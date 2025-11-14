@@ -11,8 +11,8 @@ const TabBar = () => {
     { id: 'guide', label: 'Guide', icon: BookOpen, path: '/guide' },
     { id: 'tools', label: 'Tools', icon: Wrench, path: '/tools' },
     { id: 'support', label: 'Support', icon: Heart, path: '/support' },
-    { id: 'contact', label: 'Contact', icon: Phone, path: '/contact' },
-    { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' }
+    // { id: 'contact', label: 'Contact', icon: Phone, path: '/contact' },
+    // { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' }
   ];
 
   const handleTabClick = (path) => {
