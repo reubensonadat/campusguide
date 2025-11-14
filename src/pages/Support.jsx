@@ -1,9 +1,18 @@
-import React from 'react';
+// src/pages/Support.jsx
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { PaymentButton } from '../components/payment/PaymentButton';
 import { Heart, Star, Users, Zap, Shield, Gift, CheckCircle, TrendingUp } from 'lucide-react';
 
 const Support = () => {
+  // Separate email states for different sections
+  const [heroEmail, setHeroEmail] = useState('');
+  const [tierEmails, setTierEmails] = useState({
+    5: '',
+    10: '',
+    20: ''
+  });
+
   const supporterBenefits = [
     {
       icon: Star,
@@ -78,6 +87,24 @@ const Support = () => {
     }
   ];
 
+  const handlePaymentSuccess = (result) => {
+    console.log('Payment successful:', result);
+    // You can add a success message or redirect here
+    alert('Thank you for your support!');
+  };
+
+  const handlePaymentError = (error) => {
+    console.error('Payment error:', error);
+    alert(`Payment failed: ${error.message}`);
+  };
+
+  const handleTierEmailChange = (amount, email) => {
+    setTierEmails(prev => ({
+      ...prev,
+      [amount]: email
+    }));
+  };
+
   return (
     <div className="p-4 pb-20">
       {/* Hero Section */}
@@ -88,7 +115,26 @@ const Support = () => {
           <p className="text-white/90 text-lg mb-6 max-w-md mx-auto">
             Help us keep this app free for all UCC students. Your support enables us to add new features and maintain the service.
           </p>
-          <PaymentButton amount={5} customText="Support Now" />
+          <div className="max-w-sm mx-auto">
+            <input
+              type="email"
+              value={heroEmail}
+              onChange={(e) => setHeroEmail(e.target.value)}
+              className="w-full px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white mb-4"
+              placeholder="Enter your email address"
+              required
+            />
+            <PaymentButton 
+              amount={5} 
+              email={heroEmail}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentError={handlePaymentError}
+              disabled={!heroEmail}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              Support Now - GH₵5
+            </PaymentButton>
+          </div>
         </div>
       </div>
 
@@ -161,7 +207,26 @@ const Support = () => {
                     </li>
                   ))}
                 </ul>
-                <PaymentButton amount={tier.amount} customText={`Support GH₵${tier.amount}`} />
+                <div className="space-y-3">
+                  <input
+                    type="email"
+                    value={tierEmails[tier.amount]}
+                    onChange={(e) => handleTierEmailChange(tier.amount, e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Enter your email"
+                    required
+                  />
+                  <PaymentButton 
+                    amount={tier.amount} 
+                    email={tierEmails[tier.amount]}
+                    onPaymentSuccess={handlePaymentSuccess}
+                    onPaymentError={handlePaymentError}
+                    disabled={!tierEmails[tier.amount]}
+                    className={`w-full ${tier.buttonColor}`}
+                  >
+                    Support GH₵{tier.amount}
+                  </PaymentButton>
+                </div>
               </div>
             ))}
           </div>

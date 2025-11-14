@@ -1,5 +1,5 @@
 // src/App.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -10,6 +10,7 @@ import { TabBar } from './components/common/TabBar';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { SupportModal } from './components/payment/SupportModal';
 import SupportButton from './components/payment/SupportButton';
+import { preloadPaystack } from './services/paymentService';
 
 // Page imports
 import Home from './pages/Home';
@@ -22,6 +23,13 @@ import Settings from './pages/Settings';
 function AppContent() {
   const { showOnboarding, currentStep, nextStep, prevStep, closeOnboarding } = useOnboarding();
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
+
+  // Preload Paystack script when app loads
+  useEffect(() => {
+    preloadPaystack().catch(error => {
+      console.error('Failed to preload Paystack:', error);
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">

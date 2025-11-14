@@ -9,13 +9,18 @@ const SupportButton = () => {
   return (
     <button
       onClick={openModal}
-      className="fixed bottom-20 right-4 z-50 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg p-3 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
-      aria-label="Support UCC Campus Guide"
+      className="fixed bottom-24 right-4 z-40 bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
+      aria-label="Support Us"
     >
-      <Heart className="h-4 w-4" />
+      <Heart 
+        size={24} 
+        className="fill-current group-hover:scale-110 transition-transform"
+      />
+      <span className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        Support Us
+      </span>
     </button>
   );
 };
 
-export { SupportButton };
 export default SupportButton;

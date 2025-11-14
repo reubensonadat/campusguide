@@ -5,24 +5,43 @@ import { useAppContext } from '../context/AppContext';
 export const useSupportModal = () => {
   const { state, actions } = useAppContext();
   
-  const showModal = state.showSupportModal;
+  const showModal = state?.showSupportModal || false;
   
   const openModal = () => {
-    actions.setShowSupportModal(true);
+    if (actions?.setShowSupportModal) {
+      actions.setShowSupportModal(true);
+    }
   };
   
   const closeModal = () => {
-    actions.setShowSupportModal(false);
+    if (actions?.setShowSupportModal) {
+      actions.setShowSupportModal(false);
+    }
   };
   
   const handlePaymentSuccess = (paymentResult) => {
     // Handle successful payment
     console.log('Payment successful:', paymentResult);
-    actions.setSupporterStatus(true);
-    actions.showToast({
-      message: 'Thank you for your support!',
-      type: 'success'
-    });
+    
+    // Save supporter status to localStorage
+    const supporterData = {
+      isSupporter: true,
+      plan: paymentResult.planId || 'supporter',
+      paymentDate: new Date().toISOString(),
+      reference: paymentResult.reference
+    };
+    localStorage.setItem('ucc_supporter_status', JSON.stringify(supporterData));
+    
+    if (actions?.setSupporterStatus) {
+      actions.setSupporterStatus(true);
+    }
+    
+    if (actions?.showToast) {
+      actions.showToast({
+        message: 'Thank you for your support!',
+        type: 'success'
+      });
+    }
   };
   
   return {
