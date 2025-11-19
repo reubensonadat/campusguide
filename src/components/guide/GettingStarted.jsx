@@ -1,352 +1,333 @@
-// src/components/guide/GettingStarted.jsx
 import React from 'react';
+import { Calendar, CheckCircle, AlertTriangle, BookOpen, MapPin, CreditCard, User, Info, Download, Sparkles, Truck, Coffee } from 'lucide-react';
 
 const GettingStarted = () => {
+  // UCC GUIDE: GETTING STARTED (PLATINUM EDITION 2025)
+  // DATA SOURCE: 2024/2025 Academic Calendar, Student Handbook, Hall Traditions.
+  // UPGRADES: Deep-dive "Packing Guide", "Hall Culture" section, and richer UI components.
+
   const sections = [
     {
-      title: "Welcome to University of Cape Coast",
-      summary: "Congratulations on your admission! This guide will help you navigate your first days at UCC.",
+      title: "Welcome to the University of Choice",
+      summary: "Your definitive roadmap from 'Admission Letter' to 'Matriculation'.",
+      
+      // --- OVERVIEW CONTENT (RICH UI) ---
       content: (
-        <div>
-          <p className="mb-4">
-            The University of Cape Coast (UCC) is one of Ghana's premier universities, known for its excellent academic programs and beautiful campus location. As a new student, you're about to begin an exciting journey of learning and personal growth.
-          </p>
-          <p>
-            This guide will walk you through everything you need to know to get started, from completing your registration to finding your way around campus.
-          </p>
+        <div className="space-y-12 font-sans">
+          {/* --- HERO SECTION WITH GLASSMORPHISM --- */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-blue-900 to-slate-900 text-white p-10 shadow-2xl">
+            {/* Abstract Background Shapes */}
+            <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-60 h-60 bg-blue-400/10 rounded-full blur-3xl"></div>
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="text-left space-y-4 max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-wider text-blue-200">
+                  <Sparkles size={12} /> Class of 2029
+                </div>
+                <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+                  Akwaaba to the <br/>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200">University of Choice</span>
+                </h2>
+                <p className="text-blue-100/90 text-lg leading-relaxed">
+                  You have secured your spot in Ghana's most competitive university. 
+                  The next 21 days define your first year. Don't just arrive; <strong>arrive prepared.</strong>
+                </p>
+              </div>
+              
+              {/* Mock Countdown/Status Card */}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl min-w-[200px] text-center shadow-lg transform hover:scale-105 transition-transform">
+                <p className="text-blue-200 text-xs uppercase tracking-widest mb-1">Next Major Event</p>
+                <div className="text-3xl font-bold text-white mb-1">Jan 20</div>
+                <div className="text-sm font-medium text-blue-100">Freshers Reporting</div>
+                <div className="mt-3 h-1 w-full bg-white/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-400 w-3/4"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* --- IMMEDIATE ACTIONS (Split Layout) --- */}
+          <div>
+            <SectionHeader icon={<CreditCard size={20} />} title="Immediate Actions (Before You Travel)" />
+            <div className="grid md:grid-cols-2 gap-6">
+              <ActionCard 
+                step="01"
+                title="Accept & Pay Fees"
+                theme="green"
+                desc="Your admission is provisional until fees are paid."
+                details={[
+                  "Print Admission Letter (Colour).",
+                  "Pay at GCB, Zenith, or Prudential.",
+                  "<strong>Quote Student ID</strong> (Not Ref No).",
+                  "Keep receipt safe for Hall entry."
+                ]}
+              />
+              <ActionCard 
+                step="02"
+                title="Portal Activation"
+                theme="blue"
+                desc="Your digital identity starts here."
+                details={[
+                  "Wait 24-48 hrs after payment.",
+                  "Visit <strong>portal.ucc.edu.gh</strong>",
+                  "User: Registration Number",
+                  "Pass: Registration Number (Default)"
+                ]}
+              />
+            </div>
+          </div>
+
+          {/* --- THE "SURVIVAL KIT" (Packing Guide) --- */}
+          <div>
+             <SectionHeader icon={<Truck size={20} />} title="The 'Old Site' Survival Kit (Packing)" />
+             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+               <p className="text-gray-600 mb-6 text-sm">
+                 UCC Halls are strict. Do not bring contraband items, or they will be seized at the Porter's Lodge.
+               </p>
+               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                  {/* Must Haves */}
+                  <div>
+                    <h5 className="font-bold text-gray-800 border-b-2 border-green-500 pb-2 mb-3 flex items-center">
+                      <CheckCircle size={16} className="text-green-500 mr-2" /> Must Haves
+                    </h5>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>• <strong>White Bed Sheets</strong> (Mandatory)</li>
+                      <li>• Mosquito Net (Student bed size)</li>
+                      <li>• Padlocks (For trunk & chopbox)</li>
+                      <li>• Bucket & Pail (Water is life)</li>
+                      <li>• Power Strip (Surge protector)</li>
+                      <li>• Formal Wear (For Matriculation)</li>
+                    </ul>
+                  </div>
+                  
+                  {/* Contraband */}
+                  <div>
+                    <h5 className="font-bold text-gray-800 border-b-2 border-red-500 pb-2 mb-3 flex items-center">
+                      <AlertTriangle size={16} className="text-red-500 mr-2" /> Contraband
+                    </h5>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>• Gas Cookers / Cylinders</li>
+                      <li>• Electric Stoves / Hot Plates</li>
+                      <li>• Toasters / Air Fryers</li>
+                      <li>• Sound Systems (Subwoofers)</li>
+                      <li>• Weapons / Drugs</li>
+                    </ul>
+                  </div>
+
+                  {/* Documentation */}
+                  <div>
+                    <h5 className="font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-3 flex items-center">
+                      <BookOpen size={16} className="text-blue-500 mr-2" /> Documents
+                    </h5>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>• Admission Letter (3 copies)</li>
+                      <li>• Fee Receipt (Original + Copies)</li>
+                      <li>• WASSCE Certificate/Results</li>
+                      <li>• NHIS Card</li>
+                      <li>• Passport Pictures (Red Background)</li>
+                    </ul>
+                  </div>
+               </div>
+             </div>
+          </div>
+
+          {/* --- HALL CULTURE (Traditions) --- */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-orange-50 p-6 rounded-2xl border border-orange-100">
+              <h4 className="text-orange-900 font-bold text-lg mb-3">Hall Traditions</h4>
+              <p className="text-sm text-orange-800/80 mb-4 leading-relaxed">
+                UCC is famous for its hall culture. Expect <strong>"Processions"</strong> and <strong>"Morale"</strong> (singing and drumming) on Friday nights. 
+                <strong> Casford</strong> and <strong>Adehye</strong> ("Cas-Ade") have a strong alliance, as do <strong>Atlantic</strong> and <strong>Oguaa</strong>.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Royals</span>
+                <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Super-Powers</span>
+                <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Mariners</span>
+                <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Gentlemen</span>
+              </div>
+            </div>
+
+             <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
+              <h4 className="text-indigo-900 font-bold text-lg mb-3">Medical Exam Rule</h4>
+              <p className="text-sm text-indigo-800/80 mb-4 leading-relaxed">
+                The Medical Exam is <strong>mandatory</strong>. You cannot graduate without clearing it.
+                It involves a Chest X-Ray, Lab Tests, and a Physical Exam. 
+                <strong> Pro Tip:</strong> Go as early as 6:00 AM to beat the queue.
+              </p>
+              <div className="flex items-center text-indigo-700 text-xs font-bold">
+                <MapPin size={14} className="mr-1" />
+                University Health Services (Old Site)
+              </div>
+            </div>
+          </div>
+
+          {/* --- CRITICAL DATES TIMELINE --- */}
+          <div>
+            <SectionHeader icon={<Calendar size={20} />} title="Freshers' Timeline (Jan - Mar 2025)" />
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                <TimelineEvent date="Jan 20" day="Monday" title="Freshers Report" desc="Arrival at Halls. Key collection starts at 8:00 AM." />
+                <TimelineEvent date="Jan 21" day="Tuesday" title="Orientation Begins" desc="Faculty & Dept Orientation. Venue: NEC / CALC." />
+                <TimelineEvent date="Jan 23" day="Thursday" title="Lectures Begin" desc="Classes start immediately. Don't wait for 'next week'." />
+                <TimelineEvent date="Jan 24" day="Friday" title="Registration Ends" desc="Online portal closes for normal registration." />
+                <TimelineEvent date="Mar 08" day="Saturday" title="Matriculation" desc="Official swearing-in ceremony. Formal attire required." />
+              </div>
+            </div>
+          </div>
+
         </div>
       ),
-      keyPoints: [
-        "UCC was established in 1962 and has grown to become a leading university in Ghana",
-        "The university offers a wide range of undergraduate and graduate programs",
-        "UCC is known for its strong focus on research and community engagement",
-        "The campus is located in the historic city of Cape Coast, near the coast of the Gulf of Guinea"
-      ],
-      importantDates: [
-        { title: "Orientation Week", date: "August 15-19, 2023" },
-        { title: "Registration Deadline", date: "August 26, 2023" },
-        { title: "First Day of Classes", date: "August 29, 2023" },
-        { title: "Add/Drop Deadline", date: "September 9, 2023" }
-      ],
+
+      // --- STEPS TAB DATA ---
       steps: [
         {
-          title: "Complete your admission acceptance process",
-          description: "Log into the admission portal with your credentials and follow the steps to accept your admission offer."
+          title: "Print 3 Copies of Everything",
+          description: "Admission Letter, Fee Receipt, and WASSCE Results. You will need one set for your Hall, one for your Department, and one for your own file."
         },
         {
-          title: "Pay your admission fees",
-          description: "Pay the required admission fees through the approved payment channels. Keep your receipt for future reference."
+          title: "Biometric Registration",
+          description: "Locate the ID Card Unit (usually at CAS or Old Admin). Capture your biometrics to get your Student ID card. No card = No Exams."
         },
         {
-          title: "Check your admission status on the student portal",
-          description: "Regularly check the student portal to confirm your admission status and any updates."
+          title: "Hall Registration",
+          description: "Go to your Hall's Porter's Lodge. Show your Fee Receipt to sign the 'Residence Book' and collect your room key. If in a private hostel, see the Manager."
         },
         {
-          title: "Print your admission letter",
-          description: "Once your admission is confirmed, print your admission letter and other required documents."
+          title: "The Medical Examination",
+          description: "1. Pay medical fee at Cash Office. 2. Do X-Rays & Labs at Hospital. 3. Return for Physical Exam. 4. Submit cleared form to Department."
         },
         {
-          title: "Prepare for orientation week",
-          description: "Make arrangements to attend orientation week, which is mandatory for all first-year students."
+          title: "Course Registration",
+          description: "Log in to the portal. Register Core courses and required Electives. Ensure total credits meet minimum (usually 15). Print the slip immediately."
         },
         {
-          title: "Arrange accommodation",
-          description: "Apply for on-campus accommodation or arrange for off-campus housing before arriving."
-        },
-        {
-          title: "Attend orientation program",
-          description: "Participate in all orientation activities to familiarize yourself with the university."
+          title: "Locate Lecture Venues",
+          description: "Use the Campus Map to find 'CALC', 'LLT', 'SWT', and 'CELT'. Walk the route the day before classes start."
         }
       ],
-      tips: [
-        "Start the admission process early to avoid last-minute rush",
-        "Keep copies of all documents and receipts",
-        "Join the official UCC social media groups for updates",
-        "Connect with other new students through official forums"
-      ],
+
+      // --- WARNINGS TAB DATA ---
       commonMistakes: [
-        "Not checking admission status regularly",
-        "Waiting until the last minute to pay fees",
-        "Missing orientation week activities",
-        "Not asking questions when confused",
-        "Not familiarizing yourself with the campus before classes start"
+        "Paying fees via direct Mobile Money transfer instead of Transflow/Smartpay (Money won't reflect on portal).",
+        "Assuming you can change your Hall easily (It is nearly impossible in first year).",
+        "Missing the Medical Exam (Academic record will be flagged, blocking results).",
+        "Buying handouts/books too early (Wait for lecturer's specific recommendation).",
+        "Skipping 'Library Orientation' (You won't know how to use Turnitin for assignments)."
       ],
-      consequences: "Missing important deadlines or steps in the admission process may result in losing your admission offer or facing delays in your registration.",
+      consequences: "Failure to complete Biometric Registration means no Student ID. No Student ID means no access to Exam Halls or Library.",
+
+      // --- CHECKLIST TAB DATA ---
       checklist: [
-        { text: "Accept admission offer", checked: false },
-        { text: "Pay admission fees", checked: false },
-        { text: "Check admission status", checked: false },
-        { text: "Print admission letter", checked: false },
-        { text: "Arrange accommodation", checked: false },
-        { text: "Prepare for orientation", checked: false }
+        { text: "Accepted Admission Online", checked: false },
+        { text: "Paid Fees at Bank (Transflow)", checked: false },
+        { text: "Printed 3 Copies of Admission Letter", checked: false },
+        { text: "Packed White Bed Sheets (Mandatory)", checked: false },
+        { text: "Packed Mosquito Net & Bucket", checked: false },
+        { text: "Packed Formal Wear (Matriculation)", checked: false },
+        { text: "Bought Padlocks for Trunks", checked: false },
+        { text: "Created Student Portal Account", checked: false },
+        { text: "Joined Faculty WhatsApp Group", checked: false }
       ],
+
+      // --- RESOURCES TAB DATA ---
       resources: [
         {
-          title: "UCC Student Portal",
-          description: "Access your admission status, registration, and other student services",
+          title: "Admission Status Portal",
+          description: "Check status and print letters.",
+          url: "https://apply.ucc.edu.gh"
+        },
+        {
+          title: "Student Portal",
+          description: "Course registration, results, room booking.",
           url: "https://portal.ucc.edu.gh"
         },
         {
-          title: "UCC Admission Guidelines",
-          description: "Detailed information about the admission process",
-          url: "https://ucc.edu.gh/admissions"
+          title: "UCC Freshers Official",
+          description: "Official Telegram channel for updates.",
+          url: "https://t.me/ucc_freshers"
         },
         {
-          title: "UCC Virtual Campus Tour",
-          description: "Explore the campus from anywhere",
-          url: "https://ucc.edu.gh/tour"
-        }
-      ],
-      contacts: [
-        {
-          name: "Admissions Office",
-          role: "Handles all admission-related queries",
-          contact: "admissions@ucc.edu.gh | +233 123 456 789"
-        },
-        {
-          name: "Student Affairs",
-          role: "Supports student welfare and activities",
-          contact: "studentaffairs@ucc.edu.gh | +233 123 456 788"
-        }
-      ]
-    },
-    {
-      title: "Arrival Checklist",
-      summary: "Here's everything you need to bring and do when you arrive on campus.",
-      content: (
-        <div>
-          <p className="mb-4">
-            Arriving on campus can be overwhelming, but with proper preparation, you can make the transition smooth. Make sure you have all the necessary documents and items before you arrive.
-          </p>
-          <p>
-            This checklist will help you organize your arrival and ensure you don't forget anything important.
-          </p>
-        </div>
-      ),
-      keyPoints: [
-        "The university is located in Cape Coast, about 165km from Accra",
-        "The campus has various accommodation options for students",
-        "There are several banking facilities on campus",
-        "The university provides transportation services within campus"
-      ],
-      importantDates: [
-        { title: "Arrival Day for Freshers", date: "August 13, 2023" },
-        { title: "Accommodation Check-in", date: "August 14-15, 2023" },
-        { title: "Medical Screening", date: "August 16-17, 2023" },
-        { title: "Orientation Begins", date: "August 18, 2023" }
-      ],
-      steps: [
-        {
-          title: "Print and bring your admission letter",
-          description: "You'll need to present this at various checkpoints during registration."
-        },
-        {
-          title: "Bring original and copies of your certificates",
-          description: "Include your WASSCE/SSSCE results slip and certificates."
-        },
-        {
-          title: "Bring birth certificate and proof of identity",
-          description: "Valid ID such as passport, voter's ID, or national ID card."
-        },
-        {
-          title: "Bring passport-sized photographs",
-          description: "At least 4 copies with a white background."
-        },
-        {
-          title: "Bring proof of fee payment",
-          description: "Original receipt and at least 2 copies."
-        },
-        {
-          title: "Pack essential toiletries and bedding",
-          description: "If you'll be staying in the hostel, bring these essentials."
-        },
-        {
-          title: "Bring necessary electronics",
-          description: "Laptop, phone, chargers, and extension cords."
-        },
-        {
-          title: "Pack appropriate clothing",
-          description: "Consider the weather and campus dress code."
-        },
-        {
-          title: "Bring some cash for initial expenses",
-          description: "For meals, transportation, and other immediate needs."
-        }
-      ],
-      tips: [
-        "Label all your belongings with your name and contact information",
-        "Make digital copies of all important documents",
-        "Arrive a day early if possible to avoid the last-minute rush",
-        "Bring a power bank for your phone during registration",
-        "Pack a first aid kit with basic medications"
-      ],
-      commonMistakes: [
-        "Forgetting important documents",
-        "Not having copies of important papers",
-        "Bringing too many unnecessary items",
-        "Not having enough cash for initial expenses",
-        "Not labeling personal belongings"
-      ],
-      consequences: "Missing essential documents can delay your registration process and cause unnecessary stress during your arrival.",
-      checklist: [
-        { text: "Admission letter printed", checked: false },
-        { text: "Original certificates packed", checked: false },
-        { text: "Birth certificate and ID", checked: false },
-        { text: "Passport-sized photos", checked: false },
-        { text: "Proof of fee payment", checked: false },
-        { text: "Essential toiletries", checked: false },
-        { text: "Electronics and chargers", checked: false },
-        { text: "Appropriate clothing", checked: false },
-        { text: "Cash for initial expenses", checked: false }
-      ],
-      resources: [
-        {
-          title: "UCC Campus Map",
-          description: "Navigate the campus with ease using this interactive map",
-          url: "https://ucc.edu.gh/campus-map"
-        },
-        {
-          title: "Hostel Accommodation Guide",
-          description: "Information about hostel facilities and application process",
-          url: "https://ucc.edu.gh/accommodation"
-        },
-        {
-          title: "UCC Transportation Services",
-          description: "Information about campus shuttle services and routes",
-          url: "https://ucc.edu.gh/transport"
-        }
-      ],
-      contacts: [
-        {
-          name: "Hostel Management",
-          role: "Manages all hostel accommodations",
-          contact: "hostel@ucc.edu.gh | +233 123 456 787"
-        },
-        {
-          name: "Campus Security",
-          role: "Ensures safety and security on campus",
-          contact: "security@ucc.edu.gh | +233 123 456 786"
-        }
-      ]
-    },
-    {
-      title: "Orientation Week",
-      summary: "Make the most of orientation week to familiarize yourself with the university.",
-      content: (
-        <div>
-          <p className="mb-4">
-            Orientation week is designed to help new students adjust to university life. It's a great opportunity to learn about the university, meet new people, and get answers to your questions.
-          </p>
-          <p>
-            During this week, you'll participate in various activities that will help you understand the university's culture, academic expectations, and available resources.
-          </p>
-        </div>
-      ),
-      keyPoints: [
-        "Orientation is mandatory for all first-year students",
-        "You'll meet your academic advisor during orientation",
-        "Various student clubs and societies will be showcased",
-        "Campus tours will help you navigate the university facilities"
-      ],
-      importantDates: [
-        { title: "Opening Ceremony", date: "August 18, 2023" },
-        { title: "Faculty Orientation", date: "August 19, 2023" },
-        { title: "Students' Association Fair", date: "August 20, 2023" },
-        { title: "Campus Tours", date: "August 21-22, 2023" },
-        { title: "Registration for Courses", date: "August 23-24, 2023" }
-      ],
-      steps: [
-        {
-          title: "Attend the official orientation ceremony",
-          description: "The opening ceremony marks the beginning of your university journey."
-        },
-        {
-          title: "Participate in faculty/departmental orientation",
-          description: "Learn about your specific faculty, department, and program requirements."
-        },
-        {
-          title: "Join campus tours",
-          description: "Familiarize yourself with key locations like lecture halls, library, and administrative offices."
-        },
-        {
-          title: "Attend the students' association fair",
-          description: "Explore various clubs and societies you can join."
-        },
-        {
-          title: "Sign up for clubs and societies",
-          description: "Join groups that align with your interests and career goals."
-        },
-        {
-          title: "Meet your academic advisor",
-          description: "Your advisor will guide you through your academic journey."
-        },
-        {
-          title: "Collect your student ID card",
-          description: "Your ID gives you access to various campus facilities."
-        },
-        {
-          title: "Register for your courses",
-          description: "Select and register for courses for the upcoming semester."
-        }
-      ],
-      tips: [
-        "Take notes during important presentations",
-        "Ask questions whenever you're unsure about something",
-        "Connect with faculty members in your department",
-        "Exchange contacts with fellow students",
-        "Explore the campus during free time"
-      ],
-      commonMistakes: [
-        "Skipping orientation activities",
-        "Not asking questions during sessions",
-        "Not taking notes during important presentations",
-        "Being too shy to meet new people",
-        "Not exploring the campus during tours"
-      ],
-      consequences: "Missing orientation activities can leave you unprepared for university life and unaware of important resources and opportunities available to you.",
-      checklist: [
-        { text: "Attend opening ceremony", checked: false },
-        { text: "Participate in faculty orientation", checked: false },
-        { text: "Join campus tours", checked: false },
-        { text: "Attend students' association fair", checked: false },
-        { text: "Sign up for clubs/societies", checked: false },
-        { text: "Meet academic advisor", checked: false },
-        { text: "Collect student ID", checked: false },
-        { text: "Register for courses", checked: false }
-      ],
-      resources: [
-        {
-          title: "UCC Student Handbook",
-          description: "All the rules, regulations, and guidelines you need to know",
-          url: "https://ucc.edu.gh/student-handbook"
-        },
-        {
-          title: "Academic Calendar",
-          description: "Important dates and deadlines for the academic year",
-          url: "https://ucc.edu.gh/calendar"
-        },
-        {
-          title: "Student Clubs and Societies",
-          description: "Explore the various student organizations on campus",
-          url: "https://ucc.edu.gh/clubs"
-        }
-      ],
-      contacts: [
-        {
-          name: "Dean of Students",
-          role: "Oversees student welfare and development",
-          contact: "deanofstudents@ucc.edu.gh | +233 123 456 785"
-        },
-        {
-          name: "Students' Representative Council",
-          role: "Represents student interests and organizes activities",
-          contact: "src@ucc.edu.gh | +233 123 456 784"
+          title: "E-Learning Platform",
+          description: "Access lecture slides and assignments.",
+          url: "https://elearning.ucc.edu.gh"
         }
       ]
     }
   ];
 
-  return { sections };
+  const tabs = [
+    { id: 'overview', label: 'Welcome' },
+    { id: 'steps', label: 'First Week' },
+    { id: 'resources', label: 'Portals' },
+    { id: 'warnings', label: 'Alerts' },
+    { id: 'checklist', label: 'Checklist' }
+  ];
+
+  return { sections, tabs };
 };
+
+// --- INTERNAL HELPER COMPONENTS FOR PREMIUM STYLING ---
+
+const SectionHeader = ({ icon, title }) => (
+  <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center border-b border-gray-100 pb-2">
+    <span className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mr-3 shadow-sm border border-indigo-100">
+      {icon}
+    </span>
+    {title}
+  </h3>
+);
+
+const ActionCard = ({ step, title, details, theme, desc }) => {
+  const isGreen = theme === 'green';
+  const bgClass = isGreen ? 'bg-emerald-50' : 'bg-blue-50';
+  const borderClass = isGreen ? 'border-emerald-100' : 'border-blue-100';
+  const textMain = isGreen ? 'text-emerald-900' : 'text-blue-900';
+  const badgeBg = isGreen ? 'bg-emerald-200' : 'bg-blue-200';
+  const badgeText = isGreen ? 'text-emerald-800' : 'text-blue-800';
+  const tickColor = isGreen ? 'text-emerald-600' : 'text-blue-600';
+
+  return (
+    <div className={`${bgClass} p-6 rounded-2xl border ${borderClass} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full`}>
+      <div className="flex items-center mb-3">
+        <span className={`${badgeBg} ${badgeText} text-xs font-extrabold px-3 py-1 rounded-lg uppercase tracking-wide mr-3 shadow-sm`}>
+          Step {step}
+        </span>
+        <h4 className={`font-bold text-xl ${textMain}`}>{title}</h4>
+      </div>
+      <p className={`text-sm ${textMain} opacity-80 mb-4 italic`}>{desc}</p>
+      <ul className="space-y-3 mt-auto">
+        {details.map((item, idx) => (
+          <li key={idx} className={`flex items-start text-sm ${textMain} font-medium`}>
+            <CheckCircle size={16} className={`${tickColor} mt-0.5 mr-2 flex-shrink-0`} />
+            <span dangerouslySetInnerHTML={{ __html: item }} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+const TimelineEvent = ({ date, day, title, desc }) => (
+  <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+    {/* Icon/Dot */}
+    <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+      <Calendar size={18} />
+    </div>
+    
+    {/* Content Card */}
+    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] p-5 rounded-2xl border border-slate-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 relative">
+      <div className="absolute top-4 right-4 opacity-10 text-indigo-600">
+         <Info size={40} />
+      </div>
+      <div className="flex flex-col mb-1">
+        <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 text-xl">{date}</span>
+        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{day}</span>
+      </div>
+      <h5 className="font-bold text-slate-800 text-lg mb-2">{title}</h5>
+      <p className="text-sm text-slate-600 leading-relaxed">{desc}</p>
+    </div>
+  </div>
+);
 
 export default GettingStarted;

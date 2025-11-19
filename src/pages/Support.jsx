@@ -2,7 +2,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { PaymentButton } from '../components/payment/PaymentButton';
-import { Heart, Star, Users, Zap, Shield, Gift, CheckCircle, TrendingUp } from 'lucide-react';
+import { Button } from '../components/common/Button';
+import { Heart, Star, Users, Zap, Shield, Gift, CheckCircle, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Support = () => {
   // Separate email states for different sections
@@ -12,27 +14,40 @@ const Support = () => {
     10: '',
     20: ''
   });
+  const navigate = useNavigate();
 
   const supporterBenefits = [
     {
       icon: Star,
       title: 'Supporter Badge',
-      description: 'Get a special badge in app header'
+      description: 'Get a special badge in app header',
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
+      border: 'border-blue-100'
     },
     {
       icon: Zap,
       title: 'Early Access',
-      description: 'Be the first to try new features'
+      description: 'Be the first to try new features',
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-50',
+      border: 'border-emerald-100'
     },
     {
       icon: Shield,
       title: 'Ad-Free Experience',
-      description: 'Enjoy the app without any interruptions'
+      description: 'Enjoy the app without any interruptions',
+      color: 'text-purple-600',
+      bg: 'bg-purple-50',
+      border: 'border-purple-100'
     },
     {
       icon: Gift,
       title: 'Exclusive Content',
-      description: 'Access premium guides and resources'
+      description: 'Access premium guides and resources',
+      color: 'text-orange-600',
+      bg: 'bg-orange-50',
+      border: 'border-orange-100'
     }
   ];
 
@@ -42,7 +57,10 @@ const Support = () => {
       title: 'Supporter',
       description: 'Show your appreciation',
       benefits: ['Supporter badge', 'Thank you message'],
-      color: 'border-blue-200 bg-blue-50',
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
+      border: 'border-blue-100',
+      iconBg: 'bg-blue-100',
       buttonColor: 'bg-blue-600 hover:bg-blue-700'
     },
     {
@@ -50,15 +68,21 @@ const Support = () => {
       title: 'Friend',
       description: 'Help us grow',
       benefits: ['Supporter badge', 'Early access to features'],
-      color: 'border-green-200 bg-green-50',
-      buttonColor: 'bg-green-600 hover:bg-green-700'
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-50',
+      border: 'border-emerald-100',
+      iconBg: 'bg-emerald-100',
+      buttonColor: 'bg-emerald-600 hover:bg-emerald-700'
     },
     {
       amount: 20,
       title: 'Patron',
       description: 'Make a real impact',
       benefits: ['All benefits', 'Exclusive content', 'Priority support'],
-      color: 'border-purple-200 bg-purple-50',
+      color: 'text-purple-600',
+      bg: 'bg-purple-50',
+      border: 'border-purple-100',
+      iconBg: 'bg-purple-100',
       buttonColor: 'bg-purple-600 hover:bg-purple-700'
     }
   ];
@@ -87,6 +111,25 @@ const Support = () => {
     }
   ];
 
+  const testimonials = [
+    {
+      name: 'John Doe',
+      title: 'Level 200 Student',
+      initials: 'JD',
+      color: 'bg-blue-100',
+      textColor: 'text-blue-600',
+      quote: 'This app saved me so much time during registration. The step-by-step guides are amazing!'
+    },
+    {
+      name: 'Sarah Appiah',
+      title: 'Level 300 Student',
+      initials: 'SA',
+      color: 'bg-green-100',
+      textColor: 'text-green-600',
+      quote: 'The budget tracker helped me manage my finances better. I love how easy it is to use!'
+    }
+  ];
+
   const handlePaymentSuccess = (result) => {
     console.log('Payment successful:', result);
     // You can add a success message or redirect here
@@ -106,21 +149,39 @@ const Support = () => {
   };
 
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4 pb-24 bg-gray-50/50 min-h-screen font-sans">
       {/* Hero Section */}
-      <div className="gradient-accent text-white rounded-2xl p-8 mb-6 shadow-strong">
-        <div className="text-center">
-          <Heart size={48} className="mx-auto mb-4" />
-          <h1 className="text-3xl font-bold mb-3">Support UCC Campus Guide</h1>
-          <p className="text-white/90 text-lg mb-6 max-w-md mx-auto">
+      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
+        
+        <div className="relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs font-bold uppercase tracking-widest text-blue-200 mb-6">
+             <Sparkles size={12} /> Support Your Campus Guide
+          </div>
+
+          <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
+            <Heart size={40} className="text-white drop-shadow-md" />
+          </div>
+          
+          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
+            Keep This App <br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
+              Free For Everyone
+            </span>
+          </h1>
+          
+          <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
             Help us keep this app free for all UCC students. Your support enables us to add new features and maintain the service.
           </p>
-          <div className="max-w-sm mx-auto">
+          
+          <div className="max-w-sm mx-auto mb-6">
             <input
               type="email"
               value={heroEmail}
               onChange={(e) => setHeroEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white mb-4"
+              className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white mb-4 bg-white/90 backdrop-blur-sm"
               placeholder="Enter your email address"
               required
             />
@@ -130,55 +191,71 @@ const Support = () => {
               onPaymentSuccess={handlePaymentSuccess}
               onPaymentError={handlePaymentError}
               disabled={!heroEmail}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
             >
-              Support Now - GH₵5
+              <Heart size={20} /> Support Now - GH₵5
             </PaymentButton>
+          </div>
+          
+          <div className="flex flex-col md:flex-row gap-4 justify-center">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/')}
+              className="bg-blue-800/40 backdrop-blur-md border border-white/30 text-white hover:bg-blue-800/60 px-8 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+            >
+              <ArrowRight size={20} /> Back to Home
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/guide')}
+              className="bg-blue-800/40 backdrop-blur-md border border-white/30 text-white hover:bg-blue-800/60 px-8 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+            >
+              <Star size={20} /> View Guide
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Impact Section */}
-      <Card className="mb-6" style={{ backgroundColor: 'rgb(255 255 255)' }}>
-        <CardHeader>
-          <CardTitle className="text-black">Your Impact</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {impact.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="text-center p-4 bg-gray-50 rounded-xl">
-                  <div className={`w-12 h-12 ${stat.bg} rounded-full flex items-center justify-center mx-auto mb-3`}>
-                    <Icon size={24} className={stat.color} />
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {impact.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={index} className="text-center border-none shadow-sm hover:shadow-md transition-shadow bg-white rounded-2xl overflow-hidden">
+              <CardContent className="pt-6 pb-6">
+                <div className={`w-12 h-12 ${stat.bg} rounded-full flex items-center justify-center mx-auto mb-3`}>
+                  <Icon size={22} className={stat.color} />
                 </div>
-              );
-            })}
-          </div>
-          <p className="text-center text-sm text-gray-600 mt-4">
-            Every contribution, no matter the size, makes a difference in students' lives.
-          </p>
-        </CardContent>
-      </Card>
+                <div className="text-2xl font-extrabold text-gray-900 mb-1">{stat.value}</div>
+                <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">{stat.label}</div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
       {/* Supporter Benefits */}
-      <Card className="mb-6" style={{ backgroundColor: 'rgb(255 255 255)' }}>
-        <CardHeader>
-          <CardTitle className="text-black">Supporter Benefits</CardTitle>
+      <Card className="mb-8 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
+        <CardHeader className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+          <CardTitle className="text-gray-800 flex items-center gap-2 text-lg">
+            <Star className="text-yellow-500 fill-yellow-500" size={20} />
+            Supporter Benefits
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {supporterBenefits.map((benefit, index) => {
               const Icon = benefit.icon;
               return (
-                <div key={index} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
-                  <Icon size={20} className="text-primary-600 mt-1" />
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{benefit.title}</h3>
-                    <p className="text-sm text-gray-600">{benefit.description}</p>
+                <div key={index} className={`p-5 rounded-2xl border ${benefit.border} ${benefit.bg} hover:shadow-md transition-all cursor-pointer group`}>
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-white rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                      <Icon size={24} className={benefit.color} />
+                    </div>
+                    <div>
+                      <h3 className={`font-bold text-lg mb-1 ${benefit.color}`}>{benefit.title}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed font-medium">{benefit.description}</p>
+                    </div>
                   </div>
                 </div>
               );
@@ -188,18 +265,26 @@ const Support = () => {
       </Card>
 
       {/* Support Tiers */}
-      <Card className="mb-6" style={{ backgroundColor: 'rgb(255 255 255)' }}>
-        <CardHeader>
-          <CardTitle className="text-black">Choose Your Support Level</CardTitle>
+      <Card className="mb-8 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
+        <CardHeader className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+          <CardTitle className="text-gray-800 flex items-center gap-2 text-lg">
+            <Heart className="text-red-500 fill-red-500" size={20} />
+            Choose Your Support Level
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {supportTiers.map((tier, index) => (
-              <div key={index} className={`border-2 rounded-xl p-4 ${tier.color}`}>
-                <h3 className="text-xl font-bold text-center mb-1">GH₵{tier.amount}</h3>
-                <h4 className="font-semibold text-center mb-3">{tier.title}</h4>
-                <p className="text-sm text-gray-600 text-center mb-4">{tier.description}</p>
-                <ul className="text-sm space-y-2 mb-4">
+              <div key={index} className={`border-2 rounded-2xl p-5 ${tier.border} ${tier.bg} hover:shadow-md transition-all`}>
+                <div className="text-center mb-4">
+                  <div className={`w-16 h-16 ${tier.iconBg} rounded-full flex items-center justify-center mx-auto mb-3`}>
+                    <Heart size={32} className={tier.color} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">GH₵{tier.amount}</h3>
+                  <h4 className={`font-bold text-lg mb-2 ${tier.color}`}>{tier.title}</h4>
+                  <p className="text-sm text-gray-600">{tier.description}</p>
+                </div>
+                <ul className="text-sm space-y-2 mb-5">
                   {tier.benefits.map((benefit, idx) => (
                     <li key={idx} className="flex items-center gap-2">
                       <CheckCircle size={16} className="text-green-500 flex-shrink-0" />
@@ -212,7 +297,7 @@ const Support = () => {
                     type="email"
                     value={tierEmails[tier.amount]}
                     onChange={(e) => handleTierEmailChange(tier.amount, e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                     placeholder="Enter your email"
                     required
                   />
@@ -222,9 +307,9 @@ const Support = () => {
                     onPaymentSuccess={handlePaymentSuccess}
                     onPaymentError={handlePaymentError}
                     disabled={!tierEmails[tier.amount]}
-                    className={`w-full ${tier.buttonColor}`}
+                    className={`w-full ${tier.buttonColor} text-white px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2`}
                   >
-                    Support GH₵{tier.amount}
+                    <Heart size={18} /> Support GH₵{tier.amount}
                   </PaymentButton>
                 </div>
               </div>
@@ -234,41 +319,31 @@ const Support = () => {
       </Card>
 
       {/* Testimonials */}
-      <Card style={{ backgroundColor: 'rgb(255 255 255)' }}>
-        <CardHeader>
-          <CardTitle className="text-black">What Students Say</CardTitle>
+      <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden">
+        <CardHeader className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+          <CardTitle className="text-gray-800 flex items-center gap-2 text-lg">
+            <Users className="text-blue-500" size={20} />
+            What Students Say
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="p-4 bg-gray-50 rounded-xl">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-bold">JD</span>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="p-5 bg-gray-50 rounded-2xl hover:shadow-md transition-all">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`w-12 h-12 ${testimonial.color} rounded-full flex items-center justify-center`}>
+                    <span className={`font-bold ${testimonial.textColor}`}>{testimonial.initials}</span>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
+                    <p className="text-sm text-gray-600">{testimonial.title}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold">John Doe</h4>
-                  <p className="text-sm text-gray-600">Level 200 Student</p>
-                </div>
+                <p className="text-sm text-gray-700 italic leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
               </div>
-              <p className="text-sm text-gray-700 italic">
-                "This app saved me so much time during registration. The step-by-step guides are amazing!"
-              </p>
-            </div>
-            
-            <div className="p-4 bg-gray-50 rounded-xl">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-green-600 font-bold">SA</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold">Sarah Appiah</h4>
-                  <p className="text-sm text-gray-600">Level 300 Student</p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-700 italic">
-                "The budget tracker helped me manage my finances better. I love how easy it is to use!"
-              </p>
-            </div>
+            ))}
           </div>
         </CardContent>
       </Card>

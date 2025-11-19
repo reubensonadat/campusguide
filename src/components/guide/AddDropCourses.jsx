@@ -1,380 +1,190 @@
 import React from 'react';
 
 const AddDropCourses = () => {
+  // UCC GUIDE: ADD/DROP COURSES (AMENDING REGISTRATION)
+  // Verified Data: 2025 Academic Year Policies
+  // Design: "Pastel Card" Layout for Overview; specific 'warnings' tab enabled.
+
   const sections = [
     {
-      title: "Add/Drop Period",
-      summary: "Understanding the add/drop period and its importance.",
-      content: (
-        <div>
-          <p className="mb-4">
-            The add/drop period is a specified time at the beginning of each semester when students can add or drop courses from their registration. This period allows you to adjust your schedule based on your academic needs and preferences.
-          </p>
-          <p>
-            During this period, you can make changes to your course selection without academic penalty. It's an important opportunity to ensure your course load is appropriate and aligns with your academic goals.
-          </p>
-        </div>
-      ),
-      keyPoints: [
-        "The add/drop period typically lasts for the first two weeks of the semester",
-        "Changes made during this period do not appear on your academic transcript",
-        "You must maintain the minimum credit requirement for your program",
-        "Some courses have restrictions on when they can be added or dropped",
-        "Financial implications may apply when adding or dropping courses"
-      ],
-      importantDates: [
-        { title: "Add/Drop Period Begins", date: "August 29, 2023" },
-        { title: "Add/Drop Period Ends", date: "September 9, 2023" },
-        { title: "Last Day to Add with Instructor Permission", date: "September 16, 2023" },
-        { title: "Last Day to Drop with 'W' Grade", date: "October 28, 2023" }
-      ],
-      steps: [
-        {
-          title: "Check the academic calendar for add/drop dates",
-          description: "Use the resources section to find the Registrar's Office page with the academic calendar."
-        },
-        {
-          title: "Review your course load during the first week of classes",
-          description: "Attend all classes to understand the workload and requirements before making changes."
-        },
-        {
-          title: "Consult with your academic advisor before making changes",
-          description: "Use the resources section to locate your faculty's academic advisor office."
-        },
-        {
-          title: "Log in to the student portal during the add/drop period",
-          description: "Access the portal through the UCC website using your student credentials."
-        },
-        {
-          title: "Navigate to the 'Add/Drop Courses' section",
-          description: "This option is typically found under the 'Academic Services' or 'Registration' tab."
-        },
-        {
-          title: "Add courses by entering course codes or searching",
-          description: "Make sure the courses fit your schedule and meet prerequisites."
-        },
-        {
-          title: "Drop courses by selecting them from your current registration",
-          description: "Consider the impact on your credit load and graduation timeline."
-        },
-        {
-          title: "Confirm all changes and print updated registration slip",
-          description: "Keep a copy for your records and verify with your department if required."
-        }
-      ],
-      tips: [
-        "Make a list of potential alternative courses before the add/drop period begins",
-        "Check if added courses have available seats before attempting to register",
-        "Consider your overall academic plan when making changes",
-        "Be aware of financial implications of adding or dropping courses",
-        "Save screenshots of your registration before and after making changes"
-      ],
-      commonMistakes: [
-        "Missing the add/drop deadline",
-        "Dropping courses without consulting an advisor",
-        "Adding courses without checking prerequisites",
-        "Not considering the impact on graduation timeline",
-        "Not keeping a record of changes made"
-      ],
-      consequences: "Missing the add/drop deadline or making uninformed changes can negatively impact your academic progress, financial situation, and graduation timeline.",
-      checklist: [
-        { text: "Check academic calendar for dates", checked: false },
-        { text: "Review current course load", checked: false },
-        { text: "Consult with academic advisor", checked: false },
-        { text: "Log in to student portal", checked: false },
-        { text: "Make course changes", checked: false },
-        { text: "Print updated registration slip", checked: false }
-      ],
-      resources: [
-        {
-          title: "UCC Student Portal",
-          description: "Access your registration and course information",
-          url: "https://portal.ucc.edu.gh"
-        },
-        {
-          title: "Academic Calendar",
-          description: "Important dates including add/drop periods",
-          url: "https://ucc.edu.gh/calendar"
-        },
-        {
-          title: "Registrar's Office",
-          description: "Registration and records services",
-          url: "https://maps.google.com/?q=Registrar's+Office+University+of+Cape+Coast"
-        },
-        {
-          title: "Course Catalog",
-          description: "Browse available courses and prerequisites",
-          url: "https://ucc.edu.gh/course-catalog"
-        },
-        {
-          title: "Tuition and Fees Information",
-          description: "Financial implications of adding/dropping courses",
-          url: "https://ucc.edu.gh/fees"
-        }
-      ],
-      contacts: [
-        {
-          name: "Registrar's Office",
-          role: "Handles registration and academic records",
-          contact: "registrar@ucc.edu.gh | +233 123 456 790"
-        },
-        {
-          name: "Student Accounts",
-          role: "Manages tuition and fees related to course changes",
-          contact: "accounts@ucc.edu.gh | +233 123 456 791"
-        }
-      ]
-    },
-    {
-      title: "Reasons to Add/Drop Courses",
-      summary: "Valid reasons for adding or dropping courses.",
-      content: (
-        <div>
-          <p className="mb-4">
-            There are various legitimate reasons to add or drop courses. Understanding these will help you make informed decisions about your course load and academic path.
-          </p>
-          <p>
-            Making changes to your course registration should be a thoughtful process that considers your academic goals, personal circumstances, and graduation requirements.
-          </p>
-        </div>
-      ),
-      keyPoints: [
-        "Schedule conflicts are a common reason for course changes",
-        "Academic difficulty alone is not always a valid reason to drop",
-        "Adding courses may have financial implications",
-        "Dropping below minimum credits can affect your student status",
-        "Some courses have specific add/drop restrictions"
-      ],
-      importantDates: [
-        { title: "Last Day to Add Full Semester Courses", date: "September 9, 2023" },
-        { title: "Last Day to Drop Without Record", date: "September 9, 2023" },
-        { title: "Last Day to Drop With 'W' Grade", date: "October 28, 2023" },
-        { title: "Financial Adjustment Deadline", date: "September 16, 2023" }
-      ],
-      steps: [
-        {
-          title: "Identify schedule conflicts that weren't apparent during registration",
-          description: "Check your timetable using the resources section to find the Academic Planning Office."
-        },
-        {
-          title: "Evaluate if course content differs from your expectations",
-          description: "Review the course syllabus and consult with the instructor if needed."
-        },
-        {
-          title: "Assess if your workload is too heavy or too light",
-          description: "Consider your study habits, work commitments, and other responsibilities."
-        },
-        {
-          title: "Verify prerequisites for courses you want to add",
-          description: "Use the resources section to access the course catalog and check requirements."
-        },
-        {
-          title: "Consider how changes align with your career goals",
-          description: "Consult with your academic advisor about long-term academic planning."
-        },
-        {
-          title: "Document any medical or personal reasons requiring adjustment",
-          description: "If applicable, visit the Health Center using the resources section for documentation."
-        },
-        {
-          title: "Check for course cancellations by the university",
-          description: "Regularly check your student portal for official announcements."
-        }
-      ],
-      tips: [
-        "Attend all classes during the first week before making decisions",
-        "Talk to students who have previously taken courses you're considering",
-        "Consider the teaching style and evaluation methods of instructors",
-        "Balance challenging courses with those that play to your strengths",
-        "Keep track of deadlines for different types of course changes"
-      ],
-      commonMistakes: [
-        "Dropping courses because they seem difficult",
-        "Adding too many courses without considering workload",
-        "Not considering financial implications of adding courses",
-        "Dropping required courses without replacement plan",
-        "Making changes based on peer pressure rather than personal needs"
-      ],
-      consequences: "Making poorly considered course changes can extend your time to graduation, increase your tuition costs, and negatively impact your academic performance.",
-      checklist: [
-        { text: "Identify valid reasons for changes", checked: false },
-        { text: "Check course prerequisites", checked: false },
-        { text: "Consult with academic advisor", checked: false },
-        { text: "Consider financial implications", checked: false },
-        { text: "Document special circumstances", checked: false },
-        { text: "Make informed decisions", checked: false }
-      ],
-      resources: [
-        {
-          title: "Academic Planning Office",
-          description: "Get advice on course selection and academic planning",
-          url: "https://maps.google.com/?q=Academic+Planning+Office+University+of+Cape+Coast"
-        },
-        {
-          title: "Course Catalog",
-          description: "Browse available courses and prerequisites",
-          url: "https://ucc.edu.gh/course-catalog"
-        },
-        {
-          title: "Faculty Offices",
-          description: "Consult with departmental faculty about course content",
-          url: "https://maps.google.com/?q=Faculty+Offices+University+of+Cape+Coast"
-        },
-        {
-          title: "Health Center",
-          description: "Get documentation for medical reasons",
-          url: "https://maps.google.com/?q=Health+Center+University+of+Cape+Coast"
-        },
-        {
-          title: "Counseling Center",
-          description: "Support for personal issues affecting academic performance",
-          url: "https://maps.google.com/?q=Counseling+Center+University+of+Cape+Coast"
-        }
-      ],
-      contacts: [
-        {
-          name: "Academic Advisors",
-          role: "Provide guidance on course selection and academic planning",
-          contact: "advisors@ucc.edu.gh | +233 123 456 792"
-        },
-        {
-          name: "Counseling Center",
-          role: "Support for personal issues affecting academic decisions",
-          contact: "counseling@ucc.edu.gh | +233 123 456 793"
-        }
-      ]
-    },
-    {
       title: "Add/Drop Process",
-      summary: "Step-by-step guide to adding and dropping courses.",
+      summary: "How to amend your registration during the grace period.",
+      
+      // --- OVERVIEW CONTENT (Pastel Card Design) ---
       content: (
-        <div>
-          <p className="mb-4">
-            The process for adding and dropping courses is straightforward but requires attention to detail to ensure it's done correctly. Follow these steps to make changes to your registration.
-          </p>
-          <p>
-            It's important to complete the process before the deadline and verify that your changes have been successfully processed. Always keep documentation of any changes made to your registration.
-          </p>
+        <div className="space-y-8">
+          {/* --- INTRO CARD --- */}
+          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
+            <p className="text-gray-700 leading-relaxed">
+              The <strong>Add/Drop Period</strong> is a specific window (usually 21 days after lectures begin) allowed for students to amend their course registration. 
+              This is your chance to fix schedule conflicts or drop courses you are not eligible for.
+            </p>
+          </div>
+
+          {/* --- KEY METRICS GRID --- */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-indigo-900 text-lg mb-3 flex items-center">
+                <span className="bg-indigo-200 text-indigo-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Credit Hours</span>
+                Workload Rules
+              </h4>
+              <p className="text-sm text-indigo-800/70 mb-4">UCC has strict minimum and maximum credit load limits per semester.</p>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                  <strong>Minimum:</strong> 15 Credits (Standard)
+                </li>
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                  <strong>Maximum:</strong> 21 - 24 Credits
+                </li>
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-red-400 rounded-full mr-3"></span>
+                  <strong>Warning:</strong> Dropping below 15 credits requires special permission.
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-amber-50 p-6 rounded-xl border border-amber-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-amber-900 text-lg mb-3 flex items-center">
+                <span className="bg-amber-200 text-amber-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Deadlines</span>
+                Strict Timelines
+              </h4>
+              <p className="text-sm text-amber-800/70 mb-4">Missing these dates attracts penalties or academic failure.</p>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-amber-400 rounded-full mr-3"></span>
+                  <strong>Normal Registration:</strong> First 2 weeks
+                </li>
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-amber-400 rounded-full mr-3"></span>
+                  <strong>Late Registration:</strong> 3rd Week (Fine applies)
+                </li>
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                  <strong>Closure:</strong> No changes allowed after 21 days.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* --- VISUAL STEPS --- */}
+          <div className="pt-4">
+            <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
+              <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
+              Procedure
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300">
+                <h5 className="font-bold text-blue-900 text-lg mb-1">1. Consult Advisor</h5>
+                <p className="text-sm text-gray-600 mt-2">
+                   See your <strong>Academic Level Advisor</strong> first. They must approve that the course you want to add fits your program structure.
+                </p>
+              </div>
+
+              <div className="bg-purple-50 p-5 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-300">
+                <h5 className="font-bold text-purple-900 text-lg mb-1">2. Portal Action</h5>
+                <p className="text-sm text-gray-600 mt-2">
+                  Log into <strong>portal.ucc.edu.gh</strong>. Navigate to "Register Courses", uncheck courses to drop, and check new ones to add.
+                </p>
+              </div>
+
+              <div className="bg-teal-50 p-5 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
+                <h5 className="font-bold text-teal-900 text-lg mb-1">3. Print Slip</h5>
+                <p className="text-sm text-gray-600 mt-2">
+                  <strong>Crucial:</strong> You must print the new Registration Slip. The old slip is invalid once you make changes online.
+                </p>
+              </div>
+
+              <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 hover:shadow-md transition-all duration-300">
+                <h5 className="font-bold text-slate-800 text-lg mb-1">4. Sign & File</h5>
+                <p className="text-sm text-gray-600 mt-2">
+                  Have the new slip signed by your HOD. Submit a copy to the Department Secretary to update your file.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       ),
-      keyPoints: [
-        "The add/drop process is completed online through the student portal",
-        "You must meet all prerequisites for courses you want to add",
-        "Some courses require instructor permission to add after the first week",
-        "Dropping courses may affect your financial aid eligibility",
-        "You must maintain the minimum credit requirement for your program"
-      ],
-      importantDates: [
-        { title: "Add/Drop Period Begins", date: "August 29, 2023" },
-        { title: "Last Day to Add Without Permission", date: "September 9, 2023" },
-        { title: "Last Day to Drop Without Record", date: "September 9, 2023" },
-        { title: "Last Day to Drop With 'W' Grade", date: "October 28, 2023" }
-      ],
+
+      // --- STEPS TAB DATA ---
       steps: [
         {
-          title: "Log in to the student portal",
-          description: "Access the portal through the UCC website using your student credentials."
+          title: "Check the Academic Calendar",
+          description: "Confirm the exact Add/Drop deadline. It is usually the 3rd week of the semester.",
+          note: "Late registration attracts a penalty fee."
         },
         {
-          title: "Go to 'Course Registration' section",
-          description: "This is typically found under the 'Academic Services' tab."
+          title: "Consult Academic Advisor",
+          description: "Discuss why you are dropping the course. Ensure you are not dropping a Core (Compulsory) course by mistake."
         },
         {
-          title: "Click on 'Add/Drop Courses' option",
-          description: "This will display your current registration and available options."
+          title: "Log in to Portal",
+          description: "Visit portal.ucc.edu.gh and go to the Registration tab."
         },
         {
-          title: "To add a course: enter course code or search for it",
-          description: "Verify that the course fits your schedule and that you meet prerequisites."
+          title: "Modify Selection",
+          description: "Select courses to Add. Uncheck courses to Drop. Click 'Save/Submit'."
         },
         {
-          title: "To drop a course: select it from your current courses",
-          description: "Consider the impact on your credit load and graduation timeline."
+          title: "Print Registration Slip",
+          description: "Print 3 copies of the updated registration slip."
         },
         {
-          title: "Review changes before submitting",
-          description: "Double-check that all changes are correct before finalizing."
+          title: "Obtain Signatures",
+          description: "Take the slips to your Head of Department (HOD) for endorsement."
         },
         {
-          title: "Submit your changes",
-          description: "Confirm your submission and wait for the system to process."
-        },
-        {
-          title: "Print your updated registration slip",
-          description: "Keep a copy for your records and verify with your department if required."
-        },
-        {
-          title: "Verify changes with your department if required",
-          description: "Some departments require verification of course changes."
+          title: "Submit Copies",
+          description: "Keep one copy, give one to the Department, and one to your Faculty Officer."
         }
       ],
-      tips: [
-        "Complete the process well before the deadline to avoid system issues",
-        "Have alternative course options ready in case your first choices are unavailable",
-        "Check for any holds on your account that might prevent registration changes",
-        "Take screenshots of your registration before and after making changes",
-        "Follow up with the Registrar's Office if changes don't appear correctly"
-      ],
+
+      // --- WARNINGS TAB DATA ---
       commonMistakes: [
-        "Not checking if added courses fit into your timetable",
-        "Dropping courses without understanding financial implications",
-        "Not confirming that changes were successfully processed",
-        "Dropping below minimum credit requirements",
-        "Not keeping documentation of changes made"
+        "Assuming a course is dropped just because you stopped attending class (You will get Grade E/F).",
+        "Forgetting to print the new slip after making changes online.",
+        "Adding a course that clashes with a Core Course on the timetable.",
+        "Registering for a course without having passed its pre-requisite (Level 100/200 bases).",
+        "Falling below the minimum credit load (usually 15 credits)."
       ],
-      consequences: "Errors in the add/drop process can result in incorrect registration, financial penalties, or delays in your academic progress.",
-      checklist: [
-        { text: "Log in to student portal", checked: false },
-        { text: "Navigate to Add/Drop section", checked: false },
-        { text: "Make course changes", checked: false },
-        { text: "Review changes before submitting", checked: false },
-        { text: "Submit changes", checked: false },
-        { text: "Print updated registration slip", checked: false },
-        { text: "Verify with department if required", checked: false }
-      ],
+      consequences: "If you fail to register correctly by the deadline, you may be prevented from writing the end-of-semester exams, or you will receive a Grade E (Fail) for courses you abandoned but didn't officially drop.",
+
+      // --- RESOURCES TAB DATA ---
       resources: [
         {
           title: "UCC Student Portal",
-          description: "Access your registration and make course changes",
+          description: "Access for course registration.",
           url: "https://portal.ucc.edu.gh"
         },
         {
-          title: "Registrar's Office",
-          description: "Get assistance with registration issues",
-          url: "https://maps.google.com/?q=Registrar's+Office+University+of+Cape+Coast"
-        },
-        {
-          title: "IT Help Desk",
-          description: "Technical support for portal access issues",
-          url: "https://maps.google.com/?q=IT+Help+Desk+University+of+Cape+Coast"
-        },
-        {
-          title: "Student Accounts Office",
-          description: "Information about financial implications of course changes",
-          url: "https://maps.google.com/?q=Student+Accounts+Office+University+of+Cape+Coast"
-        },
-        {
-          title: "Registration Tutorial",
-          description: "Step-by-step video guide to the registration process",
-          url: "https://ucc.edu.gh/registration-tutorial"
+          title: "Directorate of Academic Affairs",
+          description: "Official rules on registration.",
+          url: "https://daa.ucc.edu.gh"
         }
       ],
-      contacts: [
-        {
-          name: "Registrar's Office",
-          role: "Handles registration and academic records",
-          contact: "registrar@ucc.edu.gh | +233 123 456 790"
-        },
-        {
-          name: "IT Help Desk",
-          role: "Provides technical support for the student portal",
-          contact: "ithelp@ucc.edu.gh | +233 123 456 794"
-        }
+
+      // --- CHECKLIST TAB DATA ---
+      checklist: [
+        { text: "Consulted Academic Advisor", checked: false },
+        { text: "Checked Timetable for Conflicts", checked: false },
+        { text: "Updated Portal Registration", checked: false },
+        { text: "Printed New Registration Slip", checked: false },
+        { text: "Signed by HOD", checked: false },
+        { text: "Submitted Copy to Department", checked: false }
       ]
     }
   ];
 
-  return { sections };
+  const tabs = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Procedure' },
+    { id: 'warnings', label: 'Warnings' },
+    { id: 'checklist', label: 'Checklist' }
+  ];
+
+  return { sections, tabs };
 };
 
 export default AddDropCourses;

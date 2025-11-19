@@ -1,94 +1,132 @@
 import React from 'react';
 
 const FAQsTroubleshooting = () => {
+  // UCC GUIDE: FAQS & TROUBLESHOOTING
+  // Verified Data: Solutions for Portal Login, Financial Holds, and Missing Grades.
+  // Design: Problem-Solution Card Layout for easy scanning.
+
   const sections = [
     {
-      title: "Student Portal Issues",
-      summary: "Common portal problems and their solutions.",
+      title: "Portal & Academic Issues",
+      summary: "Quick fixes for when the UCC Portal or your Grades go wrong.",
+      
+      // --- OVERVIEW CONTENT ---
       content: (
-        <div>
-          <p className="mb-4">
-            The student portal can sometimes have issues. Here are solutions to common problems.
-          </p>
+        <div className="space-y-8">
+          {/* --- INTRO --- */}
+          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-sm">
+            <p className="text-gray-700 leading-relaxed">
+              Technical glitches happen. Before you panic or walk all the way to the MIS office, try these verified fixes for common portal and academic issues.
+            </p>
+          </div>
+
+          {/* --- PROBLEM / SOLUTION GRID --- */}
+          <div className="grid gap-6">
+            
+            {/* Issue 1: Portal Login */}
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-red-50 px-5 py-3 border-b border-red-100 flex justify-between items-center">
+                <h4 className="font-bold text-red-900">Problem: "Invalid Credentials"</h4>
+                <span className="text-xs font-bold bg-red-200 text-red-800 px-2 py-1 rounded">Portal</span>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 mb-3 text-sm">
+                  You are typing the correct password, but the portal refuses to let you in.
+                </p>
+                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
+                  <strong>Solution:</strong> The UCC portal caches old passwords aggressively. 
+                  <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600">
+                    <li>Switch to <strong>Incognito Mode</strong> (Chrome) or Private Window.</li>
+                    <li>Clear your browser cache/history.</li>
+                    <li>If that fails, use the "Forgot Password" link to reset it via your institutional email.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Issue 2: Financial Hold */}
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-amber-50 px-5 py-3 border-b border-amber-100 flex justify-between items-center">
+                <h4 className="font-bold text-amber-900">Problem: "Financial Hold"</h4>
+                <span className="text-xs font-bold bg-amber-200 text-amber-800 px-2 py-1 rounded">Registration</span>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 mb-3 text-sm">
+                  You have paid fees, but the portal still says you cannot register courses.
+                </p>
+                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
+                  <strong>Solution:</strong> Bank transfers are not instant.
+                  <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600">
+                    <li>Wait <strong>24 hours</strong> after payment for the system to update.</li>
+                    <li>Ensure you paid via <strong>Transflow</strong> (not direct deposit).</li>
+                    <li>If 48 hours pass, take your receipt to the <strong>Cash Office</strong> (Old Admin) or Finance Directorate.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Issue 3: Missing Results */}
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-blue-50 px-5 py-3 border-b border-blue-100 flex justify-between items-center">
+                <h4 className="font-bold text-blue-900">Problem: Missing Grade / "IC"</h4>
+                <span className="text-xs font-bold bg-blue-200 text-blue-800 px-2 py-1 rounded">Results</span>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-700 mb-3 text-sm">
+                  Your results are released, but one course is blank or marked "IC" (Incomplete).
+                </p>
+                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
+                  <strong>Solution:</strong> Act immediately (within 2 weeks).
+                  <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600">
+                    <li>Check the Department Notice Board for "IC Lists".</li>
+                    <li>Contact the <strong>Department Registration Officer</strong> or the Lecturer.</li>
+                    <li>Do not wait; "IC" turns to "E" (Fail) automatically after the rectification period.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       ),
-      steps: [
-        "Forgot password: Use 'Forgot Password' link",
-        "Login error: Clear browser cache and cookies",
-        "Page not loading: Try a different browser",
-        "Registration error: Check if window is open",
-        "Payment not reflecting: Wait 24 hours then contact finance",
-        "Results not showing: Check release date first",
-        "System slow: Try during off-peak hours",
-        "Account locked: Contact IT support"
+
+      // --- RESOURCES TAB DATA ---
+      resources: [
+        {
+          title: "MIS Section (Portal Support)",
+          description: "For password resets that email cannot fix.",
+          url: "https://mis.ucc.edu.gh"
+        },
+        {
+          title: "Students Records Section",
+          description: "For transcript and results issues.",
+          url: "https://daa.ucc.edu.gh"
+        },
+        {
+          title: "UCC Institutional Email",
+          description: "Login to access WiFi and Google Classroom.",
+          url: "https://gmail.com"
+        }
       ],
-      commonMistakes: [
-        "Not trying basic troubleshooting first",
-        "Not clearing browser cache",
-        "Not checking for announcements",
-        "Not using supported browsers",
-        "Not contacting support when needed"
-      ]
-    },
-    {
-      title: "Registration Problems",
-      summary: "Common course registration issues and fixes.",
-      content: (
-        <div>
-          <p className="mb-4">
-            Course registration can be challenging. Here's how to resolve common issues.
-          </p>
-        </div>
-      ),
-      steps: [
-        "Course full: Wait for add/drop period",
-        "Prerequisite error: Check if you meet requirements",
-        "Timetable conflict: Choose alternative sections",
-        "Credit limit exceeded: Reduce course load",
-        "System error during payment: Verify transaction first",
-        "Can't find course: Check course code carefully",
-        "Registration locked: Contact your department",
-        "Payment successful but not registered: Submit proof to finance"
-      ],
-      commonMistakes: [
-        "Not checking prerequisites early",
-        "Not having backup courses",
-        "Not verifying payments",
-        "Not contacting departments early",
-        "Not understanding registration rules"
-      ]
-    },
-    {
-      title: "General University Issues",
-      summary: "Solutions to other common university problems.",
-      content: (
-        <div>
-          <p className="mb-4">
-            Various other issues you might encounter and how to resolve them.
-          </p>
-        </div>
-      ),
-      steps: [
-        "ID card not working: Go to ID office",
-        "Room key lost: Report to hall administration",
-        "Library book overdue: Pay fine at library",
-        "Exam timetable conflict: Report to exams office immediately",
-        "Scholarship delay: Contact financial aid",
-        "Accommodation issues: Report to hall warden",
-        "Lecturer not showing up: Report to department head",
-        "Missing results: Contact examinations office"
-      ],
-      commonMistakes: [
-        "Not reporting issues promptly",
-        "Not following proper channels",
-        "Not keeping documentation",
-        "Not following up on reported issues",
-        "Not knowing who to contact"
+
+      // --- CHECKLIST TAB DATA ---
+      checklist: [
+        { text: "Cleared Browser Cache", checked: false },
+        { text: "Tried Incognito Mode", checked: false },
+        { text: "Checked 'Spam' folder for Reset Link", checked: false },
+        { text: "Verified Fee Receipt has Student ID", checked: false },
+        { text: "Reported 'IC' grade to Department", checked: false }
       ]
     }
   ];
 
-  return { sections };
+  const tabs = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'resources', label: 'Help Desk' },
+    { id: 'checklist', label: 'Checklist' }
+  ];
+
+  return { sections, tabs };
 };
 
 export default FAQsTroubleshooting;

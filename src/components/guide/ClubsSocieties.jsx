@@ -1,94 +1,146 @@
 import React from 'react';
 
 const ClubsSocieties = () => {
+  // UCC GUIDE: CLUBS & SOCIETIES
+  // Verified Data: 2025 Registered Associations (Religious, Academic, Social)
+  // Structure: Categorized lists to help freshers find their tribe.
+
   const sections = [
     {
-      title: "Finding Clubs and Societies",
-      summary: "How to discover and join student organizations at UCC.",
+      title: "Student Life & Associations",
+      summary: "Find your tribe: Religious, Academic, and Interest-based groups.",
+      
+      // --- OVERVIEW CONTENT ---
       content: (
-        <div>
-          <p className="mb-4">
-            UCC has numerous clubs and societies that cater to various interests. Joining these organizations enhances your university experience.
-          </p>
+        <div className="space-y-8">
+          {/* --- INTRO --- */}
+          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-sm">
+            <p className="text-gray-700 leading-relaxed">
+              UCC life is not just about lectures. Joining an association is the fastest way to network, build leadership skills, and find a support system. 
+              Most students belong to at least three groups: their <strong>Hall</strong>, their <strong>Departmental Association</strong>, and a <strong>Religious Group</strong>.
+            </p>
+          </div>
+
+          {/* --- CATEGORY BREAKDOWN --- */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Religious Groups */}
+            <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-indigo-900 text-lg mb-3 flex items-center">
+                <span className="bg-indigo-200 text-indigo-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Spiritual</span>
+                Religious Groups
+              </h4>
+              <p className="text-sm text-indigo-800/70 mb-4">The most active communities on campus.</p>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-2"></span><strong>GHAMSU:</strong> Ghana Methodist Students Union</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-2"></span><strong>PENSA:</strong> Pentecost Students Association</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-2"></span><strong>NUPS-G:</strong> Presbyterian Students</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-2"></span><strong>CATHOLIC:</strong> Pax Romana / IMCS</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-2"></span><strong>GMSA:</strong> Ghana Muslim Students Association</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-2"></span><strong>AGCM:</strong> Assemblies of God Campus Ministry</li>
+              </ul>
+            </div>
+
+            {/* Academic Associations */}
+            <div className="bg-teal-50 p-6 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-teal-900 text-lg mb-3 flex items-center">
+                <span className="bg-teal-200 text-teal-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Academic</span>
+                Departmental Groups
+              </h4>
+              <p className="text-sm text-teal-800/70 mb-4">Mandatory for most students (Dues required).</p>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-teal-400 rounded-full mr-2"></span><strong>UCCABS:</strong> Association of Business Students</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-teal-400 rounded-full mr-2"></span><strong>LSA:</strong> Law Students Union</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-teal-400 rounded-full mr-2"></span><strong>MSA:</strong> Medical Students Association</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-teal-400 rounded-full mr-2"></span><strong>EDSA:</strong> Education Students Association</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-teal-400 rounded-full mr-2"></span><strong>SCISA:</strong> Science Students Association</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-teal-400 rounded-full mr-2"></span><strong>ASSOS:</strong> Social Sciences Society</li>
+              </ul>
+            </div>
+
+            {/* Interest & Advocacy */}
+            <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-orange-900 text-lg mb-3 flex items-center">
+                <span className="bg-orange-200 text-orange-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Social</span>
+                Interest & Advocacy
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2"></span><strong>Debate Society:</strong> Prestigious public speaking club.</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2"></span><strong>Amnesty International:</strong> Human rights advocacy.</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2"></span><strong>Red Cross Society:</strong> First aid and health service.</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2"></span><strong>AIESEC:</strong> Global leadership exchange.</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2"></span><strong>UCC Cadets:</strong> Military training corps.</li>
+              </ul>
+            </div>
+
+             {/* Sports */}
+            <div className="bg-red-50 p-6 rounded-xl border border-red-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-red-900 text-lg mb-3 flex items-center">
+                <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Active</span>
+                Sports Teams
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-red-400 rounded-full mr-2"></span><strong>UCC Spartans:</strong> Rugby Team.</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-red-400 rounded-full mr-2"></span><strong>UCC Wildcats:</strong> Basketball Team.</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-red-400 rounded-full mr-2"></span><strong>Ogualaa FC:</strong> Campus Football.</li>
+                <li className="flex items-center"><span className="w-1.5 h-1.5 bg-red-400 rounded-full mr-2"></span><strong>Athletics Team:</strong> Track & Field.</li>
+              </ul>
+            </div>
+          </div>
         </div>
       ),
+
+      // --- STEPS TAB DATA ---
       steps: [
-        "Attend the clubs and societies fair during orientation",
-        "Check the Student Affairs office for a complete list",
-        "Look for posters and notices around campus",
-        "Follow student organizations on social media",
-        "Ask senior students about active clubs",
-        "Check departmental notice boards for related societies",
-        "Visit the SRC office for information",
-        "Attend club meetings as a guest before joining"
+        {
+          title: "Attend Orientation Fair",
+          description: "During Freshers' Week, all clubs set up stands at the Casford/Science field. Visit them."
+        },
+        {
+          title: "Pay Departmental Dues",
+          description: "Locate your department's association office. Payment is often required to access study materials or souvenirs."
+        },
+        {
+          title: "Join a Religious Family",
+          description: "Attend the first Sunday service (Joint Service) to see all denominations introduce themselves."
+        },
+        {
+          title: "Register & Get Inducted",
+          description: "Fill out membership forms. Most groups hold an 'Induction Service' for new members in the first month."
+        }
       ],
-      commonMistakes: [
-        "Not exploring different club options",
-        "Joining too many clubs at once",
-        "Not attending meetings before committing",
-        "Not checking club requirements",
-        "Not balancing club activities with academics"
-      ]
-    },
-    {
-      title: "Types of Student Organizations",
-      summary: "Different categories of clubs and societies available.",
-      content: (
-        <div>
-          <p className="mb-4">
-            Student organizations at UCC cater to diverse interests. Understanding the types available helps you find the right fit.
-          </p>
-        </div>
-      ),
-      steps: [
-        "Academic clubs related to your field of study",
-        "Religious and faith-based organizations",
-        "Sports and fitness clubs",
-        "Cultural and international student associations",
-        "Community service and volunteer groups",
-        "Arts and performance societies",
-        "Professional development organizations",
-        "Special interest and hobby clubs"
+
+      // --- RESOURCES TAB DATA ---
+      resources: [
+        {
+          title: "SRC Clubs Directory",
+          description: "Official list of registered student groups.",
+          url: "https://src.ucc.edu.gh"
+        },
+        {
+          title: "Sports Section",
+          description: "Join a university team.",
+          url: "https://sports.ucc.edu.gh"
+        }
       ],
-      commonMistakes: [
-        "Limiting yourself to one type of organization",
-        "Not stepping out of comfort zones",
-        "Not considering leadership opportunities",
-        "Not balancing different types of activities",
-        "Not exploring new interests"
-      ]
-    },
-    {
-      title: "Benefits of Joining Clubs",
-      summary: "How student organizations enhance your university experience.",
-      content: (
-        <div>
-          <p className="mb-4">
-            Joining clubs and societies offers numerous benefits beyond social activities.
-          </p>
-        </div>
-      ),
-      steps: [
-        "Develop leadership and teamwork skills",
-        "Build professional networks",
-        "Enhance your resume with extracurricular activities",
-        "Find mentors among senior members and alumni",
-        "Apply classroom knowledge in practical settings",
-        "Develop time management skills",
-        "Create lasting friendships",
-        "Contribute to campus and community life"
-      ],
-      commonMistakes: [
-        "Not taking active roles in organizations",
-        "Not networking with other members",
-        "Not documenting achievements and roles",
-        "Not balancing club commitments",
-        "Missing growth opportunities"
+
+      // --- CHECKLIST TAB DATA ---
+      checklist: [
+        { text: "Paid Departmental Dues", checked: false },
+        { text: "Joined a Religious Group (if applicable)", checked: false },
+        { text: "Signed up for one Interest Club", checked: false },
+        { text: "Followed Association Social Media pages", checked: false }
       ]
     }
   ];
 
-  return { sections };
+  const tabs = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'How to Join' },
+    { id: 'resources', label: 'Resources' },
+    { id: 'checklist', label: 'Checklist' }
+  ];
+
+  return { sections, tabs };
 };
 
 export default ClubsSocieties;
