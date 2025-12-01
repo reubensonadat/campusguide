@@ -32,8 +32,8 @@ const Contact = () => {
     {
       icon: Phone,
       title: 'Phone',
-      details: ['+233 50 123 4567', '+233 30 123 4567'],
-      action: 'tel:+233501234567',
+      details: ['+233 20 153 4711'],
+      action: 'tel:+233201534711',
       color: 'text-blue-600',
       bg: 'bg-blue-50',
       border: 'border-blue-100'
@@ -41,8 +41,8 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email',
-      details: ['support@uccguide.com', 'info@uccguide.com'],
-      action: 'mailto:support@uccguide.com',
+      details: ['uccguide25@gmail.com'],
+      action: 'mailto:uccguide25@gmail.com',
       color: 'text-emerald-600',
       bg: 'bg-emerald-50',
       border: 'border-emerald-100'
@@ -50,7 +50,7 @@ const Contact = () => {
     {
       icon: MapPin,
       title: 'Office',
-      details: ['Student Services Center', 'University of Cape Coast'],
+      details: ['No physical location currently available'],
       action: null,
       color: 'text-purple-600',
       bg: 'bg-purple-50',
@@ -59,7 +59,7 @@ const Contact = () => {
     {
       icon: Clock,
       title: 'Office Hours',
-      details: ['Monday - Friday: 8am - 5pm', 'Saturday: 9am - 1pm'],
+      details: ['Everyday 9:00 AM - 6:00 PM'],
       action: null,
       color: 'text-orange-600',
       bg: 'bg-orange-50',
@@ -168,7 +168,7 @@ const Contact = () => {
             <Button
               variant="outline"
               onClick={() => navigate('/guide')}
-              className="bg-blue-800/40 backdrop-blur-md border border-white/30 text-white hover:bg-blue-800/60 px-8 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
             >
               <Star size={20} /> View Guide
             </Button>

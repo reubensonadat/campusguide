@@ -1,4 +1,6 @@
-import React from 'react';
+// src/pages/Home.jsx
+
+import React, { useState } from 'react'; // <-- MODIFIED: Added useState import
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { PaymentButton } from '../components/payment/PaymentButton';
@@ -11,6 +13,22 @@ import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const navigate = useNavigate();
+
+  // <-- NEW: State for the support email input
+  const [supportEmail, setSupportEmail] = useState('');
+
+  // <-- NEW: Handler for successful payments
+  const handlePaymentSuccess = (result) => {
+    console.log('Payment successful:', result);
+    alert('Thank you for your support!');
+    // You could redirect or show a more sophisticated success message here
+  };
+
+  // <-- NEW: Handler for failed payments
+  const handlePaymentError = (error) => {
+    console.error('Payment error:', error);
+    alert(`Payment failed: ${error.message}`);
+  };
 
   const features = [
     {
@@ -89,7 +107,7 @@ const Home = () => {
   const stats = [
     {
       label: 'Active Students',
-      value: '20,000+',
+      value: '15,000+',
       icon: Users,
       color: 'text-blue-600',
       bg: 'bg-blue-50'
@@ -157,7 +175,7 @@ const Home = () => {
             <Button
               variant="outline"
               onClick={() => navigate('/tools')}
-              className="bg-blue-800/40 backdrop-blur-md border border-white/30 text-white hover:bg-blue-800/60 px-8 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
             >
               <Wrench size={20} /> Use Tools
             </Button>
@@ -285,12 +303,30 @@ const Home = () => {
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <PaymentButton amount={5} />
+          {/* <-- NEW: Email Input Field and Updated Payment Button */}
+          <div className="flex flex-col sm:flex-col gap-4 justify-center items-center max-w-sm mx-auto">
+            <input
+              type="email"
+              value={supportEmail}
+              onChange={(e) => setSupportEmail(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm"
+              placeholder="Enter your email to support"
+              required
+            />
+            <PaymentButton 
+              amount={5} 
+              email={supportEmail}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentError={handlePaymentError}
+              disabled={!supportEmail}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+             Support Now - GH₵5
+            </PaymentButton>
             <Button 
               variant="outline" 
               onClick={() => navigate('/support')}
-              className="border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-bold px-8 py-3 rounded-xl bg-white"
+              className="w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-bold px-8 py-3.5 rounded-xl bg-white"
             >
               Learn More
             </Button>

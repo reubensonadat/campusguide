@@ -6,11 +6,21 @@ const CampusMap = () => {
   // INCLUDES: 100+ Locations (Halls, Hostels, "Gaza", "Koobi Joint", "Brunei", Taxi Ranks)
 
   const openGoogleMaps = (term) => {
-    // Appends "University of Cape Coast" or "Cape Coast" to ensure accuracy
+  // Check if term is coordinates (contains a comma and numbers)
+  const isCoordinates = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(term);
+  
+  let url;
+  if (isCoordinates) {
+    // Direct coordinates
+    url = `https://www.google.com/maps/search/?api=1&query=${term}`;
+  } else {
+    // Search term with "University of Cape Coast" appended
     const query = term.includes("Cape Coast") ? term : `${term} University of Cape Coast`;
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-    window.open(url, '_blank');
-  };
+    url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  }
+  
+  window.open(url, '_blank');
+};
 
   const sections = [
     {
@@ -186,7 +196,7 @@ const CampusMap = () => {
     { id: "HF4", fullName: "Counseling Centre", shortForm: "Counseling", description: "Mental Health & Wellness.", url: "Counselling Centre UCC" },
     
     // --- TRANSPORT POINTS ---
-    { id: "T1", fullName: "UCC Shuttle Station", shortForm: "Shuttle", description: "Main hub at Old Site.", url: "UCC Shuttle Station" },
+    { id: "T1", fullName: "UCC Shuttle Station", shortForm: "Shuttle", description: "Main hub at Old Site.", url: "5.116807377906874, -1.2921375063551965" },
     { id: "T2", fullName: "Science Taxi Rank", shortForm: "Sci Rank", description: "Main New Site rank.", url: "UCC Science Taxi Rank" },
     { id: "T3", fullName: "ATL Taxi Rank", shortForm: "ATL Rank", description: "Near Atlantic Hall.", url: "Atlantic Hall UCC" },
     { id: "T4", fullName: "Valco Taxi Rank", shortForm: "Valco Rank", description: "Near Valco Hall.", url: "Valco Hall UCC" },

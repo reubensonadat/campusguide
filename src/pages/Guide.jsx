@@ -507,7 +507,7 @@ const Guide = () => {
             <Button
               variant="outline"
               onClick={() => navigate('/tools')}
-              className="bg-blue-800/40 backdrop-blur-md border border-white/30 text-white hover:bg-blue-800/60 px-8 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
             >
               <Laptop size={20} /> Student Tools
             </Button>

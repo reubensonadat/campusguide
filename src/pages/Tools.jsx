@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { Calendar, DollarSign, TrendingUp, Bell, Clock, BarChart3, Target, Lightbulb, Users, Wrench, Sparkles, Star, Zap } from 'lucide-react';
+import { Calendar, DollarSign, TrendingUp, Bell, Clock, BarChart3, Home, Target, Lightbulb, Users, Wrench, Sparkles, Star, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TimetableBuilder from '../components/tools/TimetableBuilder';
 import BudgetTracker from '../components/tools/BudgetTracker';
@@ -119,12 +119,12 @@ const Tools = () => {
               onClick={() => navigate('/')}
               className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
             >
-              <Target size={20} /> Back to Home
+              <Home size={20} /> Back to Home
             </Button>
             <Button
               variant="outline"
               onClick={() => navigate('/guide')}
-              className="bg-blue-800/40 backdrop-blur-md border border-white/30 text-white hover:bg-blue-800/60 px-8 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
             >
               <Lightbulb size={20} /> View Guide
             </Button>

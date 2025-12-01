@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { PaymentButton } from '../components/payment/PaymentButton';
 import { Button } from '../components/common/Button';
-import { Heart, Star, Users, Zap, Shield, Gift, CheckCircle, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
+import { Heart, Star, Users, Zap, Shield, Gift, CheckCircle, TrendingUp, Sparkles, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Support = () => {
@@ -191,9 +191,9 @@ const Support = () => {
               onPaymentSuccess={handlePaymentSuccess}
               onPaymentError={handlePaymentError}
               disabled={!heroEmail}
-              className="w-full bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+              className="bg-blue text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
             >
-              <Heart size={20} /> Support Now - GH₵5
+             Support Now - GH₵5
             </PaymentButton>
           </div>
           
@@ -201,14 +201,14 @@ const Support = () => {
             <Button
               variant="outline"
               onClick={() => navigate('/')}
-              className="bg-blue-800/40 backdrop-blur-md border border-white/30 text-white hover:bg-blue-800/60 px-8 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
             >
-              <ArrowRight size={20} /> Back to Home
+              <Home size={20} /> Back to Home
             </Button>
             <Button
               variant="outline"
               onClick={() => navigate('/guide')}
-              className="bg-blue-800/40 backdrop-blur-md border border-white/30 text-white hover:bg-blue-800/60 px-8 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
             >
               <Star size={20} /> View Guide
             </Button>
@@ -309,7 +309,7 @@ const Support = () => {
                     disabled={!tierEmails[tier.amount]}
                     className={`w-full ${tier.buttonColor} text-white px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2`}
                   >
-                    <Heart size={18} /> Support GH₵{tier.amount}
+                   Support GH₵{tier.amount}
                   </PaymentButton>
                 </div>
               </div>
