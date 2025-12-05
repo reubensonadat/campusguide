@@ -1,12 +1,11 @@
-// src/components/guide/GuideContent.jsx
 import React, { useState, useCallback, useMemo } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription, 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
   CardContent,
   InfoCard,
   WarningCard,
@@ -15,12 +14,12 @@ import {
   TipCard,
   ChecklistCard
 } from '../common/Card';
-import { 
-  CheckCircle, 
-  AlertCircle, 
-  BookOpen, 
-  FileText, 
-  Lightbulb, 
+import {
+  CheckCircle,
+  AlertCircle,
+  BookOpen,
+  FileText,
+  Lightbulb,
   List,
   ChevronRight,
   Clock,
@@ -33,15 +32,15 @@ import {
 // Memoized tab content components to prevent unnecessary re-renders
 const OverviewTab = React.memo(({ section }) => (
   <div className="space-y-4 pb-4">
-    <InfoCard 
-      title="Overview" 
+    <InfoCard
+      title="Overview"
       description={section.summary}
     >
       <CardContent>
         {section.content}
       </CardContent>
     </InfoCard>
-    
+
     {section.keyPoints && (
       <Card>
         <CardHeader icon={<Star size={20} />} iconColor="text-yellow-500">
@@ -59,7 +58,7 @@ const OverviewTab = React.memo(({ section }) => (
         </CardContent>
       </Card>
     )}
-    
+
     {section.importantDates && (
       <Card>
         <CardHeader icon={<Calendar size={20} />} iconColor="text-blue-500">
@@ -85,8 +84,8 @@ const OverviewTab = React.memo(({ section }) => (
 
 const StepsTab = React.memo(({ section }) => (
   <div className="space-y-4 pb-4">
-    <GuideCard 
-      title="Step-by-Step Guide" 
+    <GuideCard
+      title="Step-by-Step Guide"
       description="Follow these steps to complete this process successfully."
     >
       <CardContent>
@@ -114,10 +113,10 @@ const StepsTab = React.memo(({ section }) => (
         </ol>
       </CardContent>
     </GuideCard>
-    
+
     {section.tips && (
-      <TipCard 
-        title="Helpful Tips" 
+      <TipCard
+        title="Helpful Tips"
         description="These tips will help you complete this process more easily."
       >
         <CardContent>
@@ -163,10 +162,10 @@ const DirectionsTab = React.memo(({ section, buildings, openGoogleMaps }) => (
         </div>
       </CardContent>
     </Card>
-    
+
     {section.tips && (
-      <TipCard 
-        title="Navigation Tips" 
+      <TipCard
+        title="Navigation Tips"
         description="These tips will help you navigate campus more easily."
       >
         <CardContent>
@@ -207,7 +206,7 @@ const LocationTab = React.memo(({ section, location }) => (
         </div>
       </CardContent>
     </Card>
-    
+
     {section.operatingHours && (
       <Card>
         <CardHeader icon={<Clock size={20} />} iconColor="text-green-500">
@@ -225,7 +224,7 @@ const LocationTab = React.memo(({ section, location }) => (
         </CardContent>
       </Card>
     )}
-    
+
     {section.requirements && (
       <Card>
         <CardHeader icon={<FileText size={20} />} iconColor="text-indigo-500">
@@ -250,7 +249,7 @@ const ResourcesTab = React.memo(({ section }) => (
   <div className="space-y-4 pb-4">
     {section.resources && section.resources.length > 0 ? (
       section.resources.map((resource, index) => (
-        <ResourceCard 
+        <ResourceCard
           key={index}
           title={resource.title}
           description={resource.description}
@@ -266,7 +265,7 @@ const ResourcesTab = React.memo(({ section }) => (
         </CardContent>
       </Card>
     )}
-    
+
     {section.contacts && (
       <Card>
         <CardHeader icon={<Users size={20} />} iconColor="text-blue-500">
@@ -297,8 +296,8 @@ const ResourcesTab = React.memo(({ section }) => (
 
 const WarningsTab = React.memo(({ section }) => (
   <div className="space-y-4 pb-4">
-    <WarningCard 
-      title="Common Mistakes to Avoid" 
+    <WarningCard
+      title="Common Mistakes to Avoid"
       description="Be aware of these common issues to ensure a smooth process."
     >
       <CardContent>
@@ -312,7 +311,7 @@ const WarningsTab = React.memo(({ section }) => (
         </ul>
       </CardContent>
     </WarningCard>
-    
+
     {section.consequences && (
       <Card>
         <CardHeader icon={<AlertCircle size={20} />} iconColor="text-red-500">
@@ -327,28 +326,28 @@ const WarningsTab = React.memo(({ section }) => (
 ));
 
 const ChecklistTab = React.memo(({ section }) => {
-  const completedCount = useMemo(() => 
-    section.checklist?.filter(item => item.checked).length || 0, 
+  const completedCount = useMemo(() =>
+    section.checklist?.filter(item => item.checked).length || 0,
     [section.checklist]
   );
-  
-  const totalCount = useMemo(() => 
-    section.checklist?.length || 0, 
+
+  const totalCount = useMemo(() =>
+    section.checklist?.length || 0,
     [section.checklist]
   );
-  
-  const progressPercentage = useMemo(() => 
-    totalCount > 0 ? (completedCount / totalCount) * 100 : 0, 
+
+  const progressPercentage = useMemo(() =>
+    totalCount > 0 ? (completedCount / totalCount) * 100 : 0,
     [completedCount, totalCount]
   );
 
   return (
     <div className="space-y-4 pb-4">
-      <ChecklistCard 
-        title="Progress Checklist" 
+      <ChecklistCard
+        title="Progress Checklist"
         items={section.checklist || []}
       />
-      
+
       <Card>
         <CardContent className="pt-4">
           <div className="flex items-center justify-between mb-2">
@@ -358,8 +357,8 @@ const ChecklistTab = React.memo(({ section }) => {
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-indigo-600 h-2 rounded-full transition-all duration-300" 
+            <div
+              className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>
@@ -372,20 +371,19 @@ const ChecklistTab = React.memo(({ section }) => {
 // Mobile-friendly tab navigation component
 const TabNavigation = React.memo(({ activeTab, setActiveTab, tabs }) => {
   return (
-    <div className="mb-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+    <div className="mb-4 border-b border-gray-200 sticky top-[-1rem] bg-white z-10">
       <nav className="flex space-x-2 overflow-x-auto py-2 px-1">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
-          
+
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`py-2 px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap transition-colors ${
-                isActive
+              className={`py-2 px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap transition-colors ${isActive
                   ? 'border-indigo-500 text-indigo-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -485,9 +483,9 @@ const GuideContent = ({ guide, isOpen, onClose }) => {
       size="full"
       className="h-[100vh] max-h-[100vh] flex flex-col sm:h-[90vh] sm:max-h-[90vh]"
     >
-      <div className="flex flex-col h-full">
+      <div>
         {/* Header - more compact on mobile */}
-        <div className="mb-2 sm:mb-4 flex-shrink-0">
+        <div className="mb-2 sm:mb-4">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg sm:text-xl font-semibold">{section.title}</h2>
             <Button
@@ -500,17 +498,17 @@ const GuideContent = ({ guide, isOpen, onClose }) => {
               <span className="hidden sm:inline">{isCompleted ? 'Completed' : 'Mark Complete'}</span>
             </Button>
           </div>
-          
+
           {section.summary && (
             <p className="text-sm text-gray-600 line-clamp-2">{section.summary}</p>
           )}
         </div>
-        
+
         {/* Sticky navigation */}
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
-        
+
         {/* Content area - scrollable */}
-        <div className="flex-1 overflow-y-auto pb-4">
+        <div className="pb-4">
           {tabContent}
         </div>
       </div>

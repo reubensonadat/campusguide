@@ -1,10 +1,10 @@
 import React from 'react';
-import { Calendar, CheckCircle, AlertTriangle, BookOpen, MapPin, CreditCard, User, Info, Download, Sparkles, Truck, Coffee } from 'lucide-react';
+import { Calendar, CheckCircle, AlertTriangle, BookOpen, MapPin, CreditCard, User, Info, Download, Sparkles, Truck, Coffee, Plug } from 'lucide-react';
 
 const GettingStarted = () => {
-  // UCC GUIDE: GETTING STARTED (PLATINUM EDITION 2025)
-  // DATA SOURCE: 2024/2025 Academic Calendar, Student Handbook, Hall Traditions.
-  // UPGRADES: Deep-dive "Packing Guide", "Hall Culture" section, and richer UI components.
+  // UCC GUIDE: GETTING STARTED (PLATINUM EDITION 2025/2026)
+  // DATA SOURCE: Official 2025/2026 Academic Calendar, CoverGhana Flyer, Adehye Hall Guide.
+  // VALIDATION: Dates aligned with Academic Calendar (Jan 5 Start). Packing list updated to allow Electricals but ban Trunks.
 
   const sections = [
     {
@@ -35,11 +35,11 @@ const GettingStarted = () => {
                 </p>
               </div>
               
-              {/* Mock Countdown/Status Card */}
+              {/* Countdown/Status Card */}
               <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl min-w-[200px] text-center shadow-lg transform hover:scale-105 transition-transform">
-                <p className="text-blue-200 text-xs uppercase tracking-widest mb-1">Next Major Event</p>
-                <div className="text-3xl font-bold text-white mb-1">Jan 20</div>
-                <div className="text-sm font-medium text-blue-100">Freshers Reporting</div>
+                <p className="text-blue-200 text-xs uppercase tracking-widest mb-1">Freshers Reporting</p>
+                <div className="text-3xl font-bold text-white mb-1">Jan 5</div>
+                <div className="text-sm font-medium text-blue-100">Monday, 2026</div>
                 <div className="mt-3 h-1 w-full bg-white/20 rounded-full overflow-hidden">
                   <div className="h-full bg-blue-400 w-3/4"></div>
                 </div>
@@ -83,51 +83,50 @@ const GettingStarted = () => {
              <SectionHeader icon={<Truck size={20} />} title="The 'Old Site' Survival Kit (Packing)" />
              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
                <p className="text-gray-600 mb-6 text-sm">
-                 UCC Halls are strict. Do not bring contraband items, or they will be seized at the Porter's Lodge.
+                 UCC Halls are strict. Data sourced from Adehye & CoverGhana guides.
                </p>
                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-                  {/* Must Haves */}
-                  <div>
-                    <h5 className="font-bold text-gray-800 border-b-2 border-green-500 pb-2 mb-3 flex items-center">
-                      <CheckCircle size={16} className="text-green-500 mr-2" /> Must Haves
-                    </h5>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                      <li>• <strong>White Bed Sheets</strong> (Mandatory)</li>
-                      <li>• Mosquito Net (Student bed size)</li>
-                      <li>• Padlocks (For trunk & chopbox)</li>
-                      <li>• Bucket & Pail (Water is life)</li>
-                      <li>• Power Strip (Surge protector)</li>
-                      <li>• Formal Wear (For Matriculation)</li>
-                    </ul>
-                  </div>
-                  
-                  {/* Contraband */}
-                  <div>
-                    <h5 className="font-bold text-gray-800 border-b-2 border-red-500 pb-2 mb-3 flex items-center">
-                      <AlertTriangle size={16} className="text-red-500 mr-2" /> Contraband
-                    </h5>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                      <li>• Gas Cookers / Cylinders</li>
-                      <li>• Electric Stoves / Hot Plates</li>
-                      <li>• Toasters / Air Fryers</li>
-                      <li>• Sound Systems (Subwoofers)</li>
-                      <li>• Weapons / Drugs</li>
-                    </ul>
-                  </div>
+                 {/* Must Haves */}
+                 <div>
+                   <h5 className="font-bold text-gray-800 border-b-2 border-green-500 pb-2 mb-3 flex items-center">
+                     <CheckCircle size={16} className="text-green-500 mr-2" /> Must Haves
+                   </h5>
+                   <ul className="space-y-2 text-sm text-gray-600">
+                     <li>• <strong>White Bed Sheets</strong> (Mandatory)</li>
+                     <li>• Pillow & Pillowcases</li>
+                     <li>• Bucket & Pail (Water is life)</li>
+                     <li>• Formal Wear (For Matriculation)</li>
+                     <li>• Raincoat / Umbrella</li>
+                   </ul>
+                 </div>
+                 
+                 {/* Contraband - UPDATED based on Image Evidence */}
+                 <div>
+                   <h5 className="font-bold text-gray-800 border-b-2 border-red-500 pb-2 mb-3 flex items-center">
+                     <AlertTriangle size={16} className="text-red-500 mr-2" /> Prohibited
+                   </h5>
+                   <ul className="space-y-2 text-sm text-gray-600">
+                     <li>• <strong>Trunks</strong> (Use Suitcases)</li>
+                     <li>• <strong>Chop Boxes</strong></li>
+                     <li>• Mattresses (Provided by Hall)</li>
+                     <li>• Gas Cookers / Cylinders</li>
+                     <li>• Weapons / Drugs</li>
+                   </ul>
+                 </div>
 
-                  {/* Documentation */}
-                  <div>
-                    <h5 className="font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-3 flex items-center">
-                      <BookOpen size={16} className="text-blue-500 mr-2" /> Documents
-                    </h5>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                      <li>• Admission Letter (3 copies)</li>
-                      <li>• Fee Receipt (Original + Copies)</li>
-                      <li>• WASSCE Certificate/Results</li>
-                      <li>• NHIS Card</li>
-                      <li>• Passport Pictures (Red Background)</li>
-                    </ul>
-                  </div>
+                 {/* Allowed Electricals - UPDATED based on Flyer */}
+                 <div>
+                   <h5 className="font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-3 flex items-center">
+                     <Plug size={16} className="text-blue-500 mr-2" /> Allowed Electricals
+                   </h5>
+                   <ul className="space-y-2 text-sm text-gray-600">
+                     <li>• Rice Cooker</li>
+                     <li>• Electric Kettle</li>
+                     <li>• Electric Iron</li>
+                     <li>• Hot Plate (Regulated)</li>
+                     <li>• Extension Board (Strong)</li>
+                   </ul>
+                 </div>
                </div>
              </div>
           </div>
@@ -164,14 +163,13 @@ const GettingStarted = () => {
 
           {/* --- CRITICAL DATES TIMELINE --- */}
           <div>
-            <SectionHeader icon={<Calendar size={20} />} title="Freshers' Timeline (Jan - Mar 2025)" />
+            <SectionHeader icon={<Calendar size={20} />} title="Freshers' Timeline (Jan - Feb 2026)" />
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-                <TimelineEvent date="Jan 20" day="Monday" title="Freshers Report" desc="Arrival at Halls. Key collection starts at 8:00 AM." />
-                <TimelineEvent date="Jan 21" day="Tuesday" title="Orientation Begins" desc="Faculty & Dept Orientation. Venue: NEC / CALC." />
-                <TimelineEvent date="Jan 23" day="Thursday" title="Lectures Begin" desc="Classes start immediately. Don't wait for 'next week'." />
-                <TimelineEvent date="Jan 24" day="Friday" title="Registration Ends" desc="Online portal closes for normal registration." />
-                <TimelineEvent date="Mar 08" day="Saturday" title="Matriculation" desc="Official swearing-in ceremony. Formal attire required." />
+                <TimelineEvent date="Jan 05" day="Monday" title="Freshers Report" desc="Arrival at Halls. Key collection starts early. NO TRUNKS allowed." />
+                <TimelineEvent date="Jan 06" day="Tuesday" title="Orientation Begins" desc="Online Orientation and Registration begins (Ends Jan 8)." />
+                <TimelineEvent date="Jan 12" day="Monday" title="Lectures Begin" desc="Classes start immediately. Don't wait for 'next week'." />
+                <TimelineEvent date="Feb 07" day="Saturday" title="Matriculation" desc="Official swearing-in ceremony. Formal attire required." />
               </div>
             </div>
           </div>
@@ -191,7 +189,7 @@ const GettingStarted = () => {
         },
         {
           title: "Hall Registration",
-          description: "Go to your Hall's Porter's Lodge. Show your Fee Receipt to sign the 'Residence Book' and collect your room key. If in a private hostel, see the Manager."
+          description: "Go to your Hall's Porter's Lodge. Show your Fee Receipt. REMEMBER: Trunks and Chopboxes are NOT allowed and will be turned away."
         },
         {
           title: "The Medical Examination",
@@ -203,32 +201,22 @@ const GettingStarted = () => {
         },
         {
           title: "Locate Lecture Venues",
-          description: "Use the Campus Map to find 'CALC', 'LLT', 'SWT', and 'CELT'. Walk the route the day before classes start."
+          description: "Use the Campus Map to find 'CALC', 'LLT', 'SWT', and 'CELT'. Walk the route the day before classes start on Jan 12."
         }
       ],
 
       // --- WARNINGS TAB DATA ---
       commonMistakes: [
-        "Paying fees via direct Mobile Money transfer instead of Transflow/Smartpay (Money won't reflect on portal).",
-        "Assuming you can change your Hall easily (It is nearly impossible in first year).",
-        "Missing the Medical Exam (Academic record will be flagged, blocking results).",
-        "Buying handouts/books too early (Wait for lecturer's specific recommendation).",
-        "Skipping 'Library Orientation' (You won't know how to use Turnitin for assignments)."
+        "Bringing a Trunk or Chop Box (You will be forced to send it back home).",
+        "Paying fees via direct Mobile Money transfer instead of Transflow/Smartpay.",
+        "Missing the Medical Exam (Academic record will be flagged).",
+        "Assuming Lectures don't start immediately on Jan 12.",
+        "Skipping 'Library Orientation' (You won't know how to use Turnitin)."
       ],
-      consequences: "Failure to complete Biometric Registration means no Student ID. No Student ID means no access to Exam Halls or Library.",
+      consequences: "Failure to follow the 'No Trunk' policy will result in significant delays and frustration on arrival day.",
 
       // --- CHECKLIST TAB DATA ---
-      checklist: [
-        { text: "Accepted Admission Online", checked: false },
-        { text: "Paid Fees at Bank (Transflow)", checked: false },
-        { text: "Printed 3 Copies of Admission Letter", checked: false },
-        { text: "Packed White Bed Sheets (Mandatory)", checked: false },
-        { text: "Packed Mosquito Net & Bucket", checked: false },
-        { text: "Packed Formal Wear (Matriculation)", checked: false },
-        { text: "Bought Padlocks for Trunks", checked: false },
-        { text: "Created Student Portal Account", checked: false },
-        { text: "Joined Faculty WhatsApp Group", checked: false }
-      ],
+     
 
       // --- RESOURCES TAB DATA ---
       resources: [
@@ -244,13 +232,13 @@ const GettingStarted = () => {
         },
         {
           title: "UCC Freshers Official",
-          description: "Official Telegram channel for updates.",
-          url: "https://t.me/ucc_freshers"
+          description: "Official Whatsapp channel for updates.",
+          url: "https://whatsapp.com/channel/0029VarAzto6buMSvms4V30a"
         },
         {
           title: "E-Learning Platform",
           description: "Access lecture slides and assignments.",
-          url: "https://elearning.ucc.edu.gh"
+          url: "https://elearning.ucc.edu.gh/login/index.php"
         }
       ]
     }

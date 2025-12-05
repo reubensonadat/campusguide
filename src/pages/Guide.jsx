@@ -40,7 +40,6 @@ import CourseRegistration from '../components/guide/CourseRegistration';
 import AddDropCourses from '../components/guide/AddDropCourses';
 import IDCard from '../components/guide/IDCard';
 import MedicalsHealthCenter from '../components/guide/MedicalsHealthCenter';
-import PresidentialReimbursement from '../components/guide/PresidentialReimbursement';
 import StudentLoanTrustFund from '../components/guide/StudentLoanTrustFund';
 import PaymentsReceipts from '../components/guide/PaymentsReceipts';
 import Accommodation from '../components/guide/Accommodation';
@@ -151,17 +150,6 @@ const Guide = () => {
       color: 'text-purple-600',
       bg: 'bg-purple-50',
       border: 'border-purple-100'
-    },
-    {
-      id: 'presidential-reimbursement',
-      title: 'Presidential Reimbursement',
-      description: 'First-year fees guide',
-      icon: CreditCard,
-      component: PresidentialReimbursement,
-      category: 'Financial',
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      border: 'border-orange-100'
     },
     {
       id: 'student-loan-trust-fund',
