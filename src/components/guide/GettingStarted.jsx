@@ -20,7 +20,7 @@ const GettingStarted = () => {
             <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
             <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-60 h-60 bg-blue-400/10 rounded-full blur-3xl"></div>
             
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-left space-y-4 max-w-2xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-wider text-blue-200">
                   <Sparkles size={12} /> Class of 2029
@@ -299,7 +299,7 @@ const ActionCard = ({ step, title, details, theme, desc }) => {
 const TimelineEvent = ({ date, day, title, desc }) => (
   <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
     {/* Icon/Dot */}
-    <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+    <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
       <Calendar size={18} />
     </div>
     
