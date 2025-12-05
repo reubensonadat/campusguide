@@ -203,7 +203,6 @@ const CampusMap = () => {
     { id: "S9", fullName: "ICT Centre", shortForm: "ICT", description: "Computer labs and WiFi.", url: "5.116756925648479, -1.2910383941153674" },
   //  { id: "S10", fullName: "Reading Pavilion", shortForm: "Pavilion", description: "Behind Sam Jonah Library.", url: "Sam Jonah Library" },
     { id: "S11", fullName: "UCC FM", shortForm: "Radio", description: "Campus radio station.", url: "Campus Broadcasting Services (CBS)" },
-  //  { id: "S12", fullName: "ATL Beach Road", shortForm: "Beach Road", description: "Scenic route near Atlantic Hall.", url: "UCC Beach Road" },
 
     // --- LANDMARKS ---
   //  { id: "LM1", fullName: "Science Roundabout", shortForm: "Sci R-About", description: "Central New Site junction.", url: "UCC Science Block" },
