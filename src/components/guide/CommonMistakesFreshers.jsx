@@ -9,14 +9,14 @@ const CommonMistakesFreshers = () => {
     {
       title: "Avoiding The 'Fresher Trap'",
       summary: "Real talk on GPA traps, attendance policies, and financial survival.",
-      
+
       // --- OVERVIEW CONTENT ---
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
             <p className="text-gray-700 leading-relaxed">
-              First year at UCC is a test of freedom. The biggest mistake is thinking <strong>"Level 100 doesn't count."</strong> 
+              First year at UCC is a test of freedom. The biggest mistake is thinking <strong>"Level 100 doesn't count."</strong>
               In reality, your First Class starts from Semester 1. Recovering a bad GPA is mathematically harder than maintaining a good one.
             </p>
           </div>
@@ -26,7 +26,7 @@ const CommonMistakesFreshers = () => {
             <div className="bg-red-50 p-5 rounded-xl border border-red-100 hover:shadow-md transition-all">
               <h4 className="font-bold text-red-900 mb-2">The "CA" Trap</h4>
               <p className="text-sm text-gray-700">
-                Ignoring quizzes because they are "just 5 marks." 
+                Ignoring quizzes because they are "just 5 marks."
                 <strong> Reality:</strong> CA is 40% of your grade. You can fail a course before you even write the final exam.
               </p>
             </div>
@@ -81,10 +81,10 @@ const CommonMistakesFreshers = () => {
         "Copying assignments from seniors (Lecturers often change questions slightly).",
         "Buying handouts but never reading them until 'Revision Week'.",
         "Signing attendance for friends (This is forgery; penalty is rustication).",
-        "Not checking the Notice Board for 'IC' rectification lists after exams.",
+        "Not checking the Student Portal for 'IC' rectification (Incomplete Grade) after exams.",
         "Joining 5+ clubs and having no time for sleep or studies."
       ],
-      
+
       tips: [
         "Aim for a GPA of 3.6+ in Level 100. It gives you a safety buffer for harder levels.",
         "Form a study group with serious people, not just your roommates.",
@@ -102,8 +102,8 @@ const CommonMistakesFreshers = () => {
         },
         {
           title: "Counselling Centre",
-          description: "Mental health and academic advice.",
-          url: "https://counselling.ucc.edu.gh"
+          description: "Mental health and academic advice. Book via Student Portal or walk in.",
+          url: "https://portal.ucc.edu.gh/onlineReg/src/coun.php"
         }
       ],
 
@@ -122,7 +122,6 @@ const CommonMistakesFreshers = () => {
     { id: 'overview', label: 'Overview' },
     { id: 'warnings', label: 'Common Mistakes' },
     { id: 'resources', label: 'Resources' },
-    { id: 'checklist', label: 'Checklist' }
   ];
 
   return { sections, tabs };

@@ -1,614 +1,395 @@
-// src/pages/Guide.jsx
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
-import { GuideCard } from '../components/guide/GuideCard';
-import { GuideContent } from '../components/guide/GuideContent';
-import { Button } from '../components/common/Button';
-import { 
-  BookOpen, 
-  Map, 
-  User, 
-  FileText, 
-  Plus, 
-  CreditCard, 
-  Home, 
-  Car, 
-  Utensils,
-  Printer,
-  Smartphone,
-  Shield,
-  Library,
-  Laptop,
-  GraduationCap,
-  HelpCircle,
-  Wifi,
-  Clock,
-  Users,
-  Heart,
-  Phone,
-  Search,
-  Star,
-  Sparkles
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-
-// Import all guide components
-import GettingStarted from '../components/guide/GettingStarted';
-import CampusMap from '../components/guide/CampusMap';
-import StudentPortal from '../components/guide/StudentPortal';
-import CourseRegistration from '../components/guide/CourseRegistration';
-import AddDropCourses from '../components/guide/AddDropCourses';
-import IDCard from '../components/guide/IDCard';
-import MedicalsHealthCenter from '../components/guide/MedicalsHealthCenter';
-import StudentLoanTrustFund from '../components/guide/StudentLoanTrustFund';
-import PaymentsReceipts from '../components/guide/PaymentsReceipts';
-import Accommodation from '../components/guide/Accommodation';
-import Transportation from '../components/guide/Transportation';
-import FoodDining from '../components/guide/FoodDining';
-import PrintingStationery from '../components/guide/PrintingStationery';
-import BankingMoMo from '../components/guide/BankingMoMo';
-import SecuritySafety from '../components/guide/SecuritySafety';
-import LibraryServices from '../components/guide/LibraryServices';
-import LabsITServices from '../components/guide/LabsITServices';
-import WifiEmail from '../components/guide/WifiEmail';
-import ExamsAssessmentRules from '../components/guide/ExamsAssessmentRules';
-import AttendanceRegulations from '../components/guide/AttendanceRegulations';
-import ClubsSocieties from '../components/guide/ClubsSocieties';
-import StudentSupportServices from '../components/guide/StudentSupportServices';
-import TimeManagement from '../components/guide/TimeManagement';
-import StudyTechniques from '../components/guide/StudyTechniques';
-import PartTimeWorkGigs from '../components/guide/PartTimeWorkGigs';
-import LaptopBuyingGuide from '../components/guide/LaptopBuyingGuide';
-import PrintingTranscriptsLetters from '../components/guide/PrintingTranscriptsLetters';
-import GraduationClearance from '../components/guide/GraduationClearance';
-import CommonMistakesFreshers from '../components/guide/CommonMistakesFreshers';
-import ContactDirectory from '../components/guide/ContactDirectory';
-import FAQsTroubleshooting from '../components/guide/FAQsTroubleshooting';
-import SponsorsFeaturedVendors from '../components/guide/SponsorsFeaturedVendors';
+import React, { useState, useMemo } from 'react';
+import { Book, ChevronRight, MapPin, Phone, Info, Layout, CheckCircle, List, ArrowRight, MousePointer2, BookOpen, Search, X } from 'lucide-react';
+import { GUIDE_TOPICS } from '../data/guide';
 
 const Guide = () => {
-  const [selectedGuide, setSelectedGuide] = useState(null);
-  const [showGuideModal, setShowGuideModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState("Essentials");
+  const [selectedTopicId, setSelectedTopicId] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const guides = [
-    {
-      id: 'getting-started',
-      title: 'Getting Started',
-      description: 'Arrival checklist and orientation guide',
-      icon: BookOpen,
-      component: GettingStarted,
-      category: 'Essentials',
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
-      border: 'border-blue-100'
-    },
-    {
-      id: 'campus-map',
-      title: 'Campus Map & Buildings',
-      description: 'Navigate campus with interactive map',
-      icon: Map,
-      component: CampusMap,
-      category: 'Essentials',
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
-      border: 'border-blue-100'
-    },
-    {
-      id: 'student-portal',
-      title: 'Student Portal',
-      description: 'Access and password reset guide',
-      icon: User,
-      component: StudentPortal,
-      category: 'Academic',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      id: 'course-registration',
-      title: 'Course Registration',
-      description: 'Step-by-step registration process',
-      icon: FileText,
-      component: CourseRegistration,
-      category: 'Academic',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      id: 'add-drop-courses',
-      title: 'Add/Drop Courses',
-      description: 'Deadlines and procedures',
-      icon: Plus,
-      component: AddDropCourses,
-      category: 'Academic',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      id: 'id-card',
-      title: 'Student ID Card',
-      description: 'How and where to collect',
-      icon: CreditCard,
-      component: IDCard,
-      category: 'Essentials',
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
-      border: 'border-blue-100'
-    },
-    {
-      id: 'medicals-health-center',
-      title: 'Medicals & Health',
-      description: 'Health services and procedures',
-      icon: Heart,
-      component: MedicalsHealthCenter,
-      category: 'Services',
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100'
-    },
-    {
-      id: 'student-loan-trust-fund',
-      title: 'Student Loan Trust Fund',
-      description: 'Application and repayment guide',
-      icon: CreditCard,
-      component: StudentLoanTrustFund,
-      category: 'Financial',
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      border: 'border-orange-100'
-    },
-    {
-      id: 'payments-receipts',
-      title: 'Payments & Receipts',
-      description: 'Paying fees and keeping proof',
-      icon: CreditCard,
-      component: PaymentsReceipts,
-      category: 'Financial',
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      border: 'border-orange-100'
-    },
-    {
-      id: 'accommodation',
-      title: 'Accommodation',
-      description: 'On-campus and off-campus tips',
-      icon: Home,
-      component: Accommodation,
-      category: 'Living',
-      color: 'text-pink-600',
-      bg: 'bg-pink-50',
-      border: 'border-pink-100'
-    },
-    {
-      id: 'transportation',
-      title: 'Transportation',
-      description: 'Taxis, shuttle, and routes',
-      icon: Car,
-      component: Transportation,
-      category: 'Living',
-      color: 'text-pink-600',
-      bg: 'bg-pink-50',
-      border: 'border-pink-100'
-    },
-    {
-      id: 'food-dining',
-      title: 'Food & Dining',
-      description: 'Top campus spots and vendors',
-      icon: Utensils,
-      component: FoodDining,
-      category: 'Living',
-      color: 'text-pink-600',
-      bg: 'bg-pink-50',
-      border: 'border-pink-100'
-    },
-    {
-      id: 'printing-stationery',
-      title: 'Printing & Stationery',
-      description: 'Recommended shops and services',
-      icon: Printer,
-      component: PrintingStationery,
-      category: 'Services',
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100'
-    },
-    {
-      id: 'banking-momo',
-      title: 'Banking & Mobile Money',
-      description: 'Tips for managing finances',
-      icon: Smartphone,
-      component: BankingMoMo,
-      category: 'Financial',
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      border: 'border-orange-100'
-    },
-    {
-      id: 'security-safety',
-      title: 'Security & Safety',
-      description: 'Campus safety procedures',
-      icon: Shield,
-      component: SecuritySafety,
-      category: 'Services',
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100'
-    },
-    {
-      id: 'library-services',
-      title: 'Library Services',
-      description: 'Borrowing rules and hours',
-      icon: Library,
-      component: LibraryServices,
-      category: 'Academic',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      id: 'labs-it-services',
-      title: 'Labs & IT Services',
-      description: 'Where to get tech help',
-      icon: Laptop,
-      component: LabsITServices,
-      category: 'Services',
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100'
-    },
-    {
-      id: 'wifi-email',
-      title: 'Wi-Fi & Email',
-      description: 'Login credentials and setup',
-      icon: Wifi,
-      component: WifiEmail,
-      category: 'Services',
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100'
-    },
-    {
-      id: 'exams-assessment-rules',
-      title: 'Exams & Assessment',
-      description: 'Rules and procedures',
-      icon: FileText,
-      component: ExamsAssessmentRules,
-      category: 'Academic',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      id: 'attendance-regulations',
-      title: 'Attendance & Regulations',
-      description: 'Requirements and policies',
-      icon: Clock,
-      component: AttendanceRegulations,
-      category: 'Academic',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      id: 'clubs-societies',
-      title: 'Clubs & Societies',
-      description: 'Student organizations and groups',
-      icon: Users,
-      component: ClubsSocieties,
-      category: 'Campus Life',
-      color: 'text-indigo-600',
-      bg: 'bg-indigo-50',
-      border: 'border-indigo-100'
-    },
-    {
-      id: 'student-support-services',
-      title: 'Student Support Services',
-      description: 'Counselling and help resources',
-      icon: Heart,
-      component: StudentSupportServices,
-      category: 'Services',
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100'
-    },
-    {
-      id: 'time-management',
-      title: 'Time Management',
-      description: 'Schedules and productivity tips',
-      icon: Clock,
-      component: TimeManagement,
-      category: 'Skills',
-      color: 'text-teal-600',
-      bg: 'bg-teal-50',
-      border: 'border-teal-100'
-    },
-    {
-      id: 'study-techniques',
-      title: 'Study Techniques',
-      description: 'Learning strategies and methods',
-      icon: BookOpen,
-      component: StudyTechniques,
-      category: 'Skills',
-      color: 'text-teal-600',
-      bg: 'bg-teal-50',
-      border: 'border-teal-100'
-    },
-    {
-      id: 'part-time-work-gigs',
-      title: 'Part-time Work & Gigs',
-      description: 'Finding campus jobs',
-      icon: Users,
-      component: PartTimeWorkGigs,
-      category: 'Skills',
-      color: 'text-teal-600',
-      bg: 'bg-teal-50',
-      border: 'border-teal-100'
-    },
-    {
-      id: 'laptop-buying-guide',
-      title: 'Laptop Buying Guide',
-      description: 'Tips and LaptopConnect.shop link',
-      icon: Laptop,
-      component: LaptopBuyingGuide,
-      category: 'Resources',
-      color: 'text-violet-600',
-      bg: 'bg-violet-50',
-      border: 'border-violet-100'
-    },
-    {
-      id: 'printing-transcripts-letters',
-      title: 'Transcripts & Letters',
-      description: 'Steps and fees for documents',
-      icon: Printer,
-      component: PrintingTranscriptsLetters,
-      category: 'Resources',
-      color: 'text-violet-600',
-      bg: 'bg-violet-50',
-      border: 'border-violet-100'
-    },
-    {
-      id: 'graduation-clearance',
-      title: 'Graduation & Clearance',
-      description: 'Long-term preparation steps',
-      icon: GraduationCap,
-      component: GraduationClearance,
-      category: 'Academic',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      id: 'common-mistakes-freshers',
-      title: 'Common Mistakes Freshers Make',
-      description: 'Real experience and tips',
-      icon: HelpCircle,
-      component: CommonMistakesFreshers,
-      category: 'Skills',
-      color: 'text-teal-600',
-      bg: 'bg-teal-50',
-      border: 'border-teal-100'
-    },
-    {
-      id: 'contact-directory',
-      title: 'Contact Directory',
-      description: 'Offices and helplines',
-      icon: Phone,
-      component: ContactDirectory,
-      category: 'Resources',
-      color: 'text-violet-600',
-      bg: 'bg-violet-50',
-      border: 'border-violet-100'
-    },
-    {
-      id: 'faqs-troubleshooting',
-      title: 'FAQs & Troubleshooting',
-      description: 'Common portal problems',
-      icon: HelpCircle,
-      component: FAQsTroubleshooting,
-      category: 'Resources',
-      color: 'text-violet-600',
-      bg: 'bg-violet-50',
-      border: 'border-violet-100'
-    },
-    {
-      id: 'sponsors-featured-vendors',
-      title: 'Sponsors & Featured Vendors',
-      description: 'How to apply to be featured',
-      icon: Heart,
-      component: SponsorsFeaturedVendors,
-      category: 'About',
-      color: 'text-rose-600',
-      bg: 'bg-rose-50',
-      border: 'border-rose-100'
+  // Filter topics based on search query
+  const filteredTopics = useMemo(() => {
+    if (!searchQuery.trim()) return GUIDE_TOPICS;
+
+    const query = searchQuery.toLowerCase();
+    const filtered = {};
+
+    Object.entries(GUIDE_TOPICS).forEach(([category, topics]) => {
+      const matchingTopics = topics.filter(topic =>
+        topic.title.toLowerCase().includes(query) ||
+        topic.keywords?.some(k => k.toLowerCase().includes(query))
+      );
+
+      if (matchingTopics.length > 0) {
+        filtered[category] = matchingTopics;
+      }
+    });
+
+    return filtered;
+  }, [searchQuery]);
+
+  // Handle deep linking from URL
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const topicId = params.get('topic');
+    if (topicId) {
+      setSelectedTopicId(topicId);
+      // Find category for this topic to expand sidebar if needed
+      for (const [cat, topics] of Object.entries(GUIDE_TOPICS)) {
+        if (topics.find(t => t.id === topicId)) {
+          setActiveCategory(cat);
+          break;
+        }
+      }
     }
-  ];
+  }, []);
 
-  // Group guides by category
-  const categories = ['All', 'Essentials', 'Academic', 'Financial', 'Living', 'Services', 'Campus Life', 'Skills', 'Resources', 'About'];
+  // Memoize the selected topic data
+  const currentTopicData = useMemo(() => {
+    if (!selectedTopicId) return null;
+    // Find the topic object across all categories
+    for (const cat in GUIDE_TOPICS) {
+      const found = GUIDE_TOPICS[cat].find(t => t.id === selectedTopicId);
+      if (found) {
+        // Initialize the component to get the data object
+        return found.component();
+      }
+    }
+    return null;
+  }, [selectedTopicId]);
 
-  // Filter guides based on search and category
-  const filteredGuides = guides.filter(guide => {
-    const matchesSearch = guide.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         guide.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || guide.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Reset tab when topic changes
+  React.useEffect(() => {
+    if (currentTopicData?.tabs?.length > 0) {
+      setActiveTab(currentTopicData.tabs[0].id);
+    }
+  }, [currentTopicData]);
 
-  const handleGuideClick = (guideId) => {
-    const guide = guides.find(g => g.id === guideId);
-    if (guide) {
-      const guideData = guide.component();
-      setSelectedGuide({
-        ...guideData,
-        title: guide.title
-      });
-      setShowGuideModal(true);
+  const renderContent = () => {
+    if (!currentTopicData) return null;
+
+    const section = currentTopicData.sections[0]; // Assuming single section for now based on file analysis
+
+    switch (activeTab) {
+      case 'overview':
+        return (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+            {/* Summary Card */}
+            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-700">
+                  <Info className="w-5 h-5" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">{section.title}</h3>
+              </div>
+              <p className="text-gray-600 leading-relaxed font-medium mb-4">{section.summary}</p>
+              {/* Main Content Render */}
+              <div className="prose prose-yellow max-w-none text-gray-600">
+                {section.content}
+              </div>
+            </div>
+
+            {/* Key Points */}
+            {section.keyPoints && (
+              <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" /> Key Takeaways
+                </h4>
+                <ul className="space-y-3">
+                  {section.keyPoints.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></div>
+                      <span className="text-sm font-medium text-blue-800 leading-relaxed">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'steps':
+        return (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <List className="w-5 h-5 text-yellow-500" /> Action Steps
+              </h3>
+              <div className="space-y-8 relative before:absolute before:left-4 before:top-4 before:h-full before:w-0.5 before:bg-gray-100">
+                {section.steps?.map((step, idx) => (
+                  <div key={idx} className="relative pl-12">
+                    <div className="absolute left-0 top-0 w-8 h-8 bg-white border-2 border-yellow-400 text-yellow-600 rounded-full flex items-center justify-center font-bold text-sm z-10">
+                      {idx + 1}
+                    </div>
+                    <h4 className="font-bold text-gray-900 text-base mb-1">{step.title}</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {section.tips && (
+              <div className="bg-purple-50 p-6 rounded-3xl border border-purple-100">
+                <h4 className="font-bold text-purple-900 mb-3">Pro Tips</h4>
+                <ul className="grid gap-3">
+                  {section.tips.map((tip, i) => (
+                    <li key={i} className="text-sm font-medium text-purple-800 flex items-start gap-2">
+                      <span className="text-purple-400">★</span> {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'resources':
+        return (
+          <div className="grid gap-4 animate-in fade-in slide-in-from-bottom-2">
+            {section.resources?.map((res, idx) => (
+              <a
+                key={idx}
+                href={res.url}
+                target="_blank"
+                rel="noreferrer"
+                className="bg-white p-5 rounded-2xl border border-gray-200 hover:border-yellow-400 hover:shadow-md transition-all group"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">{res.title}</h4>
+                    <p className="text-sm text-gray-500 mt-1">{res.description}</p>
+                  </div>
+                  <MousePointer2 className="w-5 h-5 text-gray-300 group-hover:text-yellow-500 transform group-hover:-rotate-45 transition-all" />
+                </div>
+              </a>
+            ))}
+            {/* Buildings / Custom Location Lists often found in Food/Map guides */}
+            {currentTopicData.buildings?.map((b, idx) => (
+              <div key={`b-${idx}`} className="bg-white p-5 rounded-2xl border border-gray-200 flex justify-between items-center">
+                <div>
+                  <h4 className="font-bold text-gray-900">{b.fullName} <span className="text-xs text-gray-400 ml-2">({b.shortForm})</span></h4>
+                  <p className="text-xs text-gray-500">{b.description}</p>
+                </div>
+                <button
+                  onClick={() => currentTopicData.openGoogleMaps?.(b.url)}
+                  className="text-xs font-bold bg-gray-100 px-3 py-2 rounded-lg hover:bg-black hover:text-white transition-colors"
+                >
+                  Locate
+                </button>
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'checklist':
+        return (
+          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Essentials Checklist</h3>
+            <div className="space-y-3">
+              {section.checklist?.map((item, idx) => (
+                <label key={idx} className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors group">
+                  <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-yellow-400 focus:ring-yellow-400 transition-all" />
+                  <span className="font-medium text-gray-700 group-hover:text-gray-900">{item.text}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'warnings':
+        return (
+          <div className="bg-red-50 p-6 rounded-3xl border border-red-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+            <h3 className="text-lg font-bold text-red-900 mb-4">Warnings & Pitfalls</h3>
+            {section.commonMistakes && (
+              <div className="mb-6">
+                <h4 className="font-bold text-red-800 mb-3">Common Mistakes</h4>
+                <ul className="space-y-2">
+                  {section.commonMistakes.map((mistake, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-red-700 text-sm">
+                      <span>•</span> {mistake}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {section.consequences && (
+              <div className="bg-white/60 p-4 rounded-xl border border-red-200">
+                <h4 className="font-bold text-red-800 mb-2">Consequences</h4>
+                <p className="text-sm text-red-700">{section.consequences}</p>
+              </div>
+            )}
+          </div>
+        );
+
+      default:
+        return (
+          // Default fallback if tab content isn't explicitly handled above but exists in data
+          <div className="p-8 text-center text-gray-400">
+            {section[activeTab] ? (
+              <div className="prose prose-yellow max-w-none text-gray-600">
+                {typeof section[activeTab] === 'string' ? section[activeTab] : "Complex content not renderable in default view."}
+              </div>
+            ) : "Content pending for this tab."}
+          </div>
+        );
     }
   };
 
-  const handleCloseGuide = () => {
-    setShowGuideModal(false);
-    setSelectedGuide(null);
-  };
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="p-4 pb-24 bg-gray-50/50 min-h-screen font-sans">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
-        
-        <div className="relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs font-bold uppercase tracking-widest text-blue-200 mb-6">
-             <Sparkles size={12} /> Comprehensive Guide
+    <div className="flex bg-white h-screen relative font-sans overflow-hidden transition-colors duration-300">
+
+      {/* Mobile Header */}
+      <div className="lg:hidden absolute top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-30">
+        <span className="font-bold text-lg text-gray-900">Student Guide</span>
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="p-2 -mr-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+        >
+          {isSidebarOpen ? <List className="w-6 h-6 rotate-90" /> : <List className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Sidebar Navigation */}
+      <div className={`
+                fixed inset-y-0 left-0 z-40 w-72 bg-gray-50/80 backdrop-blur-xl border-r border-gray-200 transform transition-transform duration-300 ease-in-out
+                lg:relative lg:translate-x-0 lg:bg-gray-50 lg:backdrop-blur-none
+                ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:shadow-none'}
+            `}>
+        <div className="h-full flex flex-col">
+          <div className="p-6 pt-20 lg:pt-8">
+            <h2 className="text-xl font-black text-gray-900 tracking-tight mb-1">Campus Guide</h2>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">The Pastel Edition</p>
           </div>
 
-          <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
-            <BookOpen size={40} className="text-white drop-shadow-md" />
-          </div>
-          
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
-            UCC Campus <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
-              Student Guide
-            </span>
-          </h1>
-          
-          <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
-            Everything you need to navigate university life, from registration to graduation.
-          </p>
-          
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <Button
-              variant="secondary"
-              onClick={() => navigate('/')}
-              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
-            >
-              <Home size={20} /> Back to Home
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate('/tools')}
-              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
-            >
-              <Laptop size={20} /> Student Tools
-            </Button>
+          <div className="flex-1 overflow-y-auto px-4 pb-20 lg:pb-8 space-y-6 custom-scrollbar">
+
+            {/* Search Input */}
+            <div className="sticky top-0 bg-gray-50 pt-2 pb-4 z-10 px-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search guides..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 text-gray-900 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {Object.keys(filteredTopics).length === 0 ? (
+              <div className="text-center py-8 text-gray-500 text-sm">
+                <p>No guides found matching "{searchQuery}"</p>
+              </div>
+            ) : (
+              Object.entries(filteredTopics).map(([category, topics]) => (
+                <div key={category}>
+                  <h3 className="px-4 text-xs font-black text-indigo-900 uppercase tracking-widest mb-3 mt-2 border-b-2 border-indigo-100 pb-2">{category}</h3>
+                  <div className="space-y-1">
+                    {topics.map((topic) => (
+                      <button
+                        key={topic.id}
+                        onClick={() => {
+                          setSelectedTopicId(topic.id);
+                          if (!searchQuery) setActiveCategory(category); // Only switch category context if not searching
+                          if (window.innerWidth < 1024) setIsSidebarOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${selectedTopicId === topic.id ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-gray-200' : 'text-gray-500 hover:bg-white hover:shadow-sm hover:text-gray-900'}`}
+                      >
+                        <span>{topic.title}</span>
+                        {selectedTopicId === topic.id && <div className="w-2 h-2 rounded-full bg-indigo-600 shadow-sm" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
 
-      {/* Search Section */}
-      <Card className="mb-8 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-        <CardContent className="p-6">
-          <div className="relative">
-            <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search guides..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Categories Section */}
-      <Card className="mb-8 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-        <CardHeader className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
-          <CardTitle className="text-gray-800 flex items-center gap-2 text-lg">
-            <Star className="text-yellow-500 fill-yellow-500" size={20} />
-            Browse by Category
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="flex flex-wrap gap-3">
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-5 py-2.5 rounded-full font-medium transition-all ${
-                  selectedCategory === category
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Guide Cards Section */}
-      <Card className="mb-8 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-        <CardHeader className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
-          <CardTitle className="text-gray-800 flex items-center gap-2 text-lg">
-            <BookOpen className="text-blue-500" size={20} />
-            {selectedCategory === 'All' ? 'All Guides' : `${selectedCategory} Guides`}
-            <span className="ml-auto text-sm font-normal text-gray-500">
-              {filteredGuides.length} {filteredGuides.length === 1 ? 'guide' : 'guides'} found
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {filteredGuides.map((guide) => {
-              const Icon = guide.icon;
-              return (
-                <button
-                  key={guide.id}
-                  onClick={() => handleGuideClick(guide.id)}
-                  className={`p-5 rounded-2xl border ${guide.border} ${guide.bg} hover:shadow-md transition-all cursor-pointer group text-left`}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-white rounded-xl shadow-sm group-hover:scale-110 transition-transform">
-                      <Icon size={24} className={guide.color} />
-                    </div>
-                    <div>
-                      <h3 className={`font-bold text-lg mb-1 ${guide.color}`}>{guide.title}</h3>
-                      <p className="text-gray-600 text-sm leading-relaxed font-medium">{guide.description}</p>
-                      <div className="mt-2">
-                        <span className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full ${guide.bg} ${guide.color}`}>
-                          {guide.category}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {filteredGuides.length === 0 && (
-        <Card className="mb-8 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-          <CardContent className="p-12 text-center">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <HelpCircle size={40} className="text-gray-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No guides found</h3>
-            <p className="text-gray-600">Try searching with different keywords or selecting another category</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {selectedGuide && (
-        <GuideContent
-          guide={selectedGuide}
-          isOpen={showGuideModal}
-          onClose={handleCloseGuide}
+      {/* Overlay for mobile sidebar */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 z-30 lg:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setIsSidebarOpen(false)}
         />
       )}
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative w-full bg-white transition-colors duration-300">
+        {selectedTopicId ? (
+          <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-24">
+            <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 md:py-16">
+
+              {/* Topic Header */}
+              <div className="mb-12 border-b border-gray-100 pb-8">
+                <div className="flex items-center gap-3 text-sm font-bold text-indigo-600 mb-4 bg-indigo-50 w-fit px-3 py-1 rounded-full border border-indigo-100">
+                  <BookOpen className="w-4 h-4" />
+                  {activeCategory}
+                </div>
+                <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tight">
+                  {currentTopicData?.sections[0].title}
+                </h1>
+
+                {/* Tabs */}
+                <div className="flex gap-8 border-b border-gray-100 -mb-8 overflow-x-auto no-scrollbar mask-linear-fade pb-1">
+                  {currentTopicData?.tabs?.map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 ${activeTab === tab.id ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Main Scrollable Content Body */}
+              <div className="min-h-[400px]">
+                {renderContent()}
+              </div>
+
+              {/* Simple Footer */}
+              <div className="mt-16 pt-8 border-t border-gray-100 text-center">
+                <p className="text-xs text-gray-400 font-medium">Was this guide helpful?
+                  <a
+                    href="https://wa.me/233201534711?text=Hello%2C%20I%20have%20feedback%20regarding%20the%20Campus%20Guide"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="ml-1 underline cursor-pointer hover:text-indigo-600 transition-colors"
+                  >
+                    Send Feedback via WhatsApp
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white h-full pb-24">
+            <div className="w-24 h-24 bg-gray-50 rounded-3xl flex items-center justify-center mb-6 animate-pulse">
+              <BookOpen className="w-10 h-10 text-gray-300" />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 mb-3">Welcome to the Guide</h2>
+            <p className="max-w-md text-gray-500 font-medium leading-relaxed">
+              Select a topic from the sidebar to get started. Everything you need to know about campus life, in one place.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
-
 export default Guide;

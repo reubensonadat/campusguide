@@ -214,7 +214,6 @@ const PrintingTranscriptsLetters = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Request Process' },
     { id: 'resources', label: 'Document Services' },
-    { id: 'checklist', label: 'Request Checklist' }
   ];
 
   return { sections, tabs };

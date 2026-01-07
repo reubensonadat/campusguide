@@ -210,7 +210,6 @@ const PrintingStationery = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Printing Process' },
     { id: 'resources', label: 'Services & Vendors' },
-    { id: 'checklist', label: 'Printing Checklist' }
   ];
 
   return { sections, tabs };

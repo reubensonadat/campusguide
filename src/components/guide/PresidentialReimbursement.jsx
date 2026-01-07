@@ -264,7 +264,6 @@ const PresidentialReimbursement = () => {
     { id: 'steps', label: 'Application Process' },
     { id: 'resources', label: 'Helpful Links' },
     { id: 'warnings', label: 'Common Pitfalls' },
-    { id: 'checklist', label: 'Application Checklist' }
   ];
 
   return { sections, tabs };

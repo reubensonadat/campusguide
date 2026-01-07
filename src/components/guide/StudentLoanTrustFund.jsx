@@ -251,7 +251,6 @@ const StudentLoanTrustFund = () => {
     { id: 'steps', label: 'Application Process' },
     { id: 'resources', label: 'Loan Resources' },
     { id: 'warnings', label: 'Common Pitfalls' },
-    { id: 'checklist', label: 'Application Checklist' }
   ];
 
   return { sections, tabs };

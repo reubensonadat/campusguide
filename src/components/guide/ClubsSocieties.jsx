@@ -137,7 +137,6 @@ const ClubsSocieties = () => {
     { id: 'overview', label: 'Overview' },
     { id: 'steps', label: 'How to Join' },
     { id: 'resources', label: 'Resources' },
-    { id: 'checklist', label: 'Checklist' }
   ];
 
   return { sections, tabs };

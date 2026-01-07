@@ -314,7 +314,6 @@ const Accommodation = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Action Plan' },
     { id: 'resources', label: 'Helpful Links' },
-    { id: 'checklist', label: 'Essentials List' }
   ];
 
   return { sections, tabs };

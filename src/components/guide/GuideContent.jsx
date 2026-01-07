@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Modal } from '../common/Modal';
-import { Button } from '../common/Button';
+
 import {
   Card,
   CardHeader,
@@ -11,16 +11,12 @@ import {
   WarningCard,
   GuideCard,
   ResourceCard,
-  TipCard,
-  ChecklistCard
+  TipCard
 } from '../common/Card';
 import {
-  CheckCircle,
   AlertCircle,
-  BookOpen,
   FileText,
   Lightbulb,
-  List,
   ChevronRight,
   Clock,
   Users,
@@ -325,48 +321,7 @@ const WarningsTab = React.memo(({ section }) => (
   </div>
 ));
 
-const ChecklistTab = React.memo(({ section }) => {
-  const completedCount = useMemo(() =>
-    section.checklist?.filter(item => item.checked).length || 0,
-    [section.checklist]
-  );
 
-  const totalCount = useMemo(() =>
-    section.checklist?.length || 0,
-    [section.checklist]
-  );
-
-  const progressPercentage = useMemo(() =>
-    totalCount > 0 ? (completedCount / totalCount) * 100 : 0,
-    [completedCount, totalCount]
-  );
-
-  return (
-    <div className="space-y-4 pb-4">
-      <ChecklistCard
-        title="Progress Checklist"
-        items={section.checklist || []}
-      />
-
-      <Card>
-        <CardContent className="pt-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Your Progress</span>
-            <span className="text-sm text-gray-500">
-              {completedCount} of {totalCount} completed
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-});
 
 // Mobile-friendly tab navigation component
 const TabNavigation = React.memo(({ activeTab, setActiveTab, tabs }) => {
@@ -381,8 +336,8 @@ const TabNavigation = React.memo(({ activeTab, setActiveTab, tabs }) => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`py-2 px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap transition-colors ${isActive
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-indigo-500 text-indigo-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
             >
               {tab.label}
@@ -396,7 +351,6 @@ const TabNavigation = React.memo(({ activeTab, setActiveTab, tabs }) => {
 
 const GuideContent = ({ guide, isOpen, onClose }) => {
   const [currentSection, setCurrentSection] = useState(0);
-  const [completedSections, setCompletedSections] = useState([]);
   const [activeTab, setActiveTab] = useState(guide?.tabs?.[0]?.id || 'overview');
 
   // Memoize the current section to prevent unnecessary re-renders
@@ -413,15 +367,7 @@ const GuideContent = ({ guide, isOpen, onClose }) => {
   }, [guide]);
 
   // Use useCallback to prevent unnecessary re-renders of these functions
-  const handleMarkSectionComplete = useCallback(() => {
-    setCompletedSections(prev => {
-      if (prev.includes(currentSection)) {
-        return prev.filter(i => i !== currentSection);
-      } else {
-        return [...prev, currentSection];
-      }
-    });
-  }, [currentSection]);
+
 
   // Memoize the tab content component to prevent unnecessary re-renders
   const tabContent = useMemo(() => {
@@ -440,17 +386,13 @@ const GuideContent = ({ guide, isOpen, onClose }) => {
         return <ResourcesTab section={section} />;
       case 'warnings':
         return <WarningsTab section={section} />;
-      case 'checklist':
-        return <ChecklistTab section={section} />;
+
       default:
         return null;
     }
   }, [section, activeTab, guide.buildings, guide.openGoogleMaps, guide.location]);
 
-  // Memoize the isCompleted status to prevent unnecessary re-renders
-  const isCompleted = useMemo(() => {
-    return completedSections.includes(currentSection);
-  }, [completedSections, currentSection]);
+
 
   // Memoize the tabs to prevent unnecessary re-renders
   const tabs = useMemo(() => {
@@ -458,8 +400,7 @@ const GuideContent = ({ guide, isOpen, onClose }) => {
       { id: 'overview', label: 'Overview' },
       { id: 'steps', label: 'Steps' },
       { id: 'resources', label: 'Resources' },
-      { id: 'warnings', label: 'Warnings' },
-      { id: 'checklist', label: 'Checklist' }
+      { id: 'warnings', label: 'Warnings' }
     ];
   }, [guide?.tabs]);
 
@@ -488,15 +429,6 @@ const GuideContent = ({ guide, isOpen, onClose }) => {
         <div className="mb-2 sm:mb-4">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg sm:text-xl font-semibold">{section.title}</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleMarkSectionComplete}
-              className={isCompleted ? 'text-green-600' : ''}
-            >
-              <CheckCircle size={16} className="mr-1" />
-              <span className="hidden sm:inline">{isCompleted ? 'Completed' : 'Mark Complete'}</span>
-            </Button>
           </div>
 
           {section.summary && (

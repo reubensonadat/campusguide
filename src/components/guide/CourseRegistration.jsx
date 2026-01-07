@@ -9,14 +9,14 @@ const CourseRegistration = () => {
     {
       title: "Course Registration",
       summary: "Navigating the Portal, Financial Clearance, and the 'Rotational' Course System.",
-      
+
       // --- OVERVIEW CONTENT ---
       content: (
         <div className="space-y-8">
           {/* --- INTRO CARD --- */}
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-sm">
             <p className="text-gray-700 leading-relaxed">
-              Registration is the official process of enrolling in specific courses. 
+              Registration is the official process of enrolling in specific courses.
               <strong> No Registration = No Student Status.</strong> Even if you pay fees, you are not a student until you register courses on the portal.
             </p>
           </div>
@@ -111,8 +111,8 @@ const CourseRegistration = () => {
           description: "Verify courses. Click 'SUBMIT'. Clicking 'Save' only creates a draft and does NOT register you."
         },
         {
-          title: "Print 3 Copies",
-          description: "Print the registration slip. Submit copies to your Department and Faculty Officer for signing."
+          title: "Print for Records",
+          description: "Print the registration slip for your own file. You usually do NOT need to submit copies to your Department unless asked. If it's on the portal, you are registered."
         }
       ],
 
@@ -133,9 +133,9 @@ const CourseRegistration = () => {
         { text: "Checked Assigned Liberal/African Studies", checked: false },
         { text: "Added Required Electives", checked: false },
         { text: "Clicked 'SUBMIT' (Not Save)", checked: false },
-        { text: "Printed 3 Copies of Slip", checked: false }
+        { text: "Printed Slip for Records", checked: false }
       ],
-      
+
       // Resources remain the same...
       resources: [
         {

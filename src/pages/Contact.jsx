@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  MessageCircle, 
-  Facebook, 
-  Twitter, 
+import {
+  Phone,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Facebook,
+  Twitter,
   Instagram,
   Clock,
   Users,
@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Contact = () => {
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = React.useState({
     name: '',
     email: '',
@@ -130,33 +130,33 @@ const Contact = () => {
   };
 
   return (
-    <div className="p-4 pb-24 bg-gray-50/50 min-h-screen font-sans">
+    <div className="p-4 pb-24 bg-gray-50/50 min-h-screen font-sans transition-colors duration-300">
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden">
         {/* Decorative Elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
-        
+
         <div className="relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs font-bold uppercase tracking-widest text-blue-200 mb-6">
-             <Sparkles size={12} /> Get In Touch
+            <Sparkles size={12} /> Get In Touch
           </div>
 
           <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
             <MessageCircle size={40} className="text-white drop-shadow-md" />
           </div>
-          
+
           <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
-            Contact <br/>
+            Contact <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
               Our Team
             </span>
           </h1>
-          
+
           <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
             We're here to help you succeed at UCC. Reach out with any questions or feedback.
           </p>
-          
+
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <Button
               variant="secondary"
@@ -200,9 +200,9 @@ const Contact = () => {
                         <p key={idx} className="text-gray-600 text-sm leading-relaxed font-medium mb-1">{detail}</p>
                       ))}
                       {info.action && (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => window.open(info.action, '_blank')}
                           className={`mt-3 ${info.color} ${info.border} bg-white`}
                         >
@@ -262,7 +262,7 @@ const Contact = () => {
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 placeholder="Your name"
                 required
@@ -273,7 +273,7 @@ const Contact = () => {
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 placeholder="your.email@example.com"
                 required
@@ -283,7 +283,7 @@ const Contact = () => {
               <label className="block text-sm font-bold text-gray-700 mb-2">Message</label>
               <textarea
                 value={formData.message}
-                onChange={(e) => setFormData({...formData, message: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 rows={4}
                 placeholder="How can we help you?"

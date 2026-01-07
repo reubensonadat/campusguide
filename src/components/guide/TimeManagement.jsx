@@ -213,7 +213,6 @@ const TimeManagement = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Time Mastery Process' },
     { id: 'resources', label: 'Productivity Tools' },
-    { id: 'checklist', label: 'Time Management Setup' }
   ];
 
   return { sections, tabs };

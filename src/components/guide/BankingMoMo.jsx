@@ -148,7 +148,6 @@ const BankingMoMo = () => {
     { id: 'overview', label: 'Overview' },
     { id: 'resources', label: 'Locations' },
     { id: 'warnings', label: 'Safety' },
-    { id: 'checklist', label: 'Checklist' }
   ];
 
   return { sections, tabs };

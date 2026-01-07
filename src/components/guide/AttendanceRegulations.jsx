@@ -107,7 +107,6 @@ const AttendanceRegulations = () => {
     { id: 'overview', label: 'Overview' },
     { id: 'steps', label: 'Management' }, // Renamed for context
     { id: 'warnings', label: 'Consequences' }, // Renamed for context
-    { id: 'checklist', label: 'Tracker' }
   ];
 
   return { sections, tabs };

@@ -19,6 +19,27 @@ const AddDropCourses = () => {
             </p>
           </div>
 
+          {/* CRITICAL WARNING - UNOFFICIAL DROP */}
+          <div className="bg-red-50 p-6 rounded-xl border border-red-100 shadow-sm">
+            <h4 className="font-bold text-red-900 text-lg mb-3 flex items-center">
+              <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Critical</span>
+              The "Unofficial Drop" Trap
+            </h4>
+            <p className="text-sm text-red-900/80 mb-4 font-medium leading-relaxed">
+              If you stop attending a course without officially dropping it on the portal, it will stay on your record.
+              You will be graded as "Absent," resulting in an <strong>Grade E</strong> which significantly drags down your <strong>CGPA</strong>.
+            </p>
+            <div className="bg-white/60 p-4 rounded-lg">
+              <h5 className="text-xs font-bold text-red-800 uppercase tracking-wide mb-2">Recommendation</h5>
+              <p className="text-sm text-gray-700 leading-relaxed">
+                If you only want knowledge but no formal credit, <strong>do not register</strong>. Ask friends for the schedule and attend classes informally.
+                If you want the formal credit, you must register and complete it.
+                <br /><br />
+                <strong>Never simply "abandon" a registered course.</strong>
+              </p>
+            </div>
+          </div>
+
           {/* GRID */}
           <div className="grid md:grid-cols-2 gap-6">
 

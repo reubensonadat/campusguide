@@ -228,7 +228,6 @@ const StudentPortal = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Access Process' },
     { id: 'resources', label: 'Portal Resources' },
-    { id: 'checklist', label: 'Portal Checklist' }
   ];
 
   return { sections, tabs };

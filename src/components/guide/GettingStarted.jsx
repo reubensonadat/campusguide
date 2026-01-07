@@ -8,9 +8,9 @@ const GettingStarted = () => {
 
   const sections = [
     {
-      title: "Welcome to the University of Choice",
+      title: "Welcome to the University of Competitive Choice",
       summary: "Your definitive roadmap from 'Admission Letter' to 'Matriculation'.",
-      
+
       // --- OVERVIEW CONTENT (RICH UI) ---
       content: (
         <div className="space-y-12 font-sans">
@@ -19,22 +19,22 @@ const GettingStarted = () => {
             {/* Abstract Background Shapes */}
             <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
             <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-60 h-60 bg-blue-400/10 rounded-full blur-3xl"></div>
-            
+
             <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-left space-y-4 max-w-2xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-wider text-blue-200">
                   <Sparkles size={12} /> Class of 2029
                 </div>
                 <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-                  Akwaaba to the <br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200">University of Choice</span>
+                  Akwaaba to the <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200">University of Competitive Choice</span>
                 </h2>
                 <p className="text-blue-100/90 text-lg leading-relaxed">
-                  You have secured your spot in Ghana's most competitive university. 
+                  You have secured your spot in Ghana's most competitive university.
                   The next 21 days define your first year. Don't just arrive; <strong>arrive prepared.</strong>
                 </p>
               </div>
-              
+
               {/* Countdown/Status Card */}
               <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl min-w-[200px] text-center shadow-lg transform hover:scale-105 transition-transform">
                 <p className="text-blue-200 text-xs uppercase tracking-widest mb-1">Freshers Reporting</p>
@@ -51,7 +51,7 @@ const GettingStarted = () => {
           <div>
             <SectionHeader icon={<CreditCard size={20} />} title="Immediate Actions (Before You Travel)" />
             <div className="grid md:grid-cols-2 gap-6">
-              <ActionCard 
+              <ActionCard
                 step="01"
                 title="Accept & Pay Fees"
                 theme="green"
@@ -63,7 +63,7 @@ const GettingStarted = () => {
                   "Keep receipt safe for Hall entry."
                 ]}
               />
-              <ActionCard 
+              <ActionCard
                 step="02"
                 title="Portal Activation"
                 theme="blue"
@@ -80,55 +80,55 @@ const GettingStarted = () => {
 
           {/* --- THE "SURVIVAL KIT" (Packing Guide) --- */}
           <div>
-             <SectionHeader icon={<Truck size={20} />} title="The 'Old Site' Survival Kit (Packing)" />
-             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
-               <p className="text-gray-600 mb-6 text-sm">
-                 UCC Halls are strict. Data sourced from Adehye & CoverGhana guides.
-               </p>
-               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-                 {/* Must Haves */}
-                 <div>
-                   <h5 className="font-bold text-gray-800 border-b-2 border-green-500 pb-2 mb-3 flex items-center">
-                     <CheckCircle size={16} className="text-green-500 mr-2" /> Must Haves
-                   </h5>
-                   <ul className="space-y-2 text-sm text-gray-600">
-                     <li>• <strong>White Bed Sheets</strong> (Mandatory)</li>
-                     <li>• Pillow & Pillowcases</li>
-                     <li>• Bucket & Pail (Water is life)</li>
-                     <li>• Formal Wear (For Matriculation)</li>
-                     <li>• Raincoat / Umbrella</li>
-                   </ul>
-                 </div>
-                 
-                 {/* Contraband - UPDATED based on Image Evidence */}
-                 <div>
-                   <h5 className="font-bold text-gray-800 border-b-2 border-red-500 pb-2 mb-3 flex items-center">
-                     <AlertTriangle size={16} className="text-red-500 mr-2" /> Prohibited
-                   </h5>
-                   <ul className="space-y-2 text-sm text-gray-600">
-                     <li>• <strong>Trunks</strong> (Use Suitcases)</li>
-                     <li>• <strong>Chop Boxes</strong></li>
-                     <li>• Mattresses (Provided by Hall)</li>
-                     <li>• Gas Cookers / Cylinders</li>
-                     <li>• Weapons / Drugs</li>
-                   </ul>
-                 </div>
+            <SectionHeader icon={<Truck size={20} />} title="The 'Old Site' Survival Kit (Packing)" />
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+              <p className="text-gray-600 mb-6 text-sm">
+                UCC Halls are strict. Data sourced from Adehye & CoverGhana guides.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                {/* Must Haves */}
+                <div>
+                  <h5 className="font-bold text-gray-800 border-b-2 border-green-500 pb-2 mb-3 flex items-center">
+                    <CheckCircle size={16} className="text-green-500 mr-2" /> Must Haves
+                  </h5>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li>• <strong>White Bed Sheets</strong> (Mandatory)</li>
+                    <li>• Pillow & Pillowcases</li>
+                    <li>• Bucket & Pail (Water is life)</li>
+                    <li>• Formal Wear (For Matriculation)</li>
+                    <li>• Raincoat / Umbrella</li>
+                  </ul>
+                </div>
 
-                 {/* Allowed Electricals - UPDATED based on Flyer */}
-                 <div>
-                   <h5 className="font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-3 flex items-center">
-                     <Plug size={16} className="text-blue-500 mr-2" /> Allowed Electricals
-                   </h5>
-                   <ul className="space-y-2 text-sm text-gray-600">
-                     <li>• Rice Cooker</li>
-                     <li>• Electric Kettle</li>
-                     <li>• Electric Iron</li>
-                     <li>• Hot Plate (Regulated)</li>
-                     <li>• Extension Board (Strong)</li>
-                   </ul>
-                 </div>
-               </div>
-             </div>
+                {/* Contraband - UPDATED based on Image Evidence */}
+                <div>
+                  <h5 className="font-bold text-gray-800 border-b-2 border-red-500 pb-2 mb-3 flex items-center">
+                    <AlertTriangle size={16} className="text-red-500 mr-2" /> Prohibited
+                  </h5>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li>• <strong>Trunks</strong> (Use Suitcases)</li>
+                    <li>• <strong>Chop Boxes</strong></li>
+                    <li>• Mattresses (Provided by Hall)</li>
+                    <li>• Gas Cookers / Cylinders</li>
+                    <li>• Weapons / Drugs</li>
+                  </ul>
+                </div>
+
+                {/* Allowed Electricals - UPDATED based on Flyer */}
+                <div>
+                  <h5 className="font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-3 flex items-center">
+                    <Plug size={16} className="text-blue-500 mr-2" /> Allowed Electricals
+                  </h5>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li>• Rice Cooker</li>
+                    <li>• Electric Kettle</li>
+                    <li>• Electric Iron</li>
+                    <li>• Hot Plate (Regulated)</li>
+                    <li>• Extension Board (Strong)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* --- HALL CULTURE (Traditions) --- */}
@@ -136,8 +136,8 @@ const GettingStarted = () => {
             <div className="bg-orange-50 p-6 rounded-2xl border border-orange-100">
               <h4 className="text-orange-900 font-bold text-lg mb-3">Hall Traditions</h4>
               <p className="text-sm text-orange-800/80 mb-4 leading-relaxed">
-                UCC is famous for its hall culture. Expect <strong>"Processions"</strong> and <strong>"Morale"</strong> (singing and drumming) on Friday nights. 
-                <strong> Casford</strong> and <strong>Adehye</strong> ("Cas-Ade") have a strong alliance, as do <strong>Atlantic</strong> and <strong>Oguaa</strong>.
+                UCC is famous for its hall culture. Expect <strong>"Processions"</strong> and <strong>"Morale"</strong> (singing and drumming) on Friday nights.
+                <strong> Casford</strong> and <strong>Adehye</strong> have a strong alliance.
               </p>
               <div className="flex flex-wrap gap-2">
                 <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Royals</span>
@@ -147,11 +147,11 @@ const GettingStarted = () => {
               </div>
             </div>
 
-             <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
+            <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
               <h4 className="text-indigo-900 font-bold text-lg mb-3">Medical Exam Rule</h4>
               <p className="text-sm text-indigo-800/80 mb-4 leading-relaxed">
                 The Medical Exam is <strong>mandatory</strong>. You cannot graduate without clearing it.
-                It involves a Chest X-Ray, Lab Tests, and a Physical Exam. 
+                It involves a Chest X-Ray, Lab Tests, and a Physical Exam.
                 <strong> Pro Tip:</strong> Go as early as 6:00 AM to beat the queue.
               </p>
               <div className="flex items-center text-indigo-700 text-xs font-bold">
@@ -196,6 +196,10 @@ const GettingStarted = () => {
           description: "1. Pay medical fee at Cash Office. 2. Do X-Rays & Labs at Hospital. 3. Return for Physical Exam. 4. Submit cleared form to Department."
         },
         {
+          title: "Pay Departmental Dues",
+          description: "Visit your Department association's table. First Years pay higher dues (often includes shirt/souvenirs). Mandatory before registration."
+        },
+        {
           title: "Course Registration",
           description: "Log in to the portal. Register Core courses and required Electives. Ensure total credits meet minimum (usually 15). Print the slip immediately."
         },
@@ -216,7 +220,7 @@ const GettingStarted = () => {
       consequences: "Failure to follow the 'No Trunk' policy will result in significant delays and frustration on arrival day.",
 
       // --- CHECKLIST TAB DATA ---
-     
+
 
       // --- RESOURCES TAB DATA ---
       resources: [
@@ -249,7 +253,6 @@ const GettingStarted = () => {
     { id: 'steps', label: 'First Week' },
     { id: 'resources', label: 'Portals' },
     { id: 'warnings', label: 'Alerts' },
-    { id: 'checklist', label: 'Checklist' }
   ];
 
   return { sections, tabs };
@@ -302,11 +305,11 @@ const TimelineEvent = ({ date, day, title, desc }) => (
     <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
       <Calendar size={18} />
     </div>
-    
+
     {/* Content Card */}
     <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] p-5 rounded-2xl border border-slate-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 relative">
       <div className="absolute top-4 right-4 opacity-10 text-indigo-600">
-         <Info size={40} />
+        <Info size={40} />
       </div>
       <div className="flex flex-col mb-1">
         <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 text-xl">{date}</span>

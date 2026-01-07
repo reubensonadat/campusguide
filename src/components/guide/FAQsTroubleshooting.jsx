@@ -123,7 +123,6 @@ const FAQsTroubleshooting = () => {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'resources', label: 'Help Desk' },
-    { id: 'checklist', label: 'Checklist' }
   ];
 
   return { sections, tabs };

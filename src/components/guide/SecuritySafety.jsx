@@ -217,7 +217,6 @@ const SecuritySafety = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Safety Protocol' },
     { id: 'resources', label: 'Security Resources' },
-    { id: 'checklist', label: 'Safety Checklist' }
   ];
 
   return { sections, tabs };

@@ -279,7 +279,6 @@ const LaptopBuyingGuide = () => {
     { id: 'overview', label: 'Guide' },
     { id: 'resources', label: 'Resources' },
     { id: 'warnings', label: 'Common Mistakes' },
-    { id: 'checklist', label: 'Checklist' }
   ];
 
   return { sections, tabs };

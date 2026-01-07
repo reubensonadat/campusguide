@@ -1,17 +1,15 @@
 import React from 'react';
-import { Phone, Globe, Mail, Shield, AlertTriangle } from 'lucide-react';
+import { Phone, Shield, AlertTriangle, Plus, Flame } from 'lucide-react';
 
 const ContactDirectory = () => {
   // UCC GUIDE: CONTACT DIRECTORY
-  // Verified Data: 2025 Emergency Numbers & Hall Contacts
-  // Design: Clean, functional directory with "Call Now" intention.
+  // Updated with Jan 2026 Verified Data (Security, Hospital, and SRC Reps)
 
   const sections = [
     {
       title: "Emergency & Essential Contacts",
       summary: "Save these numbers. They are your lifeline on campus.",
       
-      // --- OVERVIEW CONTENT ---
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
@@ -24,114 +22,83 @@ const ContactDirectory = () => {
 
           {/* --- EMERGENCY GRID --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-red-50 p-5 rounded-xl border border-red-100 flex items-start gap-4">
-              <div className="bg-red-100 p-3 rounded-full text-red-600">
-                <AlertTriangle size={24} />
-              </div>
-              <div>
-                <h4 className="font-bold text-red-900 text-lg">Campus Emergency</h4>
-                <p className="text-sm text-red-800 mb-2">Security, Fire, & Rescue</p>
-                <div className="space-y-1">
-                  <a href="tel:0553660338" className="block text-lg font-bold text-red-700 hover:underline">055 366 0338</a>
-                  <a href="tel:0203005175" className="block text-lg font-bold text-red-700 hover:underline">020 300 5175</a>
-                </div>
-              </div>
-            </div>
-
+            {/* SECURITY SERVICE */}
             <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 flex items-start gap-4">
               <div className="bg-blue-100 p-3 rounded-full text-blue-600">
                 <Shield size={24} />
               </div>
               <div>
-                <h4 className="font-bold text-blue-900 text-lg">UCC Police Station</h4>
-                <p className="text-sm text-blue-800 mb-2">Located near Old Site Gate</p>
-                <div className="space-y-1">
-                  <a href="tel:0332132411" className="block text-lg font-bold text-blue-700 hover:underline">033 213 2411</a>
+                <h4 className="font-bold text-blue-900 text-lg">UCC Security Service</h4>
+                <p className="text-sm text-blue-800 mb-2">24/7 Campus Patrol</p>
+                <div className="flex flex-col gap-1">
+                  <a href="tel:0547284666" className="text-md font-bold text-blue-700 hover:underline">054 728 4666</a>
+                  <a href="tel:0555850886" className="text-md font-bold text-blue-700 hover:underline">055 585 0886</a>
+                  <a href="tel:0244206070" className="text-md font-bold text-blue-700 hover:underline">024 420 6070</a>
+                  <a href="tel:0245219107" className="text-md font-bold text-blue-700 hover:underline">024 521 9107</a>
                 </div>
               </div>
             </div>
 
-             <div className="bg-green-50 p-5 rounded-xl border border-green-100 flex items-start gap-4">
+            {/* UNIVERSITY HOSPITAL */}
+            <div className="bg-green-50 p-5 rounded-xl border border-green-100 flex items-start gap-4">
               <div className="bg-green-100 p-3 rounded-full text-green-600">
-                <div className="font-bold text-xl">+</div>
+                <Plus size={24} />
               </div>
               <div>
                 <h4 className="font-bold text-green-900 text-lg">University Hospital</h4>
                 <p className="text-sm text-green-800 mb-2">OPD / Emergency</p>
-                <div className="space-y-1">
-                  <a href="tel:0332132447" className="block text-lg font-bold text-green-700 hover:underline">033 213 2447</a>
+                <div className="flex flex-col gap-1">
+                  <a href="tel:0244977860" className="text-md font-bold text-green-700 hover:underline">024 497 7860</a>
+                  <a href="tel:0548650505" className="text-md font-bold text-green-700 hover:underline">054 865 0505</a>
+                  <a href="tel:0244473904" className="text-md font-bold text-green-700 hover:underline">024 447 3904</a>
                 </div>
               </div>
             </div>
 
-             <div className="bg-orange-50 p-5 rounded-xl border border-orange-100 flex items-start gap-4">
+            {/* UCC POLICE STATION */}
+            <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 flex items-start gap-4">
+              <div className="bg-slate-200 p-3 rounded-full text-slate-600">
+                <Shield size={24} />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-lg">UCC Police Station</h4>
+                <p className="text-sm text-slate-800 mb-2">Old Site Gate</p>
+                <a href="tel:0332132411" className="block text-lg font-bold text-slate-700 hover:underline">033 213 2411</a>
+              </div>
+            </div>
+
+            {/* FIRE SERVICE */}
+            <div className="bg-orange-50 p-5 rounded-xl border border-orange-100 flex items-start gap-4">
               <div className="bg-orange-100 p-3 rounded-full text-orange-600">
-                <div className="font-bold text-xl">F</div>
+                <Flame size={24} />
               </div>
               <div>
                 <h4 className="font-bold text-orange-900 text-lg">UCC Fire Service</h4>
                 <p className="text-sm text-orange-800 mb-2">Campus Unit</p>
-                <div className="space-y-1">
-                   <a href="tel:0205388648" className="block text-lg font-bold text-orange-700 hover:underline">020 538 8648</a>
-                </div>
+                <a href="tel:0205388648" className="block text-lg font-bold text-orange-700 hover:underline">020 538 8648</a>
               </div>
             </div>
           </div>
 
-          {/* --- HALL PORTERS (First Response) --- */}
+          {/* --- SRC STUDENT SUPPORT TEAM --- */}
           <div className="pt-4">
-            <h3 className="font-bold text-gray-800 text-xl mb-4">Hall Porters' Lodges</h3>
-            <div className="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100">
-              <ContactRow name="Casely Hayford Hall" number="033 213 0929" />
-              <ContactRow name="Adehye Hall" number="033 213 2572" />
-              <ContactRow name="Atlantic Hall" number="033 213 0938" />
-              <ContactRow name="Oguaa Hall" number="033 213 2580" />
-              <ContactRow name="Valco Hall" number="033 213 0954" />
-              <ContactRow name="Kwame Nkrumah Hall" number="033 213 6566" />
-              <ContactRow name="SRC Hostel" number="033 213 7167" />
+            <h3 className="font-bold text-gray-800 text-xl mb-4">SRC Support Team</h3>
+            <div className="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100 shadow-sm overflow-hidden">
+              <ContactRow name="Frank" number="020 054 2620" />
+              <ContactRow name="Gideon" number="055 295 2642" />
+              <ContactRow name="Theophilus" number="024 670 9816" />
+              <ContactRow name="Bright" number="054 656 3286" />
+              <ContactRow name="Shadrack" number="059 139 2402" />
+              <ContactRow name="Felix" number="024 827 0224" />
             </div>
           </div>
         </div>
       ),
-
-      // --- CONTACTS TAB DATA (Support Services) ---
-      resources: [
-        {
-          title: "Dean of Students",
-          description: "General student welfare.",
-          url: "tel:0332132480"
-        },
-        {
-          title: "Counselling Centre",
-          description: "Mental health support.",
-          url: "tel:0332132726"
-        },
-        {
-          title: "Student Records (Academic Affairs)",
-          description: "Transcripts and results.",
-          url: "tel:0332132480"
-        },
-        {
-          title: "ID Card Unit",
-          description: "Lost ID cards.",
-          url: "tel:0332132440"
-        }
-      ],
-
-      // --- CHECKLIST TAB DATA ---
-      checklist: [
-        { text: "Saved Campus Security Number", checked: false },
-        { text: "Saved Hall Porter's Number", checked: false },
-        { text: "Located the nearest Fire Extinguisher", checked: false },
-        { text: "Added 'ICE' (In Case of Emergency) contact", checked: false }
-      ]
     }
   ];
 
   const tabs = [
     { id: 'overview', label: 'Emergency' },
-    { id: 'resources', label: 'Offices' },
-    { id: 'checklist', label: 'Checklist' }
   ];
 
   return { sections, tabs };
@@ -140,8 +107,17 @@ const ContactDirectory = () => {
 // Helper Component for clean list
 const ContactRow = ({ name, number }) => (
   <div className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
-    <span className="font-medium text-gray-700">{name}</span>
-    <a href={`tel:${number.replace(/\s/g, '')}`} className="text-indigo-600 font-bold hover:underline">{number}</a>
+    <div className="flex flex-col">
+      <span className="font-medium text-gray-700">{name}</span>
+      <span className="text-xs text-gray-400 uppercase">SRC Representative</span>
+    </div>
+    <a 
+      href={`tel:${number.replace(/\s/g, '')}`} 
+      className="text-indigo-600 font-bold hover:underline flex items-center gap-2"
+    >
+      <Phone size={14} />
+      {number}
+    </a>
   </div>
 );
 

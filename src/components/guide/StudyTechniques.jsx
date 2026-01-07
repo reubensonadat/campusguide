@@ -227,7 +227,6 @@ const StudyTechniques = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Study Process' },
     { id: 'resources', label: 'Learning Resources' },
-    { id: 'checklist', label: 'Study Setup Checklist' }
   ];
 
   return { sections, tabs };

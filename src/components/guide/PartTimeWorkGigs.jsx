@@ -213,7 +213,6 @@ const PartTimeWorkGigs = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Job Search Process' },
     { id: 'resources', label: 'Opportunities' },
-    { id: 'checklist', label: 'Work-Ready Checklist' }
   ];
 
   return { sections, tabs };
