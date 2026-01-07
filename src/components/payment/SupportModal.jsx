@@ -3,56 +3,16 @@ import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { PaymentButton } from './PaymentButton';
-import { Card, CardHeader, CardTitle, CardContent } from '../common/Card';
-import { Heart, Star, Crown, Gift, CheckCircle } from 'lucide-react';
+import { Heart, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedAmount, setSelectedAmount] = useState(10);
+  const [customAmount, setCustomAmount] = useState('');
   const [email, setEmail] = useState('');
   const [paymentResult, setPaymentResult] = useState(null);
+  const [showWhySupport, setShowWhySupport] = useState(false);
 
-  const supportPlans = [
-    {
-      id: 'coffee',
-      name: 'Buy Me a Coffee',
-      amount: 5,
-      description: 'Show your appreciation with a small contribution',
-      icon: <Heart className="h-5 w-5" />,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200'
-    },
-    {
-      id: 'supporter',
-      name: 'Supporter',
-      amount: 10,
-      description: 'Get a special supporter badge in the app',
-      icon: <Star className="h-5 w-5" />,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200'
-    },
-    {
-      id: 'premium',
-      name: 'Premium Supporter',
-      amount: 25,
-      description: 'Unlock exclusive features and priority support',
-      icon: <Crown className="h-5 w-5" />,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-      borderColor: 'border-purple-200'
-    },
-    {
-      id: 'patron',
-      name: 'Campus Patron',
-      amount: 50,
-      description: 'Become a patron and help us grow',
-      icon: <Gift className="h-5 w-5" />,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200'
-    }
-  ];
+  const quickAmounts = [5, 10, 20, 50];
 
   const handlePaymentSuccess = (result) => {
     // Create a clean result object without circular references
@@ -61,25 +21,23 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
       reference: result.reference,
       transaction: result.transaction,
       message: result.message,
-      planId: selectedPlan?.id,
-      planName: selectedPlan?.name,
-      amount: selectedPlan?.amount
+      amount: customAmount || selectedAmount
     };
-    
+
     setPaymentResult({
       success: true,
       data: cleanResult
     });
-    
+
     // Save supporter status to localStorage
     const supporterData = {
       isSupporter: true,
-      plan: selectedPlan.id,
+      plan: 'supporter',
       paymentDate: new Date().toISOString(),
       reference: result.reference
     };
     localStorage.setItem('ucc_supporter_status', JSON.stringify(supporterData));
-    
+
     // Call parent callback
     if (onPaymentSuccess) {
       onPaymentSuccess(cleanResult);
@@ -94,9 +52,11 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
   };
 
   const resetModal = () => {
-    setSelectedPlan(null);
+    setSelectedAmount(10);
+    setCustomAmount('');
     setEmail('');
     setPaymentResult(null);
+    setShowWhySupport(false);
   };
 
   const closeModal = () => {
@@ -104,140 +64,194 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
     onClose();
   };
 
+  const getCurrentAmount = () => {
+    return customAmount ? parseFloat(customAmount) : selectedAmount;
+  };
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={closeModal}
       title="Support UCC Campus Guide"
-      size="lg"
+      size="md"
     >
-      <div className="space-y-6">
+      <div className="space-y-5">
         {!paymentResult ? (
           <>
-            <div className="text-center">
-              <p className="text-gray-600 mb-6">
-                Help us keep the UCC Campus Guide free and accessible to all students. 
-                Your support enables us to add new features and maintain the app.
+            {/* Header Message */}
+            <div className="text-center pb-2">
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Help keep this guide <strong className="text-indigo-600">free</strong> and <strong className="text-indigo-600">ad-free</strong> for all students
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {supportPlans.map((plan) => (
-                <Card
-                  key={plan.id}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
-                    selectedPlan?.id === plan.id 
-                      ? 'ring-2 ring-indigo-500' 
-                      : ''
-                  }`}
-                  onClick={() => setSelectedPlan(plan)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className={plan.color}>
-                        {plan.icon}
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900">
-                        GH₵{plan.amount}
-                      </div>
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-1">
-                      {plan.name}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {plan.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+            {/* Quick Amount Selection */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                Choose Amount (GH₵)
+              </label>
+              <div className="grid grid-cols-4 gap-2.5">
+                {quickAmounts.map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => {
+                      setSelectedAmount(amount);
+                      setCustomAmount('');
+                    }}
+                    className={`py-3 px-2 rounded-xl font-bold text-sm transition-all border-2 ${selectedAmount === amount && !customAmount
+                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm'
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:bg-indigo-50/50'
+                      }`}
+                  >
+                    ₵{amount}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {selectedPlan && (
-              <Card className={`${selectedPlan.bgColor} ${selectedPlan.borderColor}`}>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    {selectedPlan.icon}
-                    <span className="ml-2">{selectedPlan.name} - GH₵{selectedPlan.amount}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="your.email@example.com"
-                        required
-                      />
-                    </div>
-                    
-                    <PaymentButton
-                      amount={selectedPlan.amount}
-                      email={email}
-                      metadata={{
-                        plan_id: selectedPlan.id,
-                        plan_name: selectedPlan.name
-                      }}
-                      onPaymentSuccess={handlePaymentSuccess}
-                      onPaymentError={handlePaymentError}
-                      disabled={!email}
-                      className="w-full"
-                    >
-                      Support with {selectedPlan.name}
-                    </PaymentButton>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {/* Custom Amount */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Or Enter Custom Amount
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">
+                  GH₵
+                </span>
+                <input
+                  type="number"
+                  min="1"
+                  value={customAmount}
+                  onChange={(e) => setCustomAmount(e.target.value)}
+                  className="w-full pl-14 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  placeholder="Enter amount"
+                />
+              </div>
+            </div>
+
+            {/* Email Input */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Email Address (Optional)
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                placeholder="your.email@example.com"
+              />
+              <p className="text-xs text-gray-500 mt-1.5">
+                For receipt and updates
+              </p>
+            </div>
+
+            {/* Payment Button */}
+            <PaymentButton
+              amount={getCurrentAmount()}
+              email={email || 'anonymous@uccguide.com'}
+              metadata={{
+                plan_id: 'supporter',
+                plan_name: 'Supporter'
+              }}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentError={handlePaymentError}
+              disabled={!getCurrentAmount() || getCurrentAmount() < 1}
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              <span className="flex items-center justify-center gap-2">
+                <Heart className="w-5 h-5 fill-current" />
+                Support with GH₵{getCurrentAmount()}
+              </span>
+            </PaymentButton>
+
+            {/* Why Support Section - Collapsible */}
+            <div className="border-t border-gray-100 pt-4">
+              <button
+                onClick={() => setShowWhySupport(!showWhySupport)}
+                className="w-full flex items-center justify-between text-sm font-semibold text-gray-700 hover:text-indigo-600 transition-colors"
+              >
+                <span>Why support us?</span>
+                {showWhySupport ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+
+              {showWhySupport && (
+                <ul className="mt-3 space-y-2 text-xs text-gray-600">
+                  <li className="flex gap-2 items-start">
+                    <CheckCircle className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                    <span>Keep the app <strong className="text-indigo-700">ad-free</strong> for everyone</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <CheckCircle className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                    <span>Cover server costs and API fees</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <CheckCircle className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                    <span>Support development of new features</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <CheckCircle className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                    <span>Help other students access campus information</span>
+                  </li>
+                </ul>
+              )}
+            </div>
           </>
         ) : (
-          <Card className={paymentResult.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}>
-            <CardContent className="text-center py-8">
-              {paymentResult.success ? (
-                <>
-                  <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-green-900 mb-2">
-                    Thank You for Your Support!
-                  </h3>
-                  <p className="text-green-700 mb-4">
-                    Your contribution helps us keep UCC Campus Guide free for all students.
-                  </p>
-                  <p className="text-sm text-green-600">
-                    Transaction ID: {paymentResult.data.reference}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl text-red-600">!</span>
-                  </div>
-                  <h3 className="text-xl font-semibold text-red-900 mb-2">
-                    Payment Failed
-                  </h3>
-                  <p className="text-red-700 mb-4">
-                    {paymentResult.error}
-                  </p>
-                </>
-              )}
-              
-              <div className="flex space-x-3 justify-center">
+          /* Payment Result */
+          <div className={`rounded-2xl p-6 text-center ${paymentResult.success
+              ? 'bg-green-50 border-2 border-green-200'
+              : 'bg-red-50 border-2 border-red-200'
+            }`}>
+            {paymentResult.success ? (
+              <>
+                <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-green-900 mb-2">
+                  Thank You for Your Support! 🎉
+                </h3>
+                <p className="text-green-700 mb-4">
+                  Your contribution helps us keep UCC Campus Guide free for all students.
+                </p>
+                <p className="text-sm text-green-600">
+                  Transaction ID: {paymentResult.data.reference}
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-3xl text-red-600">!</span>
+                </div>
+                <h3 className="text-xl font-bold text-red-900 mb-2">
+                  Payment Failed
+                </h3>
+                <p className="text-red-700 mb-4">
+                  {paymentResult.error}
+                </p>
+              </>
+            )}
+
+            <div className="flex gap-3 justify-center mt-6">
+              {!paymentResult.success && (
                 <Button
                   onClick={resetModal}
                   variant="outline"
+                  className="border-2"
                 >
-                  {paymentResult.success ? 'Support Again' : 'Try Again'}
+                  Try Again
                 </Button>
-                <Button onClick={closeModal}>
-                  {paymentResult.success ? 'Done' : 'Close'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              )}
+              <Button
+                onClick={closeModal}
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              >
+                {paymentResult.success ? 'Done' : 'Close'}
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </Modal>

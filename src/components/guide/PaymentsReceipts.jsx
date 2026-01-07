@@ -208,23 +208,6 @@ const PaymentsReceipts = () => {
         "For large payments, consider bank transfers for better record-keeping.",
         "Always ask for a receipt, even if the system is 'down'."
       ],
-      resources: [
-        {
-          title: "UCC Fee Structure",
-          description: "Current fee schedules for all programs.",
-          url: "https://ucc.edu.gh/fees"
-        },
-        {
-          title: "Payment Channels",
-          description: "All approved payment methods and guidelines.",
-          url: "https://ucc.edu.gh/payments"
-        },
-        {
-          title: "Student Portal",
-          description: "Generate invoices and verify payments.",
-          url: "https://portal.ucc.edu.gh"
-        }
-      ],
       commonMistakes: [
         "Paying to wrong or unauthorized bank accounts.",
         "Losing payment receipts and having no proof of transaction.",
@@ -247,7 +230,6 @@ const PaymentsReceipts = () => {
   const tabs = [
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Payment Cycle' },
-    { id: 'resources', label: 'Payment Channels' },
     { id: 'warnings', label: 'Payment Pitfalls' },
   ];
 

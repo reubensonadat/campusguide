@@ -4,11 +4,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { useOnboarding } from './hooks/useOnboarding';
 import { useSupportModal } from './hooks/useSupportModal';
+import { useSupportTimer } from './hooks/useSupportTimer';
 import { Toast } from './components/common/Toast';
 import { TabBar } from './components/common/TabBar';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { SupportModal } from './components/payment/SupportModal';
-import SupportButton from './components/payment/SupportButton';
 import PWAInstallButton from './components/common/PWAInstallButton';
 import { preloadPaystack } from './services/paymentService';
 
@@ -23,6 +23,7 @@ import Settings from './pages/Settings';
 function AppContent() {
   const { showOnboarding, currentStep, nextStep, prevStep, closeOnboarding } = useOnboarding();
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
+  const { resetTimer } = useSupportTimer();
 
   // Preload Paystack script when app loads
   useEffect(() => {
@@ -30,6 +31,12 @@ function AppContent() {
       console.error('Failed to preload Paystack:', error);
     });
   }, []);
+
+  // Handle closing support modal and resetting timer
+  const handleCloseModal = () => {
+    closeModal();
+    resetTimer(); // Reset timer to show modal again after 5 minutes
+  };
 
   return (
     <div className="min-h-screen">
@@ -45,9 +52,6 @@ function AppContent() {
 
       <TabBar />
 
-      {/* Support Button - Fixed Position */}
-      <SupportButton />
-
       {/* PWA Install Button - Fixed Position */}
       <PWAInstallButton />
 
@@ -61,7 +65,7 @@ function AppContent() {
 
       <SupportModal
         isOpen={showModal}
-        onClose={closeModal}
+        onClose={handleCloseModal}
         onPaymentSuccess={handlePaymentSuccess}
       />
     </div>

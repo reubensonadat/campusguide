@@ -10,6 +10,7 @@ export const LS_KEYS = {
   FIRST_VISIT: 'ucc_first_visit',
   GUIDE_COMPLETION: 'ucc_guide_completion',
   SUPPORTER_STATUS: 'ucc_supporter_status',
+  LAST_SUPPORT_MODAL_SHOWN: 'ucc_last_support_modal_shown',
   TIMETABLE: 'ucc_timetable',
   BUDGET: 'ucc_budget',
   GPA: 'ucc_gpa',

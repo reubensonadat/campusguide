@@ -128,13 +128,6 @@ const AddDropCourses = () => {
                 </p>
               </div>
 
-              <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 hover:shadow-md transition-all duration-300">
-                <h5 className="font-bold text-slate-800 text-lg mb-1">4. Sign & Submit</h5>
-                <p className="text-sm text-gray-600 mt-2">
-                  Get the slip signed by your HOD and submit copies to your Department and Faculty Officer.
-                </p>
-              </div>
-
             </div>
           </div>
         </div>
@@ -147,8 +140,6 @@ const AddDropCourses = () => {
         { title: "Log in to Portal", description: "portal.ucc.edu.gh → Register Courses" },
         { title: "Modify Courses", description: "Add or uncheck courses → Save" },
         { title: "Print Slip", description: "Print 3 copies of your updated slip." },
-        { title: "Get Signatures", description: "Let HOD endorse all copies." },
-        { title: "Submit Copies", description: "One for Department, one for Faculty, one for yourself." }
       ],
 
       // WARNINGS

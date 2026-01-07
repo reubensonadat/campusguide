@@ -214,7 +214,7 @@ const CampusMap = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'directions', label: 'Directions' },
+    { id: 'resources', label: 'Directions' },
   ];
 
   return { sections, buildings, openGoogleMaps, tabs };

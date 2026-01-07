@@ -12,16 +12,16 @@ const IDCard = () => {
           {/* INTRO */}
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
             <p className="text-gray-700 leading-relaxed">
-              Your student ID card is mainly used for <strong>examinations</strong>. 
-              It is not required for most campus facilities. 
-              You will receive it only after your department organizes the official photo-taking 
-              exercise and Prudential Bank prints the cards.
+              Your student ID card is mainly used for <strong>examinations</strong>.
+              It is not required for most campus facilities.
+              You will receive it only after your department organizes the official photo-taking
+              exercise and a specific bank selected by the university prints the cards.
             </p>
           </div>
 
           {/* TRUE FEATURES */}
           <div className="grid md:grid-cols-2 gap-6">
-            
+
             {/* USES */}
             <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all">
               <h4 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
@@ -65,6 +65,44 @@ const IDCard = () => {
                 </li>
               </ul>
             </div>
+
+            {/* LOST ID CARD WARNING */}
+            <div className="bg-red-50 p-6 rounded-xl border border-red-100 hover:shadow-md transition-all">
+              <h4 className="font-bold text-red-900 text-lg mb-3 flex items-center">
+                <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded mr-2 uppercase">⚠️ Lost Your ID?</span>
+                Replacement Process
+              </h4>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-start bg-white/60 p-3 rounded">
+                  <span className="w-2 h-2 bg-red-400 rounded-full mr-3 mt-1.5"></span>
+                  <div>
+                    <strong className="block mb-1">Go to MIS Office</strong>
+                    <span className="text-xs text-gray-600">Located near the Education Library</span>
+                  </div>
+                </li>
+                <li className="flex items-start bg-white/60 p-3 rounded">
+                  <span className="w-2 h-2 bg-red-400 rounded-full mr-3 mt-1.5"></span>
+                  <div>
+                    <strong className="block mb-1">Report ID Card Missing</strong>
+                    <span className="text-xs text-gray-600">Inform them your ID card is lost</span>
+                  </div>
+                </li>
+                <li className="flex items-start bg-white/60 p-3 rounded">
+                  <span className="w-2 h-2 bg-red-400 rounded-full mr-3 mt-1.5"></span>
+                  <div>
+                    <strong className="block mb-1">Pay Replacement Fee</strong>
+                    <span className="text-xs text-gray-600">Fee required for new card processing</span>
+                  </div>
+                </li>
+                <li className="flex items-start bg-white/60 p-3 rounded">
+                  <span className="w-2 h-2 bg-red-400 rounded-full mr-3 mt-1.5"></span>
+                  <div>
+                    <strong className="block mb-1">Wait for Processing</strong>
+                    <span className="text-xs text-gray-600">MIS office will handle the replacement</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* TRUE COLLECTION PROCESS */}
@@ -94,9 +132,9 @@ const IDCard = () => {
 
               {/* Step 3 */}
               <div className="bg-violet-50 p-5 rounded-xl border border-violet-100 hover:shadow-md transition-all">
-                <h5 className="font-bold text-violet-900 text-lg">3. Printing by Prudential Bank</h5>
+                <h5 className="font-bold text-violet-900 text-lg">3. Printing by Bank</h5>
                 <p className="text-sm mt-2 text-gray-600">
-                  Prudential Bank prints the ID cards. You cannot collect the card directly there.
+                  A specific bank selected by the university prints the ID cards. You cannot collect the card directly there.
                 </p>
               </div>
 
@@ -124,7 +162,7 @@ const IDCard = () => {
       keyPoints: [
         "ID card is mainly for exams",
         "You must take your photo during department schedule",
-        "Prudential Bank prints the cards",
+        "A specific bank selected by the university prints the cards",
         "Collection is done through course reps",
         "Admission letter can be used temporarily for mid-sem exams"
       ],
@@ -132,7 +170,7 @@ const IDCard = () => {
       steps: [
         { title: "Department Announces Photo Day", description: "Follow the official photo schedule for your department." },
         { title: "Take Your Formal Picture", description: "Dress formally. This photo appears on your portal and ID card." },
-        { title: "Printing by Prudential Bank", description: "Cards are processed and returned to your department." },
+        { title: "Printing by specific bank selected by the university", description: "Cards are processed and returned to your department." },
         { title: "Wait for Your Course Rep", description: "They will announce when the ID cards are ready." },
         { title: "Collect with Your Name/Index Number", description: "No additional documents required." },
       ],
@@ -167,15 +205,8 @@ const IDCard = () => {
     }
   ];
 
-  const location = {
-    building: "Varies by Department",
-    description: "Photos usually taken at CALC, Sam Jonah Library Area, ICT Centre, or designated halls. Collection location is announced by course reps.",
-    url: "https://maps.google.com/?q=University+of+Cape+Coast"
-  };
-
   const tabs = [
     { id: 'overview', label: 'Guide & Context' },
-    { id: 'location', label: 'Location' },
     { id: 'steps', label: 'Action Plan' },
     { id: 'resources', label: 'Helpful Links' },
   ];

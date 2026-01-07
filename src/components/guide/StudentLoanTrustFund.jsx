@@ -211,19 +211,9 @@ const StudentLoanTrustFund = () => {
           url: "https://www.sltf.gov.gh"
         },
         {
-          title: "Eligibility Criteria",
-          description: "Complete list of eligibility requirements",
-          url: "https://www.sltf.gov.gh/eligibility"
-        },
-        {
-          title: "Repayment Calculator",
-          description: "Calculate your loan repayment schedule",
-          url: "https://www.sltf.gov.gh/calculator"
-        },
-        {
           title: "FAQs and Support",
           description: "Common questions and contact information",
-          url: "https://www.sltf.gov.gh/support"
+          url: "https://www.sltf.gov.gh/contact-us/"
         }
       ],
       commonMistakes: [

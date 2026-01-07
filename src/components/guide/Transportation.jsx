@@ -84,7 +84,7 @@ const Transportation = () => {
               {/* Old Site */}
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 hover:shadow-md transition-all">
                 <div className="bg-blue-200 text-blue-800 text-xs font-bold inline-block px-2 py-0.5 rounded mb-2">OLD SITE</div>
-                <h4 className="font-bold text-blue-900 text-lg mb-1">"ATLANTIC HALL"</h4>
+                <h4 className="font-bold text-blue-900 text-lg mb-1">"OLD SITE"</h4>
                 <p className="text-xs text-blue-800/70 mb-3">Bus Display Text</p>
                 <hr className="border-blue-200 mb-3" />
                 <p className="text-sm text-gray-700 font-medium mb-1">Stops At:</p>
@@ -132,7 +132,7 @@ const Transportation = () => {
               <h5 className="font-bold text-yellow-900 text-sm">Pro Tip for New Site & SRC</h5>
               <p className="text-sm text-yellow-800 mt-1">
                 The bus may drop you a short walk from your exact hall block.
-                For <strong>UCC Hospital</strong> visits, take the <strong>Old Site (Atlantic)</strong> bus—it will stop there for you to alight before proceeding to the halls.
+                For <strong>UCC Hospital</strong> visits, take the <strong>(Old Site)</strong> bus—it will stop there for you to alight before proceeding to the halls.
               </p>
             </div>
           </div>
@@ -143,7 +143,7 @@ const Transportation = () => {
         "Shuttle Cards cost GHS 20.00 and are mandatory (No Cash).",
         "Fare is GHS 2.00, but GHS 4.00 is deducted on entry.",
         "You MUST tap out at the exit to get your GHS 2.00 refund.",
-        "Old Site buses display 'ATLANTIC HALL'.",
+        "Old Site buses display 'Old site'.",
         "New Site buses display 'VALCO HALL' or 'VALCO'."
       ]
     },
@@ -165,7 +165,7 @@ const Transportation = () => {
 
   const tabs = [
     { id: 'overview', label: 'Guide & Context' },
-    { id: 'directions', label: 'Map & Stops' },
+    { id: 'resources', label: 'Map & Stops' },
   ];
 
   return { sections, tabs, buildings, openGoogleMaps };

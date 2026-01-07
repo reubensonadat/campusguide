@@ -177,38 +177,14 @@ const LibraryServices = () => {
         "Book group study rooms in advance during peak periods",
         "Ask librarians for help with complex research queries"
       ],
-      resources: [
-        {
-          title: "Online Catalog",
-          description: "Search library resources online",
-          url: "https://library.ucc.edu.gh"
-        },
-        {
-          title: "E-Resources Portal",
-          description: "Access electronic resources",
-          url: "https://eresources.ucc.edu.gh"
-        },
-        {
-          title: "Research Guides",
-          description: "Subject-specific research help",
-          url: "https://library.ucc.edu.gh/guides"
-        }
-      ],
-      checklist: [
-        { text: "Register at library", checked: false },
-        { text: "Learn catalog use", checked: false },
-        { text: "Access e-resources", checked: false },
-        { text: "Know borrowing rules", checked: false },
-        { text: "Find study spots", checked: false },
-        { text: "Save library contacts", checked: false }
-      ]
+      
+      
     }
   ];
 
   const tabs = [
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Action Plan' },
-    { id: 'resources', label: 'Helpful Links' },
   ];
 
   return { sections, tabs };
