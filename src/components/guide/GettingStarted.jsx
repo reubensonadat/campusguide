@@ -143,7 +143,6 @@ const GettingStarted = () => {
                 <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Royals</span>
                 <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Super-Powers</span>
                 <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Mariners</span>
-                <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Gentlemen</span>
               </div>
             </div>
 
@@ -183,18 +182,7 @@ const GettingStarted = () => {
           title: "Print 3 Copies of Everything",
           description: "Admission Letter, Fee Receipt, and WASSCE Results. You will need one set for your Hall, one for your Department, and one for your own file."
         },
-        {
-          title: "Biometric Registration",
-          description: "Locate the ID Card Unit (usually at CAS or Old Admin). Capture your biometrics to get your Student ID card. No card = No Exams."
-        },
-        {
-          title: "Hall Registration",
-          description: "Go to your Hall's Porter's Lodge. Show your Fee Receipt. REMEMBER: Trunks and Chopboxes are NOT allowed and will be turned away."
-        },
-        {
-          title: "The Medical Examination",
-          description: "1. Pay medical fee at Cash Office. 2. Do X-Rays & Labs at Hospital. 3. Return for Physical Exam. 4. Submit cleared form to Department."
-        },
+       
         {
           title: "Pay Departmental Dues",
           description: "Visit your Department association's table. First Years pay higher dues (often includes shirt/souvenirs). Mandatory before registration."

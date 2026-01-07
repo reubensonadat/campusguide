@@ -102,26 +102,28 @@ const Accommodation = () => {
               </div>
 
               {/* Step 3 - Subtle Purple */}
-              <div className="bg-violet-50 p-5 rounded-xl border border-violet-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-violet-900 text-lg">Select Room</h5>
-                  <span className="text-3xl font-bold text-violet-200/80 -mt-1">03</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-violet-700 font-semibold mb-2">Fast Fingers</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Navigate to 'Accommodation'. Rooms disappear in seconds. Casford & Adehye fill up fastest.
-                </p>
-              </div>
 
-              {/* Step 4 - Subtle Amber */}
               <div className="bg-amber-50 p-5 rounded-xl border border-amber-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
                   <h5 className="font-bold text-amber-900 text-lg">Instant Payment</h5>
-                  <span className="text-3xl font-bold text-amber-200/80 -mt-1">04</span>
+                  <span className="text-3xl font-bold text-amber-200/80 -mt-1">03</span>
                 </div>
                 <p className="text-xs uppercase tracking-wider text-amber-700 font-semibold mb-2">Secure the Bed</p>
                 <p className="text-sm text-gray-600 leading-relaxed">
                   Print the invoice and pay <strong>immediately</strong> at GCB, Zenith, or Prudential Bank to lock it in.
+                </p>
+              </div>
+              
+
+              {/* Step 4 - Subtle Amber */}
+              <div className="bg-violet-50 p-5 rounded-xl border border-violet-100 hover:shadow-md transition-all duration-300">
+                <div className="flex justify-between items-start mb-2">
+                  <h5 className="font-bold text-violet-900 text-lg">Select Room</h5>
+                  <span className="text-3xl font-bold text-violet-200/80 -mt-1">04</span>
+                </div>
+                <p className="text-xs uppercase tracking-wider text-violet-700 font-semibold mb-2">Fast Fingers</p>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Navigate to 'Accommodation'. Rooms disappear in seconds. Casford & Adehye fill up fastest.
                 </p>
               </div>
 

@@ -141,10 +141,6 @@ const ExamsAssessmentRules = () => {
           description: "Timetables are released 2 weeks prior. Check your specific Course Codes carefully (e.g., ASP 102 vs ASP 102A)."
         },
         {
-          title: "Print Exam Permit",
-          description: "You must print your Exam Permit from the portal. It must show your photo and registered courses."
-        },
-        {
           title: "Locate Venue Early",
           description: "If your exam is at 'NEA', 'Ellen K', or 'G-Block', go there the day before to know the exact location."
         },
@@ -177,12 +173,12 @@ const ExamsAssessmentRules = () => {
         {
           title: "Student Handbook (Exams)",
           description: "Official rules on assessment.",
-          url: "https://ucc.edu.gh/student-handbook"
+          url: "https://elearning.ucc.edu.gh/"
         },
         {
           title: "Past Questions Portal",
           description: "Access previous exam papers.",
-          url: "https://library.ucc.edu.gh/past-questions"
+          url: ""
         }
       ],
 

@@ -104,33 +104,6 @@ const BankingMoMo = () => {
         </div>
       ),
 
-      // --- RESOURCES TAB (Locations & Maps) ---
-      resources: [
-        {
-          title: "Campus Map (Banks)",
-          description: "Locate ATMs and Branches.",
-          url: "https://ucc.edu.gh/map"
-        },
-        {
-          title: "Prudential Bank (UCC)",
-          description: "Primary bank for Transflow payments.",
-          url: "https://prudentialbank.com.gh"
-        },
-        {
-          title: "UCC Finance Office",
-          description: "For fee clearance issues.",
-          url: "https://finance.ucc.edu.gh"
-        }
-      ],
-
-      // --- CHECKLIST TAB (Banking Setup) ---
-      checklist: [
-        { text: "Opened a Student Account", checked: false },
-        { text: "Linked Student ID to Account (Optional)", checked: false },
-        { text: "Located nearest ATM to Hostel", checked: false },
-        { text: "Activated Mobile Banking App", checked: false },
-        { text: "Paid Fees via Transflow/Smartpay", checked: false }
-      ],
 
       // --- WARNINGS TAB (Financial Safety) ---
       // Triggered by 'commonMistakes' ID logic from the main app
@@ -146,7 +119,6 @@ const BankingMoMo = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'resources', label: 'Locations' },
     { id: 'warnings', label: 'Safety' },
   ];
 

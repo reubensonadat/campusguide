@@ -197,7 +197,7 @@ const StudentPortal = () => {
         {
           title: "Student Email Setup",
           description: "How to set up and access your student email",
-          url: "https://ucc.edu.gh/email-setup"
+          url: "https://youtu.be/xHLUNorFojk?si=JsLMNJFdZ_v2E559"
         }
       ],
       contacts: [

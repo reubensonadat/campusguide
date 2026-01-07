@@ -1,5 +1,5 @@
 // Service Worker for UCC Campus Guide
-const CACHE_NAME = 'ucc-guide-v1';
+const CACHE_NAME = 'ucc-guide-v2';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -25,7 +25,14 @@ self.addEventListener('install', (event) => {
 });
 
 // Fetch event - serve from cache, fallback to network
+// Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+    // Skip cross-origin requests and non-http schemes (like chrome-extension)
+    if (!event.request.url.startsWith(self.location.origin) ||
+        !event.request.url.startsWith('http')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
@@ -55,8 +62,10 @@ self.addEventListener('fetch', (event) => {
                 });
             })
             .catch(() => {
-                // Return offline page if available
-                return caches.match('/index.html');
+                // Return offline page if available for navigation requests
+                if (event.request.mode === 'navigate') {
+                    return caches.match('/index.html');
+                }
             })
     );
 });

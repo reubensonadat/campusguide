@@ -68,7 +68,7 @@ const AttendanceRegulations = () => {
       steps: [
         {
           title: "Sign the Register",
-          description: "Ensure you sign the class attendance sheet every single time. If you are present but don't sign, you are marked absent."
+          description: "Ensure you sign the class attendance sheet every single time if available. If you are present but don't sign, you are marked absent."
         },
         {
           title: "Track Your Hours",
@@ -76,7 +76,7 @@ const AttendanceRegulations = () => {
         },
         {
           title: "Submit Medical Reports",
-          description: "If sick, visit the University Hospital. If treated outside, take your report to the Director of Health Services for validation immediately upon return."
+          description: "If sick, visit the University Hospital. Always make sure that at least you send a message to the course representative or the lecturer if you will not be able to make it through that class with valid reasons"
         },
         {
           title: "Check the Notice Board",
