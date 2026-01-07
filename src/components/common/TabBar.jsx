@@ -10,9 +10,7 @@ const TabBar = () => {
     { id: 'home', label: 'Home', icon: Home, path: '/' },
     { id: 'guide', label: 'Guide', icon: BookOpen, path: '/guide' },
     { id: 'tools', label: 'Tools', icon: Wrench, path: '/tools' },
-    { id: 'support', label: 'Support', icon: Heart, path: '/support' },
-    // { id: 'contact', label: 'Contact', icon: Phone, path: '/contact' },
-    // { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' }
+    { id: 'support', label: 'Support', icon: Heart, path: '/support' }
   ];
 
   const handleTabClick = (path) => {
@@ -20,19 +18,20 @@ const TabBar = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 tab-bar z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 transition-colors duration-300">
       <div className="flex justify-around items-center h-16">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
           const Icon = tab.icon;
-          
+
           return (
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.path)}
-              className={`flex flex-col items-center justify-center w-full h-full py-1 px-2 focus:outline-none transition-colors ${
-                isActive ? 'text-primary-600' : 'text-gray-500'
-              }`}
+              className={`flex flex-col items-center justify-center w-full h-full py-1 px-2 focus:outline-none transition-colors ${isActive
+                  ? 'text-primary-600'
+                  : 'text-gray-500 hover:text-gray-700'
+                }`}
               aria-label={tab.label}
             >
               <Icon size={20} />

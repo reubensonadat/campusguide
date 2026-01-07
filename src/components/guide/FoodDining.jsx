@@ -168,7 +168,6 @@ const FoodDining = () => {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'resources', label: 'Food Map' },
-    { id: 'checklist', label: 'Checklist' }
   ];
 
   return { sections, buildings, openGoogleMaps, tabs };

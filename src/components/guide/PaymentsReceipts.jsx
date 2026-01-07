@@ -13,12 +13,12 @@ const PaymentsReceipts = () => {
           {/* --- INTRO --- */}
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
             <p className="text-gray-700 leading-relaxed">
-              Proper fee payment and meticulous record-keeping are crucial for your smooth academic journey at UCC. 
+              Proper fee payment and meticulous record-keeping are crucial for your smooth academic journey at UCC.
               Every transaction, from tuition to residential fees, must be made through official channels and verified on the student portal.
               <strong> Always keep your receipts; they are your only proof of payment.</strong>
             </p>
           </div>
-          
+
           {/* --- PAYMENT CHANNELS GRID --- */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Traditional Payments Card */}
@@ -68,15 +68,42 @@ const PaymentsReceipts = () => {
             </div>
           </div>
 
+          {/* --- DEPARTMENTAL DUES CARD (NEW) --- */}
+          <div className="bg-purple-50 p-6 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-300 mt-6 md:col-span-2">
+            <h4 className="font-bold text-purple-900 text-lg mb-3 flex items-center">
+              <span className="bg-purple-200 text-purple-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Mandatory</span>
+              Departmental Dues
+            </h4>
+            <p className="text-sm text-purple-800/70 mb-4">
+              Separate from school fees. Paid to your Department's Student Association (e.g., PASAG, MASA, etc.).
+            </p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-start bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-1.5"></span>
+                  <span><strong>First Years Pay More:</strong> Freshers pay a higher amount (includes Souvenirs/T-shirt).</span>
+                </li>
+                <li className="flex items-start bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-1.5"></span>
+                  <span><strong>Verification:</strong> Payment is manually verified at the Department table.</span>
+                </li>
+              </ul>
+              <div className="bg-white/60 p-3 rounded text-sm text-gray-600 italic">
+                "You must pay your dues before you are allowed to do your manual course registration signing (if required) or collect souvenirs."
+              </div>
+            </div>
+          </div>
+
+
           {/* --- PAYMENT PROCESS AS SUBTLE COLORED CARDS --- */}
           <div className="pt-4">
             <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
               <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
               The Payment Cycle
             </h3>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              
+
               {/* Step 1 - Subtle Blue */}
               <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
@@ -138,8 +165,8 @@ const PaymentsReceipts = () => {
               </div>
 
             </div>
-          </div>
-        </div>
+          </div >
+        </div >
       ),
       keyPoints: [
         "Multiple payment channels available (Bank, Online, Mobile Money).",
@@ -222,7 +249,6 @@ const PaymentsReceipts = () => {
     { id: 'steps', label: 'Payment Cycle' },
     { id: 'resources', label: 'Payment Channels' },
     { id: 'warnings', label: 'Payment Pitfalls' },
-    { id: 'checklist', label: 'Pre-Payment Checklist' }
   ];
 
   return { sections, tabs };

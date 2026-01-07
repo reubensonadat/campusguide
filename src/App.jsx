@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
-import { ThemeProvider } from './context/ThemeContext';
 import { useOnboarding } from './hooks/useOnboarding';
 import { useSupportModal } from './hooks/useSupportModal';
 import { Toast } from './components/common/Toast';
@@ -10,6 +9,7 @@ import { TabBar } from './components/common/TabBar';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { SupportModal } from './components/payment/SupportModal';
 import SupportButton from './components/payment/SupportButton';
+import PWAInstallButton from './components/common/PWAInstallButton';
 import { preloadPaystack } from './services/paymentService';
 
 // Page imports
@@ -32,7 +32,7 @@ function AppContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/guide" element={<Guide />} />
@@ -42,12 +42,15 @@ function AppContent() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
-      
+
       <TabBar />
-      
+
       {/* Support Button - Fixed Position */}
       <SupportButton />
-      
+
+      {/* PWA Install Button - Fixed Position */}
+      <PWAInstallButton />
+
       <Onboarding
         isOpen={showOnboarding}
         onClose={closeOnboarding}
@@ -55,7 +58,7 @@ function AppContent() {
         onNext={nextStep}
         onPrev={prevStep}
       />
-      
+
       <SupportModal
         isOpen={showModal}
         onClose={closeModal}
@@ -68,11 +71,9 @@ function AppContent() {
 function App() {
   return (
     <AppProvider>
-      <ThemeProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </ThemeProvider>
+      <Router>
+        <AppContent />
+      </Router>
     </AppProvider>
   );
 }

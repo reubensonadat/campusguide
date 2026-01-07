@@ -203,7 +203,6 @@ const ExamsAssessmentRules = () => {
     { id: 'steps', label: 'Procedure' },
     { id: 'warnings', label: 'Malpractice' },
     { id: 'resources', label: 'Resources' },
-    { id: 'checklist', label: 'Checklist' }
   ];
 
   return { sections, tabs };

@@ -17,7 +17,7 @@ const StudentSupportServices = () => {
               <strong> These services are confidential, professional, and designed to help you navigate every aspect of student life.</strong>
             </p>
           </div>
-          
+
           {/* --- SUPPORT SERVICES GRID --- */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Counseling & Mental Health Card */}
@@ -73,9 +73,9 @@ const StudentSupportServices = () => {
               <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
               How to Access Support
             </h3>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              
+
               {/* Step 1 - Subtle Blue */}
               <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
@@ -184,7 +184,7 @@ const StudentSupportServices = () => {
         {
           title: "Counseling Center",
           description: "Book a confidential counseling session",
-          url: "https://ucc.edu.gh/counseling"
+          url: "https://portal.ucc.edu.gh/onlineReg/src/coun.php"
         },
         {
           title: "Academic Support Unit",
@@ -218,7 +218,6 @@ const StudentSupportServices = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Getting Support' },
     { id: 'resources', label: 'Support Services' },
-    { id: 'checklist', label: 'Wellness Checklist' }
   ];
 
   return { sections, tabs };

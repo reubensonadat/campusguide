@@ -213,7 +213,6 @@ const WifiEmail = () => {
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Connection Process' },
     { id: 'resources', label: 'Connectivity Resources' },
-    { id: 'checklist', label: 'Setup Checklist' }
   ];
 
   return { sections, tabs };

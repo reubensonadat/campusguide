@@ -1,30 +1,26 @@
-// src/pages/Home.jsx
-
-import React, { useState } from 'react'; // <-- MODIFIED: Added useState import
-import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
+import React, { useState } from 'react';
+import { Card, CardContent } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { PaymentButton } from '../components/payment/PaymentButton';
-import { 
-  BookOpen, Wrench, Heart, Users, MapPin, ArrowRight, 
-  TrendingUp, Shield, Zap, Star, ClipboardList, Map, 
-  CalendarDays, Wallet, Compass, Sparkles 
+import {
+  BookOpen, Wrench, Heart, Users, MapPin, ArrowRight,
+  TrendingUp, Shield, Zap, Star, ClipboardList, Map,
+  CalendarDays, Wallet, Compass, Sparkles, Phone, Settings,
+  MessageCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../context/AppContext';
 
 const Home = () => {
   const navigate = useNavigate();
-
-  // <-- NEW: State for the support email input
+  const { state } = useAppContext();
   const [supportEmail, setSupportEmail] = useState('');
 
-  // <-- NEW: Handler for successful payments
   const handlePaymentSuccess = (result) => {
     console.log('Payment successful:', result);
     alert('Thank you for your support!');
-    // You could redirect or show a more sophisticated success message here
   };
 
-  // <-- NEW: Handler for failed payments
   const handlePaymentError = (error) => {
     console.error('Payment error:', error);
     alert(`Payment failed: ${error.message}`);
@@ -33,60 +29,52 @@ const Home = () => {
   const features = [
     {
       icon: BookOpen,
-      title: 'Comprehensive Guide',
-      description: '30+ topics covering everything from registration to graduation',
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
-      border: 'border-blue-100'
+      title: 'Student Guide',
+      description: 'Comprehensive resources for your academic journey',
+      color: 'text-indigo-600',
+      bg: 'bg-indigo-50',
+      border: 'border-indigo-100'
     },
     {
       icon: Wrench,
-      title: 'Essential Tools',
-      description: 'Timetable, Budget Tracker, GPA Calculator & Reminders',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      icon: MapPin,
-      title: 'Campus Navigation',
-      description: 'Interactive map with directions to key locations',
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100'
+      title: 'Academic Tools',
+      description: 'Timetable builder and GPA calculator',
+      color: 'text-violet-600',
+      bg: 'bg-violet-50',
+      border: 'border-violet-100'
     },
     {
       icon: Users,
-      title: 'Student Support',
-      description: 'Connect with services and support networks',
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      border: 'border-orange-100'
+      title: 'Campus Life',
+      description: 'Connect with support services and communities',
+      color: 'text-pink-600',
+      bg: 'bg-pink-50',
+      border: 'border-pink-100'
     }
   ];
 
   const quickActions = [
     {
       title: 'Course Registration',
-      description: 'Step-by-step portal guide',
+      description: 'Portal guide & checklist',
       icon: ClipboardList,
-      action: () => navigate('/guide/course-registration'),
-      color: 'text-indigo-600',
-      bg: 'bg-indigo-50',
-      iconBg: 'bg-indigo-100'
+      action: () => navigate('/guide?topic=course-registration'),
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
+      iconBg: 'bg-blue-100'
     },
     {
       title: 'Campus Map',
-      description: 'Find your way around',
+      description: 'Find locations easily',
       icon: Map,
-      action: () => navigate('/guide/campus-map'),
-      color: 'text-teal-600',
-      bg: 'bg-teal-50',
-      iconBg: 'bg-teal-100'
+      action: () => navigate('/guide?topic=campus-map'),
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-50',
+      iconBg: 'bg-emerald-100'
     },
     {
       title: 'Timetable Builder',
-      description: 'Create your schedule',
+      description: 'Organize your schedule',
       icon: CalendarDays,
       action: () => navigate('/tools'),
       color: 'text-violet-600',
@@ -94,245 +82,152 @@ const Home = () => {
       iconBg: 'bg-violet-100'
     },
     {
-      title: 'Budget Tracker',
-      description: 'Manage your finances',
-      icon: Wallet,
-      action: () => navigate('/tools'),
-      color: 'text-pink-600',
-      bg: 'bg-pink-50',
-      iconBg: 'bg-pink-100'
-    }
-  ];
-
-  const stats = [
-    {
-      label: 'Active Students',
-      value: '15,000+',
-      icon: Users,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50'
-    },
-    {
-      label: 'Guide Topics',
-      value: '30+',
-      icon: BookOpen,
-      color: 'text-green-600',
-      bg: 'bg-green-50'
-    },
-    {
-      label: 'Free Tools',
-      value: '4',
-      icon: Wrench,
-      color: 'text-purple-600',
-      bg: 'bg-purple-50'
-    },
-    {
-      label: 'Daily Updates',
-      value: '100%',
-      icon: TrendingUp,
+      title: 'Contact Directory',
+      description: 'Key university contacts',
+      icon: Phone,
+      action: () => navigate('/guide?topic=contact-directory'),
       color: 'text-orange-600',
-      bg: 'bg-orange-50'
+      bg: 'bg-orange-50',
+      iconBg: 'bg-orange-100'
+    },
+    {
+      title: 'Settings',
+      description: 'App preferences',
+      icon: Settings,
+      action: () => navigate('/settings'),
+      color: 'text-gray-600',
+      bg: 'bg-gray-50',
+      iconBg: 'bg-gray-100'
+    },
+    {
+      title: 'Report Issue',
+      description: 'Help improve the app',
+      icon: MessageCircle,
+      action: () => navigate('/support'),
+      color: 'text-red-600',
+      bg: 'bg-red-50',
+      iconBg: 'bg-red-100'
     }
   ];
 
   return (
-    <div className="p-4 pb-24 bg-gray-50/50 min-h-screen font-sans">
-      
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
-        
-        <div className="relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs font-bold uppercase tracking-widest text-blue-200 mb-6">
-             <Sparkles size={12} /> The Ultimate Companion
-          </div>
+    <div className="pb-24 bg-white min-h-screen font-sans transition-colors duration-300">
 
-          <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
-            <BookOpen size={40} className="text-white drop-shadow-md" />
+      {/* Hero Section - Clean & Professional */}
+      <div className="bg-white border-b border-gray-100 pt-8 pb-12 px-6 transition-colors duration-300">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-bold uppercase tracking-widest text-indigo-600 mb-6">
+            <Sparkles size={12} /> UCC Class of 2029
           </div>
-          
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
-            Welcome to <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
-              UCC Campus Guide
-            </span>
+          {state.isSupporter && (
+            <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold uppercase tracking-widest ml-2 shadow-sm">
+              <Star size={12} fill="currentColor" /> Supporter
+            </div>
+          )}
+          <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 tracking-tight leading-tight">
+            Your Essential <span className="text-indigo-600">Campus Companion</span>
           </h1>
-          
-          <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
-            Your complete companion for University of Cape Coast success. Navigate, calculate, and thrive.
+          <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+            Everything you need to navigate university life. From academic guides to essential tools, all in one place.
           </p>
-          
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              variant="secondary"
+              variant="primary"
               onClick={() => navigate('/guide')}
-              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+              className="bg-indigo-600 text-white hover:bg-indigo-700 px-8 py-4 rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-1"
             >
-              <Compass size={20} /> Explore Guide
+              <BookOpen size={20} className="mr-2" /> Open Guide
             </Button>
             <Button
               variant="outline"
               onClick={() => navigate('/tools')}
-              className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+              className="border-gray-200 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl font-bold transition-all hover:-translate-y-1"
             >
-              <Wrench size={20} /> Use Tools
+              <Wrench size={20} className="mr-2" /> Open Tools
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index} className="text-center border-none shadow-sm hover:shadow-md transition-shadow bg-white rounded-2xl overflow-hidden">
-              <CardContent className="pt-6 pb-6">
-                <div className={`w-12 h-12 ${stat.bg} rounded-full flex items-center justify-center mx-auto mb-3`}>
-                  <Icon size={22} className={stat.color} />
-                </div>
-                <div className="text-2xl font-extrabold text-gray-900 mb-1">{stat.value}</div>
-                <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">{stat.label}</div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <div className="max-w-4xl mx-auto px-6 py-12 space-y-16">
 
-      {/* Features Section */}
-      <Card className="mb-8 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-        <CardHeader className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
-          <CardTitle className="text-gray-800 flex items-center gap-2 text-lg">
-            <Star className="text-yellow-500 fill-yellow-500" size={20} />
-            Everything You Need
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <div key={index} className={`p-5 rounded-2xl border ${feature.border} ${feature.bg} hover:shadow-md transition-all cursor-pointer group`}>
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-white rounded-xl shadow-sm group-hover:scale-110 transition-transform">
-                      <Icon size={24} className={feature.color} />
-                    </div>
-                    <div>
-                      <h3 className={`font-bold text-lg mb-1 ${feature.color}`}>{feature.title}</h3>
-                      <p className="text-gray-600 text-sm leading-relaxed font-medium">{feature.description}</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Quick Actions */}
-      <Card className="mb-8 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-        <CardHeader className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
-          <CardTitle className="text-gray-800 flex items-center gap-2 text-lg">
-            <Zap className="text-blue-500 fill-blue-500" size={20} />
-            Quick Actions
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Quick Actions Grid */}
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <Zap className="w-5 h-5 text-indigo-500" /> Quick Actions
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
             {quickActions.map((action, index) => {
               const Icon = action.icon;
               return (
                 <button
                   key={index}
                   onClick={action.action}
-                  className="group text-left p-4 bg-white border border-gray-100 rounded-xl hover:border-blue-200 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-between"
+                  className="group text-left p-4 bg-white border border-gray-100 rounded-2xl hover:border-indigo-200 hover:shadow-md transition-all flex items-center justify-between"
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 ${action.iconBg || action.bg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <div className={`w-12 h-12 ${action.iconBg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                       <Icon size={22} className={action.color} />
                     </div>
                     <div>
                       <h4 className="font-bold text-gray-900">{action.title}</h4>
-                      <p className="text-sm text-gray-500 font-medium">{action.description}</p>
+                      <p className="text-xs text-gray-500 font-medium mt-0.5">{action.description}</p>
                     </div>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-                     <ArrowRight size={18} className="text-gray-400 group-hover:text-blue-600" />
-                  </div>
+                  <ArrowRight size={16} className="text-gray-300 group-hover:text-indigo-600 transition-colors" />
                 </button>
               );
             })}
           </div>
-        </CardContent>
-      </Card>
+        </section>
 
-      {/* Support Section */}
-      <Card className="border-green-100 bg-gradient-to-br from-green-50 to-emerald-50 shadow-sm rounded-2xl overflow-hidden">
-        <CardHeader className="border-b border-green-100/50 px-6 py-4">
-          <CardTitle className="flex items-center gap-2 text-emerald-900 text-lg">
-            <Heart size={20} className="fill-emerald-600 text-emerald-600" />
-            Support Your Campus Guide
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-8">
-          <div className="text-center mb-8">
-            <Shield size={56} className="text-emerald-600 mx-auto mb-4 opacity-90" />
-            <h3 className="text-2xl font-bold text-emerald-900 mb-3">Keep This App Free</h3>
-            <p className="text-emerald-700 max-w-lg mx-auto text-sm leading-relaxed font-medium">
-              Help us maintain and improve this free resource for all UCC students. Your support helps pay for servers and updates.
+        {/* Features Overview */}
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <Star className="w-5 h-5 text-yellow-500" /> Features Overview
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <div key={index} className={`p-6 rounded-2xl border ${feature.border} ${feature.bg}`}>
+                  <Icon className={`w-8 h-8 ${feature.color} mb-4`} />
+                  <h3 className={`font-bold text-lg mb-2 ${feature.color}`}>{feature.title}</h3>
+                  <p className="text-sm text-gray-600 font-medium leading-relaxed">{feature.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+
+        {/* Support CTA */}
+        <section>
+          <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100 text-center transition-colors duration-300">
+            <Heart className="w-12 h-12 text-red-500 mx-auto mb-4 fill-red-500" />
+            <h2 className="text-2xl font-black text-gray-900 mb-2">Support This Project</h2>
+            <p className="text-gray-500 mb-8 max-w-md mx-auto">
+              Help us keep the UCC Campus Guide free and updated for every student.
             </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 max-w-3xl mx-auto">
-            <div className="text-center p-5 bg-white rounded-xl shadow-sm border border-green-100 hover:border-yellow-200 transition-colors">
-              <Zap size={24} className="text-yellow-500 mx-auto mb-2 fill-yellow-500" />
-              <h4 className="font-bold text-gray-900">Quick Support</h4>
-              <span className="inline-block mt-2 px-3 py-1 bg-yellow-50 text-yellow-700 text-xs font-bold rounded-full">GH₵5</span>
-            </div>
-            <div className="text-center p-5 bg-white rounded-xl shadow-md border-2 border-emerald-100 transform scale-105 z-10">
-              <Star size={24} className="text-blue-500 mx-auto mb-2 fill-blue-500" />
-              <h4 className="font-bold text-gray-900">Friend</h4>
-              <span className="inline-block mt-2 px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">GH₵10</span>
-            </div>
-            <div className="text-center p-5 bg-white rounded-xl shadow-sm border border-green-100 hover:border-red-200 transition-colors">
-              <Heart size={24} className="text-red-500 mx-auto mb-2 fill-red-500" />
-              <h4 className="font-bold text-gray-900">Patron</h4>
-              <span className="inline-block mt-2 px-3 py-1 bg-red-50 text-red-700 text-xs font-bold rounded-full">GH₵20</span>
+
+            <div className="max-w-sm mx-auto space-y-4">
+              <PaymentButton
+                amount={5}
+                email={supportEmail || "anonymous@uccguide.com"}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentError={handlePaymentError}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transition-transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+              >
+                Support Now (GH₵5)
+              </PaymentButton>
+              <p className="text-xs text-gray-400">
+                Issues or suggestions? Contact <a href="mailto:uccguide25@gmail.com" className="text-indigo-600 hover:underline">uccguide25@gmail.com</a>
+              </p>
             </div>
           </div>
-          
-          {/* <-- NEW: Email Input Field and Updated Payment Button */}
-          <div className="flex flex-col sm:flex-col gap-4 justify-center items-center max-w-sm mx-auto">
-            <input
-              type="email"
-              value={supportEmail}
-              onChange={(e) => setSupportEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm"
-              placeholder="Enter your email to support"
-              required
-            />
-            <PaymentButton 
-              amount={5} 
-              email={supportEmail}
-              onPaymentSuccess={handlePaymentSuccess}
-              onPaymentError={handlePaymentError}
-              disabled={!supportEmail}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2"
-            >
-             Support Now - GH₵5
-            </PaymentButton>
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/support')}
-              className="w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-bold px-8 py-3.5 rounded-xl bg-white"
-            >
-              Learn More
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        </section>
+
+      </div>
     </div>
   );
 };
