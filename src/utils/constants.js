@@ -4,6 +4,7 @@ export const APP_VERSION = '1.0.0';
 
 // Time constants
 export const SUPPORT_MODAL_INTERVAL = 5 * 60 * 1000; // 5 minutes in ms
+export const FEEDBACK_MODAL_DELAY = 2 * 60 * 1000; // 2 minutes in ms, per request
 
 // LocalStorage keys
 export const LS_KEYS = {
@@ -11,6 +12,7 @@ export const LS_KEYS = {
   GUIDE_COMPLETION: 'ucc_guide_completion',
   SUPPORTER_STATUS: 'ucc_supporter_status',
   LAST_SUPPORT_MODAL_SHOWN: 'ucc_last_support_modal_shown',
+  FEEDBACK_SUBMITTED: 'ucc_feedback_submitted_v2',
   TIMETABLE: 'ucc_timetable',
   BUDGET: 'ucc_budget',
   GPA: 'ucc_gpa',

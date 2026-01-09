@@ -229,6 +229,17 @@ const Settings = () => {
 
             <Button
               variant="outline"
+              onClick={() => {
+                localStorage.removeItem('ucc_feedback_submitted_v2');
+                actions.showToast('Feedback status reset.', 'success');
+              }}
+              className="w-full border-green-200 text-green-600 hover:bg-green-50 font-medium"
+            >
+              Reset Feedback Status (Test Mode)
+            </Button>
+
+            <Button
+              variant="outline"
               onClick={handleClearAllData}
               className="w-full flex items-center justify-center gap-2 border-red-200 text-red-600 hover:bg-red-50 font-medium"
             >
