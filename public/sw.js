@@ -1,5 +1,5 @@
 // Service Worker for UCC Campus Guide
-const CACHE_NAME = 'ucc-guide-v2';
+const CACHE_NAME = 'ucc-guide-v3-forced';
 const urlsToCache = [
     '/',
     '/index.html',

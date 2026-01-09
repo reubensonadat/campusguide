@@ -11,7 +11,7 @@ import { Toast } from './components/common/Toast';
 import { TabBar } from './components/common/TabBar';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { SupportModal } from './components/payment/SupportModal';
-import FeedbackModal from './components/common/FeedbackModal';
+import FeedbackModal from './components/common/FeedbackSurveyModal';
 import PWAInstallButton from './components/common/PWAInstallButton';
 import { preloadPaystack } from './services/paymentService';
 
