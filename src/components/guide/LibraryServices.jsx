@@ -13,12 +13,12 @@ const LibraryServices = () => {
           {/* --- INTRO --- */}
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
             <p className="text-gray-700 leading-relaxed">
-              The UCC library is a treasure trove of resources for your academic success. 
+              The UCC library is a treasure trove of resources for your academic success.
               With both physical and digital collections, it provides essential support for your research and study needs.
               <strong> Your student ID is your key to unlocking these resources.</strong>
             </p>
           </div>
-          
+
           {/* --- LIBRARY FACILITIES GRID --- */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Physical Resources Card */}
@@ -68,15 +68,40 @@ const LibraryServices = () => {
             </div>
           </div>
 
+          {/* --- LEARNING COMMONS --- */}
+          <div className="bg-rose-50 p-6 rounded-xl border border-rose-100 hover:shadow-md transition-all duration-300">
+            <h4 className="font-bold text-rose-900 text-lg mb-3 flex items-center">
+              <span className="bg-rose-200 text-rose-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Booking Required</span>
+              The Learning Commons
+            </h4>
+            <p className="text-sm text-rose-800/70 mb-4">
+              A dynamic space for collaboration and study. Booking is often necessary, especially during peak times like exams.
+            </p>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="bg-white/60 p-4 rounded-lg border border-rose-100/50">
+                <strong className="block text-rose-900 mb-1 text-base">Social Learning Commons</strong>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  Designed for social learning. You must <span className="font-semibold text-rose-700">book your seat</span> in advance, especially during busy exam periods when demand is high.
+                </p>
+              </div>
+              <div className="bg-white/60 p-4 rounded-lg border border-rose-100/50">
+                <strong className="block text-rose-900 mb-1 text-base">Discussion Rooms</strong>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  Private spaces for group discussions. <span className="font-semibold text-rose-700">Advance booking is mandatory</span>. Ensure you secure a slot before occupying a room.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* --- GETTING STARTED AS SUBTLE COLORED CARDS --- */}
           <div className="pt-4">
             <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
               <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
               Getting Started
             </h3>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              
+
               {/* Step 1 - Subtle Blue */}
               <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
@@ -177,8 +202,8 @@ const LibraryServices = () => {
         "Book group study rooms in advance during peak periods",
         "Ask librarians for help with complex research queries"
       ],
-      
-      
+
+
     }
   ];
 

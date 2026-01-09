@@ -5,10 +5,13 @@ import { AppProvider } from './context/AppContext';
 import { useOnboarding } from './hooks/useOnboarding';
 import { useSupportModal } from './hooks/useSupportModal';
 import { useSupportTimer } from './hooks/useSupportTimer';
+import { useFeedbackTimer } from './hooks/useFeedbackTimer';
+import { useFeedbackModal } from './hooks/useFeedbackModal';
 import { Toast } from './components/common/Toast';
 import { TabBar } from './components/common/TabBar';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { SupportModal } from './components/payment/SupportModal';
+import FeedbackModal from './components/common/FeedbackModal';
 import PWAInstallButton from './components/common/PWAInstallButton';
 import { preloadPaystack } from './services/paymentService';
 
@@ -24,6 +27,10 @@ function AppContent() {
   const { showOnboarding, currentStep, nextStep, prevStep, closeOnboarding } = useOnboarding();
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
   const { resetTimer } = useSupportTimer();
+
+  // Feedback Modal Logic
+  useFeedbackTimer();
+  const { showModal: showFeedback, closeModal: closeFeedback } = useFeedbackModal();
 
   // Preload Paystack script when app loads
   useEffect(() => {
@@ -67,6 +74,11 @@ function AppContent() {
         isOpen={showModal}
         onClose={handleCloseModal}
         onPaymentSuccess={handlePaymentSuccess}
+      />
+
+      <FeedbackModal
+        isOpen={showFeedback}
+        onClose={closeFeedback}
       />
     </div>
   );

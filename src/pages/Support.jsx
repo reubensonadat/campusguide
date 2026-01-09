@@ -4,11 +4,19 @@ import { PaymentButton } from '../components/payment/PaymentButton';
 import { Button } from '../components/common/Button';
 import { Heart, Star, Users, Zap, Shield, Gift, CheckCircle, MessageCircle, Bug, Lightbulb, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useFeedbackModal } from '../hooks/useFeedbackModal';
+
+import { LS_KEYS } from '../utils/constants';
 
 const Support = () => {
   const [amount, setAmount] = useState(5);
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
+  const { openModal: openFeedbackModal } = useFeedbackModal();
+
+  // check if submitted
+  const hasSubmittedFeedback = localStorage.getItem(LS_KEYS.FEEDBACK_SUBMITTED);
+  const showFeedbackCard = !hasSubmittedFeedback;
 
   const handlePaymentSuccess = (result) => {
     console.log('Payment successful:', result);
@@ -116,15 +124,23 @@ const Support = () => {
               <a href="mailto:uccguide25@gmail.com?subject=Bug Report" className="text-sm font-bold text-red-600 hover:underline">Send Email →</a>
             </div>
 
-            {/* Suggest Feature */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-yellow-100 hover:shadow-sm transition-all group">
-              <div className="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center mb-4 text-yellow-600 group-hover:scale-110 transition-transform">
-                <Lightbulb size={20} />
+            {/* Version 2 - Feedback Form */}
+            {showFeedbackCard && (
+              <div
+                onClick={openFeedbackModal}
+                className="bg-white p-6 rounded-2xl border-2 border-indigo-50 hover:border-indigo-500 hover:shadow-md transition-all group cursor-pointer relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">
+                  V2 BETA
+                </div>
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center mb-4 text-indigo-600 group-hover:scale-110 transition-transform">
+                  <Users size={20} />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Join V2 Beta</h3>
+                <p className="text-xs text-gray-500 mb-4 h-10">Help us build the next version. Vote on features & get early access.</p>
+                <span className="text-sm font-bold text-indigo-600 hover:underline">Take Survey →</span>
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Suggest Feature</h3>
-              <p className="text-xs text-gray-500 mb-4 h-10">Have an idea? We'd love to hear what could make this better.</p>
-              <a href="mailto:uccguide25@gmail.com?subject=Feature Suggestion" className="text-sm font-bold text-yellow-600 hover:underline">Send Email →</a>
-            </div>
+            )}
 
             {/* General Contact */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-blue-100 hover:shadow-sm transition-all group">
