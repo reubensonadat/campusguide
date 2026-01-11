@@ -77,7 +77,7 @@ const Guide = () => {
               switch (activeTab) {
                 case 'overview':
                   return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+                    <div className="space-y-6">
                       {/* Section Header if multiple sections exist (Optional context) */}
                       {currentTopicData.sections.length > 1 && (
                         <div className="mb-4">
@@ -124,7 +124,7 @@ const Guide = () => {
                 case 'steps':
                   if (!section.steps || section.steps.length === 0) return null;
                   return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+                    <div className="space-y-6">
                       {/* Section Title for Steps */}
                       {currentTopicData.sections.length > 1 && (
                         <h3 className="text-xl font-bold text-gray-800 mb-2">{section.title}</h3>
@@ -165,7 +165,7 @@ const Guide = () => {
                 case 'resources':
                   if ((!section.resources || section.resources.length === 0) && (!currentTopicData.buildings || sectionIdx > 0)) return null;
                   return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                    <div className="space-y-4">
                       {currentTopicData.sections.length > 1 && section.resources?.length > 0 && (
                         <h3 className="text-lg font-bold text-gray-800 mt-2">{section.title} Resources</h3>
                       )}
@@ -268,10 +268,10 @@ const Guide = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex bg-white h-screen supports-[height:100dvh]:h-[100dvh] relative font-sans overflow-hidden transition-colors duration-300">
+    <div className="flex bg-white lg:h-screen lg:overflow-hidden min-h-screen relative font-sans transition-colors duration-300">
 
       {/* Mobile Header */}
-      <div className="lg:hidden absolute top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-30">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-50">
         <span className="font-bold text-lg text-gray-900">Student Guide</span>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -357,9 +357,9 @@ const Guide = () => {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden relative w-full bg-white transition-colors duration-300">
+      <div className="flex-1 flex flex-col h-full lg:overflow-hidden relative w-full bg-white transition-colors duration-300">
         {selectedTopicId ? (
-          <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-32">
+          <div className="flex-1 lg:overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-32">
             <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 md:py-16">
 
               {/* Topic Header */}
@@ -370,6 +370,10 @@ const Guide = () => {
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tight">
                   {currentTopicData?.sections[0].title}
+                  {/* DEBUG: Remove before production */}
+                  <span className="text-xs ml-2 text-red-500 block">
+                    (Debug: Found {currentTopicData?.sections?.length || 0} sections)
+                  </span>
                 </h1>
 
                 {/* Tabs */}
