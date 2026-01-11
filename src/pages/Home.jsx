@@ -33,7 +33,8 @@ const Home = () => {
       description: 'Comprehensive resources for your academic journey',
       color: 'text-indigo-600',
       bg: 'bg-indigo-50',
-      border: 'border-indigo-100'
+      border: 'border-indigo-100',
+      action: () => navigate('/guide')
     },
     {
       icon: Wrench,
@@ -41,7 +42,8 @@ const Home = () => {
       description: 'Timetable builder and GPA calculator',
       color: 'text-violet-600',
       bg: 'bg-violet-50',
-      border: 'border-violet-100'
+      border: 'border-violet-100',
+      action: () => navigate('/tools')
     },
     {
       icon: Users,
@@ -49,7 +51,8 @@ const Home = () => {
       description: 'Connect with support services and communities',
       color: 'text-pink-600',
       bg: 'bg-pink-50',
-      border: 'border-pink-100'
+      border: 'border-pink-100',
+      action: () => navigate('/guide?topic=clubs-societies')
     }
   ];
 
@@ -117,7 +120,7 @@ const Home = () => {
       <div className="bg-white border-b border-gray-100 pt-8 pb-12 px-6 transition-colors duration-300">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-bold uppercase tracking-widest text-indigo-600 mb-6">
-            <Sparkles size={12} /> UCC Class of 2029
+            <Sparkles size={12} /> Developed by Synapse Tech
           </div>
           {state.isSupporter && (
             <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold uppercase tracking-widest ml-2 shadow-sm">
@@ -190,11 +193,15 @@ const Home = () => {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <div key={index} className={`p-6 rounded-2xl border ${feature.border} ${feature.bg}`}>
-                  <Icon className={`w-8 h-8 ${feature.color} mb-4`} />
+                <button
+                  key={index}
+                  onClick={feature.action}
+                  className={`p-6 rounded-2xl border ${feature.border} ${feature.bg} text-left w-full transition-all hover:-translate-y-1 hover:shadow-md group`}
+                >
+                  <Icon className={`w-8 h-8 ${feature.color} mb-4 group-hover:scale-110 transition-transform`} />
                   <h3 className={`font-bold text-lg mb-2 ${feature.color}`}>{feature.title}</h3>
                   <p className="text-sm text-gray-600 font-medium leading-relaxed">{feature.description}</p>
-                </div>
+                </button>
               );
             })}
           </div>

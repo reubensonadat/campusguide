@@ -30,11 +30,19 @@ export const useSupportTimer = () => {
             startTimeRef.current = Date.now();
 
             timerRef.current = setTimeout(() => {
-                // Show the support modal
-                if (actions?.setShowSupportModal) {
+                // Check if user is already a supporter
+                const supporterData = localStorage.getItem(LS_KEYS.SUPPORTER_STATUS);
+                const isSupporter = supporterData ? JSON.parse(supporterData) : false;
+
+                // Only show support modal if user is NOT a supporter
+                if (!isSupporter && actions?.setShowSupportModal) {
                     actions.setShowSupportModal(true);
                     // Update last shown timestamp
                     localStorage.setItem(LS_KEYS.LAST_SUPPORT_MODAL_SHOWN, Date.now().toString());
+
+                    // Increment support shown count for coordination with feedback modal
+                    const currentCount = parseInt(localStorage.getItem(LS_KEYS.SUPPORT_SHOWN_COUNT) || '0');
+                    localStorage.setItem(LS_KEYS.SUPPORT_SHOWN_COUNT, (currentCount + 1).toString());
                 }
             }, duration);
         };
@@ -80,9 +88,18 @@ export const useSupportTimer = () => {
         startTimeRef.current = Date.now();
 
         timerRef.current = setTimeout(() => {
-            if (actions?.setShowSupportModal) {
+            // Check if user is already a supporter
+            const supporterData = localStorage.getItem(LS_KEYS.SUPPORTER_STATUS);
+            const isSupporter = supporterData ? JSON.parse(supporterData) : false;
+
+            // Only show support modal if user is NOT a supporter
+            if (!isSupporter && actions?.setShowSupportModal) {
                 actions.setShowSupportModal(true);
                 localStorage.setItem(LS_KEYS.LAST_SUPPORT_MODAL_SHOWN, Date.now().toString());
+
+                // Increment support shown count
+                const currentCount = parseInt(localStorage.getItem(LS_KEYS.SUPPORT_SHOWN_COUNT) || '0');
+                localStorage.setItem(LS_KEYS.SUPPORT_SHOWN_COUNT, (currentCount + 1).toString());
             }
         }, SUPPORT_MODAL_INTERVAL);
     };

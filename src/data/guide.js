@@ -56,7 +56,8 @@ export const GUIDE_TOPICS = {
     ],
     "Living": [
         { id: 'accommodation', title: 'Accommodation', component: Accommodation, keywords: ['hostels', 'halls', 'room booking', 'housing'] },
-        { id: 'food-dining', title: 'Food & Dining', component: FoodDining, keywords: ['restaurants', 'market', 'food joints', 'eating'] },
+        // Temporarily hidden: Food & Dining
+        // { id: 'food-dining', title: 'Food & Dining', component: FoodDining, keywords: ['restaurants', 'market', 'food joints', 'eating'] },
         { id: 'transportation', title: 'Transportation', component: Transportation, keywords: ['shuttle', 'taxi', 'bus', 'travel', 'movement'] },
     ],
     "Services": [
