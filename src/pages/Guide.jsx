@@ -370,10 +370,6 @@ const Guide = () => {
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tight">
                   {currentTopicData?.sections[0].title}
-                  {/* DEBUG: Remove before production */}
-                  <span className="text-xs ml-2 text-red-500 block">
-                    (Debug: Found {currentTopicData?.sections?.length || 0} sections)
-                  </span>
                 </h1>
 
                 {/* Tabs */}
