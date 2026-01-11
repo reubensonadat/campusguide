@@ -57,7 +57,9 @@ const LabsITServices = () => {
                 </li>
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-indigo-500 rounded-full mr-3"></span>
-                  <strong>Campus Wi-Fi</strong> <span className="text-xs ml-auto text-gray-500">Eduroam, UCC-Secure</span>
+                  <strong>Campus Wi-Fi</strong> <span className="text-xs ml-auto text-gray-500">Eduroam, 
+                    UCC-Wi-Fi
+                  </span>
                 </li>
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-indigo-500 rounded-full mr-3"></span>
@@ -158,7 +160,7 @@ const LabsITServices = () => {
         },
         {
           title: "Connect to Wi-Fi",
-          description: "Connect your personal device to the 'Eduroam' or 'UCC-Secure' Wi-Fi networks using your student credentials for secure, high-speed internet."
+          description: "Connect your personal device to the 'Eduroam' or 'UCC-Wi-Fi' Wi-Fi networks using your student credentials for secure, high-speed internet."
         },
         {
           title: "Use Lab Services",
@@ -180,38 +182,13 @@ const LabsITServices = () => {
         "Book lab time during peak periods",
         "Report technical issues immediately"
       ],
-      resources: [
-        {
-          title: "Lab Locations",
-          description: "Map of all computer labs on campus",
-          url: "https://ucc.edu.gh/lab-locations"
-        },
-        {
-          title: "IT Support Portal",
-          description: "Submit IT requests and get help",
-          url: "https://itsupport.ucc.edu.gh"
-        },
-        {
-          title: "Available Software",
-          description: "List of software available in labs",
-          url: "https://ucc.edu.gh/lab-software"
-        }
-      ],
-      checklist: [
-        { text: "Know lab locations", checked: false },
-        { text: "Get student login", checked: false },
-        { text: "Check lab hours", checked: false },
-        { text: "Save IT support number", checked: false },
-        { text: "Learn lab rules", checked: false },
-        { text: "Bring storage device", checked: false }
-      ]
+      
     }
   ];
 
   const tabs = [
     { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Action Plan' },
-    { id: 'resources', label: 'Helpful Links' },
+    { id: 'steps', label: 'Action Plan' }
   ];
 
   return { sections, tabs };

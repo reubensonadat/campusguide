@@ -72,7 +72,7 @@ const MedicalsHealthCenter = () => {
           <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
             <h4 className="text-red-900 font-bold text-lg mb-2">Mandatory Medical Examination</h4>
             <p className="text-red-800 text-sm leading-relaxed">
-              All first-year students must complete a comprehensive medical examination. This includes a Chest X-Ray, 
+              All first-year students must complete a comprehensive medical examination. This includes a Chest X-Ray, Eye exam,
               Lab Tests, and a Physical Exam. <strong>You cannot graduate without completing this examination.</strong>
               The results are kept in your permanent record and are required for clearance.
             </p>
@@ -145,26 +145,9 @@ const MedicalsHealthCenter = () => {
           title: "Health Center Location",
           description: "Find the University Health Center on campus",
           url: "https://maps.google.com/?q=University+Health+Center+University+of+Cape+Coast"
-        },
-        {
-          title: "Medical Requirements",
-          description: "Required vaccinations and medical forms",
-          url: "https://ucc.edu.gh/medical-requirements"
-        },
-        {
-          title: "NHIS Registration",
-          description: "How to register for National Health Insurance",
-          url: "https://ucc.edu.gh/nhis-info"
         }
       ],
-      checklist: [
-        { text: "Register at Health Center", checked: false },
-        { text: "Complete medical check-up", checked: false },
-        { text: "Get NHIS card", checked: false },
-        { text: "Know emergency numbers", checked: false },
-        { text: "Keep medical records", checked: false },
-        { text: "Know operating hours", checked: false }
-      ]
+      
     }
   ];
 

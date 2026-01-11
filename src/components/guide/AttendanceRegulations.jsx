@@ -10,14 +10,14 @@ const AttendanceRegulations = () => {
     {
       title: "Attendance Policy",
       summary: "The '3-Week Rule', Medical Excuses, and Exam Eligibility.",
-      
+
       // --- OVERVIEW CONTENT (Flexible/Creative Layout) ---
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
             <p className="text-gray-700 leading-relaxed">
-              At UCC, paying school fees registers you for the semester, but <strong>attending lectures</strong> qualifies you to write the exam. 
+              At UCC, paying school fees registers you for the semester, but <strong>attending lectures</strong> qualifies you to write the exam.
               The University enforces a strict <strong>"Contact Hour"</strong> policy rather than a simple percentage.
             </p>
           </div>
@@ -31,7 +31,7 @@ const AttendanceRegulations = () => {
             <p className="text-sm text-indigo-800/80 mb-4">
               You are automatically withdrawn from a course if you miss more than the cumulative equivalent of <strong>three weeks</strong> of contact hours.
             </p>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
               <div className="bg-white p-3 rounded-lg border border-indigo-100 text-center">
                 <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">1 Credit Course</div>
@@ -56,8 +56,8 @@ const AttendanceRegulations = () => {
             <div className="flex-1">
               <h4 className="font-bold text-red-900 text-lg mb-2">Medical Absences</h4>
               <p className="text-sm text-gray-700 leading-relaxed">
-                A note from a private hospital is <strong>NOT valid</strong> on its own. 
-                All medical reports must be submitted to and certified by the <strong>Director of University Health Services</strong> (UCC Hospital) to be accepted by your department.
+                While a note from a private hospital may be accepted, please note that <strong>the lecturer reserves the right to verify this information</strong>.
+                Providing false medical information or forged documents is a serious offense that can lead to severe disciplinary action, including rustication.
               </p>
             </div>
           </div>

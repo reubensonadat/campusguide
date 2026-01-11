@@ -185,30 +185,10 @@ const SecuritySafety = () => {
       ],
       resources: [
         {
-          title: "Emergency Numbers",
-          description: "Save these important emergency contacts",
-          url: "https://ucc.edu.gh/emergency-numbers"
-        },
-        {
-          title: "Safety Guidelines",
-          description: "Complete campus safety manual",
-          url: "https://ucc.edu.gh/safety-guidelines"
-        },
-        {
           title: "Security Office Location",
           description: "Find main security office",
           url: "https://maps.google.com/?q=UCC+Security+Office+Cape+Coast"
         }
-      ],
-      checklist: [
-        { text: "Save emergency numbers in phone", checked: false },
-        { text: "Know security office location", checked: false },
-        { text: "Identify emergency call boxes", checked: false },
-        { text: "Program emergency contacts", checked: false },
-        { text: "Know evacuation routes", checked: false },
-        { text: "Report security concerns", checked: false },
-        { text: "Secure room with proper locks", checked: false },
-        { text: "Identify well-lit paths", checked: false }
       ]
     }
   ];

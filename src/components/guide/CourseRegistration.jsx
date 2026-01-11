@@ -85,6 +85,15 @@ const CourseRegistration = () => {
               The portal locks registration until you pay ~60% fees. Payment via Transflow usually takes 2-24 hours to clear the "Hold" on the portal.
             </p>
           </div>
+
+          {/* --- LECTURE START DISCLAIMER --- */}
+          <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
+            <h4 className="font-bold text-blue-900 text-lg mb-2">When Do Lectures Start?</h4>
+            <div className="p-3 bg-white/60 rounded-lg border border-blue-100/50 text-sm text-gray-800">
+              Lectures typically begin <strong>when the official timetable is released</strong>.
+              If the timetable is not out, relax. Wait for official communication from your Course Reps regarding the start of lectures.
+            </div>
+          </div>
         </div>
       ),
 

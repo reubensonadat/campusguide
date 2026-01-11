@@ -99,8 +99,8 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                       setCustomAmount('');
                     }}
                     className={`py-3 px-2 rounded-xl font-bold text-sm transition-all border-2 ${selectedAmount === amount && !customAmount
-                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm'
-                        : 'border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:bg-indigo-50/50'
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:bg-indigo-50/50'
                       }`}
                   >
                     ₵{amount}
@@ -120,13 +120,18 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                 </span>
                 <input
                   type="number"
-                  min="1"
+                  min="5"
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
-                  className="w-full pl-14 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  placeholder="Enter amount"
+                  className={`w-full pl-14 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${customAmount && parseFloat(customAmount) < 5 ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+                  placeholder="Enter amount (Min 5)"
                 />
               </div>
+              {customAmount && parseFloat(customAmount) < 5 && (
+                <p className="text-xs text-red-500 mt-2 font-medium">
+                  Please enter at least GH₵ 5 to cover transaction fees.
+                </p>
+              )}
             </div>
 
             {/* Email Input */}
@@ -156,7 +161,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
               }}
               onPaymentSuccess={handlePaymentSuccess}
               onPaymentError={handlePaymentError}
-              disabled={!getCurrentAmount() || getCurrentAmount() < 1}
+              disabled={!getCurrentAmount() || getCurrentAmount() < 5}
               className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <span className="flex items-center justify-center gap-2">
@@ -204,8 +209,8 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
         ) : (
           /* Payment Result */
           <div className={`rounded-2xl p-6 text-center ${paymentResult.success
-              ? 'bg-green-50 border-2 border-green-200'
-              : 'bg-red-50 border-2 border-red-200'
+            ? 'bg-green-50 border-2 border-green-200'
+            : 'bg-red-50 border-2 border-red-200'
             }`}>
             {paymentResult.success ? (
               <>

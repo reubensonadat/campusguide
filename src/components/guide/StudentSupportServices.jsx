@@ -185,21 +185,6 @@ const StudentSupportServices = () => {
           title: "Counseling Center",
           description: "Book a confidential counseling session",
           url: "https://portal.ucc.edu.gh/onlineReg/src/coun.php"
-        },
-        {
-          title: "Academic Support Unit",
-          description: "Get tutoring and academic help",
-          url: "https://ucc.edu.gh/academic-support"
-        },
-        {
-          title: "Career Services",
-          description: "Career guidance and job search help",
-          url: "https://careers.ucc.edu.gh"
-        },
-        {
-          title: "Disability Support Services",
-          description: "Accessibility and accommodation services",
-          url: "https://ucc.edu.gh/disability-services"
         }
       ],
       checklist: [
