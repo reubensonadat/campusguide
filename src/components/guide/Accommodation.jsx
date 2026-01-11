@@ -145,9 +145,6 @@ const Accommodation = () => {
       ),
       keyPoints: [
         "Freshers are prioritized for halls (In-Out-Out-Out Policy).",
-        "Biometric entry is used in most halls for security.",
-        "Cooking in rooms is strictly prohibited; use general kitchenettes.",
-        "Hall Dues are mandatory for all affiliates, even if living off-campus."
       ],
       // Data retained for the generic "Action Plan" tab
       steps: [
@@ -173,8 +170,6 @@ const Accommodation = () => {
         }
       ],
       tips: [
-        "Internet speed is key; go to a cafe or use a strong 4G connection when the portal opens.",
-        "Have a backup hall choice in mind (e.g., if Adehye is full, try Oguaa immediately).",
         "Do not pay anyone for a room 'connection'; the system is automated."
       ],
       resources: [
@@ -189,19 +184,10 @@ const Accommodation = () => {
           url: "https://ucc.edu.gh/student-handbook"
         }
       ],
-      checklist: [
-        { text: "Admission Letter & ID", checked: false },
-        { text: "Mosquito Net (Essential for malaria)", checked: false },
-        { text: "Bucket & Pail (Water storage is necessary)", checked: false },
-        { text: "Power Strip / Extension Board", checked: false },
-        { text: "Padlocks (For luggage and wardrobes)", checked: false },
-        { text: "Provisions (Gari, Sugar, Milk, Shito)", checked: false },
-        { text: "White Bed Sheets (Required for some halls)", checked: false }
-      ]
     },
     {
       title: "Off-Campus (Diaspora)",
-      summary: "Renting in Amamoma, Kwaprow, and Apewosika.",
+      summary: "Renting in Amamoma, Ayensu, Kwaprow, and Apewosika.",
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
@@ -253,8 +239,7 @@ const Accommodation = () => {
         </div>
       ),
       keyPoints: [
-        "Rent is paid annually (1 or 2 years in advance).",
-        "Campus Shuttles run frequently between Diaspora stops and the Lecture Theatres.",
+        "Rent is paid annually (1 year in advance).",
         "Security varies; walled and gated hostels with night watchmen are recommended.",
         "Water flow can be inconsistent; check if the hostel has Polytanks."
       ],
@@ -278,25 +263,9 @@ const Accommodation = () => {
         }
       ],
       tips: [
-        "Start searching early (immediately after the second semester ends).",
-        "Grouping with friends to rent a full room/apartment is often cheaper.",
-        "Check the distance to the nearest Shuttle Station."
+        "Start searching early (immediately before the second semester ends).",
       ],
-      resources: [
-
-        {
-          title: "UCC Shuttle Map",
-          description: "Routes for campus shuttles from diaspora.",
-          url: "https://ucc.edu.gh/transport"
-        }
-      ],
-      checklist: [
-        { text: "Check Water Storage (Polytanks)", checked: false },
-        { text: "Check Security (Gates & Locks)", checked: false },
-        { text: "Verify Electricity Meter (Prepaid vs Postpaid)", checked: false },
-        { text: "Check Ventilation & Netting", checked: false },
-        { text: "Test Mobile Network Signal in Room", checked: false }
-      ]
+    
     },
     {
       title: "Expert Advice & Resources",
