@@ -268,7 +268,7 @@ const Guide = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex bg-white h-screen relative font-sans overflow-hidden transition-colors duration-300">
+    <div className="flex bg-white h-screen supports-[height:100dvh]:h-[100dvh] relative font-sans overflow-hidden transition-colors duration-300">
 
       {/* Mobile Header */}
       <div className="lg:hidden absolute top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-30">
@@ -359,7 +359,7 @@ const Guide = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full overflow-hidden relative w-full bg-white transition-colors duration-300">
         {selectedTopicId ? (
-          <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-24">
+          <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-32">
             <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 md:py-16">
 
               {/* Topic Header */}

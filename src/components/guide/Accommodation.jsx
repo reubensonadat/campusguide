@@ -20,14 +20,14 @@ const Accommodation = () => {
           </div>
 
           {/* --- HALLS GRID --- */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Old Site Card */}
             <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300">
               <h4 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
                 <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Old Site</span>
                 Southern Campus
               </h4>
-              <p className="text-sm text-blue-800/70 mb-4">Home to Admin, Arts, & Social Sciences. Breezy coastal atmosphere.</p>
+              <p className="text-sm text-blue-800/70 mb-4"></p>
               <ul className="space-y-3 text-sm text-gray-700">
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
@@ -50,7 +50,7 @@ const Accommodation = () => {
                 <span className="bg-emerald-200 text-emerald-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">New Site</span>
                 Northern Campus
               </h4>
-              <p className="text-sm text-emerald-800/70 mb-4">"Science" - Home to Medical, Business & Physical Sciences.</p>
+              <p className="text-sm text-emerald-800/70 mb-4"></p>
               <ul className="space-y-3 text-sm text-gray-700">
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
@@ -212,7 +212,7 @@ const Accommodation = () => {
           </div>
 
           {/* --- COMMUNITIES GRID --- */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 hover:shadow-md transition-all duration-300">
               <h4 className="font-bold text-orange-900 text-lg mb-2">Amamoma & School Bus Road</h4>
               <p className="text-xs font-bold text-orange-600 uppercase mb-3 tracking-wide">Near LT & Main Library</p>
