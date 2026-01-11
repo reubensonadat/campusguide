@@ -69,171 +69,200 @@ const Guide = () => {
   const renderContent = () => {
     if (!currentTopicData) return null;
 
-    const section = currentTopicData.sections[0]; // Assuming single section for now based on file analysis
+    return (
+      <div className="space-y-12">
+        {currentTopicData.sections.map((section, sectionIdx) => (
+          <div key={sectionIdx} className={sectionIdx > 0 ? "pt-8 border-t border-gray-100" : ""}>
+            {(() => {
+              switch (activeTab) {
+                case 'overview':
+                  return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+                      {/* Section Header if multiple sections exist (Optional context) */}
+                      {currentTopicData.sections.length > 1 && (
+                        <div className="mb-4">
+                          <h2 className="text-2xl font-black text-gray-800">{section.title}</h2>
+                          {section.summary && <p className="text-gray-500 font-medium">{section.summary}</p>}
+                        </div>
+                      )}
 
-    switch (activeTab) {
-      case 'overview':
-        return (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
-            {/* Summary Card */}
-            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-700">
-                  <Info className="w-5 h-5" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">{section.title}</h3>
-              </div>
-              <p className="text-gray-600 leading-relaxed font-medium mb-4">{section.summary}</p>
-              {/* Main Content Render */}
-              <div className="prose prose-yellow max-w-none text-gray-600">
-                {section.content}
-              </div>
-            </div>
+                      {/* Content Card */}
+                      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-700">
+                            <Info className="w-5 h-5" />
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-900">{section.title} Content</h3>
+                        </div>
+                        {/* Only show summary in card if we didn't show it in header above, or contextually */}
+                        {!section.summary ? null : <p className="text-gray-600 leading-relaxed font-medium mb-4">{section.summary}</p>}
 
-            {/* Key Points */}
-            {section.keyPoints && (
-              <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
-                <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" /> Key Takeaways
-                </h4>
-                <ul className="space-y-3">
-                  {section.keyPoints.map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></div>
-                      <span className="text-sm font-medium text-blue-800 leading-relaxed">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        );
+                        <div className="prose prose-yellow max-w-none text-gray-600">
+                          {section.content}
+                        </div>
+                      </div>
 
-      case 'steps':
-        return (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
-            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <List className="w-5 h-5 text-yellow-500" /> Action Steps
-              </h3>
-              <div className="space-y-8 relative before:absolute before:left-4 before:top-4 before:h-full before:w-0.5 before:bg-gray-100">
-                {section.steps?.map((step, idx) => (
-                  <div key={idx} className="relative pl-12">
-                    <div className="absolute left-0 top-0 w-8 h-8 bg-white border-2 border-yellow-400 text-yellow-600 rounded-full flex items-center justify-center font-bold text-sm z-10">
-                      {idx + 1}
+                      {/* Key Points */}
+                      {section.keyPoints && (
+                        <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                          <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5" /> Key Takeaways
+                          </h4>
+                          <ul className="space-y-3">
+                            {section.keyPoints.map((point, idx) => (
+                              <li key={idx} className="flex items-start gap-3">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></div>
+                                <span className="text-sm font-medium text-blue-800 leading-relaxed">{point}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
-                    <h4 className="font-bold text-gray-900 text-base mb-1">{step.title}</h4>
-                    <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  );
 
-            {section.tips && (
-              <div className="bg-purple-50 p-6 rounded-3xl border border-purple-100">
-                <h4 className="font-bold text-purple-900 mb-3">Pro Tips</h4>
-                <ul className="grid gap-3">
-                  {section.tips.map((tip, i) => (
-                    <li key={i} className="text-sm font-medium text-purple-800 flex items-start gap-2">
-                      <span className="text-purple-400">★</span> {tip}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        );
+                case 'steps':
+                  if (!section.steps || section.steps.length === 0) return null;
+                  return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+                      {/* Section Title for Steps */}
+                      {currentTopicData.sections.length > 1 && (
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">{section.title}</h3>
+                      )}
 
-      case 'resources':
-        return (
-          <div className="grid gap-4 animate-in fade-in slide-in-from-bottom-2">
-            {section.resources?.map((res, idx) => (
-              <a
-                key={idx}
-                href={res.url}
-                target="_blank"
-                rel="noreferrer"
-                className="bg-white p-5 rounded-2xl border border-gray-200 hover:border-yellow-400 hover:shadow-md transition-all group"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">{res.title}</h4>
-                    <p className="text-sm text-gray-500 mt-1">{res.description}</p>
-                  </div>
-                  <MousePointer2 className="w-5 h-5 text-gray-300 group-hover:text-yellow-500 transform group-hover:-rotate-45 transition-all" />
-                </div>
-              </a>
-            ))}
-            {/* Buildings / Custom Location Lists often found in Food/Map guides */}
-            {currentTopicData.buildings?.map((b, idx) => (
-              <div key={`b-${idx}`} className="bg-white p-5 rounded-2xl border border-gray-200 flex justify-between items-center">
-                <div>
-                  <h4 className="font-bold text-gray-900">{b.fullName} <span className="text-xs text-gray-400 ml-2">({b.shortForm})</span></h4>
-                  <p className="text-xs text-gray-500">{b.description}</p>
-                </div>
-                <button
-                  onClick={() => currentTopicData.openGoogleMaps?.(b.url)}
-                  className="text-xs font-bold bg-gray-100 px-3 py-2 rounded-lg hover:bg-black hover:text-white transition-colors"
-                >
-                  Locate
-                </button>
-              </div>
-            ))}
-          </div>
-        );
+                      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                        <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                          <List className="w-5 h-5 text-yellow-500" /> Action Steps
+                        </h3>
+                        <div className="space-y-8 relative before:absolute before:left-4 before:top-4 before:h-full before:w-0.5 before:bg-gray-100">
+                          {section.steps?.map((step, idx) => (
+                            <div key={idx} className="relative pl-12">
+                              <div className="absolute left-0 top-0 w-8 h-8 bg-white border-2 border-yellow-400 text-yellow-600 rounded-full flex items-center justify-center font-bold text-sm z-10">
+                                {idx + 1}
+                              </div>
+                              <h4 className="font-bold text-gray-900 text-base mb-1">{step.title}</h4>
+                              <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
 
-      case 'checklist':
-        return (
-          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Essentials Checklist</h3>
-            <div className="space-y-3">
-              {section.checklist?.map((item, idx) => (
-                <label key={idx} className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors group">
-                  <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-yellow-400 focus:ring-yellow-400 transition-all" />
-                  <span className="font-medium text-gray-700 group-hover:text-gray-900">{item.text}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-        );
+                      {section.tips && (
+                        <div className="bg-purple-50 p-6 rounded-3xl border border-purple-100">
+                          <h4 className="font-bold text-purple-900 mb-3">Pro Tips</h4>
+                          <ul className="grid gap-3">
+                            {section.tips.map((tip, i) => (
+                              <li key={i} className="text-sm font-medium text-purple-800 flex items-start gap-2">
+                                <span className="text-purple-400">★</span> {tip}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  );
 
-      case 'warnings':
-        return (
-          <div className="bg-red-50 p-6 rounded-3xl border border-red-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
-            <h3 className="text-lg font-bold text-red-900 mb-4">Warnings & Pitfalls</h3>
-            {section.commonMistakes && (
-              <div className="mb-6">
-                <h4 className="font-bold text-red-800 mb-3">Common Mistakes</h4>
-                <ul className="space-y-2">
-                  {section.commonMistakes.map((mistake, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-red-700 text-sm">
-                      <span>•</span> {mistake}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {section.consequences && (
-              <div className="bg-white/60 p-4 rounded-xl border border-red-200">
-                <h4 className="font-bold text-red-800 mb-2">Consequences</h4>
-                <p className="text-sm text-red-700">{section.consequences}</p>
-              </div>
-            )}
-          </div>
-        );
+                case 'resources':
+                  if ((!section.resources || section.resources.length === 0) && (!currentTopicData.buildings || sectionIdx > 0)) return null;
+                  return (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                      {currentTopicData.sections.length > 1 && section.resources?.length > 0 && (
+                        <h3 className="text-lg font-bold text-gray-800 mt-2">{section.title} Resources</h3>
+                      )}
+                      <div className="grid gap-4">
+                        {section.resources?.map((res, idx) => (
+                          <a
+                            key={idx}
+                            href={res.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="bg-white p-5 rounded-2xl border border-gray-200 hover:border-yellow-400 hover:shadow-md transition-all group"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">{res.title}</h4>
+                                <p className="text-sm text-gray-500 mt-1">{res.description}</p>
+                              </div>
+                              <MousePointer2 className="w-5 h-5 text-gray-300 group-hover:text-yellow-500 transform group-hover:-rotate-45 transition-all" />
+                            </div>
+                          </a>
+                        ))}
+                      </div>
 
-      default:
-        return (
-          // Default fallback if tab content isn't explicitly handled above but exists in data
-          <div className="p-8 text-center text-gray-400">
-            {section[activeTab] ? (
-              <div className="prose prose-yellow max-w-none text-gray-600">
-                {typeof section[activeTab] === 'string' ? section[activeTab] : "Complex content not renderable in default view."}
-              </div>
-            ) : "Content pending for this tab."}
+                      {/* Show buildings only once, typically with the first section or separate */}
+                      {sectionIdx === 0 && currentTopicData.buildings?.map((b, idx) => (
+                        <div key={`b-${idx}`} className="bg-white p-5 rounded-2xl border border-gray-200 flex justify-between items-center">
+                          <div>
+                            <h4 className="font-bold text-gray-900">{b.fullName} <span className="text-xs text-gray-400 ml-2">({b.shortForm})</span></h4>
+                            <p className="text-xs text-gray-500">{b.description}</p>
+                          </div>
+                          <button
+                            onClick={() => currentTopicData.openGoogleMaps?.(b.url)}
+                            className="text-xs font-bold bg-gray-100 px-3 py-2 rounded-lg hover:bg-black hover:text-white transition-colors"
+                          >
+                            Locate
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  );
+
+                case 'checklist':
+                  if (!section.checklist || section.checklist.length === 0) return null;
+                  return (
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">{section.title} Checklist</h3>
+                      <div className="space-y-3">
+                        {section.checklist?.map((item, idx) => (
+                          <label key={idx} className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors group">
+                            <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-yellow-400 focus:ring-yellow-400 transition-all" />
+                            <span className="font-medium text-gray-700 group-hover:text-gray-900">{item.text}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  );
+
+                case 'warnings':
+                  if (!section.commonMistakes && !section.consequences) return null;
+                  return (
+                    <div className="bg-red-50 p-6 rounded-3xl border border-red-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                      <h3 className="text-lg font-bold text-red-900 mb-4">{section.title} Warnings</h3>
+                      {section.commonMistakes && (
+                        <div className="mb-6">
+                          <h4 className="font-bold text-red-800 mb-3">Common Mistakes</h4>
+                          <ul className="space-y-2">
+                            {section.commonMistakes.map((mistake, idx) => (
+                              <li key={idx} className="flex items-start gap-2 text-red-700 text-sm">
+                                <span>•</span> {mistake}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {section.consequences && (
+                        <div className="bg-white/60 p-4 rounded-xl border border-red-200">
+                          <h4 className="font-bold text-red-800 mb-2">Consequences</h4>
+                          <p className="text-sm text-red-700">{section.consequences}</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+
+                default:
+                  return (
+                    section[activeTab] ? (
+                      <div className="p-8 text-center text-gray-400 prose prose-yellow max-w-none text-gray-600">
+                        {typeof section[activeTab] === 'string' ? section[activeTab] : "Complex content not renderable in default view."}
+                      </div>
+                    ) : null
+                  );
+              }
+            })()}
           </div>
-        );
-    }
+        ))}
+      </div>
+    );
   };
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

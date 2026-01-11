@@ -214,14 +214,14 @@ const Accommodation = () => {
           {/* --- COMMUNITIES GRID --- */}
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-orange-900 text-lg mb-2">Amamoma & Kwaprow</h4>
-              <p className="text-xs font-bold text-orange-600 uppercase mb-3 tracking-wide">Best for Science/Business Students</p>
-              <p className="text-sm text-gray-700">Closest to New Site (Science). Very lively student atmosphere, many food joints, but rent is generally higher due to proximity.</p>
+              <h4 className="font-bold text-orange-900 text-lg mb-2">Amamoma & School Bus Road</h4>
+              <p className="text-xs font-bold text-orange-600 uppercase mb-3 tracking-wide">Near LT & Main Library</p>
+              <p className="text-sm text-gray-700">Closest to the <strong>Large Lecture Theatre (LLT)</strong> and <strong>Sam Jonah Library</strong>. Very lively student atmosphere with many food spots, though rent can be higher due to the prime location.</p>
             </div>
             <div className="bg-teal-50 p-6 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-teal-900 text-lg mb-2">Apewosika & Ayensu</h4>
-              <p className="text-xs font-bold text-teal-600 uppercase mb-3 tracking-wide">Best for Arts/Social Science Students</p>
-              <p className="text-sm text-gray-700">Located behind Old Site/Hospital. Generally quieter, more affordable, but often requires a shuttle or taxi to reach the lecture theaters.</p>
+              <h4 className="font-bold text-teal-900 text-lg mb-2">Kwaprow & Ayensu</h4>
+              <p className="text-xs font-bold text-teal-600 uppercase mb-3 tracking-wide">Near Sandwich Lecture Theatre</p>
+              <p className="text-sm text-gray-700">Strategic choice if you have frequent classes at the <strong>Sandwich Lecture Theatre (SWLT)</strong>. These areas often offer more affordable housing options while remaining accessible.</p>
             </div>
           </div>
 
@@ -233,23 +233,18 @@ const Accommodation = () => {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
-              <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 hover:shadow-md transition-all duration-300">
-                <h5 className="font-bold text-slate-800 text-lg mb-1">1. Consult DOS List</h5>
-                <p className="text-sm text-gray-600 mt-2">Always check the <strong>Dean of Students Office</strong> for approved hostels. This is your safety net against fraud.</p>
-              </div>
-
               <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300">
-                <h5 className="font-bold text-blue-900 text-lg mb-1">2. Physical Inspection</h5>
+                <h5 className="font-bold text-blue-900 text-lg mb-1">1. Physical Inspection</h5>
                 <p className="text-sm text-gray-600 mt-2"><strong>Never</strong> pay without seeing the room. Check water flow, ventilation, and security personally.</p>
               </div>
 
               <div className="bg-red-50 p-5 rounded-xl border border-red-100 hover:shadow-md transition-all duration-300">
-                <h5 className="font-bold text-red-900 text-lg mb-1">3. Verify Ownership</h5>
+                <h5 className="font-bold text-red-900 text-lg mb-1">2. Verify Ownership</h5>
                 <p className="text-sm text-gray-600 mt-2">Ensure you are paying the actual landlord or caretaker. Ask for ID. Avoid "agents" without official credentials.</p>
               </div>
 
               <div className="bg-green-50 p-5 rounded-xl border border-green-100 hover:shadow-md transition-all duration-300">
-                <h5 className="font-bold text-green-900 text-lg mb-1">4. Sign & Pay</h5>
+                <h5 className="font-bold text-green-900 text-lg mb-1">3. Sign & Pay</h5>
                 <p className="text-sm text-gray-600 mt-2">Read the tenancy agreement (check utility bills/refund policies) before paying via Bank Deposit.</p>
               </div>
 
@@ -264,10 +259,7 @@ const Accommodation = () => {
         "Water flow can be inconsistent; check if the hostel has Polytanks."
       ],
       steps: [
-        {
-          title: "Consult Dean of Students",
-          description: "Check the Dean of Students Office (DOS) for the updated list of approved/accredited private hostels."
-        },
+
         {
           title: "Physical Inspection",
           description: "Visit the hostel in person. Do not rely on pictures. Check proximity to campus and water flow."
@@ -291,11 +283,7 @@ const Accommodation = () => {
         "Check the distance to the nearest Shuttle Station."
       ],
       resources: [
-        {
-          title: "Dean of Students Office",
-          description: "Regulatory body for private hostels.",
-          url: "https://dos.ucc.edu.gh"
-        },
+
         {
           title: "UCC Shuttle Map",
           description: "Routes for campus shuttles from diaspora.",
@@ -373,9 +361,8 @@ const Accommodation = () => {
               <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded">Update</span>
             </div>
             <p className="text-sm text-gray-700 mb-4">
-              The SRC President has announced an initiative to gather information on all hostels
-              and create a centralized <strong>Contact Directory</strong> accessible via student portals.
-              This will help students verify prices and contacts safely.
+              The current SRC President (2025-2026) promised a centralized directory in his campaign.
+              However, the resource provided below is strictly from the <strong>previous administration (2024-2025)</strong>.
             </p>
 
             <div className="mt-4 pt-4 border-t border-blue-200/50">
