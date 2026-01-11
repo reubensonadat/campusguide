@@ -184,27 +184,8 @@ const WifiEmail = () => {
         {
           title: "Email Setup Guide",
           description: "Step-by-step email configuration",
-          url: "https://ucc.edu.gh/email-setup"
-        },
-        {
-          title: "Wi-Fi Coverage Map",
-          description: "Wi-Fi availability on campus",
-          url: "https://ucc.edu.gh/wifi-map"
-        },
-        {
-          title: "IT Support",
-          description: "Get help with connectivity issues",
-          url: "https://itsupport.ucc.edu.gh"
+          url: "https://portal.ucc.edu.gh/frames/index.php"
         }
-      ],
-      checklist: [
-        { text: "Download GetEduroam app", checked: false },
-        { text: "Visit self-service portal", checked: false },
-        { text: "Check institutional email", checked: false },
-        { text: "Create secure password", checked: false },
-        { text: "Connect to Eduroam", checked: false },
-        { text: "Access student email", checked: false },
-        { text: "Save IT support contacts", checked: false }
       ]
     }
   ];

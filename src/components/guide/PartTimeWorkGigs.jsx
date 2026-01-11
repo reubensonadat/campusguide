@@ -13,12 +13,12 @@ const PartTimeWorkGigs = () => {
           {/* --- INTRO --- */}
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
             <p className="text-gray-700 leading-relaxed">
-              Working part-time can provide valuable experience and extra income while studying at UCC. 
+              Working part-time can provide valuable experience and extra income while studying at UCC.
               The key is finding opportunities that complement your academic journey rather than compromise it.
               <strong> Remember, your studies should always come first.</strong>
             </p>
           </div>
-          
+
           {/* --- WORK OPPORTUNITIES GRID --- */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* On-Campus Work Card */}
@@ -74,9 +74,9 @@ const PartTimeWorkGigs = () => {
               <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
               Finding the Right Opportunity
             </h3>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              
+
               {/* Step 1 - Subtle Blue */}
               <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
@@ -181,23 +181,7 @@ const PartTimeWorkGigs = () => {
         "Save portion of earnings for emergencies",
         "Build professional relationships"
       ],
-      resources: [
-        {
-          title: "Career Services Job Board",
-          description: "On-campus and off-campus job listings",
-          url: "https://careers.ucc.edu.gh/jobs"
-        },
-        {
-          title: "Work-Study Program",
-          description: "Apply for on-campus work opportunities",
-          url: "https://ucc.edu.gh/work-study"
-        },
-        {
-          title: "Internship Portal",
-          description: "Find internship opportunities",
-          url: "https://careers.ucc.edu.gh/internships"
-        }
-      ],
+
       checklist: [
         { text: "Update CV", checked: false },
         { text: "Check job board", checked: false },
@@ -212,7 +196,6 @@ const PartTimeWorkGigs = () => {
   const tabs = [
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Job Search Process' },
-    { id: 'resources', label: 'Opportunities' },
   ];
 
   return { sections, tabs };

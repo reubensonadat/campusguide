@@ -14,11 +14,11 @@ const Accommodation = () => {
           {/* --- INTRO --- */}
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
             <p className="text-gray-700 leading-relaxed">
-              UCC operates a collegiate system where every student is affiliated with a Hall of Residence. 
+              UCC operates a collegiate system where every student is affiliated with a Hall of Residence.
               Due to the <strong>"In-Out-Out-Out"</strong> policy, freshers are prioritized for on-campus rooms.
             </p>
           </div>
-          
+
           {/* --- HALLS GRID --- */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Old Site Card */}
@@ -74,9 +74,9 @@ const Accommodation = () => {
               <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
               Application Process
             </h3>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              
+
               {/* Step 1 - Subtle Blue */}
               <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
@@ -113,7 +113,7 @@ const Accommodation = () => {
                   Print the invoice and pay <strong>immediately</strong> at GCB, Zenith, or Prudential Bank to lock it in.
                 </p>
               </div>
-              
+
 
               {/* Step 4 - Subtle Amber */}
               <div className="bg-violet-50 p-5 rounded-xl border border-violet-100 hover:shadow-md transition-all duration-300">
@@ -210,19 +210,19 @@ const Accommodation = () => {
               Continuing students (Level 200-400) usually move to private hostels in the communities surrounding the university, collectively known as the <strong>"Diaspora"</strong>.
             </p>
           </div>
-          
+
           {/* --- COMMUNITIES GRID --- */}
           <div className="grid md:grid-cols-2 gap-6">
-             <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 hover:shadow-md transition-all duration-300">
-                <h4 className="font-bold text-orange-900 text-lg mb-2">Amamoma & Kwaprow</h4>
-                <p className="text-xs font-bold text-orange-600 uppercase mb-3 tracking-wide">Best for Science/Business Students</p>
-                <p className="text-sm text-gray-700">Closest to New Site (Science). Very lively student atmosphere, many food joints, but rent is generally higher due to proximity.</p>
-             </div>
-             <div className="bg-teal-50 p-6 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
-                <h4 className="font-bold text-teal-900 text-lg mb-2">Apewosika & Ayensu</h4>
-                <p className="text-xs font-bold text-teal-600 uppercase mb-3 tracking-wide">Best for Arts/Social Science Students</p>
-                <p className="text-sm text-gray-700">Located behind Old Site/Hospital. Generally quieter, more affordable, but often requires a shuttle or taxi to reach the lecture theaters.</p>
-             </div>
+            <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-orange-900 text-lg mb-2">Amamoma & Kwaprow</h4>
+              <p className="text-xs font-bold text-orange-600 uppercase mb-3 tracking-wide">Best for Science/Business Students</p>
+              <p className="text-sm text-gray-700">Closest to New Site (Science). Very lively student atmosphere, many food joints, but rent is generally higher due to proximity.</p>
+            </div>
+            <div className="bg-teal-50 p-6 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-teal-900 text-lg mb-2">Apewosika & Ayensu</h4>
+              <p className="text-xs font-bold text-teal-600 uppercase mb-3 tracking-wide">Best for Arts/Social Science Students</p>
+              <p className="text-sm text-gray-700">Located behind Old Site/Hospital. Generally quieter, more affordable, but often requires a shuttle or taxi to reach the lecture theaters.</p>
+            </div>
           </div>
 
           {/* --- RENTING STEPS AS VISUAL CARDS --- */}
@@ -232,7 +232,7 @@ const Accommodation = () => {
               Renting Process
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              
+
               <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 hover:shadow-md transition-all duration-300">
                 <h5 className="font-bold text-slate-800 text-lg mb-1">1. Consult DOS List</h5>
                 <p className="text-sm text-gray-600 mt-2">Always check the <strong>Dean of Students Office</strong> for approved hostels. This is your safety net against fraud.</p>
@@ -309,6 +309,110 @@ const Accommodation = () => {
         { text: "Check Ventilation & Netting", checked: false },
         { text: "Test Mobile Network Signal in Room", checked: false }
       ]
+    },
+    {
+      title: "Expert Advice & Resources",
+      summary: "Critical timing strategy and SRC initiatives.",
+      content: (
+        <div className="space-y-6">
+          {/* --- TIMING ADVICE --- */}
+          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-100 shadow-sm">
+            <h4 className="font-bold text-purple-900 text-lg mb-4 flex items-center">
+              <span className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 mr-3 text-sm">💡</span>
+              The "Golden Window" Rule
+            </h4>
+            <p className="text-gray-700 leading-relaxed mb-6">
+              <strong>End of Second Semester = Hunt Begins.</strong><br />
+              Many students make the mistake of waiting until the long vacation is over.
+              To live a happy life in Level 200 and beyond, you must start looking for accommodation
+              <strong> immediately as the second semester ends</strong>.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-white/80 p-4 rounded-lg border border-purple-100">
+                <h5 className="font-bold text-green-700 text-xs uppercase mb-2">Why Start Early?</h5>
+                <ul className="text-sm text-gray-600 space-y-2">
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2 font-bold">✓</span>
+                    <span><strong>Better Prices:</strong> Secure rooms before demand spikes prices.</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2 font-bold">✓</span>
+                    <span><strong>Peace of Mind:</strong> Make down payments, go home, and return to a secured home.</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2 font-bold">✓</span>
+                    <span><strong>Prime Locations:</strong> Get the best spots closer to campus.</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-white/80 p-4 rounded-lg border border-red-100">
+                <h5 className="font-bold text-red-700 text-xs uppercase mb-2">Risks of Delay</h5>
+                <ul className="text-sm text-gray-600 space-y-2">
+                  <li className="flex items-start">
+                    <span className="text-red-400 mr-2 font-bold">⚠</span>
+                    <span><strong>Expensive Leftovers:</strong> You'll pay premium for sub-par rooms.</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-400 mr-2 font-bold">⚠</span>
+                    <span><strong>Distance Stress:</strong> Far hostels = fatigue + high transport costs.</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-400 mr-2 font-bold">⚠</span>
+                    <span><strong>Academic Impact:</strong> A stressful home environment can break your academic year.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* --- SRC INITIATIVE --- */}
+          <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-blue-900 text-lg">SRC Hostel Directory</h4>
+              <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded">Update</span>
+            </div>
+            <p className="text-sm text-gray-700 mb-4">
+              The SRC President has announced an initiative to gather information on all hostels
+              and create a centralized <strong>Contact Directory</strong> accessible via student portals.
+              This will help students verify prices and contacts safely.
+            </p>
+
+            <div className="mt-4 pt-4 border-t border-blue-200/50">
+              <div className="bg-white/60 p-3 rounded-lg text-xs text-gray-600 mb-3 border border-blue-100">
+                <strong className="text-blue-800">Note:</strong> While this list is a helpful initiative, it is
+                <strong> just a small collection of contacts</strong> and may not be the "best thing in the world."
+                It is better to physically go around and search for yourself, but this can help you make initial inquiries in the meantime.
+              </div>
+
+              <p className="text-xs font-bold text-gray-500 uppercase mb-2">In the meantime, verify listings here:</p>
+              <a href="https://www.capevars.com/" target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-between bg-white p-3 rounded-lg border border-blue-200 hover:border-blue-400 transition-all group shadow-sm">
+                <span className="font-bold text-blue-700">CapeVars.com</span>
+                <span className="text-blue-400 group-hover:translate-x-1 transition-transform">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      ),
+      keyPoints: [
+        "Your accommodation environment can make or break your GPA.",
+        "If a place is too far, you will be stressed. If it's close and decent, you thrive.",
+        "Waiting until the last minute guarantees 'big problems' with pricing and quality."
+      ],
+      steps: [],
+      tips: [
+        "The earlier you look, the better for you.",
+        "Make your down payments early to lock in the agreement."
+      ],
+      resources: [
+        {
+          title: "CapeVars Listing",
+          description: "Browse available hostels.",
+          url: "https://www.capevars.com/"
+        }
+      ],
+      checklist: []
     }
   ];
 

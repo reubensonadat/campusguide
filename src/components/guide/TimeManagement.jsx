@@ -181,38 +181,13 @@ const TimeManagement = () => {
         "Learn to say 'no' to non-essential commitments that don't align with your goals.",
         "Protect your peak energy hours for your most demanding work."
       ],
-      resources: [
-        {
-          title: "Time Management Tools",
-          description: "Recommended apps and tools for effective time management.",
-          url: "https://ucc.edu.gh/time-tools"
-        },
-        {
-          title: "Weekly Planner Template",
-          description: "Download a structured weekly planner template for students.",
-          url: "https://ucc.edu.gh/planner-template"
-        },
-        {
-          title: "Productivity Workshops",
-          description: "Join our free workshops on time management and productivity.",
-          url: "https://ucc.edu.gh/productivity-workshops"
-        }
-      ],
-      checklist: [
-        { text: "Completed a one-week time audit", checked: false },
-        { text: "Identified top 3 weekly priorities", checked: false },
-        { text: "Created a weekly schedule template", checked: false },
-        { text: "Chosen a primary time management tool", checked: false },
-        { text: "Implemented time blocking for key tasks", checked: false },
-        { text: "Scheduled weekly review sessions", checked: false }
-      ]
+
     }
   ];
 
   const tabs = [
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Time Mastery Process' },
-    { id: 'resources', label: 'Productivity Tools' },
   ];
 
   return { sections, tabs };

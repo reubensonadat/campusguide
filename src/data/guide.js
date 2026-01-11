@@ -12,7 +12,7 @@ import PaymentsReceipts from '../components/guide/PaymentsReceipts';
 import Accommodation from '../components/guide/Accommodation';
 import Transportation from '../components/guide/Transportation';
 import FoodDining from '../components/guide/FoodDining';
-import PrintingStationery from '../components/guide/PrintingStationery';
+
 import BankingMoMo from '../components/guide/BankingMoMo';
 import SecuritySafety from '../components/guide/SecuritySafety';
 import LibraryServices from '../components/guide/LibraryServices';
@@ -64,7 +64,7 @@ export const GUIDE_TOPICS = {
         { id: 'labs-it-services', title: 'Labs & IT Support', component: LabsITServices, keywords: ['computer lab', 'wifi password', 'technical support'] },
         { id: 'wifi-email', title: 'Wi-Fi & Email', component: WifiEmail, keywords: ['internet', 'student email', 'connection'] },
         { id: 'security-safety', title: 'Security & Safety', component: SecuritySafety, keywords: ['police', 'emergency contacts', 'theft', 'safety'] },
-        { id: 'printing-stationery', title: 'Printing & Stationery', component: PrintingStationery, keywords: ['photocopy', 'print', 'binding', 'books'] },
+
         { id: 'student-support-services', title: 'Counselling & Support', component: StudentSupportServices, keywords: ['mental health', 'counselling center', 'guidance'] },
     ],
     "Campus Life": [

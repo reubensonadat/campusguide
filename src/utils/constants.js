@@ -4,7 +4,7 @@ export const APP_VERSION = '1.0.0';
 
 // Time constants
 export const SUPPORT_MODAL_INTERVAL = 5 * 60 * 1000; // 5 minutes in ms
-export const FEEDBACK_MODAL_DELAY = 2 * 60 * 1000; // 2 minutes in ms, per request
+export const FEEDBACK_MODAL_DELAY = 30 * 60 * 1000; // 30 minutes in ms, per request
 
 // LocalStorage keys
 export const LS_KEYS = {

@@ -92,7 +92,7 @@ const GettingStarted = () => {
                     <CheckCircle size={16} className="text-green-500 mr-2" /> Must Haves
                   </h5>
                   <ul className="space-y-2 text-sm text-gray-600">
-                    <li>• <strong>White Bed Sheets</strong> (Mandatory)</li>
+                    <li>• <strong>White Bed Sheets</strong> (Recommended, not mandatory)</li>
                     <li>• Pillow & Pillowcases</li>
                     <li>• Bucket & Pail (Water is life)</li>
                     <li>• Formal Wear (For Matriculation)</li>
@@ -164,11 +164,66 @@ const GettingStarted = () => {
           <div>
             <SectionHeader icon={<Calendar size={20} />} title="Freshers' Timeline (Jan - Feb 2026)" />
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800 flex gap-3">
+                <AlertTriangle size={20} className="shrink-0" />
+                <div>
+                  <p className="font-bold mb-1">IMPORTANT DISCLAIMER: DATES ARE SUBJECT TO CHANGE</p>
+                  <p className="mb-2">
+                    These dates are provided for planning purposes but are <strong>not final</strong>.
+                    The University reserves the right to change these dates under any circumstances.
+                  </p>
+                  <p>
+                    For the latest official information, ALWAYS check the Directorate of Academic Affairs (DAA) website: <br />
+                    <a href="https://daa.ucc.edu.gh" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-600 underline hover:text-blue-800">
+                      daa.ucc.edu.gh
+                    </a>
+                    <br />
+                    <span className="text-xs text-yellow-900/80 font-medium mt-1 block">
+                      ⚠️ <strong>INSTRUCTION:</strong> When you visit the site, look specifically for the <strong>"Academic Calendar"</strong> page/section to confirm these dates.
+                    </span>
+                  </p>
+                </div>
+              </div>
+
               <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-                <TimelineEvent date="Jan 05" day="Monday" title="Freshers Report" desc="Arrival at Halls. Key collection starts early. NO TRUNKS allowed." />
-                <TimelineEvent date="Jan 06" day="Tuesday" title="Orientation Begins" desc="Online Orientation and Registration begins (Ends Jan 8)." />
-                <TimelineEvent date="Jan 12" day="Monday" title="Lectures Begin" desc="Classes start immediately. Don't wait for 'next week'." />
-                <TimelineEvent date="Feb 07" day="Saturday" title="Matriculation" desc="Official swearing-in ceremony. Formal attire required." />
+                <TimelineEvent date="Jan 05" day="Monday" title="Freshers Report" desc="Arrival at Halls. Key collection starts early." />
+                <TimelineEvent date="Jan 06" day="Tuesday" title="Orientation Begins" desc="Online Orientation and Registration begins. (Dates subject to university confirmation)." />
+                <TimelineEvent date="Jan 12" day="Monday" title="Lectures Begin (Provisional)" desc="Classes usually start immediately, but officially depend on the Timetable release." />
+                <TimelineEvent date="Feb 07" day="Saturday" title="Matriculation (Tentative)" desc="Official swearing-in ceremony. Formal attire required. (Date subject to change)." />
+              </div>
+
+              {/* --- ORIENTATION ATTENDANCE NOTE --- */}
+              <div className="mt-6 p-4 bg-purple-50 border border-purple-100 rounded-lg">
+                <h4 className="font-bold text-purple-900 mb-2 flex items-center">
+                  <User size={18} className="mr-2" />
+                  Orientation Attendance Rules
+                </h4>
+                <div className="grid md:grid-cols-2 gap-4 text-sm">
+                  <div className="bg-white/60 p-3 rounded border border-purple-100">
+                    <span className="font-bold text-purple-800 block mb-1">🌍 In Diaspora (Private Hostels/Home)</span>
+                    <p className="text-gray-700">
+                      You can attend orientation <strong>online</strong>. You do not strictly need to come to your Hall of Affiliation.
+                      Links will be provided at the appropriate time.
+                    </p>
+                  </div>
+                  <div className="bg-white/60 p-3 rounded border border-purple-100">
+                    <span className="font-bold text-purple-800 block mb-1">🏫 Inside Hall of Affiliation</span>
+                    <p className="text-gray-700">
+                      If you are physically in the Hall, it is <strong>mandatory to attend</strong> the sessions organized there.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-lg text-sm text-blue-800">
+                <p className="flex items-start gap-2">
+                  <Info size={16} className="mt-1 shrink-0" />
+                  <span>
+                    <strong>Note on Lectures:</strong> Lectures typically begin when the official timetable is released.
+                    If the timetable is not out, do not panic. Relax and wait for official communication from your Course Reps
+                    or the <a href="https://daa.ucc.edu.gh" className="underline font-bold">DAA website</a>.
+                  </span>
+                </p>
               </div>
             </div>
           </div>
@@ -182,7 +237,7 @@ const GettingStarted = () => {
           title: "Print 3 Copies of Everything",
           description: "Admission Letter, Fee Receipt, and WASSCE Results. You will need one set for your Hall, one for your Department, and one for your own file."
         },
-       
+
         {
           title: "Pay Departmental Dues",
           description: "Visit your Department association's table. First Years pay higher dues (often includes shirt/souvenirs). Mandatory before registration."
@@ -199,7 +254,7 @@ const GettingStarted = () => {
 
       // --- WARNINGS TAB DATA ---
       commonMistakes: [
-        "Bringing a Trunk or Chop Box (You will be forced to send it back home).",
+        "Bringing a Trunk or Chop Box (Not recommended due to space; stick to suitcases).",
         "Paying fees via direct Mobile Money transfer instead of Transflow/Smartpay.",
         "Missing the Medical Exam (Academic record will be flagged).",
         "Assuming Lectures don't start immediately on Jan 12.",

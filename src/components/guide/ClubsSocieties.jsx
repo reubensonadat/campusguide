@@ -110,33 +110,13 @@ const ClubsSocieties = () => {
       ],
 
       // --- RESOURCES TAB DATA ---
-      resources: [
-        {
-          title: "SRC Clubs Directory",
-          description: "Official list of registered student groups.",
-          url: "https://src.ucc.edu.gh"
-        },
-        {
-          title: "Sports Section",
-          description: "Join a university team.",
-          url: "https://sports.ucc.edu.gh"
-        }
-      ],
-
-      // --- CHECKLIST TAB DATA ---
-      checklist: [
-        { text: "Paid Departmental Dues", checked: false },
-        { text: "Joined a Religious Group (if applicable)", checked: false },
-        { text: "Signed up for one Interest Club", checked: false },
-        { text: "Followed Association Social Media pages", checked: false }
-      ]
+     
     }
   ];
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'steps', label: 'How to Join' },
-    { id: 'resources', label: 'Resources' },
+    { id: 'steps', label: 'How to Join' }
   ];
 
   return { sections, tabs };

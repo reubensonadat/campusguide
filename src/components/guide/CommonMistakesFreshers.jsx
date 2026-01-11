@@ -48,31 +48,32 @@ const CommonMistakesFreshers = () => {
             </div>
           </div>
 
-          {/* --- FINANCIAL & SOCIAL TRAPS --- */}
+          {/* --- RELATIONSHIP & SENIOR ADVICE (New Section) --- */}
           <div className="pt-4">
-            <h3 className="font-bold text-gray-800 text-xl mb-4 flex items-center">
-              <span className="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 font-bold">!</span>
-              Lifestyle & Money
-            </h3>
             <div className="grid md:grid-cols-2 gap-6">
-              {/* Fixed: Changed from Border-Left style to Full Pastel Card */}
-              <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 hover:shadow-md transition-all">
-                <h5 className="font-bold text-indigo-900 mb-1">"Blowman" Syndrome</h5>
-                <p className="text-sm text-gray-700">
-                  Spending 80% of your semester allowance in the first month (Freshers' Week) on fast food (Sammo/Splash) and Uber rides.
+              <div className="bg-pink-50 p-5 rounded-xl border border-pink-100 hover:shadow-md transition-all">
+                <h5 className="font-bold text-pink-900 mb-2">Relationship Drama</h5>
+                <p className="text-sm text-gray-700 italic mb-2">
+                  "Don't skip lectures because your boyfriend or girlfriend wants something from you. It's not worth it."
+                </p>
+                <p className="text-xs text-pink-800 font-bold">
+                  Prioritize your education.
                 </p>
               </div>
 
-              {/* Fixed: Changed from Border-Left style to Full Pastel Card */}
-              <div className="bg-pink-50 p-5 rounded-xl border border-pink-100 hover:shadow-md transition-all">
-                <h5 className="font-bold text-pink-900 mb-1">Relationship Drama</h5>
-                <p className="text-sm text-gray-700">
-                  Getting into intense "campus marriage" in Level 100. It consumes study time and emotional energy needed for academics.
+              <div className="bg-emerald-50 p-5 rounded-xl border border-emerald-100 hover:shadow-md transition-all">
+                <h5 className="font-bold text-emerald-900 mb-2">Senior Helpers</h5>
+                <p className="text-sm text-gray-700 mb-2">
+                  If a senior wants to "help" you with studies, remember:
+                  <strong> Use public spaces</strong> like the Library, Lecture Theatres, or Summer Huts.
+                </p>
+                <p className="text-xs text-emerald-800 font-bold">
+                  "It is better to be safe than sorry."
                 </p>
               </div>
             </div>
-          </div>
-        </div>
+          </div >
+        </div >
       ),
 
       // --- WARNINGS TAB DATA (Specific Mistakes) ---
