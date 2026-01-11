@@ -1,12 +1,11 @@
 // Service Worker for UCC Campus Guide
-const CACHE_NAME = 'ucc-guide-v3-forced';
+const CACHE_NAME = 'ucc-guide-v4-fix';
 const urlsToCache = [
     '/',
     '/index.html',
-    '/src/main.jsx',
-    '/src/styles/globals.css',
     '/logo.png',
-    '/favicon.ico'
+    '/favicon.ico',
+    '/manifest.json'
 ];
 
 // Install event - cache resources
