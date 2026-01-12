@@ -35,7 +35,7 @@ const CommonMistakesFreshers = () => {
               <h4 className="font-bold text-orange-900 mb-2">The "IC" Grade</h4>
               <p className="text-sm text-gray-700">
                 Forgetting to sign the attendance sheet at an exam.
-                <strong> Reality:</strong> You get an "Incomplete" (IC). If not fixed in 2 weeks, it automatically becomes an E (Fail).
+                <strong> Reality:</strong> You get an "Incomplete" (IC). If not fixed you cannot graduate.
               </p>
             </div>
 
