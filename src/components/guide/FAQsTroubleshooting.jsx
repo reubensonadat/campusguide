@@ -79,8 +79,8 @@ const FAQsTroubleshooting = () => {
                   <strong>Solution:</strong> Act immediately (within 2 weeks).
                   <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600">
                     <li>Check the Department Notice Board for "IC Lists".</li>
-                    <li>Contact the <strong>Department Registration Officer</strong> or the Lecturer.</li>
-                    <li>Do not wait; "IC" turns to "E" (Fail) automatically after the rectification period.</li>
+                    <li>Contact the <strong>Lecturer</strong> </li>
+                    <li>Do not wait; If you have an IC in your portal, <strong>you cannot graduate</strong>.</li>
                   </ul>
                 </div>
               </div>
@@ -89,34 +89,6 @@ const FAQsTroubleshooting = () => {
           </div>
         </div>
       ),
-
-      // --- RESOURCES TAB DATA ---
-      resources: [
-        {
-          title: "MIS Section (Portal Support)",
-          description: "For password resets that email cannot fix.",
-          url: "https://mis.ucc.edu.gh"
-        },
-        {
-          title: "Students Records Section",
-          description: "For transcript and results issues.",
-          url: "https://daa.ucc.edu.gh"
-        },
-        {
-          title: "UCC Institutional Email",
-          description: "Login to access WiFi and Google Classroom.",
-          url: "https://gmail.com"
-        }
-      ],
-
-      // --- CHECKLIST TAB DATA ---
-      checklist: [
-        { text: "Cleared Browser Cache", checked: false },
-        { text: "Tried Incognito Mode", checked: false },
-        { text: "Checked 'Spam' folder for Reset Link", checked: false },
-        { text: "Verified Fee Receipt has Student ID", checked: false },
-        { text: "Reported 'IC' grade to Department", checked: false }
-      ]
     }
   ];
 
