@@ -5,6 +5,7 @@ import { AppProvider } from './context/AppContext';
 import { useOnboarding } from './hooks/useOnboarding';
 import { useSupportModal } from './hooks/useSupportModal';
 import { useSupportTimer } from './hooks/useSupportTimer';
+import { useClassReminders } from './hooks/useClassReminders';
 import { useFeedbackTimer } from './hooks/useFeedbackTimer';
 import { useFeedbackModal } from './hooks/useFeedbackModal';
 import { Toast } from './components/common/Toast';
@@ -31,6 +32,9 @@ function AppContent() {
   // Feedback Modal Logic
   useFeedbackTimer();
   const { showModal: showFeedback, closeModal: closeFeedback } = useFeedbackModal();
+
+  // Class Reminders Logic
+  useClassReminders();
 
   // Preload Paystack script when app loads
   useEffect(() => {

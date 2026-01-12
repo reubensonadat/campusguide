@@ -2,13 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Button } from '../common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../common/Card';
-import { Plus, Trash2, Download, Calendar } from 'lucide-react';
+import { Plus, Trash2, Calendar, Bell } from 'lucide-react';
 import { DAYS_OF_WEEK, TIME_SLOTS } from '../../utils/constants';
-import { exportTimetableToPDF } from '../../services/exportService';
+import { requestNotificationPermission, isNotificationSupported } from '../../services/notificationService';
 
 const TimetableBuilder = () => {
   const [courses, setCourses] = useLocalStorage('ucc_timetable', []);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  useEffect(() => {
+    if (isNotificationSupported()) {
+      setNotificationsEnabled(Notification.permission === 'granted');
+    }
+  }, []);
+
+  const handleEnableNotifications = async () => {
+    const granted = await requestNotificationPermission();
+    setNotificationsEnabled(granted);
+    if (granted) {
+      // Optional: Show a test notification or toast
+      new Notification('Reminders Enabled', { body: 'You will be notified 30 minutes before your classes.' });
+    }
+  };
+
   const [newCourse, setNewCourse] = useState({
     name: '',
     day: 'Monday',
@@ -42,10 +59,6 @@ const TimetableBuilder = () => {
     setCourses(courses.filter(course => course.id !== id));
   };
 
-  const handleExportPDF = () => {
-    exportTimetableToPDF('timetable-grid', 'ucc-timetable.pdf');
-  };
-
   const getCourseForSlot = (day, time) => {
     return courses.find(course =>
       course.day === day &&
@@ -74,16 +87,17 @@ const TimetableBuilder = () => {
             </div>
 
             <div className="flex w-full sm:w-auto gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExportPDF}
-                disabled={courses.length === 0}
-                className="flex-1 sm:flex-none border-indigo-200 text-indigo-700 hover:bg-indigo-50"
-              >
-                <Download size={16} className="mr-2" />
-                Export PDF
-              </Button>
+              {!notificationsEnabled && isNotificationSupported() && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEnableNotifications}
+                  className="flex-1 sm:flex-none border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                >
+                  <Bell size={16} className="mr-2" />
+                  Enable Reminders
+                </Button>
+              )}
               <Button
                 variant="primary"
                 size="sm"
