@@ -2,214 +2,347 @@
 const LibraryServices = () => {
   // UCC GUIDE: LIBRARY SERVICES
   // "The Pastel Edition" - Verified UCC Data (2025)
-  // Features: Visual Step Cards in Overview, specific 'tabs' configuration for the app.
+  // Updated with comprehensive content from libraryguide.md
 
   const sections = [
     {
-      title: "Library Services & Resources",
-      summary: "Make the most of UCC's library facilities.",
+      title: "Overview",
+      summary: "The University of Cape Coast Library system consists of the main Sam Jonah Library (2,000 seating capacity) and 31 satellite libraries.",
       content: (
-        <div className="space-y-8">
-          {/* --- INTRO --- */}
+        <div className="space-y-6">
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
             <p className="text-gray-700 leading-relaxed">
-              The UCC library is a treasure trove of resources for your academic success.
-              With both physical and digital collections, it provides essential support for your research and study needs.
-              <strong> Your student ID is your key to unlocking these resources.</strong>
+              The Sam Jonah Library is the heart of academic research at UCC. It offers a massive collection of physical books,
+              journals, and a rapidly growing digital library. Whether you need a quiet place to study, access to wifi,
+              or help with research, the library is your go-to resource.
             </p>
           </div>
 
-          {/* --- LIBRARY FACILITIES GRID --- */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Physical Resources Card */}
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
-                <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Physical</span>
-                Resources & Spaces
-              </h4>
-              <p className="text-sm text-blue-800/70 mb-4">Access books, journals, and study spaces in the library building.</p>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Book Collection</strong> <span className="text-xs ml-auto text-gray-500">14-day loan</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Study Spaces</strong> <span className="text-xs ml-auto text-gray-500">Quiet & Group</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Reference Desk</strong> <span className="text-xs ml-auto text-gray-500">Research Help</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Digital Resources Card */}
-            <div className="bg-emerald-50 p-6 rounded-xl border border-emerald-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-emerald-900 text-lg mb-3 flex items-center">
-                <span className="bg-emerald-200 text-emerald-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Digital</span>
-                E-Resources
-              </h4>
-              <p className="text-sm text-emerald-800/70 mb-4">Access online journals, e-books, and databases 24/7.</p>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Online Catalog</strong> <span className="text-xs ml-auto text-gray-500">Search & Reserve</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>E-Resources Portal</strong> <span className="text-xs ml-auto text-gray-500">24/7 Access</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Research Guides</strong> <span className="text-xs ml-auto text-gray-500">Subject-specific</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* --- LEARNING COMMONS --- */}
-          <div className="bg-rose-50 p-6 rounded-xl border border-rose-100 hover:shadow-md transition-all duration-300">
-            <h4 className="font-bold text-rose-900 text-lg mb-3 flex items-center">
-              <span className="bg-rose-200 text-rose-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Booking Required</span>
-              The Learning Commons
-            </h4>
-            <p className="text-sm text-rose-800/70 mb-4">
-              A dynamic space for collaboration and study. Booking is often necessary, especially during peak times like exams.
-            </p>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="bg-white/60 p-4 rounded-lg border border-rose-100/50">
-                <strong className="block text-rose-900 mb-1 text-base">Social Learning Commons</strong>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  Designed for social learning. You must <span className="font-semibold text-rose-700">book your seat</span> in advance, especially during busy exam periods when demand is high.
-                </p>
-              </div>
-              <div className="bg-white/60 p-4 rounded-lg border border-rose-100/50">
-                <strong className="block text-rose-900 mb-1 text-base">Discussion Rooms</strong>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  Private spaces for group discussions. <span className="font-semibold text-rose-700">Advance booking is mandatory</span>. Ensure you secure a slot before occupying a room.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* --- GETTING STARTED AS SUBTLE COLORED CARDS --- */}
-          <div className="pt-4">
-            <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
-              <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
-              Getting Started
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-
-              {/* Step 1 - Subtle Blue */}
-              <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-sky-900 text-lg">Register</h5>
-                  <span className="text-3xl font-bold text-sky-200/80 -mt-1">01</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-sky-700 font-semibold mb-2">First Step</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Activate your library account at the circulation desk using your <strong>student ID</strong>.
-                </p>
-              </div>
-
-              {/* Step 2 - Subtle Indigo */}
-              <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-indigo-900 text-lg">Learn Catalog</h5>
-                  <span className="text-3xl font-bold text-indigo-200/80 -mt-1">02</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-indigo-700 font-semibold mb-2">Essential Skill</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Practice searching for books and resources using the <strong>online catalog</strong>.
-                </p>
-              </div>
-
-              {/* Step 3 - Subtle Purple */}
-              <div className="bg-violet-50 p-5 rounded-xl border border-violet-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-violet-900 text-lg">Explore E-Resources</h5>
-                  <span className="text-3xl font-bold text-violet-200/80 -mt-1">03</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-violet-700 font-semibold mb-2">Digital Access</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Access online journals, e-books, and databases with your student credentials.
-                </p>
-              </div>
-
-              {/* Step 4 - Subtle Amber */}
-              <div className="bg-amber-50 p-5 rounded-xl border border-amber-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-amber-900 text-lg">Find Study Spaces</h5>
-                  <span className="text-3xl font-bold text-amber-200/80 -mt-1">04</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-amber-700 font-semibold mb-2">Productive Environment</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Locate quiet areas and group study rooms for different study needs.
-                </p>
-              </div>
-
-              {/* Step 5 - Subtle Teal */}
-              <div className="bg-teal-50 p-5 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-teal-900 text-lg">Learn Rules</h5>
-                  <span className="text-3xl font-bold text-teal-200/80 -mt-1">05</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-teal-700 font-semibold mb-2">Borrowing Policies</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Understand loan periods, renewal policies, and overdue fines.
-                </p>
-              </div>
-
-            </div>
+          <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+            <h4 className="font-bold text-blue-900 mb-3">Quick Facts</h4>
+            <ul className="grid sm:grid-cols-2 gap-3 text-sm text-gray-700">
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                Main Library + 31 Satellites
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                2,000 Seating Capacity
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                Located near the large lecture theatres
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                Open to all students & staff
+              </li>
+            </ul>
           </div>
         </div>
       ),
       keyPoints: [
-        "Student ID required for library access",
-        "Books can be borrowed for 14 days",
-        "E-resources available 24/7",
-        "Study spaces available throughout library",
-        "Research help available at reference desk"
+        "Bags must be left at the baggage room (Ground floor)",
+        "No food, smoking, or phone calls allowed inside",
+        "Silence must be maintained at all times"
+      ]
+    },
+    {
+      title: "Operational Hours",
+      summary: "Opening times vary based on the academic calendar (Regular Semester vs. Exams vs. Vacation).",
+      content: (
+        <div className="space-y-6">
+          {/* Regular Semester */}
+          <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-indigo-50 px-6 py-4 border-b border-indigo-100">
+              <h4 className="font-bold text-indigo-900">Regular Semester</h4>
+            </div>
+            <div className="p-6 grid gap-4">
+              <div className="flex justify-between items-center border-b border-gray-50 pb-2">
+                <span className="text-gray-600 font-medium">Monday – Friday</span>
+                <span className="font-bold text-gray-800">9:00 AM – 10:00 PM</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Saturdays</span>
+                <span className="font-bold text-gray-800">9:00 AM – 8:00 PM</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Examination Period */}
+          <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-amber-50 px-6 py-4 border-b border-amber-100 flex justify-between items-center">
+              <h4 className="font-bold text-amber-900">Examination Period</h4>
+              <span className="text-xs font-bold bg-amber-200 text-amber-800 px-2 py-1 rounded">Extended Hours</span>
+            </div>
+            <div className="p-6">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Monday – Saturday</span>
+                <span className="font-bold text-gray-800">9:00 AM – 5:00 AM <span className="text-xs text-gray-500 font-normal">(Next Day)</span></span>
+              </div>
+            </div>
+          </div>
+
+          {/* Vacation */}
+          <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-100">
+              <h4 className="font-bold text-gray-900">Vacation Period</h4>
+            </div>
+            <div className="p-6 grid gap-4">
+              <div className="flex justify-between items-center border-b border-gray-50 pb-2">
+                <span className="text-gray-600 font-medium">Monday – Friday</span>
+                <span className="font-bold text-gray-800">9:00 AM – 4:30 PM</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Saturdays</span>
+                <span className="font-bold text-gray-400 italic">Closed (Service on request)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "Rules & Conduct",
+      summary: "Strict adherence to library rules is required to maintain a conducive study environment.",
+      content: (
+        <div className="space-y-6">
+          <div className="bg-red-50 p-6 rounded-xl border border-red-100">
+            <h4 className="font-bold text-red-900 mb-4">Prohibited Acts</h4>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3 text-red-800 text-sm">
+                <span className="font-bold text-red-500">×</span>
+                <span><strong>No Phone Calls:</strong> Calls are not allowed in most parts of the library.</span>
+              </li>
+              <li className="flex items-start gap-3 text-red-800 text-sm">
+                <span className="font-bold text-red-500">×</span>
+                <span><strong>No Smoking or Eating:</strong> Strictly prohibited inside the library.</span>
+              </li>
+              <li className="flex items-start gap-3 text-red-800 text-sm">
+                <span className="font-bold text-red-500">×</span>
+                <span><strong>No Seat Reservation:</strong> You cannot 'book' a seat by leaving items for more than 10 minutes.</span>
+              </li>
+              <li className="flex items-start gap-3 text-red-800 text-sm">
+                <span className="font-bold text-red-500">×</span>
+                <span><strong>No Proxy Borrowing:</strong> You cannot borrow books on behalf of others.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
+            <h4 className="font-bold text-slate-900 mb-4">Entry & Exit Protocols</h4>
+            <ul className="space-y-3 text-sm text-gray-600">
+              <li><strong>Baggage:</strong> Must be left in the Baggage Room (Ground Floor). Do not leave valuables.</li>
+              <li><strong>Inspections:</strong> You must show all books to security at the gate before exiting.</li>
+              <li><strong>Identification:</strong> Always insist on a tag for your checked bag.</li>
+            </ul>
+          </div>
+        </div>
+      ),
+      commonMistakes: [
+        "Leaving valuables (phones, money) in checked bags at the baggage room",
+        "Attempting to borrow books for a friend",
+        "Eating or drinking inside the main library halls",
+        "Leaving books on a desk for over 10 mins to 'reserve' the seat"
       ],
+      consequences: "Stealing library property is a grave offense punishable by expulsion. Defacing books (writing/tearing) attracts a surcharge. The Librarian has authority to search student rooms if theft is suspected."
+    },
+    {
+      title: "Borrowing Books",
+      summary: "Understand how to borrow, renew, and reserve books found in the Circulation Unit.",
+      content: (
+        <div className="space-y-6">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="bg-emerald-50 p-5 rounded-xl border border-emerald-100">
+              <h4 className="font-bold text-emerald-900 mb-2">Loan Period</h4>
+              <p className="text-3xl font-bold text-emerald-600 mb-1">2 Weeks</p>
+              <p className="text-xs text-emerald-800">Renewable once if not requested by others</p>
+            </div>
+            <div className="bg-orange-50 p-5 rounded-xl border border-orange-100">
+              <h4 className="font-bold text-orange-900 mb-2">Overdue Fines</h4>
+              <p className="text-3xl font-bold text-orange-600 mb-1">50p</p>
+              <p className="text-xs text-orange-800">Per book, per day</p>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <h4 className="font-bold text-gray-900 mb-4">Reference vs. Borrowable</h4>
+            <p className="text-sm text-gray-600 mb-4">
+              Not all books can be taken out. Check the spine label (Call Mark).
+              If it has these prefixes, it is for <strong>Reference Only</strong>:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm font-mono font-bold">R (Reference)</span>
+              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm font-mono font-bold">GH (Ghana Coll.)</span>
+              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm font-mono font-bold">DT (Africana)</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-4">
+              *Borrowable books are primarily on the 1st and 2nd Floors.
+            </p>
+          </div>
+        </div>
+      ),
       steps: [
         {
-          title: "Register with the library",
-          description: "Activate your library account with your student ID at the circulation desk."
+          title: "Find a book",
+          description: "Locate a book on the 1st or 2nd floor (ensure it's not Reference only)."
         },
         {
-          title: "Learn to use the catalog",
-          description: "Practice searching for books and resources using the online catalog system."
+          title: "Go to Circulation Desk",
+          description: "Take the book to the desk on the Ground Floor."
         },
         {
-          title: "Explore e-resources",
-          description: "Access online journals, e-books, and databases with your student credentials."
+          title: "Present ID",
+          description: "Show your valid Student ID card to the staff."
         },
         {
-          title: "Find study spaces",
-          description: "Locate quiet areas and group study rooms for different study needs."
-        },
-        {
-          title: "Learn borrowing rules",
-          description: "Understand loan periods, renewal policies, and overdue fines."
+          title: "Check Return Date",
+          description: "Note the due date stamped on the slip to avoid fines."
         }
       ],
       tips: [
-        "Renew books online before they're due to avoid fines",
-        "Use the 'Save & Share' feature to create reading lists",
-        "Attend library orientation sessions at the beginning of the semester",
-        "Book group study rooms in advance during peak periods",
-        "Ask librarians for help with complex research queries"
+        "Lost a book? Report it immediately to avoid accumulating daily fines.",
+        "If you lose a book, you must replace it or pay 3 times the current cost.",
+        "You can reserve a book that is currently out; it will be held for 24h upon return."
+      ]
+    },
+    {
+      title: "Departments & Sections",
+      summary: "A guide to the physical layout of the Sam Jonah Library.",
+      content: (
+        <div className="space-y-8">
+          {/* Ground Floor */}
+          <div className="relative pl-6 border-l-2 border-indigo-100">
+            <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-500"></span>
+            <h4 className="font-bold text-gray-900 text-lg mb-2">Ground Floor</h4>
+            <ul className="space-y-3">
+              <li className="bg-slate-50 p-3 rounded-lg text-sm">
+                <strong className="block text-slate-800">Serials & Media Unit</strong>
+                <span className="text-slate-600">Newspapers, magazines, light reading.</span>
+              </li>
+              <li className="bg-slate-50 p-3 rounded-lg text-sm">
+                <strong className="block text-slate-800">Reference & Reserve</strong>
+                <span className="text-slate-600">Dictionaries, encyclopedias (Ref Only).</span>
+              </li>
+              <li className="bg-slate-50 p-3 rounded-lg text-sm">
+                <strong className="block text-slate-800">Special Needs Section</strong>
+                <span className="text-slate-600">Braille resources, mobility aids, exam transcription services.</span>
+              </li>
+              <li className="bg-slate-50 p-3 rounded-lg text-sm">
+                <strong className="block text-slate-800">Electronic Library (E-Library)</strong>
+                <span className="text-slate-600">Computers, typing services, technical support.</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* First Floor */}
+          <div className="relative pl-6 border-l-2 border-indigo-100">
+            <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-300"></span>
+            <h4 className="font-bold text-gray-900 text-lg mb-2">First Floor</h4>
+            <div className="bg-indigo-50/50 p-3 rounded-lg text-sm">
+              <strong className="block text-indigo-900">General Stacks</strong>
+              <span className="text-gray-600">Main collection of borrowable books arranged by subject.</span>
+            </div>
+          </div>
+
+          {/* Second Floor */}
+          <div className="relative pl-6 border-l-2 border-indigo-100">
+            <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-300"></span>
+            <h4 className="font-bold text-gray-900 text-lg mb-2">Second Floor</h4>
+            <ul className="space-y-3">
+              <li className="bg-slate-50 p-3 rounded-lg text-sm">
+                <strong className="block text-slate-800">Africana Unit</strong>
+                <span className="text-slate-600">Rare collections on Africa/Ghana, theses. (Ref Only).</span>
+              </li>
+              <li className="bg-slate-50 p-3 rounded-lg text-sm">
+                <strong className="block text-slate-800">Law Library (East Wing)</strong>
+                <span className="text-slate-600">Dedicated collection for Law Faculty.</span>
+              </li>
+              <li className="bg-slate-50 p-3 rounded-lg text-sm">
+                <strong className="block text-slate-800">Research Commons (West Wing)</strong>
+                <span className="text-slate-600">Restricted to Graduate Students/Faculty. High-end facilities.</span>
+              </li>
+              <li className="bg-slate-50 p-3 rounded-lg text-sm">
+                <strong className="block text-slate-800">Knowledge Commons (West Wing)</strong>
+                <span className="text-slate-600">Open to Undergrads. Group study areas, discussion rooms (booking req).</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Basement */}
+          <div className="relative pl-6 border-l-2 border-gray-100">
+            <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-gray-300"></span>
+            <h4 className="font-bold text-gray-900 text-lg mb-2">Basement</h4>
+            <div className="bg-gray-50 p-3 rounded-lg text-sm">
+              <strong className="block text-gray-800">Graduate Study Area</strong>
+              <span className="text-gray-600">Quiet cubicles strictly for Graduate Students.</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "Digital Services",
+      summary: "Access journals, past questions, and chat support via library.ucc.edu.gh / crl.ucc.edu.gh",
+      content: (
+        <div className="space-y-6">
+          <div className="bg-purple-50 p-6 rounded-xl border border-purple-100">
+            <h4 className="font-bold text-purple-900 mb-2">Accessing E-Resources (Off-Campus)</h4>
+            <p className="text-sm text-purple-800 mb-4">
+              Databases like JSTOR and Emerald work automatically on campus WiFi.
+              To access them from home, you must register for <strong>Off-Campus Remote Access</strong>.
+            </p>
+            <div className="text-xs bg-white/60 p-3 rounded border border-purple-200 text-purple-900">
+              <strong>Registration:</strong> Fill out the form (Name, Student No, Email) on the website.
+              Processing takes up to 2 working days.
+            </div>
+          </div>
+        </div>
+      ),
+      resources: [
+        {
+          title: "UCC Library Website",
+          url: "https://crl.ucc.edu.gh",
+          description: "Main portal for all services"
+        },
+        {
+          title: "UCC Cat (Online Catalog)",
+          url: "https://crl.ucc.edu.gh",
+          description: "Search for physical books and their shelf locations"
+        },
+        {
+          title: "Institutional Repository",
+          url: "https://ir.ucc.edu.gh",
+          description: "Access theses, dissertations and past questions"
+        },
+        {
+          title: "Live Chat",
+          url: "https://crl.ucc.edu.gh",
+          description: "Chat with a librarian in real-time"
+        }
       ],
-
-
+      steps: [
+        {
+          title: "Using UCC Cat",
+          description: "Select UCC Cat > Type keywords > Note the Location & Call Number."
+        },
+        {
+          title: "Downloading Past Questions",
+          description: "Go to E-Resources > Past Questions > Login with Student ID."
+        },
+        {
+          title: "Chat with Librarian",
+          description: "Click Chat icon on website > Enter details > Start chat (or leave email if offline)."
+        }
+      ]
     }
   ];
 
   const tabs = [
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Action Plan' },
+    { id: 'warnings', label: 'Rules & Penalties' },
+    { id: 'resources', label: 'Quick Links' },
   ];
 
   return { sections, tabs };
