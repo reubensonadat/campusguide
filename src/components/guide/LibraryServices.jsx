@@ -301,24 +301,14 @@ const LibraryServices = () => {
       ),
       resources: [
         {
-          title: "UCC Library Website",
-          url: "https://crl.ucc.edu.gh",
-          description: "Main portal for all services"
-        },
-        {
-          title: "UCC Cat (Online Catalog)",
-          url: "https://crl.ucc.edu.gh",
-          description: "Search for physical books and their shelf locations"
-        },
-        {
           title: "Institutional Repository",
           url: "https://ir.ucc.edu.gh",
           description: "Access theses, dissertations and past questions"
         },
         {
-          title: "Live Chat",
-          url: "https://crl.ucc.edu.gh",
-          description: "Chat with a librarian in real-time"
+          title: "Full Guide Video",
+          url: "Https://youtu.be/FDTW3FXOPHY?si=93-j98zVkhbehiMb",
+          description: "Official guide video on youtube"
         }
       ],
       steps: [
