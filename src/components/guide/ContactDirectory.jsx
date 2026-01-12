@@ -38,46 +38,6 @@ const ContactDirectory = () => {
                 </div>
               </div>
             </div>
-
-            {/* UNIVERSITY HOSPITAL */}
-            <div className="bg-green-50 p-5 rounded-xl border border-green-100 flex items-start gap-4">
-              <div className="bg-green-100 p-3 rounded-full text-green-600">
-                <Plus size={24} />
-              </div>
-              <div>
-                <h4 className="font-bold text-green-900 text-lg">University Hospital</h4>
-                <p className="text-sm text-green-800 mb-2">OPD / Emergency</p>
-                <div className="flex flex-col gap-1">
-                  <a href="tel:0244977860" className="text-md font-bold text-green-700 hover:underline">024 497 7860</a>
-                  <a href="tel:0548650505" className="text-md font-bold text-green-700 hover:underline">054 865 0505</a>
-                  <a href="tel:0244473904" className="text-md font-bold text-green-700 hover:underline">024 447 3904</a>
-                </div>
-              </div>
-            </div>
-
-            {/* UCC POLICE STATION */}
-            <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 flex items-start gap-4">
-              <div className="bg-slate-200 p-3 rounded-full text-slate-600">
-                <Shield size={24} />
-              </div>
-              <div>
-                <h4 className="font-bold text-slate-900 text-lg">UCC Police Station</h4>
-                <p className="text-sm text-slate-800 mb-2">Old Site Gate</p>
-                <a href="tel:0332132411" className="block text-lg font-bold text-slate-700 hover:underline">033 213 2411</a>
-              </div>
-            </div>
-
-            {/* FIRE SERVICE */}
-            <div className="bg-orange-50 p-5 rounded-xl border border-orange-100 flex items-start gap-4">
-              <div className="bg-orange-100 p-3 rounded-full text-orange-600">
-                <Flame size={24} />
-              </div>
-              <div>
-                <h4 className="font-bold text-orange-900 text-lg">UCC Fire Service</h4>
-                <p className="text-sm text-orange-800 mb-2">Campus Unit</p>
-                <a href="tel:0205388648" className="block text-lg font-bold text-orange-700 hover:underline">020 538 8648</a>
-              </div>
-            </div>
           </div>
 
           {/* --- SRC STUDENT SUPPORT TEAM --- */}

@@ -13,12 +13,12 @@ const PrintingTranscriptsLetters = () => {
           {/* --- INTRO --- */}
           <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
             <p className="text-gray-700 leading-relaxed">
-              Official academic documents like transcripts and recommendation letters are essential for job applications, further studies, or scholarship opportunities. 
+              Official academic documents like transcripts and recommendation letters are essential for job applications, further studies, or scholarship opportunities.
               The Exams and Records Office handles these requests with specific procedures.
               <strong> Plan ahead as processing takes time, and some documents require departmental clearance.</strong>
             </p>
           </div>
-          
+
           {/* --- DOCUMENT TYPES GRID --- */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Transcripts Card */}
@@ -31,11 +31,11 @@ const PrintingTranscriptsLetters = () => {
               <ul className="space-y-3 text-sm text-gray-700">
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Official Transcript</strong> <span className="text-xs ml-auto text-gray-500">GH₵ 30</span>
+                  <strong>Official Transcript</strong>
                 </li>
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Unofficial Transcript</strong> <span className="text-xs ml-auto text-gray-500">GH₵ 10</span>
+                  <strong>Unofficial Transcript</strong>
                 </li>
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
@@ -54,15 +54,15 @@ const PrintingTranscriptsLetters = () => {
               <ul className="space-y-3 text-sm text-gray-700">
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Recommendation Letter</strong> <span className="text-xs ml-auto text-gray-500">GH₵ 20</span>
+                  <strong>Recommendation Letter</strong>
                 </li>
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Proof of Enrollment</strong> <span className="text-xs ml-auto text-gray-500">GH₵ 15</span>
+                  <strong>Proof of Enrollment</strong>
                 </li>
                 <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Completion Certificate</strong> <span className="text-xs ml-auto text-gray-500">GH₵ 50</span>
+                  <strong>Completion Certificate</strong>
                 </li>
               </ul>
             </div>
@@ -74,9 +74,9 @@ const PrintingTranscriptsLetters = () => {
               <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
               Document Request Process
             </h3>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              
+
               {/* Step 1 - Subtle Blue */}
               <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
@@ -144,7 +144,7 @@ const PrintingTranscriptsLetters = () => {
       keyPoints: [
         "Transcripts processed by Exams and Records Office",
         "Processing takes 3-5 working days (standard)",
-        "Fees apply for most documents (GH₵ 10-50)",
+        "Fees apply for most documents",
         "Some documents require departmental clearance",
         "Rush processing available at extra cost (24-hour service)"
       ],
