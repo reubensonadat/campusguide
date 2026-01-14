@@ -77,57 +77,65 @@ const ExamsAssessmentRules = () => {
              
              <h4 className="font-bold text-xl mb-4 flex items-center text-yellow-400 relative z-10">
                 <span className="bg-yellow-500/20 p-2 rounded-lg mr-3 text-sm font-mono">∑</span>
-                How to Calculate Your GPA
+                How to Calculate Your GPA & CGPA
              </h4>
              
-             <div className="grid md:grid-cols-2 gap-8 relative z-10">
-                {/* Formula Explanation */}
-                <div className="space-y-4">
-                  <p className="text-slate-300 text-sm leading-relaxed">
-                    Your Grade Point Average (GPA) is a weighted calculation. It is <strong>not</strong> just an average of your marks. 
-                    Courses with higher <strong>Credit Hours</strong> affect your GPA more than those with lower credits.
-                  </p>
+             <div className="space-y-4 relative z-10">
+                {/* Key Definitions */}
+                <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600 space-y-2">
+                  <p className="text-slate-200 text-sm"><strong className="text-yellow-400">CP</strong> = Course Weighting (Course Credit)</p>
+                  <p className="text-slate-200 text-sm"><strong className="text-yellow-400">GP</strong> = Grade Point (your grade converted to 4.0 scale)</p>
+                  <p className="text-slate-200 text-sm"><strong className="text-yellow-400">GPA</strong> = Grade Point Average (for current semester)</p>
+                  <p className="text-slate-200 text-sm"><strong className="text-yellow-400">CGPA</strong> = Cumulative Grade Point Average (all semesters)</p>
+                </div>
+
+                {/* Concrete Example from Flyer */}
+                <div className="bg-white text-slate-800 p-4 rounded-lg text-sm shadow-md">
+                  <p className="font-bold mb-3 border-b border-slate-200 pb-2 text-xs uppercase tracking-wide text-slate-600">Example: GPA = 3.2 for the Semester</p>
                   
-                  <div className="bg-slate-900/50 p-4 rounded-lg font-mono text-xs md:text-sm border border-slate-700 text-center">
-                    <div className="mb-2 text-slate-400">The Formula</div>
-                    <span className="text-green-400">Total Grade Points</span> 
-                    <span className="mx-2 text-slate-500">÷</span> 
-                    <span className="text-blue-400">Total Credits</span> 
-                    <span className="mx-2 text-white">=</span> 
-                    <span className="text-yellow-400 font-bold">GPA</span>
+                  <div className="space-y-2 mb-4 font-mono text-xs">
+                    <div className="flex items-center justify-between p-2 bg-indigo-50 rounded">
+                      <span>ECO 101: 3 Credits, B (3 GP)</span>
+                      <span className="text-indigo-700 font-bold">CP × GP = 9</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-blue-50 rounded">
+                      <span>ISB 104: 3 Credits, A (4 GP)</span>
+                      <span className="text-blue-700 font-bold">CP × GP = 12</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-purple-50 rounded">
+                      <span>EPS 111: 3 Credits, C (2 GP)</span>
+                      <span className="text-purple-700 font-bold">CP × GP = 6</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-pink-50 rounded">
+                      <span>CMS 107: 3 Credits, B (3 GP)</span>
+                      <span className="text-pink-700 font-bold">CP × GP = 9</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-green-50 rounded">
+                      <span>ASP 102A: 3 Credits, A (4 GP)</span>
+                      <span className="text-green-700 font-bold">CP × GP = 12</span>
+                    </div>
+                  </div>
+
+                  <div className="border-t-2 border-slate-300 pt-2 mt-2">
+                    <div className="text-right mb-2">
+                      <span className="text-slate-600">Total CP × GP = </span>
+                      <span className="font-bold text-slate-800">48</span>
+                    </div>
+                    <div className="text-right mb-2">
+                      <span className="text-slate-600">Total Credits = </span>
+                      <span className="font-bold text-slate-800">15</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3 bg-yellow-50 p-3 rounded border border-yellow-200 text-center">
+                    <div className="text-xs text-yellow-800 mb-1">GPA = Σ Grade Points / Σ Credits</div>
+                    <span className="text-yellow-900 font-bold text-base">GPA = 48 ÷ 15 = 3.2</span>
                   </div>
                 </div>
 
-                {/* Concrete Example */}
-                <div className="bg-white text-slate-800 p-4 rounded-lg text-sm shadow-md">
-                  <p className="font-bold mb-2 border-b border-slate-200 pb-1 text-xs uppercase tracking-wide text-slate-500">Hypothetical Semester</p>
-                  
-                  <div className="space-y-2 mb-3">
-                    <div className="flex justify-between items-center">
-                      <span>1. Research Methods (3 Credits)</span>
-                      <span className="font-mono text-indigo-600 font-bold">A (4.0)</span>
-                    </div>
-                    <div className="text-xs text-slate-500 text-right border-b border-slate-100 pb-1">
-                      Calculation: 3 × 4.0 = <span className="text-slate-700 font-medium">12.0</span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span>2. African Studies (2 Credits)</span>
-                      <span className="font-mono text-orange-600 font-bold">C (2.0)</span>
-                    </div>
-                    <div className="text-xs text-slate-500 text-right border-b border-slate-100 pb-1">
-                      Calculation: 2 × 2.0 = <span className="text-slate-700 font-medium">4.0</span>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between font-bold text-slate-700 pt-1">
-                    <span>Total Credits: 5</span>
-                    <span>Total Points: 16.0</span>
-                  </div>
-                  
-                  <div className="mt-3 bg-yellow-50 p-2 rounded border border-yellow-100 text-center">
-                    <span className="text-yellow-800 font-bold">GPA = 16.0 ÷ 5 = 3.2</span>
-                  </div>
+                {/* CGPA Note */}
+                <div className="bg-blue-900/30 border border-blue-700 p-4 rounded-lg text-sm">
+                  <p className="text-blue-100"><strong className="text-blue-300">Important:</strong> CGPA treats all completed courses as if taken in one semester. It is calculated by summing all grade points from ALL semesters divided by total credits from ALL semesters. CGPA ≠ Average of semester GPAs.</p>
                 </div>
              </div>
           </div>

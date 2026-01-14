@@ -310,7 +310,7 @@ const LibraryServices = () => {
           url: "Https://youtu.be/FDTW3FXOPHY?si=93-j98zVkhbehiMb",
           description: "Official guide video on youtube"
         }
-      ],
+      ], 
       steps: [
         {
           title: "Using UCC Cat",

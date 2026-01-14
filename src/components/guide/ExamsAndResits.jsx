@@ -64,10 +64,10 @@ const ExamsAndResits = () => {
                             <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm md:col-span-2">
                                 <h4 className="font-bold text-red-800 flex items-center mb-2">
                                     <span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
-                                    The 12-Credit Hour Rule (Dismissal)
+                                    The 9-Credit Hour Rule (Dismissal)
                                 </h4>
                                 <p className="text-sm text-gray-700 leading-relaxed">
-                                    If you fail a total of <strong>12 credit hours</strong> in an academic year (e.g., getting 'E' in four 3-credit courses across Sem 1 & 2), the university <strong>will withdraw (sack) you</strong> regardless of your level (100-400).
+                                    If you fail a total of <strong>more than 9 credit hours</strong> in an academic year (e.g., getting 'E' in four 3-credit courses across Sem 1 & 2), the university <strong>will withdraw (sack) you</strong> regardless of your level (100-400).
                                     <br />
                                     <span className="text-red-600 font-bold mt-1 block">Always register for resits immediately to avoid this.</span>
                                 </p>
@@ -105,15 +105,117 @@ const ExamsAndResits = () => {
                         </div>
                     </div>
 
+                    {/* --- PROGRESSION/WITHDRAWAL AFTER 2ND RESIT --- */}
+                    <div className="bg-orange-50 p-6 rounded-xl border border-orange-100">
+                        <h3 className="text-xl font-bold text-orange-900 mb-4 flex items-center">
+                            Progression/Withdrawal After Second Re-sit Examination
+                            <span className="ml-3 text-xs font-bold bg-orange-200 text-orange-800 px-2 py-1 rounded uppercase">Policy 9.1.3</span>
+                        </h3>
+
+                        <div className="space-y-4">
+                            <div className="bg-white p-4 rounded-lg border border-orange-100 shadow-sm">
+                                <h4 className="font-bold text-orange-900 mb-3">Core Courses vs University-Wide Courses</h4>
+                                <p className="text-gray-700 text-sm leading-relaxed mb-3">
+                                    The outcome after your 2nd re-sit exam depends on the type of course you failed:
+                                </p>
+                                
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="bg-red-50 p-4 rounded border border-red-100">
+                                        <h5 className="font-bold text-red-800 mb-2 flex items-center">
+                                            <span className="w-2 h-2 rounded-full bg-red-600 mr-2"></span>
+                                            Failing a Core Course
+                                        </h5>
+                                        <p className="text-sm text-gray-700">
+                                            <strong>Result:</strong> <span className="text-red-700 font-bold">WITHDRAWAL from the program</span> with no progression to the next level.
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-blue-50 p-4 rounded border border-blue-100">
+                                        <h5 className="font-bold text-blue-800 mb-2 flex items-center">
+                                            <span className="w-2 h-2 rounded-full bg-blue-600 mr-2"></span>
+                                            Failing a University-Wide Course
+                                        </h5>
+                                        <p className="text-sm text-gray-700">
+                                            <strong>Result:</strong> <span className="text-blue-700 font-bold">PROGRESSION to Level 200 ON PROBATION</span> with chances to retake the course.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white p-4 rounded-lg border border-orange-100 shadow-sm">
+                                <h4 className="font-bold text-orange-900 mb-2 flex items-center">
+                                    <span className="text-lg mr-2">ℹ️</span>
+                                    Level 100 Withdrawal Policy
+                                </h4>
+                                <p className="text-sm text-gray-700">
+                                    If you withdraw at Level 100, you <strong>can reapply for admission the following year</strong>. You may be re-admitted and start fresh, depending on university policies.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* --- PROGRESSION FROM LEVEL 200 UPWARDS --- */}
+                    <div className="bg-purple-50 p-6 rounded-xl border border-purple-100">
+                        <h3 className="text-xl font-bold text-purple-900 mb-4 flex items-center">
+                            Progression from Level 200 Upwards
+                            <span className="ml-3 text-xs font-bold bg-purple-200 text-purple-800 px-2 py-1 rounded uppercase">Policy 9.1.3</span>
+                        </h3>
+
+                        <p className="text-gray-700 mb-4 leading-relaxed">
+                            To progress from Level 200 → 300 or Level 300 → 400, a student <strong>must meet ALL three conditions</strong>:
+                        </p>
+
+                        <div className="space-y-3">
+                            <div className="flex gap-4 bg-white p-4 rounded-lg border border-purple-100">
+                                <div className="flex-shrink-0">
+                                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-600 text-white font-bold text-sm">(A)</span>
+                                </div>
+                                <div>
+                                    <h5 className="font-bold text-gray-800">Minimum CGPA of 1.0</h5>
+                                    <p className="text-sm text-gray-600">Your cumulative grade point average must be at least 1.0.</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 bg-white p-4 rounded-lg border border-purple-100">
+                                <div className="flex-shrink-0">
+                                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-600 text-white font-bold text-sm">(B)</span>
+                                </div>
+                                <div>
+                                    <h5 className="font-bold text-gray-800">Earn at Least 30 Credits for the Current Academic Year</h5>
+                                    <p className="text-sm text-gray-600">You must complete at least 30 credit hours during the academic year to show adequate progress.</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 bg-white p-4 rounded-lg border border-purple-100">
+                                <div className="flex-shrink-0">
+                                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-600 text-white font-bold text-sm">(C)</span>
+                                </div>
+                                <div>
+                                    <h5 className="font-bold text-gray-800">Not Lose More Than 9 Credits Among Registered Courses</h5>
+                                    <p className="text-sm text-gray-600">By the end of the academic year, you cannot have failed (or dropped) more than 9 credit hours from your registered courses.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-sm text-red-900">
+                                <strong>Consequence:</strong> Failing any of these conditions leads to <strong>Probation</strong> or <strong>External-Candidate Status</strong>, depending on the severity of the failure.
+                            </p>
+                        </div>
+                    </div>
+
                 </div>
             ),
 
             keyPoints: [
                 "Missing an exam without proof leads to an automatic E (Fail).",
                 "Official medical reports are required to appeal for a 'deferred' exam.",
-                "Accumulating 12 credit hours of failure in one year leads to dismissal.",
+                "Accumulating more than 9 credit hours of failure in one year leads to dismissal.",
                 "You must actively register for resits; it is not automatic.",
-                "Resits happen at a specific scheduled time of the year - watch the noticeboards."
+                "Resits happen at a specific scheduled time of the year - watch the noticeboards.",
+                "Failing a core course at Level 100 results in withdrawal; failing a university-wide course allows progression to Level 200 on probation.",
+                "To progress from Level 200+, you need: CGPA ≥ 1.0, at least 30 credits earned, and not more than 9 failed credits in the year.",
+                "CGPA (Cumulative Grade Point Average) is calculated from ALL semesters, not just the average of semester GPAs."
             ]
         }
     ];
