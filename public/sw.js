@@ -69,7 +69,33 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Activate event - clean up old caches
+// Function to track PWA visits
+function trackVisit() {
+    // Get the current origin
+    const origin = self.location.origin;
+
+    // Add a timestamp to ensure the request isn't cached
+    const timestamp = Date.now();
+
+    // Ping the homepage with a tracking parameter
+    // Cloudflare Web Analytics will count this as a visit
+    const trackingUrl = `${origin}/?pwa_visit=1&t=${timestamp}`;
+
+    // Send a fetch request to track the visit
+    fetch(trackingUrl, {
+        method: 'GET',
+        mode: 'no-cors', // Use no-cors to avoid CORS issues
+        cache: 'no-cache',
+        headers: {
+            'X-PWA-Visit': 'true'
+        }
+    }).catch((error) => {
+        // Silently fail if tracking doesn't work
+        console.log('Visit tracking failed:', error);
+    });
+}
+
+// Activate event - clean up old caches and track visit
 self.addEventListener('activate', (event) => {
     const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
@@ -81,7 +107,17 @@ self.addEventListener('activate', (event) => {
                     }
                 })
             );
+        }).then(() => {
+            // Track visit when service worker activates
+            trackVisit();
         })
     );
     self.clients.claim();
+});
+
+// Listen for messages from the client to track visits
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'TRACK_VISIT') {
+        trackVisit();
+    }
 });
