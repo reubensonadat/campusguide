@@ -147,6 +147,7 @@ const CampusMap = () => {
     { id: "A20", fullName: "Computer Science Department", shortForm: "CS", description: "Science Block.", url: "5.11604897232864, -1.2938718155845037" },
     { id: "A21", fullName: "Faculty of Law", shortForm: "Law", description: "New Site.", url: "5.1175453569657625, -1.2929534136352714" },
     { id: "A22", fullName: "School of Nursing", shortForm: "Nursing", description: "Inside the CANS building.", url: "5.116297423955384, -1.2935723263496335" },
+    { id: "A23", fullName: "SRT", shortForm: "SRT", description: "New Site.", url: " Space above LT" },
 
     // --- LIBRARIES ---
     { id: "L1", fullName: "Sam Jonah Library", shortForm: "SAMIS", description: "The central university library (New Site).", url: "Sam Jonah Library" },
