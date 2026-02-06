@@ -4,12 +4,12 @@ import { Button } from '../common/Button';
 import { handlePayment, generatePaymentReference, verifyPayment } from '../../services/paymentService';
 import { CreditCard, Loader2, CheckCircle } from 'lucide-react';
 
-const PaymentButton = ({ 
-  amount, 
-  email, 
-  metadata = {}, 
-  onPaymentSuccess, 
-  onPaymentError, 
+const PaymentButton = ({
+  amount,
+  email,
+  metadata = {},
+  onPaymentSuccess,
+  onPaymentError,
   className = '',
   disabled = false,
   children = 'Support UCC Campus Guide'
@@ -19,18 +19,20 @@ const PaymentButton = ({
 
   const handlePaymentClick = async () => {
     if (isLoading || disabled) return;
-    
+
     // Validate email
     if (!email || !email.includes('@') || !email.includes('.')) {
       onPaymentError?.(new Error('Valid email is required'));
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
-      const reference = generatePaymentReference();
-      
+      // Use custom prefix if provided, otherwise default to UCC
+      const prefix = metadata.campusPrefix ? metadata.campusPrefix.toUpperCase() : 'UCC';
+      const reference = generatePaymentReference(prefix);
+
       // Initiate payment
       const result = await handlePayment({
         amount,
@@ -46,10 +48,10 @@ const PaymentButton = ({
       if (result.status === 'success') {
         // Verify the payment on the server side
         setIsVerifying(true);
-        
+
         try {
           const verification = await verifyPayment(result.reference);
-          
+
           if (verification.verified) {
             onPaymentSuccess?.({
               ...result,

@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
+import { CampusProvider, useCampus } from './context/CampusContext';
 import { useOnboarding } from './hooks/useOnboarding';
 import { useSupportModal } from './hooks/useSupportModal';
 import { useSupportTimer } from './hooks/useSupportTimer';
@@ -14,6 +15,7 @@ import { Onboarding } from './components/onboarding/Onboarding';
 import { SupportModal } from './components/payment/SupportModal';
 import FeedbackModal from './components/common/FeedbackSurveyModal';
 import PWAInstallButton from './components/common/PWAInstallButton';
+import CampusSelectorModal from './components/common/CampusSelectorModal';
 import { preloadPaystack } from './services/paymentService';
 
 // Page imports
@@ -26,6 +28,7 @@ import Settings from './pages/Settings';
 
 function AppContent() {
   const { showOnboarding, currentStep, nextStep, prevStep, closeOnboarding } = useOnboarding();
+  const { selectedCampusId } = useCampus();
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
   const { resetTimer } = useSupportTimer();
 
@@ -74,6 +77,11 @@ function AppContent() {
         onPrev={prevStep}
       />
 
+      <CampusSelectorModal
+        isOpen={!showOnboarding && !selectedCampusId}
+        onClose={() => { }}
+      />
+
       <SupportModal
         isOpen={showModal}
         onClose={handleCloseModal}
@@ -91,9 +99,11 @@ function AppContent() {
 function App() {
   return (
     <AppProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <CampusProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </CampusProvider>
     </AppProvider>
   );
 }
