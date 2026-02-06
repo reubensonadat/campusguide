@@ -8,6 +8,8 @@ import { Heart, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
   const [selectedAmount, setSelectedAmount] = useState(10);
   const [customAmount, setCustomAmount] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [paymentResult, setPaymentResult] = useState(null);
   const [showWhySupport, setShowWhySupport] = useState(false);
@@ -54,6 +56,8 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
   const resetModal = () => {
     setSelectedAmount(10);
     setCustomAmount('');
+    setName('');
+    setPhone('');
     setEmail('');
     setPaymentResult(null);
     setShowWhySupport(false);
@@ -134,20 +138,49 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
               )}
             </div>
 
-            {/* Email Input */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address (Optional)
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                placeholder="your.email@example.com"
-              />
-              <p className="text-xs text-gray-500 mt-1.5">
-                For receipt and updates
+            {/* Contact Info */}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  placeholder="Your Name"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Phone (Optional)
+                  </label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="020..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Email (Optional)
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="mail@..."
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">
+                To confirm your spot on the leaderboard and for updates.
               </p>
             </div>
 
@@ -157,7 +190,9 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
               email={email || 'anonymous@uccguide.com'}
               metadata={{
                 plan_id: 'supporter',
-                plan_name: 'Supporter'
+                plan_name: 'Supporter',
+                supporterName: name,
+                supporterPhone: phone
               }}
               onPaymentSuccess={handlePaymentSuccess}
               onPaymentError={handlePaymentError}

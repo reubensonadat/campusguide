@@ -1,5 +1,5 @@
 // App constants
-export const APP_NAME = 'UCC Campus Guide';
+export const APP_NAME = 'Campus Guide';
 export const APP_VERSION = '1.0.0';
 
 // Time constants

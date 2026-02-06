@@ -22,7 +22,7 @@ export const loadPaystackScript = () => {
       resolve(window.PaystackPop);
       return;
     }
-    
+
     // Check if script is already loading
     if (isPaystackLoading) {
       // Poll for completion
@@ -32,34 +32,34 @@ export const loadPaystackScript = () => {
           resolve(window.PaystackPop);
         }
       }, 100);
-      
+
       // Timeout after 10 seconds
       setTimeout(() => {
         clearInterval(checkInterval);
         reject(new Error('Paystack script loading timeout'));
       }, 10000);
-      
+
       return;
     }
-    
+
     // Set loading flag
     isPaystackLoading = true;
-    
+
     // Create script element
     const script = document.createElement('script');
     script.src = 'https://js.paystack.co/v1/inline.js';
     script.async = true;
-    
+
     script.onload = () => {
       isPaystackLoading = false;
       resolve(window.PaystackPop);
     };
-    
+
     script.onerror = () => {
       isPaystackLoading = false;
       reject(new Error('Failed to load Paystack script'));
     };
-    
+
     document.head.appendChild(script);
   });
 };
@@ -71,26 +71,26 @@ export const handlePayment = async ({ amount, email, reference, metadata }) => {
     if (!amount || amount <= 0) {
       throw new Error('Invalid amount');
     }
-    
+
     // Basic email validation
     if (!email || !email.includes('@') || !email.includes('.')) {
       throw new Error('Valid email is required');
     }
-    
+
     if (!reference) {
       throw new Error('Payment reference is required');
     }
 
     // Load Paystack if not available
     await loadPaystackScript();
-    
+
     if (!window.PaystackPop) {
       throw new Error('Paystack not available');
     }
 
     // Get the appropriate key based on environment
     const paystackKey = getPaystackKey();
-    
+
     if (!paystackKey) {
       throw new Error('Paystack key not configured');
     }
@@ -105,7 +105,7 @@ export const handlePayment = async ({ amount, email, reference, metadata }) => {
         ref: reference,
         currency: 'GHS', // Ghana Cedis
         metadata: metadata,
-        callback: function(response) {
+        callback: function (response) {
           console.log('Paystack callback:', response);
           if (response.status === 'success') {
             resolve({
@@ -119,7 +119,7 @@ export const handlePayment = async ({ amount, email, reference, metadata }) => {
             reject(new Error(response.message || 'Payment failed'));
           }
         },
-        onClose: function() {
+        onClose: function () {
           console.log('Payment cancelled by user');
           reject(new Error('Payment cancelled by user'));
         }
@@ -140,10 +140,10 @@ export const handlePayment = async ({ amount, email, reference, metadata }) => {
 };
 
 // Generate unique payment reference
-export const generatePaymentReference = () => {
+export const generatePaymentReference = (prefix = 'UCC') => {
   const timestamp = Date.now();
   const random = Math.floor(Math.random() * 1000000);
-  return `UCC_${timestamp}_${random}`;
+  return `${prefix}_${timestamp}_${random}`;
 };
 
 // Preload Paystack script
@@ -159,16 +159,16 @@ export const verifyPayment = async (reference) => {
   try {
     // This should be done on your backend server for security
     // For demonstration, we're showing the client-side approach
-    
+
     // Get the secret key (should be on server-side in production)
-    const secretKey = import.meta.env.PROD 
+    const secretKey = import.meta.env.PROD
       ? import.meta.env.VITE_PAYSTACK_LIVE_SECRET_KEY
       : import.meta.env.VITE_PAYSTACK_TEST_SECRET_KEY;
-    
+
     if (!secretKey) {
       throw new Error('Paystack secret key not configured');
     }
-    
+
     // Make API request to verify payment
     const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
       method: 'GET',
@@ -177,9 +177,9 @@ export const verifyPayment = async (reference) => {
         'Content-Type': 'application/json'
       }
     });
-    
+
     const data = await response.json();
-    
+
     if (data.status) {
       return {
         status: 'success',
