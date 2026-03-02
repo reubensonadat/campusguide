@@ -93,11 +93,17 @@ const MapView = () => {
 
             {/* --- MAP CONTAINER (LEAFLET) --- */}
             <div className="absolute inset-0 z-0 h-full w-full">
+                
                 <MapContainer
+                    maxBounds={[[5.0900, -4.3100], [5.1500, -1.2600]]}
+                    maxBoundsViscosity={1.0}
+                    minZoom={14}
+                    maxZoom={19}
                     center={defaultCenter}
                     zoom={15}
                     style={{ height: '100%', width: '100%' }}
-                    zoomControl={false} // We can add custom controls if we want, or rely on touch
+                    zoomControl={false}
+                 // We can add custom controls if we want, or rely on touch
                 >
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
