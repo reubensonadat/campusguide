@@ -68,7 +68,7 @@ const Support = () => {
   };
 
   return (
-    <div className="pb-24 bg-gray-50/50 min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="pb-24 bg-gray-50/30 min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900">
 
       {/* Header - Clean & Simple */}
       <div className="pt-16 pb-12 px-6 text-center max-w-2xl mx-auto">

@@ -9,8 +9,7 @@ export const CampusProvider = ({ children }) => {
     const LS_CAMPUS_KEY = 'campus_guide_selected_campus';
 
     // Use custom hook or standard useState with lazy initialization
-    // We prefer useLocalStorage if available, but for simplicity here's the logic:
-    const [selectedCampusId, setSelectedCampusId] = useLocalStorage(LS_CAMPUS_KEY, null);
+    const [selectedCampusId, setSelectedCampusId] = useLocalStorage(LS_CAMPUS_KEY, 'ucc');
     const [selectedCampus, setSelectedCampus] = useState(null);
 
     useEffect(() => {

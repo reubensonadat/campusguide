@@ -218,7 +218,20 @@ const CampusMap = () => {
     { id: 'resources', label: 'Directions' },
   ];
 
-  return { sections, buildings, openGoogleMaps, tabs };
+  // Helper to extract coordinates from URL if present
+  const getCoordinates = (url) => {
+    if (!url) return null;
+    // Check if url is a coordinate string "lat, lng"
+    const coordMatch = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/.exec(url);
+    if (coordMatch) {
+      return [parseFloat(coordMatch[1]), parseFloat(coordMatch[3])];
+    }
+    return null;
+  };
+
+  const defaultCenter = [5.11676647092683, -1.293229663589804]; // Default to central campus
+
+  return { sections, buildings, openGoogleMaps, tabs, getCoordinates, defaultCenter };
 };
 
 // Helper Components

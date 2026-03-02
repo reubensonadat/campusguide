@@ -94,7 +94,7 @@ const Settings = () => {
   ];
 
   return (
-    <div className="p-4 pb-24 bg-gray-50/50 min-h-screen font-sans">
+    <div className="p-4 pb-24 bg-gray-50/30 min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900">
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden">
         {/* Decorative Elements */}
