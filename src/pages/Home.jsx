@@ -152,7 +152,6 @@ const Home = () => {
             >
               <BookOpen size={20} />
               <span>Open Guide</span>
-              <ArrowUpRight size={18} className="opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Button>
             <Button
               variant="outline"
