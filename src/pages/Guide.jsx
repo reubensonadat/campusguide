@@ -45,15 +45,18 @@ const Guide = () => {
     }
   }, []);
 
-  // Memoize the selected topic data
   const currentTopicData = useMemo(() => {
     if (!selectedTopicId) return null;
     // Find the topic object across all categories
     for (const cat in GUIDE_TOPICS) {
       const found = GUIDE_TOPICS[cat].find(t => t.id === selectedTopicId);
       if (found) {
+        if (found.isInteractive) {
+          // DO NOT return the component here, return a flag and reference
+          return { isInteractive: true, component: found.component };
+        }
         // Initialize the component to get the data object
-        return found.component();
+        return { isInteractive: false, data: found.component() };
       }
     }
     return null;
@@ -61,17 +64,19 @@ const Guide = () => {
 
   // Reset tab when topic changes
   React.useEffect(() => {
-    if (currentTopicData?.tabs?.length > 0) {
-      setActiveTab(currentTopicData.tabs[0].id);
+    if (currentTopicData && !currentTopicData.isInteractive && currentTopicData.data?.tabs?.length > 0) {
+      setActiveTab(currentTopicData.data.tabs[0].id);
     }
   }, [currentTopicData]);
 
   const renderContent = () => {
-    if (!currentTopicData) return null;
+    if (!currentTopicData || currentTopicData.isInteractive) return null;
+
+    const { data } = currentTopicData;
 
     return (
       <div className="space-y-12">
-        {currentTopicData.sections.map((section, sectionIdx) => (
+        {data.sections.map((section, sectionIdx) => (
           <div key={sectionIdx} className={sectionIdx > 0 ? "pt-8 border-t border-gray-100" : ""}>
             {(() => {
               switch (activeTab) {
@@ -79,7 +84,7 @@ const Guide = () => {
                   return (
                     <div className="space-y-6">
                       {/* Section Header if multiple sections exist (Optional context) */}
-                      {currentTopicData.sections.length > 1 && (
+                      {data.sections.length > 1 && (
                         <div className="mb-4">
                           <h2 className="text-2xl font-black text-gray-800">{section.title}</h2>
                           {section.summary && <p className="text-gray-500 font-medium">{section.summary}</p>}
@@ -126,7 +131,7 @@ const Guide = () => {
                   return (
                     <div className="space-y-6">
                       {/* Section Title for Steps */}
-                      {currentTopicData.sections.length > 1 && (
+                      {data.sections.length > 1 && (
                         <h3 className="text-xl font-bold text-gray-800 mb-2">{section.title}</h3>
                       )}
 
@@ -163,10 +168,10 @@ const Guide = () => {
                   );
 
                 case 'resources':
-                  if ((!section.resources || section.resources.length === 0) && (!currentTopicData.buildings || sectionIdx > 0)) return null;
+                  if ((!section.resources || section.resources.length === 0) && (!data.buildings || sectionIdx > 0)) return null;
                   return (
                     <div className="space-y-4">
-                      {currentTopicData.sections.length > 1 && section.resources?.length > 0 && (
+                      {data.sections.length > 1 && section.resources?.length > 0 && (
                         <h3 className="text-lg font-bold text-gray-800 mt-2">{section.title} Resources</h3>
                       )}
                       <div className="grid gap-4">
@@ -190,14 +195,14 @@ const Guide = () => {
                       </div>
 
                       {/* Show buildings only once, typically with the first section or separate */}
-                      {sectionIdx === 0 && currentTopicData.buildings?.map((b, idx) => (
+                      {sectionIdx === 0 && data.buildings?.map((b, idx) => (
                         <div key={`b-${idx}`} className="bg-white p-5 rounded-2xl border border-gray-200 flex justify-between items-center">
                           <div>
                             <h4 className="font-bold text-gray-900">{b.fullName} <span className="text-xs text-gray-400 ml-2">({b.shortForm})</span></h4>
                             <p className="text-xs text-gray-500">{b.description}</p>
                           </div>
                           <button
-                            onClick={() => currentTopicData.openGoogleMaps?.(b.url)}
+                            onClick={() => data.openGoogleMaps?.(b.url)}
                             className="text-xs font-bold bg-gray-100 px-3 py-2 rounded-lg hover:bg-black hover:text-white transition-colors"
                           >
                             Locate
@@ -268,7 +273,7 @@ const Guide = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex bg-white lg:h-screen lg:overflow-hidden min-h-screen relative font-sans transition-colors duration-300">
+    <div className="flex bg-gray-50/30 lg:h-screen lg:overflow-hidden min-h-screen relative font-sans selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-300">
 
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-50">
@@ -358,54 +363,60 @@ const Guide = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full lg:overflow-hidden relative w-full bg-white transition-colors duration-300">
-        {selectedTopicId ? (
-          <div className="flex-1 lg:overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-32">
-            <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 md:py-16">
+        {selectedTopicId && currentTopicData ? (
+          currentTopicData.isInteractive ? (
+            <div className="w-full flex-1 relative mt-16 lg:mt-0 flex flex-col h-[calc(100svh-8rem)] min-h-[500px] lg:h-[calc(100vh-4rem)] z-0">
+              <currentTopicData.component />
+            </div>
+          ) : (
+            <div className="flex-1 lg:overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-32">
+              <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 md:py-16">
 
-              {/* Topic Header */}
-              <div className="mb-12 border-b border-gray-100 pb-8">
-                <div className="flex items-center gap-3 text-sm font-bold text-indigo-600 mb-4 bg-indigo-50 w-fit px-3 py-1 rounded-full border border-indigo-100">
-                  <BookOpen className="w-4 h-4" />
-                  {activeCategory}
+                {/* Topic Header */}
+                <div className="mb-12 border-b border-gray-100 pb-8">
+                  <div className="flex items-center gap-3 text-sm font-bold text-indigo-600 mb-4 bg-indigo-50 w-fit px-3 py-1 rounded-full border border-indigo-100">
+                    <BookOpen className="w-4 h-4" />
+                    {activeCategory}
+                  </div>
+                  <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tight">
+                    {currentTopicData.data?.sections[0].title}
+                  </h1>
+
+                  {/* Tabs */}
+                  <div className="flex gap-8 border-b border-gray-100 -mb-8 overflow-x-auto no-scrollbar mask-linear-fade pb-1">
+                    {currentTopicData.data?.tabs?.map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 ${activeTab === tab.id ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tight">
-                  {currentTopicData?.sections[0].title}
-                </h1>
 
-                {/* Tabs */}
-                <div className="flex gap-8 border-b border-gray-100 -mb-8 overflow-x-auto no-scrollbar mask-linear-fade pb-1">
-                  {currentTopicData?.tabs?.map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 ${activeTab === tab.id ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                {/* Main Scrollable Content Body */}
+                <div className="min-h-[400px]">
+                  {renderContent()}
+                </div>
+
+                {/* Simple Footer */}
+                <div className="mt-16 pt-8 border-t border-gray-100 text-center">
+                  <p className="text-xs text-gray-400 font-medium">Was this guide helpful?
+                    <a
+                      href="https://wa.me/233201534711?text=Hello%2C%20I%20have%20feedback%20regarding%20the%20Campus%20Guide"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="ml-1 underline cursor-pointer hover:text-indigo-600 transition-colors"
                     >
-                      {tab.label}
-                    </button>
-                  ))}
+                      Send Feedback via WhatsApp
+                    </a>
+                  </p>
                 </div>
-              </div>
-
-              {/* Main Scrollable Content Body */}
-              <div className="min-h-[400px]">
-                {renderContent()}
-              </div>
-
-              {/* Simple Footer */}
-              <div className="mt-16 pt-8 border-t border-gray-100 text-center">
-                <p className="text-xs text-gray-400 font-medium">Was this guide helpful?
-                  <a
-                    href="https://wa.me/233201534711?text=Hello%2C%20I%20have%20feedback%20regarding%20the%20Campus%20Guide"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="ml-1 underline cursor-pointer hover:text-indigo-600 transition-colors"
-                  >
-                    Send Feedback via WhatsApp
-                  </a>
-                </p>
               </div>
             </div>
-          </div>
+          )
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white h-full pb-24">
             <div className="w-24 h-24 bg-gray-50 rounded-3xl flex items-center justify-center mb-6 animate-pulse">

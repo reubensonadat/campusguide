@@ -32,6 +32,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Bypass caching completely for local development (Vite HMR support)
+    if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
@@ -60,11 +65,23 @@ self.addEventListener('fetch', (event) => {
                     return response;
                 });
             })
-            .catch(() => {
+            .catch(async () => {
                 // Return offline page if available for navigation requests
                 if (event.request.mode === 'navigate') {
-                    return caches.match('/index.html');
+                    const cachedResponse = await caches.match('/index.html');
+                    if (cachedResponse) {
+                        return cachedResponse;
+                    }
                 }
+
+                // Must always return a Response object to avoid "TypeError: Failed to convert value to 'Response'"
+                return new Response('Network error occurred', {
+                    status: 503,
+                    statusText: 'Service Unavailable',
+                    headers: new Headers({
+                        'Content-Type': 'text/plain'
+                    })
+                });
             })
     );
 });

@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { CampusProvider, useCampus } from './context/CampusContext';
-import { useOnboarding } from './hooks/useOnboarding';
+
 import { useSupportModal } from './hooks/useSupportModal';
 import { useSupportTimer } from './hooks/useSupportTimer';
 import { useClassReminders } from './hooks/useClassReminders';
@@ -11,12 +11,14 @@ import { useFeedbackTimer } from './hooks/useFeedbackTimer';
 import { useFeedbackModal } from './hooks/useFeedbackModal';
 import { Toast } from './components/common/Toast';
 import { TabBar } from './components/common/TabBar';
-import { Onboarding } from './components/onboarding/Onboarding';
+
 import { SupportModal } from './components/payment/SupportModal';
 import FeedbackModal from './components/common/FeedbackSurveyModal';
 import PWAInstallButton from './components/common/PWAInstallButton';
-import CampusSelectorModal from './components/common/CampusSelectorModal';
+
 import { preloadPaystack } from './services/paymentService';
+import { useOnboarding } from './hooks/useOnboarding';
+import { Onboarding } from './components/onboarding/Onboarding';
 
 // Page imports
 import Home from './pages/Home';
@@ -27,7 +29,6 @@ import Contact from './pages/Contact';
 import Settings from './pages/Settings';
 
 function AppContent() {
-  const { showOnboarding, currentStep, nextStep, prevStep, closeOnboarding } = useOnboarding();
   const { selectedCampusId } = useCampus();
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
   const { resetTimer } = useSupportTimer();
@@ -45,6 +46,15 @@ function AppContent() {
       console.error('Failed to preload Paystack:', error);
     });
   }, []);
+
+  // Onboarding
+  const {
+    showOnboarding,
+    currentStep,
+    nextStep,
+    prevStep,
+    closeOnboarding
+  } = useOnboarding();
 
   // Handle closing support modal and resetting timer
   const handleCloseModal = () => {
@@ -69,19 +79,6 @@ function AppContent() {
       {/* PWA Install Button - Fixed Position */}
       <PWAInstallButton />
 
-      <Onboarding
-        isOpen={showOnboarding}
-        onClose={closeOnboarding}
-        currentStep={currentStep}
-        onNext={nextStep}
-        onPrev={prevStep}
-      />
-
-      <CampusSelectorModal
-        isOpen={!showOnboarding && !selectedCampusId}
-        onClose={() => { }}
-      />
-
       <SupportModal
         isOpen={showModal}
         onClose={handleCloseModal}
@@ -91,6 +88,14 @@ function AppContent() {
       <FeedbackModal
         isOpen={showFeedback}
         onClose={closeFeedback}
+      />
+
+      <Onboarding
+        isOpen={showOnboarding}
+        currentStep={currentStep}
+        onNext={nextStep}
+        onPrev={prevStep}
+        onClose={closeOnboarding}
       />
     </div>
   );

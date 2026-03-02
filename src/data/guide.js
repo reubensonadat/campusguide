@@ -35,7 +35,7 @@ import FAQsTroubleshooting from '../components/guide/FAQsTroubleshooting';
 export const GUIDE_TOPICS = {
     "Essentials": [
         { id: 'getting-started', title: 'Getting Started', component: GettingStarted, keywords: ['freshers', 'arrival', 'orientation', 'registration', 'first week'] },
-        { id: 'campus-map', title: 'Campus Map', component: CampusMap, keywords: ['locations', 'directions', 'buildings', 'halls', 'lecture theatres'] },
+        { id: 'campus-map', title: 'Campus Map', component: CampusMap, isInteractive: true, keywords: ['locations', 'directions', 'buildings', 'halls', 'lecture theatres'] },
         { id: 'id-card', title: 'Student ID Card', component: IDCard, keywords: ['identification', 'library card', 'exam card', 'replacement'] },
     ],
     "Academic": [
