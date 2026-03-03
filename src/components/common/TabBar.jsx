@@ -18,7 +18,7 @@ const TabBar = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 transition-colors duration-300">
+    <div className={`fixed bottom-0 left-0 right-0 z-50 transition-colors duration-300 bg-white`}>
       <div className="flex justify-around items-center h-16">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
