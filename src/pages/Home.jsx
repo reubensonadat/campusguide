@@ -52,12 +52,12 @@ const Home = () => {
     },
     {
       icon: Users,
-      title: 'Campus Life',
+      title: 'Community Life',
       description: 'Connect with support services, find clubs, and explore campus communities.',
       color: 'text-pink-600',
       bg: 'bg-pink-50/50',
       border: 'border-pink-100/50',
-      action: () => navigate('/guide?topic=clubs-societies')
+      action: () => navigate('/community')
     }
   ];
 
