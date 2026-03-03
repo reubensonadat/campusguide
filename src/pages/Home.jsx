@@ -11,6 +11,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 
+// new import for the illustration
+import CampusIllustration from '../images/college campus-rafiki.svg';
+
 const Home = () => {
   const navigate = useNavigate();
   const { state } = useAppContext();
@@ -116,51 +119,98 @@ const Home = () => {
   return (
     <div className="pb-24 bg-gray-50/30 min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900">
 
-      {/* Premium Hero Section */}
-      <div className="relative overflow-hidden bg-white border-b border-gray-100/80 pt-16 pb-20 px-6 sm:pt-24 sm:pb-28">
-        {/* Subtle Background Gradients */}
+      {/* Premium Hero Section (layout updated for tighter spacing + mobile blue card) */}
+      <div className="relative overflow-hidden bg-white border-b border-gray-100/80 py-8 px-4 sm:py-12 sm:px-6 min-h-[50vh]">
+        {/* Subtle Background Gradients (unchanged) */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-40">
           <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
           <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
           <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
         </div>
 
-        <div className="relative max-w-5xl mx-auto text-center z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-gray-200/50 text-xs font-bold uppercase tracking-widest text-gray-600 mb-8 shadow-sm">
-            <Sparkles size={14} className="text-indigo-500" /> Developed by Synapse Tech
-            {state.isSupporter && (
-              <span className="ml-2 pl-2 border-l border-gray-300 gap-1 flex items-center text-amber-500">
-                <Star size={12} fill="currentColor" /> Supporter
-              </span>
-            )}
+        <div className="relative max-w-6xl mx-auto z-10">
+          {/* Mobile: compact blue card (left-aligned, 60% height) */}
+          <div className="lg:hidden">
+            <div className="rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-indigo-700 to-indigo-600 p-6 text-white flex flex-col justify-between text-left h-[60vh]">
+              <div>
+                <h1 className="text-3xl font-extrabold leading-tight tracking-tight">
+                  <span className="block">Your Essential</span>
+                  <span className="block font-black text-indigo-100">Campus Companion</span>
+                </h1>
+
+                <p className="mt-4 text-base text-indigo-100/90 max-w-[28rem] font-medium">
+                  Navigate university life with ease. Access course registration, campus maps, and academic tools all in one centralized hub designed for student success.
+                </p>
+              </div>
+
+              <div className="flex gap-3 mt-2">
+                <button
+                  onClick={() => navigate('/guide')}
+                  className="flex items-center gap-2 bg-white text-indigo-700 px-4 py-2 rounded-lg font-semibold shadow-sm border border-white/20"
+                >
+                  <BookOpen size={16} /> Open Guide
+                </button>
+
+                <button
+                  onClick={() => navigate('/tools')}
+                  className="flex items-center gap-2 border border-white/30 text-white px-4 py-2 rounded-lg font-semibold bg-white/5"
+                >
+                  <Wrench size={16} /> Open Tools
+                </button>
+              </div>
+            </div>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-black text-gray-900 mb-6 tracking-tight leading-[1.1]">
-            Your Essential <br className="hidden md:block" />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 animate-gradient-x">Campus Companion</span>
-          </h1>
+          {/* Desktop / large screens: two-column layout (text left, illustration right) */}
+          <div className="hidden lg:grid lg:grid-cols-12 lg:items-center lg:gap-6">
+            <div className="col-span-7 text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 backdrop-blur-md border border-gray-200/50 text-xs font-bold uppercase tracking-widest text-gray-600 mb-6 shadow-sm">
+                <Sparkles size={14} className="text-indigo-500" /> Built by Synapse Tech
+                {state.isSupporter && (
+                  <span className="ml-2 pl-2 border-l border-gray-300 gap-1 flex items-center text-amber-500">
+                    <Star size={12} fill="currentColor" /> Supporter
+                  </span>
+                )}
+              </div>
 
-          <p className="text-lg md:text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
-            Everything you need to navigate university life seamlessly. Academic guides, essential tools, and campus maps all in one place.
-          </p>
+              <h1 className="text-5xl font-black text-gray-900 mb-4 tracking-tight leading-tight">
+                Your Essential <span className="block lg:inline bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600">Campus Companion</span>
+              </h1>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              variant="primary"
-              onClick={() => navigate('/guide')}
-              className="w-full sm:w-auto bg-indigo-600 text-white hover:bg-indigo-700 px-8 py-4 rounded-2xl font-bold shadow-[0_8px_30px_rgb(79,70,229,0.3)] hover:shadow-[0_8px_40px_rgb(79,70,229,0.4)] transition-all duration-300 hover:-translate-y-1 group flex items-center justify-center gap-2"
-            >
-              <BookOpen size={20} />
-              <span>Open Guide</span>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate('/tools')}
-              className="w-full sm:w-auto bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 px-8 py-4 rounded-2xl font-bold transition-all duration-300 hover:-translate-y-1 shadow-sm flex items-center justify-center gap-2"
-            >
-              <Wrench size={20} className="text-gray-400" />
-              <span>Open Tools</span>
-            </Button>
+              <p className="text-lg text-gray-500 mb-6 max-w-xl font-medium">
+                Navigate campus life with clear guides, essential tools, and quick access to services — all in a compact, easy-to-use hub.
+              </p>
+
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="primary"
+                  onClick={() => navigate('/guide')}
+                  className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-semibold shadow-soft btn-hover flex items-center gap-3"
+                >
+                  <BookOpen size={18} /> Open Guide
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/tools')}
+                  className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-2xl font-semibold shadow-sm flex items-center gap-3"
+                >
+                  <Wrench size={18} className="text-gray-400" /> Open Tools
+                </Button>
+              </div>
+            </div>
+
+            <div className="col-span-5 flex items-center justify-end">
+              <div className="relative w-full max-w-lg -mr-6">
+                <img
+                  src={CampusIllustration}
+                  alt="Campus illustration"
+                  className="w-full h-auto object-contain drop-shadow-lg"
+                  style={{ WebkitTransform: 'translateZ(0)' }}
+                />
+                <div className="pointer-events-none absolute inset-0 rounded-lg" aria-hidden="true"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
