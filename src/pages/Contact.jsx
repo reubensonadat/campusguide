@@ -101,7 +101,7 @@ const Contact = () => {
     },
     {
       question: 'Is the app really free?',
-      answer: 'Yes! The app is completely free for all UCC students. We rely on supporter donations to keep it running.',
+      answer: 'Yes! The app is completely free for all UCC students. No purchases or donations are required.',
       color: 'text-emerald-600',
       bg: 'bg-emerald-50',
       border: 'border-emerald-100'

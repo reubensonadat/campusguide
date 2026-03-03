@@ -8,9 +8,7 @@ const initialState = {
   user: null,
   settings: DEFAULT_SETTINGS,
   guideCompletion: {},
-  isSupporter: false,
   isLoading: false,
-  showSupportModal: false, // Add this for support modal
   toast: {
     show: false,
     message: '',
@@ -24,11 +22,9 @@ const actionTypes = {
   SET_USER: 'SET_USER',
   UPDATE_SETTINGS: 'UPDATE_SETTINGS',
   MARK_GUIDE_COMPLETE: 'MARK_GUIDE_COMPLETE',
-  SET_SUPPORTER_STATUS: 'SET_SUPPORTER_STATUS',
   SET_LOADING: 'SET_LOADING',
   SHOW_TOAST: 'SHOW_TOAST',
   HIDE_TOAST: 'HIDE_TOAST',
-  SET_SHOW_SUPPORT_MODAL: 'SET_SHOW_SUPPORT_MODAL',
   SET_SHOW_FEEDBACK_MODAL: 'SET_SHOW_FEEDBACK_MODAL' // Add this
 };
 
@@ -49,9 +45,6 @@ const appReducer = (state, action) => {
           [action.payload]: true
         }
       };
-
-    case actionTypes.SET_SUPPORTER_STATUS:
-      return { ...state, isSupporter: action.payload };
 
     case actionTypes.SET_LOADING:
       return { ...state, isLoading: action.payload };
@@ -75,9 +68,6 @@ const appReducer = (state, action) => {
         }
       };
 
-    case actionTypes.SET_SHOW_SUPPORT_MODAL:
-      return { ...state, showSupportModal: action.payload };
-
     case actionTypes.SET_SHOW_FEEDBACK_MODAL:
       return { ...state, showFeedbackModal: action.payload };
 
@@ -94,14 +84,12 @@ export const AppProvider = ({ children }) => {
   // Load data from localStorage
   const [settings, setSettings] = useLocalStorage(LS_KEYS.SETTINGS, DEFAULT_SETTINGS);
   const [guideCompletion, setGuideCompletion] = useLocalStorage(LS_KEYS.GUIDE_COMPLETION, {});
-  const [isSupporter, setIsSupporter] = useLocalStorage(LS_KEYS.SUPPORTER_STATUS, false);
 
   // Initialize state with localStorage data
   const [state, dispatch] = useReducer(appReducer, {
     ...initialState,
     settings,
-    guideCompletion,
-    isSupporter
+    guideCompletion
   });
 
   // Custom action creators
@@ -118,20 +106,12 @@ export const AppProvider = ({ children }) => {
       setGuideCompletion({ ...guideCompletion, [guideId]: true });
     },
 
-    setSupporterStatus: (status) => {
-      dispatch({ type: actionTypes.SET_SUPPORTER_STATUS, payload: status });
-      setIsSupporter(status);
-    },
-
     setLoading: (isLoading) => dispatch({ type: actionTypes.SET_LOADING, payload: isLoading }),
 
     showToast: (message, type = 'info') =>
       dispatch({ type: actionTypes.SHOW_TOAST, payload: { message, type } }),
 
     hideToast: () => dispatch({ type: actionTypes.HIDE_TOAST }),
-
-    // Add support modal actions
-    setShowSupportModal: (show) => dispatch({ type: actionTypes.SET_SHOW_SUPPORT_MODAL, payload: show }),
 
     // Add feedback modal actions
     setShowFeedbackModal: (show) => dispatch({ type: actionTypes.SET_SHOW_FEEDBACK_MODAL, payload: show })

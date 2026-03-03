@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { PaymentButton } from '../components/payment/PaymentButton';
 import {
-  BookOpen, Wrench, Heart, Users, MapPin, ArrowRight,
+  BookOpen, Wrench, Users, MapPin, ArrowRight,
   TrendingUp, Shield, Zap, Star, ClipboardList, Map,
   CalendarDays, Wallet, Compass, Sparkles, Phone, Settings,
   MessageCircle, ArrowUpRight
@@ -14,17 +13,6 @@ import { useAppContext } from '../context/AppContext';
 const Home = () => {
   const navigate = useNavigate();
   const { state } = useAppContext();
-  const [supportEmail, setSupportEmail] = useState('');
-
-  const handlePaymentSuccess = (result) => {
-    console.log('Payment successful:', result);
-    alert('Thank you for your support!');
-  };
-
-  const handlePaymentError = (error) => {
-    console.error('Payment error:', error);
-    alert(`Payment failed: ${error.message}`);
-  };
 
   const features = [
     {
@@ -103,10 +91,10 @@ const Home = () => {
       iconBg: 'bg-gray-100/50'
     },
     {
-      title: 'Report Issue',
-      description: 'Help improve the app',
+      title: 'Contact Us',
+      description: 'Reach out for help or feedback',
       icon: MessageCircle,
-      action: () => navigate('/support'),
+      action: () => navigate('/contact'),
       color: 'text-red-600',
       bg: 'bg-red-50/80',
       iconBg: 'bg-red-100/50'
@@ -128,11 +116,6 @@ const Home = () => {
         <div className="relative max-w-5xl mx-auto text-center z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-gray-200/50 text-xs font-bold uppercase tracking-widest text-gray-600 mb-8 shadow-sm">
             <Sparkles size={14} className="text-indigo-500" /> Developed by Synapse Tech
-            {state.isSupporter && (
-              <span className="ml-2 pl-2 border-l border-gray-300 gap-1 flex items-center text-amber-500">
-                <Star size={12} fill="currentColor" /> Supporter
-              </span>
-            )}
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black text-gray-900 mb-6 tracking-tight leading-[1.1]">
@@ -234,36 +217,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Support CTA */}
-        <section>
-          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-[2.5rem] p-10 sm:p-14 text-center border border-indigo-100 shadow-sm transition-all duration-300">
-            <div className="relative z-10">
-              <div className="w-20 h-20 bg-indigo-100/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-indigo-100">
-                <Heart className="w-10 h-10 text-red-500 fill-red-500" />
-              </div>
-
-              <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">Support This Project</h2>
-              <p className="text-gray-500 mb-10 max-w-lg mx-auto text-lg font-medium">
-                Help us keep the UCC Campus Guide free, ad-free, and regularly updated for every student.
-              </p>
-
-              <div className="max-w-sm mx-auto space-y-5">
-                <PaymentButton
-                  amount={5}
-                  email={supportEmail || "anonymous@uccguide.com"}
-                  onPaymentSuccess={handlePaymentSuccess}
-                  onPaymentError={handlePaymentError}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-indigo-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2"
-                >
-                  Support Now (GH₵5)
-                </PaymentButton>
-                <p className="text-sm font-medium text-gray-500">
-                  Issues or suggestions? <a href="mailto:uccguide25@gmail.com" className="text-indigo-600 hover:underline transition-colors">Contact us</a>
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
 
       </div>
     </div>

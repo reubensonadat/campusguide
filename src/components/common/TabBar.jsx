@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, BookOpen, Wrench, Heart, Phone, Settings } from 'lucide-react';
+import { Home, BookOpen, Wrench, Phone, Settings } from 'lucide-react';
 
 const TabBar = () => {
   const location = useLocation();
@@ -9,8 +9,7 @@ const TabBar = () => {
   const tabs = [
     { id: 'home', label: 'Home', icon: Home, path: '/' },
     { id: 'guide', label: 'Guide', icon: BookOpen, path: '/guide' },
-    { id: 'tools', label: 'Tools', icon: Wrench, path: '/tools' },
-    { id: 'support', label: 'Support', icon: Heart, path: '/support' }
+    { id: 'tools', label: 'Tools', icon: Wrench, path: '/tools' }
   ];
 
   const handleTabClick = (path) => {

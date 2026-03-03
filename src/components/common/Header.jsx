@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppContext } from '../../context/AppContext';
-import { Menu, X, Heart } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const Header = ({ title, onMenuToggle, showMenuButton = true }) => {
   const { state } = useAppContext();
@@ -21,12 +21,6 @@ const Header = ({ title, onMenuToggle, showMenuButton = true }) => {
           <h1 className="text-xl font-bold">{title}</h1>
         </div>
         
-        {state.isSupporter && (
-          <div className="flex items-center bg-primary-700 px-3 py-1 rounded-full">
-            <Heart size={16} className="mr-1" />
-            <span className="text-sm">Supporter</span>
-          </div>
-        )}
       </div>
     </header>
   );

@@ -19,8 +19,7 @@ A comprehensive mobile app for University of Cape Coast students, featuring guid
 - **Reminders Board** - Never miss important deadlines with priority levels
 
 ### 💳 Payment System
-- **Optional Support** - Keep the app free for all students
-- **Supporter Badges** - Special recognition for contributors
+- **Free to Use** - The app remains free for all students
 - **Configurable Intervals** - Non-intrusive reminder system
 
 ### 📱 Mobile-First Design
@@ -48,8 +47,6 @@ ucc-campus-guide/
 │ │ ├── common/ # Reusable components
 │ │ ├── guide/ # Guide-related components
 │ │ ├── tools/ # Tool components
-│ │ ├── payment/ # Payment components
-│ │ └── onboarding/ # Onboarding component
 │ ├── context/ # React context providers
 │ ├── hooks/ # Custom React hooks
 │ ├── pages/ # Page components
@@ -120,24 +117,8 @@ All user data is stored in localStorage. To clear data:
 localStorage.clear();
 
 🔧 Configuration
-Payment Integration
-Update src/services/paymentService.js with your Paystack credentials:
 
-export const handlePayment = ({ amount, email, reference, metadata }) => {
-  // Replace with your actual Paystack integration
-  return new Promise((resolve, reject) => {
-    // Mock implementation for development
-    setTimeout(() => {
-      resolve({
-        status: 'success',
-        reference,
-        transaction: `txn_${Date.now()}`,
-        message: 'Payment successful'
-      });
-    }, 2000);
-  });
-};
-
+The app no longer includes payment or support features, so no additional configuration is required for payments.
 🐛 Troubleshooting
 Common Issues
 Module not found errors: Ensure all import paths are correct
