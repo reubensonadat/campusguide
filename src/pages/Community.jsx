@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Megaphone, ChevronRight, Sparkles, Star } from 'lucide-react';
 import CommunityCard from '../components/community/CommunityCard';
 import { useNavigate } from 'react-router-dom';
 
-// Dummy Mock Data
+// Categories matching Advertise.jsx options
+const CATEGORIES = [
+    { id: 'all', label: 'All Listings' },
+    { id: 'food', label: 'Food & Delivery' },
+    { id: 'clothing', label: 'Clothing & Fashion' },
+    { id: 'tech', label: 'Tech & Electronics' },
+    { id: 'services', label: 'Student Services' },
+    { id: 'event', label: 'Commercial Event' },
+];
+
+// Dummy Mock Data updated with categories
 const MOCK_FEED = [
     {
         id: 1,
         type: 'announcement',
+        category: 'event',
         tag: 'OCT 12',
         title: 'Freshers Orientation Gathering',
         description: 'Welcome to all incoming students! Join us for a comprehensive overview of campus life, academic expectations, and support services available to you.',
@@ -19,6 +30,7 @@ const MOCK_FEED = [
     {
         id: 2,
         type: 'ad',
+        category: 'food',
         title: 'Bush Canteen Fresh Meals',
         description: 'Get 20% off your first meal at Bush Canteen when you show this ad! Serving hot Jollof packed with chicken and assorted meats. Our food is sourced organically and prepared in a highly hygienic premium setting. This text is long to demonstrate the read more button working effectively so it does not clutter the feed!',
         image: 'https://images.unsplash.com/photo-1604328698692-f76ea9498e76?q=80&w=800&auto=format&fit=crop',
@@ -28,6 +40,7 @@ const MOCK_FEED = [
     {
         id: 3,
         type: 'announcement',
+        category: 'event',
         tag: 'OCT 15',
         title: 'Matriculation Ceremony',
         description: 'The official induction of incoming students into the university community. Dress code is strictly formal.',
@@ -39,6 +52,7 @@ const MOCK_FEED = [
     {
         id: 4,
         type: 'ad',
+        category: 'services',
         title: 'Excel Hostels - Room Available',
         description: 'One slot left in a 4-in-a-room setup. AC, WiFi, and dedicated study desks included. GH₵3500/yr.',
         image: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=800&auto=format&fit=crop',
@@ -48,7 +62,17 @@ const MOCK_FEED = [
 ];
 
 const Community = () => {
+    const [selectedCategory, setSelectedCategory] = useState('all');
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const navigate = useNavigate();
+
+    const filteredFeed = MOCK_FEED.filter(post => 
+        selectedCategory === 'all' || post.category === selectedCategory
+    );
 
     return (
         <div className="pb-24 bg-gray-50/50 min-h-screen">
@@ -99,7 +123,7 @@ const Community = () => {
                                 Showcase to the World
                             </h3>
                             <p className="text-indigo-100/90 text-sm sm:text-base lg:text-lg font-medium max-w-xl leading-relaxed">
-                                Reach thousands of students daily. Post your product, hostel, or service here and gain 100% student viewership monopoly on the most visited app pages.
+                                Reach thousands of students daily. Post your product or service here and gain 100% student viewership monopoly on the most visited app pages.
                             </p>
                         </div>
 
@@ -112,22 +136,59 @@ const Community = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-4 mb-4">
                     <div className="h-px bg-gray-200 flex-1"></div>
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2">Community Feed</span>
                     <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
 
-                {/* Render Feed using CSS Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
-                    {MOCK_FEED.map(post => (
-                        <CommunityCard key={post.id} post={post} />
+                {/* Filter Categories - Horizontally Scrollable */}
+                <div className="flex overflow-x-auto hide-scrollbar gap-3 pb-6 mb-2 -mx-5 px-5 md:mx-0 md:px-0">
+                    {CATEGORIES.map(category => (
+                        <button
+                            key={category.id}
+                            onClick={() => setSelectedCategory(category.id)}
+                            className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 shadow-sm ${
+                                selectedCategory === category.id
+                                    ? 'bg-primary-600 text-white shadow-md shadow-primary-200 scale-105'
+                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                            }`}
+                        >
+                            {category.label}
+                        </button>
                     ))}
                 </div>
 
-                <div className="text-center mt-12 pb-12">
-                    <p className="text-gray-400 font-medium text-sm">You've caught up with the latest listings</p>
-                </div>
+                {/* Render Feed using CSS Grid or Empty State */}
+                {filteredFeed.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
+                        {filteredFeed.map(post => (
+                            <CommunityCard key={post.id} post={post} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="py-20 flex flex-col items-center justify-center text-center bg-white rounded-3xl border border-gray-100 shadow-sm mb-8">
+                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                            <Megaphone className="text-gray-400" size={28} />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">No listings found</h3>
+                        <p className="text-gray-500 font-medium max-w-sm">
+                            There are currently no items under this category. Be the first to advertise here!
+                        </p>
+                        <button 
+                            onClick={() => navigate('/advertise')}
+                            className="mt-6 px-6 py-2.5 bg-primary-50 text-primary-700 font-bold rounded-xl hover:bg-primary-100 transition-colors"
+                        >
+                            Create Ad
+                        </button>
+                    </div>
+                )}
+
+                {filteredFeed.length > 0 && (
+                    <div className="text-center mt-12 pb-12">
+                        <p className="text-gray-400 font-medium text-sm">You've caught up with the latest listings</p>
+                    </div>
+                )}
             </div>
         </div>
     );
