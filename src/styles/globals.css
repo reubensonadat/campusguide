@@ -228,23 +228,7 @@ body {
   border-top: 1px solid var(--gray-200);
 }
 
-/* Onboarding modal */
-.onboarding-backdrop {
-  background-color: rgba(0, 0, 0, 0.6);
-}
 
-.onboarding-content {
-  background-color: var(--white);
-}
-
-/* Support modal */
-.support-backdrop {
-  background-color: rgba(0, 0, 0, 0.6);
-}
-
-.support-content {
-  background-color: var(--white);
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

@@ -33,30 +33,3 @@ export const submitToGoogleSheet = async (scriptUrl, data) => {
     }
 };
 
-/**
- * Fetches data from a Google Sheet via a Google Apps Script Web App.
- * Returns mocked data if fetching fails or url is not provided.
- * 
- * @param {string} scriptUrl - The Web App URL of the Google Apps Script
- * @returns {Promise<Array>} - The array of supporters
- */
-export const fetchSupporters = async (scriptUrl) => {
-    if (!scriptUrl) return getMockSupporters();
-
-    try {
-        const response = await fetch(scriptUrl);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        return data; // Assuming API returns array of object { name, amount, message, campus }
-    } catch (error) {
-        console.warn("Error fetching supporters, using mock data:", error);
-        return getMockSupporters();
-    }
-};
-
-const getMockSupporters = () => [
-    { name: "Nana Kwame", amount: 20, message: "Great guide! Helped me find Casford.", campus: "UCC" },
-    { name: "Abena S.", amount: 10, message: "Thanks for the map updates.", campus: "UG" },
-    { name: "Kojo", amount: 50, message: "Keep it up!", campus: "KNUST" },
-    { name: "Anonymous", amount: 5, message: "", campus: "UCC" },
-];
