@@ -22,6 +22,10 @@ import headerImage from '/call-center-cuate.png';
 
 
 const Contact = () => {
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = React.useState({
