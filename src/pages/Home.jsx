@@ -333,7 +333,7 @@ const Home = () => {
                 <img
                   src="/Savings.png"
                   alt="Support Development"
-                  className="w-full max-w-sm object-contain drop-shadow-2xl"
+                  className="w-full max-w-sm object-contain drop-shadow-2xl max-w-[300px]"
                 />
               </div>
             </div>
