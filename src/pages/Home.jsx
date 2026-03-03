@@ -304,7 +304,7 @@ const Home = () => {
             {/* Background Accent */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-100/30 rounded-full blur-3xl -mr-32 -mt-32"></div>
 
-            <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12 text-center lg:text-left">
+            <div className="relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 text-center lg:text-left">
               {/* Text Content */}
               <div className="flex-1">
                 <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">Support This Project</h2>
