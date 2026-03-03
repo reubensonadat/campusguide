@@ -2,6 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { Book, ChevronRight, MapPin, Phone, Info, Layout, CheckCircle, List, ArrowRight, MousePointer2, BookOpen, Search, X } from 'lucide-react';
 import { GUIDE_TOPICS } from '../data/guide';
 
+
+// new import for the illustration
+import CampusIllustration from '/Leader-rafiki.svg';
+
 const Guide = () => {
   const [activeCategory, setActiveCategory] = useState("Essentials");
   const [selectedTopicId, setSelectedTopicId] = useState(null);
@@ -419,8 +423,14 @@ const Guide = () => {
           )
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white h-full pb-24">
-            <div className="w-24 h-24 bg-gray-50 rounded-3xl flex items-center justify-center mb-6 animate-pulse">
-              <BookOpen className="w-10 h-10 text-gray-300" />
+            <div className="relative w-full max-w-lg -mr-6">
+              <img
+                src={CampusIllustration}
+                alt="Campus illustration"
+                className="w-full h-auto object-contain drop-shadow-lg"
+                style={{ WebkitTransform: 'translateZ(0)' }}
+              />
+              <div className="pointer-events-none absolute inset-0 rounded-lg" aria-hidden="true"></div>
             </div>
             <h2 className="text-2xl font-black text-gray-900 mb-3">Welcome to the Guide</h2>
             <p className="max-w-md text-gray-500 font-medium leading-relaxed">

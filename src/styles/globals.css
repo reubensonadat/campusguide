@@ -97,11 +97,14 @@ body {
   background: var(--gray-400);
 }
 
-
-
-
-
-
+/* hide-scrollbar utility used for the quick actions row */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
 
 /* Custom animations */
 @keyframes fadeIn {
