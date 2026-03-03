@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Building2, UploadCloud, CheckCircle2, AlertCircle, Phone, LayoutGrid, Star, ChevronRight, Check, ExternalLink } from 'lucide-react';
 import { PaymentButton } from '../components/payment/PaymentButton'; // Simulated Paystack
+import CommunityCard from '../components/community/CommunityCard';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const AD_PACKAGES = [
     {
@@ -10,7 +12,7 @@ const AD_PACKAGES = [
         description: 'Permanent presence in the Community feed. Great for discoverability.',
         icon: LayoutGrid,
         popular: false,
-        color: 'amber',
+        color: 'blue',
         prices: [
             { days: 3, price: 50 },
             { days: 7, price: 70, tag: 'Best Value' },
@@ -34,21 +36,37 @@ const AD_PACKAGES = [
 
 const Advertise = () => {
     const navigate = useNavigate();
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useLocalStorage('ucc_ad_step', 1);
 
-    // Form State
-    const [formData, setFormData] = useState({
+    // Form State (Persisted)
+    const [savedFormData, setSavedFormData] = useLocalStorage('ucc_ad_form_data', {
         businessName: '',
         category: '',
         whatsapp: '',
-        description: '',
-        imageFile: null // In real app, this would be an uploaded file or URL
+        description: ''
     });
 
-    // Package State
-    const [selectedPackage, setSelectedPackage] = useState(AD_PACKAGES[1].id);
-    const [selectedDuration, setSelectedDuration] = useState(7);
-    const [calculatedPrice, setCalculatedPrice] = useState(100);
+    // Local form state for UI binding (we merge saved with local so we can handle files)
+    const [formData, setFormData] = useState({
+        ...savedFormData,
+        imageFile: null,
+        imagePreview: null
+    });
+
+    // Sync non-file formData to localStorage when it changes
+    useEffect(() => {
+        setSavedFormData({
+            businessName: formData.businessName,
+            category: formData.category,
+            whatsapp: formData.whatsapp,
+            description: formData.description
+        });
+    }, [formData.businessName, formData.category, formData.whatsapp, formData.description, setSavedFormData]);
+
+    // Package State (Persisted)
+    const [selectedPackage, setSelectedPackage] = useLocalStorage('ucc_ad_selected_pkg', AD_PACKAGES[0].id);
+    const [selectedDuration, setSelectedDuration] = useLocalStorage('ucc_ad_selected_dur', 7);
+    const [calculatedPrice, setCalculatedPrice] = useLocalStorage('ucc_ad_calculated_price', 70);
 
     const activePackage = AD_PACKAGES.find(p => p.id === selectedPackage);
 
@@ -67,7 +85,12 @@ const Advertise = () => {
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // In a real app, you'd check file size (e.g., file.size < 5000000 for 5MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert("File size exceeds 2MB limit. Please upload a smaller image.");
+                e.target.value = null; // reset the input
+                return;
+            }
+
             const reader = new FileReader();
             reader.onloadend = () => {
                 setFormData(prev => ({
@@ -84,7 +107,6 @@ const Advertise = () => {
     const isStep2Valid = formData.businessName.length > 2 && formData.category && formData.whatsapp.replace(/\D/g, '').length >= 9;
 
     // UI states
-
 
     const handlePriceSelection = (pkgId, days, price) => {
         setSelectedPackage(pkgId);
@@ -275,23 +297,23 @@ const Advertise = () => {
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Campaign Flyer (16:9 or Square)</label>
 
-                                <div className="relative border-2 border-dashed border-gray-300 rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:bg-gray-50 hover:border-indigo-400 transition-colors cursor-pointer group overflow-hidden bg-gray-50">
+                                <div className={`relative border-2 rounded-3xl flex flex-col items-center justify-center text-center transition-colors cursor-pointer group overflow-hidden ${formData.imagePreview ? 'border-solid border-indigo-100 bg-black/5' : 'border-dashed border-gray-300 p-8 hover:bg-gray-50 hover:border-indigo-400 bg-gray-50'}`}>
 
                                     <input
                                         type="file"
                                         accept="image/jpeg, image/png, image/webp"
                                         onChange={handleImageUpload}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                                     />
 
                                     {formData.imagePreview ? (
-                                        <div className="absolute inset-0 w-full h-full bg-black/5">
+                                        <div className="relative w-full flex items-center justify-center">
                                             <img
                                                 src={formData.imagePreview}
                                                 alt="Flyer Preview"
-                                                className="w-full h-full object-contain"
+                                                className="w-full max-h-[400px] object-contain bg-black/5"
                                             />
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                                                 <span className="text-white font-bold bg-black/50 px-4 py-2 rounded-xl backdrop-blur-sm shadow-lg">Change Image</span>
                                             </div>
                                         </div>
@@ -343,70 +365,99 @@ const Advertise = () => {
                 {step === 4 && (
                     <div className="animate-in fade-in slide-in-from-right-8 duration-500 pb-12">
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Checkout</h2>
-                        <p className="text-gray-500 mb-8 font-medium">Select your placement tier and duration.</p>
+                        <p className="text-gray-500 mb-8 font-medium">Preview your ad, select your placement tier, and duration.</p>
 
-                        <div className="space-y-6">
-                            {AD_PACKAGES.map((pkg) => {
-                                const isSelected = selectedPackage === pkg.id;
-                                const Icon = pkg.icon;
-                                const C = pkg.color === 'indigo'
-                                    ? { border: 'border-indigo-600', text: 'text-indigo-600', lightBorder: 'border-indigo-100', iconBg: 'bg-indigo-100', badge: 'bg-indigo-600 text-white', highlightBg: 'bg-indigo-50/50' }
-                                    : { border: 'border-amber-500', text: 'text-amber-600', lightBorder: 'border-amber-100', iconBg: 'bg-amber-100', badge: 'bg-amber-500 text-white', highlightBg: 'bg-amber-50/50' };
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            {/* Left Side: Package Selection */}
+                            <div className="lg:col-span-7 space-y-6">
+                                {AD_PACKAGES.map((pkg) => {
+                                    const isSelected = selectedPackage === pkg.id;
+                                    const Icon = pkg.icon;
+                                    const C = pkg.color === 'indigo'
+                                        ? { border: 'border-indigo-600', text: 'text-indigo-600', lightBorder: 'border-indigo-100', iconBg: 'bg-indigo-100', badge: 'bg-indigo-600 text-white', highlightBg: 'bg-indigo-50/50' }
+                                        : { border: 'border-blue-600', text: 'text-blue-600', lightBorder: 'border-blue-100', iconBg: 'bg-blue-100', badge: 'bg-blue-600 text-white', highlightBg: 'bg-blue-50/50' };
 
-                                return (
-                                    <div
-                                        key={pkg.id}
-                                        className={`relative transition-all duration-300 rounded-[2rem] border-2 p-1 bg-white
-                                            ${isSelected ? C.border + ' shadow-xl shadow-' + pkg.color + '-200/40' : 'border-transparent shadow-sm hover:shadow-md'}
-                                        `}
-                                    >
-                                        <div className={`rounded-[1.75rem] p-6 border ${isSelected ? C.lightBorder : 'border-gray-100'}`}>
-                                            <div className="flex items-start gap-4 mb-5">
-                                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isSelected ? C.iconBg + ' ' + C.text : 'bg-gray-100 text-gray-500'}`}>
-                                                    <Icon size={24} />
+                                    return (
+                                        <div
+                                            key={pkg.id}
+                                            className={`relative transition-all duration-300 rounded-[2rem] border-2 p-1 bg-white
+                                                ${isSelected ? C.border + ' shadow-xl shadow-' + pkg.color + '-200/40' : 'border-transparent shadow-sm hover:shadow-md'}
+                                            `}
+                                        >
+                                            <div className={`rounded-[1.75rem] p-6 border ${isSelected ? C.lightBorder : 'border-gray-100'}`}>
+                                                <div className="flex items-start gap-4 mb-5">
+                                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isSelected ? C.iconBg + ' ' + C.text : 'bg-gray-100 text-gray-500'}`}>
+                                                        <Icon size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className={`font-semibold text-xl mb-1 leading-none ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>
+                                                            {pkg.name}
+                                                        </h4>
+                                                        <p className="text-sm text-gray-500 font-medium leading-relaxed pr-4">
+                                                            {pkg.description}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <h4 className={`font-bold text-xl mb-1 leading-none ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>
-                                                        {pkg.name}
-                                                    </h4>
-                                                    <p className="text-sm text-gray-500 font-medium leading-relaxed pr-4">
-                                                        {pkg.description}
-                                                    </p>
-                                                </div>
-                                            </div>
 
-                                            {/* Interactive Pricing Tiers Selection */}
-                                            <div className="grid grid-cols-3 gap-3">
-                                                {pkg.prices.map((price, idx) => {
-                                                    const isSpecificPriceSelected = isSelected && selectedDuration === price.days;
-                                                    return (
-                                                        <div
-                                                            key={idx}
-                                                            onClick={() => handlePriceSelection(pkg.id, price.days, price.price)}
-                                                            className={`relative cursor-pointer flex flex-col items-center justify-center py-4 px-2 rounded-2xl border-2 transition-all ${isSpecificPriceSelected
-                                                                ? C.border + ' ' + C.highlightBg
-                                                                : 'border-gray-100 bg-gray-50 hover:bg-gray-100/80'
-                                                                }`}
-                                                        >
-                                                            {price.tag && (
-                                                                <span className={`absolute -top-3 ${isSpecificPriceSelected ? C.badge : 'bg-gray-800 text-white'} text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-full whitespace-nowrap shadow-sm`}>
-                                                                    {price.tag}
+                                                {/* Interactive Pricing Tiers Selection */}
+                                                <div className="grid grid-cols-3 gap-3">
+                                                    {pkg.prices.map((price, idx) => {
+                                                        const isSpecificPriceSelected = isSelected && selectedDuration === price.days;
+                                                        return (
+                                                            <div
+                                                                key={idx}
+                                                                onClick={() => handlePriceSelection(pkg.id, price.days, price.price)}
+                                                                className={`relative cursor-pointer flex flex-col items-center justify-center py-4 px-2 rounded-2xl border-2 transition-all ${isSpecificPriceSelected
+                                                                    ? C.border + ' ' + C.highlightBg
+                                                                    : 'border-gray-100 bg-gray-50 hover:bg-gray-100/80'
+                                                                    }`}
+                                                            >
+                                                                {price.tag && (
+                                                                    <span className={`absolute -top-3 ${isSpecificPriceSelected ? C.badge : 'bg-gray-800 text-white'} text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-full whitespace-nowrap shadow-sm`}>
+                                                                        {price.tag}
+                                                                    </span>
+                                                                )}
+                                                                <span className={`text-xs font-bold mb-1 ${isSpecificPriceSelected ? C.text : 'text-gray-500'}`}>
+                                                                    {price.days} Days
                                                                 </span>
-                                                            )}
-                                                            <span className={`text-xs font-bold mb-1 ${isSpecificPriceSelected ? C.text : 'text-gray-500'}`}>
-                                                                {price.days} Days
-                                                            </span>
-                                                            <span className={`font-black text-lg sm:text-xl tracking-tight ${isSpecificPriceSelected ? 'text-gray-900' : 'text-gray-700'}`}>
-                                                                GH₵{price.price}
-                                                            </span>
-                                                        </div>
-                                                    );
-                                                })}
+                                                                <span className={`font-black text-lg sm:text-xl tracking-tight ${isSpecificPriceSelected ? 'text-gray-900' : 'text-gray-700'}`}>
+                                                                    GH₵{price.price}
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
                                         </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Right Side: Live Ad Preview */}
+                            <div className="lg:col-span-5">
+                                <div className="sticky top-24">
+                                    <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                                        <ExternalLink size={18} className="text-gray-400" />
+                                        Live Feed Preview
+                                    </h3>
+                                    <div className="scale-[0.95] origin-top md:scale-100 transition-transform">
+                                        <CommunityCard
+                                            post={{
+                                                type: 'ad',
+                                                title: formData.businessName || 'Your Business Name',
+                                                description: formData.description || 'Your promotional description will appear here.',
+                                                image: formData.imagePreview,
+                                                link: formData.whatsapp
+                                                    ? `https://wa.me/${formData.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello, I saw an advertisement for ${formData.businessName || 'your business'} on Campus Guide. I would like to make a purchase / find out how much.`)}`
+                                                    : '#',
+                                            }}
+                                        />
                                     </div>
-                                );
-                            })}
+                                    <p className="text-center text-xs text-gray-400 font-medium mt-2">
+                                        This is how your ad will appear to students in the feed.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Summary & Checkout Stick to bottom of screen on mobile, inline on desktop */}

@@ -103,7 +103,7 @@ const Community = () => {
                                 Showcase to the World
                             </h3>
                             <p className="text-indigo-100/90 text-sm sm:text-base lg:text-lg font-medium max-w-xl leading-relaxed">
-                                Reach thousands of students daily. Post your product, hostel, or service here and gain 100% student viewership monopoly on the most visited app pages.
+                                Reach thousands of students daily. Post your product or service here and gain 100% student viewership monopoly on the most visited app pages.
                             </p>
                         </div>
 
