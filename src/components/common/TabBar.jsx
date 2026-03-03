@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, BookOpen, Wrench, Heart, Phone, Settings } from 'lucide-react';
+import { Home, BookOpen, Wrench, Users, Phone, Settings } from 'lucide-react';
 
 const TabBar = () => {
   const location = useLocation();
@@ -10,7 +10,7 @@ const TabBar = () => {
     { id: 'home', label: 'Home', icon: Home, path: '/' },
     { id: 'guide', label: 'Guide', icon: BookOpen, path: '/guide' },
     { id: 'tools', label: 'Tools', icon: Wrench, path: '/tools' },
-    { id: 'support', label: 'Support', icon: Heart, path: '/support' }
+    { id: 'community', label: 'Community', icon: Users, path: '/community' }
   ];
 
   const handleTabClick = (path) => {
@@ -29,8 +29,8 @@ const TabBar = () => {
               key={tab.id}
               onClick={() => handleTabClick(tab.path)}
               className={`flex flex-col items-center justify-center w-full h-full py-1 px-2 focus:outline-none transition-colors ${isActive
-                  ? 'text-primary-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                ? 'text-primary-600'
+                : 'text-gray-500 hover:text-gray-700'
                 }`}
               aria-label={tab.label}
             >

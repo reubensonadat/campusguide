@@ -25,6 +25,8 @@ import Home from './pages/Home';
 import Guide from './pages/Guide';
 import Tools from './pages/Tools';
 import Support from './pages/Support';
+import Community from './pages/Community';
+import Advertise from './pages/Advertise';
 import Contact from './pages/Contact';
 import Settings from './pages/Settings';
 
@@ -69,7 +71,8 @@ function AppContent() {
         <Route path="/guide" element={<Guide />} />
         <Route path="/guide/:topic" element={<Guide />} />
         <Route path="/tools" element={<Tools />} />
-        <Route path="/support" element={<Support />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/advertise" element={<Advertise />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
