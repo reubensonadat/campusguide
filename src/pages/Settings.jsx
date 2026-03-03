@@ -21,6 +21,10 @@ import { useAppContext } from '../context/AppContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const Settings = () => {
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const navigate = useNavigate();
   const { state, actions } = useAppContext();
   const [timetable] = useLocalStorage('ucc_timetable', []);

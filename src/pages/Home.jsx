@@ -16,6 +16,10 @@ import { PaymentButton } from '../components/payment/PaymentButton'; // <-- fixe
 import CampusIllustration from '/college-campus-rafiki.svg';
 
 const Home = () => {
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const navigate = useNavigate();
   const { state } = useAppContext();
 
@@ -132,51 +136,51 @@ const Home = () => {
 
         <div className="relative max-w-6xl mx-auto z-10">
           {/* Mobile: compact blue card (left-aligned, 60% height) */}
-          
-            <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden lg:hidden">
-              {/* Decorative Elements */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-              <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
-      
-              <div className="relative z-10 text-center">
-                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
-                  <BookOpen size={40} className="text-white drop-shadow-md" />
-                </div>
-      
-                <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
-                  Your Essential<br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
-                    Campus Companion
-                  </span>
-                </h1>
-      
-                <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
+
+          <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden lg:hidden">
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
+
+            <div className="relative z-10 text-center">
+              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
+                <BookOpen size={40} className="text-white drop-shadow-md" />
+              </div>
+
+              <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
+                Your Essential<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
+                  Campus Companion
+                </span>
+              </h1>
+
+              <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
                 Everything you need to navigate university life seamlessly. Academic guides, essential tools, and campus maps all in one place.
-                </p>
-      
-                <div className="flex flex-col md:flex-row gap-4 justify-center">
-                  <Button
-                    variant="secondary"
-                    onClick={() => navigate('/guide')}
-                    className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
-                  >
-                    <BookOpen size={20} /> Open Guide
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate('/tools')}
-                    className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
-                  >
-                    <WrenchIcon size={20} /> Open Tools
-                  </Button>
-                </div>
+              </p>
+
+              <div className="flex flex-col md:flex-row gap-4 justify-center">
+                <Button
+                  variant="secondary"
+                  onClick={() => navigate('/guide')}
+                  className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+                >
+                  <BookOpen size={20} /> Open Guide
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/tools')}
+                  className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+                >
+                  <WrenchIcon size={20} /> Open Tools
+                </Button>
               </div>
             </div>
+          </div>
 
           {/* Desktop / large screens: two-column layout (text left, illustration right) */}
           <div className="hidden lg:grid lg:grid-cols-12 lg:items-center lg:gap-6">
             <div className="col-span-7 text-left mt-8">
-              
+
               <h1 className="text-5xl font-black text-gray-900 mb-4 tracking-tight leading-tight">
                 Your Essential <span className="block lg:inline bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600">Campus Companion</span>
               </h1>
@@ -308,7 +312,7 @@ const Home = () => {
               </p>
 
               <div className="max-w-sm mx-auto space-y-5">
-              <PaymentButton
+                <PaymentButton
                   amount={5}
                   email={supportEmail}
                   onPaymentSuccess={handlePaymentSuccess}
