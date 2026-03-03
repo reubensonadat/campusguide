@@ -48,6 +48,10 @@ const MOCK_FEED = [
 ];
 
 const Community = () => {
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const navigate = useNavigate();
 
     return (

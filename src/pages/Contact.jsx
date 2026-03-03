@@ -20,6 +20,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const Contact = () => {
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = React.useState({
