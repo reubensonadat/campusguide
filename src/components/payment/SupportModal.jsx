@@ -82,10 +82,20 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
       <div className="space-y-5">
         {!paymentResult ? (
           <>
+            {/* Modal Image Header */}
+            <div className="flex justify-center -mt-2">
+              <img
+                src="/Savings.png"
+                alt="Support Development"
+                className="w-full max-w-[200px] h-auto object-contain drop-shadow-lg"
+              />
+            </div>
+
             {/* Header Message */}
             <div className="text-center pb-2">
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Help keep this guide <strong className="text-indigo-600">free</strong> and <strong className="text-indigo-600">ad-free</strong> for all students
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Make a Difference</h3>
+              <p className="text-gray-600 text-sm leading-relaxed px-4">
+                Help keep the UCC Campus Guide <strong className="text-indigo-600">free</strong> and <strong className="text-indigo-600">ad-free</strong> for every student.
               </p>
             </div>
 

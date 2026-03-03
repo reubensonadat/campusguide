@@ -320,34 +320,7 @@ const Contact = () => {
         </div>
       </div>
 
-      {/* Social Media */}
-      <Card className="mb-8 border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-        <CardHeader className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
-          <CardTitle className="text-gray-800 flex items-center gap-2 text-lg">
-            <Users className="text-blue-500" size={20} />
-            Follow Us
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <p className="text-gray-600 mb-6 text-center">
-            Stay updated with the latest features and announcements
-          </p>
-          <div className="flex gap-4 justify-center">
-            {socialMedia.map((social, index) => {
-              const Icon = social.icon;
-              return (
-                <button
-                  key={index}
-                  onClick={() => window.open(social.url, '_blank')}
-                  className={`w-14 h-14 ${social.color} ${social.hoverColor} text-white rounded-full flex items-center justify-center transition-all transform hover:scale-110 shadow-lg`}
-                >
-                  <Icon size={24} />
-                </button>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+      
 
       {/* FAQs */}
       <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden">
