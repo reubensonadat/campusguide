@@ -286,7 +286,7 @@ const Guide = () => {
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="p-2 -mr-2 text-gray-600 hover:bg-gray-50 rounded-lg"
         >
-          {isSidebarOpen ? <List className="w-6 h-6 rotate-90" /> : <List className="w-6 h-6" />}
+          {isSidebarOpen ? <List className="w-6 h-6" /> : <List className="w-6 h-6" />}
         </button>
       </div>
 
