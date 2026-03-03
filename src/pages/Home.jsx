@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 
 // new import for the illustration
-import CampusIllustration from '../images/college-campus-rafiki.svg';
+import CampusIllustration from '/college-campus-rafiki.svg';
 
 const Home = () => {
   const navigate = useNavigate();
