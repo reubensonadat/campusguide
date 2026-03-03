@@ -300,30 +300,41 @@ const Home = () => {
         </section>
 
         <section>
-          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-[2.5rem] p-10 sm:p-14 text-center border border-indigo-100 shadow-sm transition-all duration-300">
-            <div className="relative z-10">
-              <div className="w-20 h-20 bg-indigo-100/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-indigo-100">
-                <Heart className="w-10 h-10 text-red-500 fill-red-500" />
+          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-[2.5rem] p-10 sm:p-14 border border-indigo-100 shadow-sm transition-all duration-300">
+            {/* Background Accent */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-100/30 rounded-full blur-3xl -mr-32 -mt-32"></div>
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12 text-center lg:text-left">
+              {/* Text Content */}
+              <div className="flex-1">
+                <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">Support This Project</h2>
+                <p className="text-gray-500 mb-10 max-w-lg mx-auto lg:mx-0 text-lg font-medium">
+                  Help us keep the UCC Campus Guide free, ad-free, and regularly updated for every student.
+                </p>
+
+                <div className="max-w-sm mx-auto lg:mx-0 space-y-5">
+                  <PaymentButton
+                    amount={5}
+                    email={supportEmail}
+                    onPaymentSuccess={handlePaymentSuccess}
+                    onPaymentError={handlePaymentError}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-indigo-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2"
+                  >
+                    Support Now (GH₵5)
+                  </PaymentButton>
+                  <p className="text-sm font-medium text-gray-500">
+                    Issues or suggestions? <a href="mailto:uccguide25@gmail.com" className="text-indigo-600 hover:underline transition-colors">Contact us</a>
+                  </p>
+                </div>
               </div>
 
-              <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">Support This Project</h2>
-              <p className="text-gray-500 mb-10 max-w-lg mx-auto text-lg font-medium">
-                Help us keep the UCC Campus Guide free, ad-free, and regularly updated for every student.
-              </p>
-
-              <div className="max-w-sm mx-auto space-y-5">
-                <PaymentButton
-                  amount={5}
-                  email={supportEmail}
-                  onPaymentSuccess={handlePaymentSuccess}
-                  onPaymentError={handlePaymentError}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-indigo-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2"
-                >
-                  Support Now (GH₵5)
-                </PaymentButton>
-                <p className="text-sm font-medium text-gray-500">
-                  Issues or suggestions? <a href="mailto:uccguide25@gmail.com" className="text-indigo-600 hover:underline transition-colors">Contact us</a>
-                </p>
+              {/* Image Content */}
+              <div className="flex-1 flex justify-center lg:justify-end">
+                <img
+                  src="/Savings.png"
+                  alt="Support Development"
+                  className="w-full max-w-sm object-contain drop-shadow-2xl"
+                />
               </div>
             </div>
           </div>

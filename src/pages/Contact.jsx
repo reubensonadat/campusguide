@@ -139,27 +139,73 @@ const Contact = () => {
   return (
     <div className="p-4 pb-24 bg-gray-50/30 min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-300">
       {/* Hero Section */}
-      <div className="mb-12 relative overflow-hidden bg-transparent">
-        <div className="relative z-10 flex flex-col-reverse md:flex-row gap-12 items-center">
+      <div className="mb-12 relative overflow-hidden bg-transparent cursor-default select-none">
+        {/* Mobile: compact blue card (centered, consistent with Home page mobile style) */}
+        <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden md:hidden">
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
 
-          {/* Text Content (Left on Desktop, Bottom on Mobile) */}
-          <div className="flex-1 text-center md:text-left text-gray-800 ml-12">
+          <div className="relative z-10 text-center">
+            <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
+              <MessageCircle size={40} className="text-white drop-shadow-md" />
+            </div>
+
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+              <Sparkles size={12} /> Get In Touch
+            </div>
+
+            <h1 className="text-3xl font-extrabold mb-4 tracking-tight leading-tight">
+              Contact <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
+                Our Team
+              </span>
+            </h1>
+
+            <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
+              We're here to help you succeed at UCC. Reach out with any questions or feedback.
+            </p>
+
+            <div className="flex flex-col gap-4 justify-center">
+              <Button
+                variant=""
+                onClick={() => navigate('/')}
+                className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+              >
+                <ArrowRight size={20} /> Back to Home
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/guide')}
+                className="bg-white/10 text-white border border-white/20 hover:bg-white/20 px-8 py-3.5 rounded-xl font-bold backdrop-blur-sm transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+              >
+                <Star size={20} /> View Guide
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: two-column layout (text left, image right) */}
+        <div className="relative z-10 hidden md:flex md:flex-row gap-12 items-center">
+
+          {/* Text Content (Left on Desktop) */}
+          <div className="flex-1 text-left text-gray-800 ml-12">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-blue-600 mb-6 ">
               <Sparkles size={12} /> Get In Touch
             </div>
 
-            <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
+            <h1 className="text-5xl font-extrabold mb-4 tracking-tight leading-tight">
               Contact <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
                 Our Team
               </span>
             </h1>
 
-            <p className="text-gray-600 text-lg mb-8 max-w-xl leading-relaxed mx-auto md:mx-0">
+            <p className="text-gray-600 text-lg mb-8 max-w-xl leading-relaxed">
               We're here to help you succeed at UCC. Reach out with any questions or feedback.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <div className="flex flex-row gap-4 justify-start">
               <Button
                 variant=""
                 onClick={() => navigate('/')}
@@ -178,7 +224,7 @@ const Contact = () => {
             </div>
           </div>
 
-          {/* Image (Right on Desktop, Top on Mobile) */}
+          {/* Image (Right on Desktop) */}
           <div className="flex-1 flex justify-center py-4">
             <img src={headerImage} alt="Customer Support" className="w-full max-w-md object-contain drop-shadow-xl pointer-events-none" />
           </div>
@@ -210,8 +256,8 @@ const Contact = () => {
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2 text-gray-800">Email Us</h3>
-                <p className="text-gray-600 text-base leading-relaxed">debate@ucc.edu.gh</p>
-                <p className="text-gray-600 text-base leading-relaxed">info@uccds.org</p>
+                <p className="text-gray-600 text-base leading-relaxed">[EMAIL_ADDRESS]</p>
+
               </div>
             </div>
 
@@ -221,7 +267,6 @@ const Contact = () => {
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2 text-gray-800">Call Us</h3>
-                <p className="text-gray-600 text-base leading-relaxed">+233 55 436 6039</p>
                 <p className="text-gray-600 text-base leading-relaxed">+233 (0) 244 987 654</p>
               </div>
             </div>
@@ -250,7 +295,7 @@ const Contact = () => {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full p-4 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 shadow-sm"
-                placeholder="othniel@example.com"
+                placeholder="your.name@stu.ucc.edu.gh"
                 required
               />
             </div>
