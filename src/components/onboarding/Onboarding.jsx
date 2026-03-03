@@ -1,5 +1,12 @@
 import React from "react";
 import { X, ChevronLeft, ArrowRight } from "lucide-react";
+// replace external images with local SVGs
+import Onboard1 from '/welcome.svg';
+import Onboard2 from '/guide.svg';
+import Onboard3 from '/Campus-map.svg';
+import Onboard4 from '/Tools.svg';
+import Onboard5 from '/Directory.svg';
+import Onboard6 from '/personalized-exp.svg';
 
 const Onboarding = ({ isOpen, onClose, currentStep, onNext, onPrev }) => {
   if (!isOpen) return null;
@@ -8,32 +15,32 @@ const Onboarding = ({ isOpen, onClose, currentStep, onNext, onPrev }) => {
     {
       title: "Welcome to UCC\nCampus Guide",
       subtitle: "Your essential companion for university life.\nNavigate UCC with ease and confidence.",
-      image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=800"
+      image: Onboard1
     },
     {
       title: "Comprehensive\nStudent Guides",
       subtitle: "Access essential resources, rules, academic\nprocedures, and tips for student life.",
-      image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800"
+      image: Onboard2
     },
     {
       title: "Interactive\nCampus Map",
       subtitle: "Never get lost. Find lecture halls,\nlibraries, and facilities effortlessly.",
-      image: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800"
+      image: Onboard3
     },
     {
       title: "Smart \nAcademic Tools",
       subtitle: "Build your timetable, calculate your GPA,\nand manage your schedule efficiently.",
-      image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=800"
+      image: Onboard4
     },
     {
       title: "Contact\nDirectory",
       subtitle: "Quickly find and reach out to university\ndepartments and essential services.",
-      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800"
+      image: Onboard5
     },
     {
       title: "Personalized\nExperience",
       subtitle: "Customize your settings, report issues,\nand get support whenever you need it.",
-      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800"
+      image: Onboard6
     }
   ];
 
