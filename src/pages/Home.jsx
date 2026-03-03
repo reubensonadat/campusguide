@@ -1,32 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { PaymentButton } from '../components/payment/PaymentButton';
 import {
-  BookOpen, Wrench, Heart, Users, MapPin, ArrowRight,
-  TrendingUp, Shield, Zap, Star, ClipboardList, Map,
+  BookOpen, Wrench, Users, MapPin, ArrowRight,
+  TrendingUp, Zap, Star, ClipboardList, Map,
   CalendarDays, Wallet, Compass, Sparkles, Phone, Settings,
-  MessageCircle, ArrowUpRight
+  MessageCircle, Heart, SettingsIcon,
+  WrenchIcon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { PaymentButton } from '../components/payment/PaymentButton'; // <-- fixed import (closing quote)
 
 // new import for the illustration
-import CampusIllustration from '../images/college campus-rafiki.svg';
+import CampusIllustration from '/college-campus-rafiki.svg';
 
 const Home = () => {
   const navigate = useNavigate();
   const { state } = useAppContext();
-  const [supportEmail, setSupportEmail] = useState('');
 
+  const supportEmail = state?.supportEmail || 'anonymous@uccguide.com';
   const handlePaymentSuccess = (result) => {
-    console.log('Payment successful:', result);
+    console.log('Payment success', result);
     alert('Thank you for your support!');
+    // add your success handling (toast/navigation) here
   };
-
   const handlePaymentError = (error) => {
-    console.error('Payment error:', error);
+    console.error('Payment error', error);
     alert(`Payment failed: ${error.message}`);
+    // add your error handling here
   };
 
   const features = [
@@ -106,10 +108,10 @@ const Home = () => {
       iconBg: 'bg-gray-100/50'
     },
     {
-      title: 'Report Issue',
-      description: 'Help improve the app',
+      title: 'Contact Us',
+      description: 'Reach out for help or feedback',
       icon: MessageCircle,
-      action: () => navigate('/support'),
+      action: () => navigate('/contact'),
       color: 'text-red-600',
       bg: 'bg-red-50/80',
       iconBg: 'bg-red-100/50'
@@ -130,55 +132,57 @@ const Home = () => {
 
         <div className="relative max-w-6xl mx-auto z-10">
           {/* Mobile: compact blue card (left-aligned, 60% height) */}
-          <div className="lg:hidden">
-            <div className="rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-indigo-700 to-indigo-600 p-6 text-white flex flex-col justify-between text-left h-[60vh]">
-              <div>
-                <h1 className="text-3xl font-extrabold leading-tight tracking-tight">
-                  <span className="block">Your Essential</span>
-                  <span className="block font-black text-indigo-100">Campus Companion</span>
+          
+            <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden lg:hidden">
+              {/* Decorative Elements */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
+      
+              <div className="relative z-10 text-center">
+                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
+                  <BookOpen size={40} className="text-white drop-shadow-md" />
+                </div>
+      
+                <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
+                  Your Essential<br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
+                    Campus Companion
+                  </span>
                 </h1>
-
-                <p className="mt-4 text-base text-indigo-100/90 max-w-[28rem] font-medium">
-                  Navigate university life with ease. Access course registration, campus maps, and academic tools all in one centralized hub designed for student success.
+      
+                <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
+                Everything you need to navigate university life seamlessly. Academic guides, essential tools, and campus maps all in one place.
                 </p>
-              </div>
-
-              <div className="flex gap-3 mt-2">
-                <button
-                  onClick={() => navigate('/guide')}
-                  className="flex items-center gap-2 bg-white text-indigo-700 px-4 py-2 rounded-lg font-semibold shadow-sm border border-white/20"
-                >
-                  <BookOpen size={16} /> Open Guide
-                </button>
-
-                <button
-                  onClick={() => navigate('/tools')}
-                  className="flex items-center gap-2 border border-white/30 text-white px-4 py-2 rounded-lg font-semibold bg-white/5"
-                >
-                  <Wrench size={16} /> Open Tools
-                </button>
+      
+                <div className="flex flex-col md:flex-row gap-4 justify-center">
+                  <Button
+                    variant="secondary"
+                    onClick={() => navigate('/guide')}
+                    className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+                  >
+                    <BookOpen size={20} /> Open Guide
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/tools')}
+                    className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+                  >
+                    <WrenchIcon size={20} /> Open Tools
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
 
           {/* Desktop / large screens: two-column layout (text left, illustration right) */}
           <div className="hidden lg:grid lg:grid-cols-12 lg:items-center lg:gap-6">
-            <div className="col-span-7 text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 backdrop-blur-md border border-gray-200/50 text-xs font-bold uppercase tracking-widest text-gray-600 mb-6 shadow-sm">
-                <Sparkles size={14} className="text-indigo-500" /> Built by Synapse Tech
-                {state.isSupporter && (
-                  <span className="ml-2 pl-2 border-l border-gray-300 gap-1 flex items-center text-amber-500">
-                    <Star size={12} fill="currentColor" /> Supporter
-                  </span>
-                )}
-              </div>
-
+            <div className="col-span-7 text-left mt-8">
+              
               <h1 className="text-5xl font-black text-gray-900 mb-4 tracking-tight leading-tight">
                 Your Essential <span className="block lg:inline bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600">Campus Companion</span>
               </h1>
 
               <p className="text-lg text-gray-500 mb-6 max-w-xl font-medium">
-                Navigate campus life with clear guides, essential tools, and quick access to services — all in a compact, easy-to-use hub.
+                Navigate campus life with clear guides, essential tools, and quick access to services all in a compact, easy-to-use hub.
               </p>
 
               <div className="flex items-center gap-4">
@@ -223,30 +227,37 @@ const Home = () => {
             <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quick Actions</h2>
             <Zap className="w-5 h-5 text-indigo-400 opacity-50" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => {
-              const Icon = action.icon;
-              return (
-                <button
-                  key={index}
-                  onClick={action.action}
-                  className="group relative overflow-hidden text-left p-5 bg-white border border-gray-100 rounded-3xl hover:border-indigo-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-4 relative z-10">
-                    <div className={`w-14 h-14 ${action.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                      <Icon size={24} className={action.color} />
+
+          {/* Mobile: stacked; Desktop: horizontal snap with hidden scrollbar and exactly 3 cards fit */}
+          <div className="grid grid-cols-1 gap-4">
+            <div
+              className="grid grid-cols-1 gap-4 lg:flex lg:gap-6 lg:py-2 lg:px-2 snap-x snap-mandatory lg:overflow-x-auto hide-scrollbar"
+            >
+              {quickActions.map((action, index) => {
+                const Icon = action.icon;
+                return (
+                  <button
+                    key={index}
+                    onClick={action.action}
+                    className="group relative overflow-hidden text-left p-5 bg-white border border-gray-100 rounded-3xl hover:border-indigo-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 flex items-center justify-between lg:flex-none snap-start"
+                    style={{ minWidth: 'min(24rem, calc((100vw - 96px) / 4))' }}
+                  >
+                    <div className="flex items-center gap-4 relative z-10">
+                      <div className={`w-14 h-14 ${action.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                        <Icon size={24} className={action.color} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 text-base">{action.title}</h4>
+                        <p className="text-sm text-gray-500 font-medium mt-0.5">{action.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900 text-base">{action.title}</h4>
-                      <p className="text-sm text-gray-500 font-medium mt-0.5">{action.description}</p>
+                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+                      <ArrowRight size={16} className={action.color} />
                     </div>
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 relative z-10">
-                    <ArrowRight size={16} className={action.color} />
-                  </div>
-                </button>
-              );
-            })}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
 
@@ -284,7 +295,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Support CTA */}
         <section>
           <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-[2.5rem] p-10 sm:p-14 text-center border border-indigo-100 shadow-sm transition-all duration-300">
             <div className="relative z-10">
@@ -298,9 +308,9 @@ const Home = () => {
               </p>
 
               <div className="max-w-sm mx-auto space-y-5">
-                <PaymentButton
+              <PaymentButton
                   amount={5}
-                  email={supportEmail || "anonymous@uccguide.com"}
+                  email={supportEmail}
                   onPaymentSuccess={handlePaymentSuccess}
                   onPaymentError={handlePaymentError}
                   className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-indigo-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2"
@@ -314,6 +324,9 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+
+
 
       </div>
     </div>
