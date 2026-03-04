@@ -157,7 +157,7 @@ const Home = () => {
               <div className="flex flex-col gap-3">
                 <Button
                   onClick={() => navigate('/guide')}
-                  className="bg-white text-[#0f1117] hover:bg-white/90 font-bold py-4 rounded-xl shadow-lg border-none"
+                  className="bg-white text-gray-900 hover:bg-white/90 font-bold py-4 rounded-xl shadow-lg border-none"
                 >
                   Open Guide
                 </Button>
