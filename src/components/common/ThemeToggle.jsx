@@ -17,19 +17,23 @@ const ThemeToggle = () => {
    return (
       <button
          onClick={handleToggle}
-         className="fixed bottom-28 right-6 z-[99999] p-4 rounded-full bg-white dark:bg-gray-800 shadow-2xl border-2 border-indigo-100 dark:border-indigo-900 transition-all active:scale-90 hover:scale-110 group overflow-hidden touch-none"
+         className="fixed bottom-28 right-6 z-[99999] touch-none"
          aria-label="Toggle theme"
          style={{ pointerEvents: 'auto' }}
       >
-         <div className="flex flex-col items-center">
-            {isDarkMode ? (
-               <Sun className="w-6 h-6 text-yellow-500 transition-all transform group-hover:rotate-45" />
-            ) : (
-               <Moon className="w-6 h-6 text-indigo-600 transition-all transform group-hover:rotate-12" />
-            )}
-            <span className="text-[6px] font-black uppercase mt-1 text-gray-400 dark:text-gray-500">
-               {isDarkMode ? 'Dark' : 'Light'}
-            </span>
+         {/* Frosted glass pill — both icons visible, active one highlighted */}
+         <div className="flex items-center gap-1 p-1.5 rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200/60 dark:border-white/10 shadow-lg dark:shadow-black/40 transition-all duration-300 hover:scale-105 active:scale-95">
+
+            {/* Sun — glows amber when light mode is active */}
+            <div className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${!isDarkMode ? 'bg-amber-400 shadow-md shadow-amber-200' : 'opacity-35'}`}>
+               <Sun className={`w-4 h-4 transition-colors duration-300 ${!isDarkMode ? 'text-white' : 'text-gray-400'}`} />
+            </div>
+
+            {/* Moon — glows indigo when dark mode is active */}
+            <div className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${isDarkMode ? 'bg-indigo-600 shadow-md shadow-indigo-900' : 'opacity-35'}`}>
+               <Moon className={`w-4 h-4 transition-colors duration-300 ${isDarkMode ? 'text-white' : 'text-gray-500'}`} />
+            </div>
+
          </div>
       </button>
    );
