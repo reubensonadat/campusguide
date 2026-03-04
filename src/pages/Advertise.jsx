@@ -4,6 +4,7 @@ import { ArrowLeft, Sparkles, Building2, UploadCloud, CheckCircle2, AlertCircle,
 import { PaymentButton } from '../components/payment/PaymentButton'; // Simulated Paystack
 import CommunityCard from '../components/community/CommunityCard';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { supabase } from '../lib/supabase';
 
 const AD_PACKAGES = [
     {
@@ -73,10 +74,10 @@ const Advertise = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        // Strict WhatsApp Validation (Allows digits, optional + or spaces, minimum length 10)
+        // Strict WhatsApp Validation (Allows digits, optional + or spaces)
         if (name === 'whatsapp') {
-            // Only allow typing numbers, space, and +
             if (!/^[\d\s+]*$/.test(value)) return;
+            if (value.length > 20) return; // Prevent unreasonable lengths
         }
 
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -85,6 +86,13 @@ const Advertise = () => {
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                alert("Invalid file format. Please upload a JPEG, PNG, or WebP image.");
+                e.target.value = null;
+                return;
+            }
+
             if (file.size > 2 * 1024 * 1024) {
                 alert("File size exceeds 2MB limit. Please upload a smaller image.");
                 e.target.value = null; // reset the input
@@ -104,7 +112,8 @@ const Advertise = () => {
     };
 
     // Validation checks for buttons
-    const isStep2Valid = formData.businessName.length > 2 && formData.category && formData.whatsapp.replace(/\D/g, '').length >= 9;
+    const isValidPhone = formData.whatsapp ? formData.whatsapp.replace(/\D/g, '').length >= 9 && formData.whatsapp.replace(/\D/g, '').length <= 15 : false;
+    const isStep2Valid = formData.businessName.trim().length >= 3 && formData.category && isValidPhone;
 
     // UI states
 
@@ -117,10 +126,66 @@ const Advertise = () => {
     const nextStep = () => setStep(prev => prev + 1);
     const prevStep = () => setStep(prev => prev - 1);
 
-    const handleSuccess = (res) => {
-        // Here we'd typically save data to Supabase with status: 'pending'
-        alert("Payment successful! Your ad is now pending manual review. We will reach out via WhatsApp once approved.");
-        navigate('/community');
+    const handleSuccess = async (res) => {
+        try {
+            // Provide immediate feedback to the user while uploading
+            const submitButtonText = document.getElementById("submit-ad-text");
+            if (submitButtonText) submitButtonText.innerText = "Uploading Ad...";
+
+            let finalImageUrl = null;
+
+            // 1. Upload Flyer to Supabase Storage if an image file exists
+            if (formData.imageFile) {
+                // Create a unique filename using timestamp and a random string
+                const fileExt = formData.imageFile.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+                const filePath = `flyers/${fileName}`;
+
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('ad-images')
+                    .upload(filePath, formData.imageFile);
+
+                if (uploadError) {
+                    throw new Error("Failed to upload image: " + uploadError.message);
+                }
+
+                // Get the public URL for the uploaded image
+                const { data: publicUrlData } = supabase.storage
+                    .from('ad-images')
+                    .getPublicUrl(filePath);
+
+                finalImageUrl = publicUrlData.publicUrl;
+            }
+
+            // 2. Save Ad Data to Supabase Database
+            const { error: dbError } = await supabase
+                .from('advertisements')
+                .insert([{
+                    title: formData.businessName,
+                    description: formData.description,
+                    phone_number: formData.whatsapp.replace(/\D/g, ''), // Cleaned number
+                    image_url: finalImageUrl,
+                    category: formData.category,
+                    status: 'PENDING',
+                    paystack_reference: res.reference // Important: Required for Cloudflare webhook verification
+                }]);
+
+            if (dbError) {
+                // If database insert fails, we ideally should delete the uploaded image too, but for MVPs this is okay.
+                throw new Error("Failed to save advertisement details: " + dbError.message);
+            }
+
+            // Success! Clear local storage form data
+            setSavedFormData({ businessName: '', category: '', whatsapp: '', description: '' });
+            setStep(1); // Reset to beginning for next time
+
+            alert("Payment successful! Your ad is now pending manual review. We will reach out via WhatsApp once approved.");
+            navigate('/community');
+
+        } catch (error) {
+            console.error("Submission Error:", error);
+            alert("Ad submission encountered an issue: " + error.message + "\n\nPlease reach out to support with your Payment Reference: " + res.reference);
+        }
     };
 
     const STEPS = [
@@ -251,8 +316,8 @@ const Advertise = () => {
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2 flex justify-between">
                                     <span>WhatsApp Business Number</span>
-                                    {formData.whatsapp && formData.whatsapp.replace(/\D/g, '').length < 9 && (
-                                        <span className="text-red-500 text-xs">Invalid number</span>
+                                    {formData.whatsapp && !isValidPhone && (
+                                        <span className="text-red-500 text-xs">Invalid number length</span>
                                     )}
                                 </label>
                                 <div className="relative">
@@ -277,8 +342,8 @@ const Advertise = () => {
                         <div className="mt-8 flex gap-4">
                             <button
                                 onClick={nextStep}
-                                disabled={!formData.businessName || !formData.category || !formData.whatsapp}
-                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg transition-all"
+                                disabled={!isStep2Valid}
+                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all"
                             >
                                 Continue to Media
                             </button>
@@ -352,8 +417,8 @@ const Advertise = () => {
                         <div className="mt-8 flex gap-4">
                             <button
                                 onClick={nextStep}
-                                disabled={!formData.description || !formData.imagePreview}
-                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg transition-all"
+                                disabled={!formData.description.trim() || formData.description.length > 300 || !formData.imagePreview}
+                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all"
                             >
                                 Continue to Packages
                             </button>
@@ -477,7 +542,7 @@ const Advertise = () => {
                                     onPaymentSuccess={handleSuccess}
                                     className="w-full py-5 rounded-2xl font-bold text-white text-lg shadow-xl transition-all hover:-translate-y-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700"
                                 >
-                                    Pay & Submit Ad <ExternalLink size={20} />
+                                    <span id="submit-ad-text">Pay & Submit Ad</span> <ExternalLink size={20} />
                                 </PaymentButton>
                                 <p className="text-center text-xs text-gray-400 font-medium mt-3 flex items-center justify-center gap-1.5">
                                     <CheckCircle2 size={14} className="text-emerald-500" /> Secure Checkout via Paystack
