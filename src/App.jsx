@@ -1,6 +1,7 @@
+// src/App.jsx
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AppProvider, useAppContext } from './context/AppContext';
+import { AppProvider } from './context/AppContext';
 import { CampusProvider, useCampus } from './context/CampusContext';
 
 import { useSupportModal } from './hooks/useSupportModal';
@@ -8,7 +9,7 @@ import { useSupportTimer } from './hooks/useSupportTimer';
 import { useClassReminders } from './hooks/useClassReminders';
 import { useFeedbackTimer } from './hooks/useFeedbackTimer';
 import { useFeedbackModal } from './hooks/useFeedbackModal';
-import { Toast } from './components/common/Toasts';
+import { Toast } from './components/common/Toast';
 import { TabBar } from './components/common/TabBar';
 
 import { SupportModal } from './components/payment/SupportModal';
@@ -18,8 +19,8 @@ import PWAInstallButton from './components/common/PWAInstallButton';
 import { preloadPaystack } from './services/paymentService';
 import { useOnboarding } from './hooks/useOnboarding';
 import { Onboarding } from './components/onboarding/Onboarding';
-import { ThemeToggle } from './components/common/ThemeToggle';
 
+// Page imports
 import Home from './pages/Home';
 import Guide from './pages/Guide';
 import Tools from './pages/Tools';
@@ -30,33 +31,25 @@ import Contact from './pages/Contact';
 import Settings from './pages/Settings';
 
 function AppContent() {
-  const { state, actions } = useAppContext();
   const { selectedCampusId } = useCampus();
-  const { showModal, closeModal, handlePaymentSuccess } = useSupportModal;
+  const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
   const { resetTimer } = useSupportTimer();
 
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (state.settings.darkMode) {
-      root.classList.add('dark');
-      root.style.colorScheme = 'dark';
-    } else {
-      root.classList.remove('dark');
-      root.style.colorScheme = 'light';
-    }
-  }, [state.settings?.darkMode]);
-
+  // Feedback Modal Logic
   useFeedbackTimer();
   const { showModal: showFeedback, closeModal: closeFeedback } = useFeedbackModal();
 
-  useClassReminders;
+  // Class Reminders Logic
+  useClassReminders();
 
+  // Preload Paystack script when app loads
   useEffect(() => {
     preloadPaystack().catch(error => {
       console.error('Failed to preload Paystack:', error);
     });
-  }, [preloadPaystack]);
+  }, []);
 
+  // Onboarding
   const {
     showOnboarding,
     currentStep,
@@ -65,16 +58,17 @@ function AppContent() {
     closeOnboarding
   } = useOnboarding();
 
+  // Handle closing support modal and resetting timer
   const handleCloseModal = () => {
     closeModal();
-    resetTimer();
+    resetTimer(); // Reset timer to show modal again after 5 minutes
   };
 
   return (
     <div className="min-h-screen">
       <Routes>
-        <Route path="/" element={Home} />
-        <Route path="/guide" element={<Group />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/guide" element={<Guide />} />
         <Route path="/guide/:topic" element={<Guide />} />
         <Route path="/tools" element={<Tools />} />
         <Route path="/community" element={<Community />} />
@@ -83,10 +77,9 @@ function AppContent() {
         <Route path="/settings" element={<Settings />} />
       </Routes>
 
-      {state.userConfig.map((item, id) => <div key={item}>{item}</div>)}
-
       <TabBar />
 
+      {/* PWA Install Button - Fixed Position */}
       <PWAInstallButton />
 
       <SupportModal
@@ -107,20 +100,19 @@ function AppContent() {
         onPrev={prevStep}
         onClose={closeOnboarding}
       />
-      <ThemeToggle />
     </div>
   );
 }
 
 function App() {
   return (
-    <Appcontext>
+    <AppProvider>
       <CampusProvider>
         <Router>
           <AppContent />
         </Router>
       </CampusProvider>
-    </Appcontext>
+    </AppProvider>
   );
 }
 

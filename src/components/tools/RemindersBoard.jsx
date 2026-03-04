@@ -160,8 +160,8 @@ const RemindersBoard = () => {
                 <div
                   key={reminder.id}
                   className={`flex items-center justify-between p-3 border rounded ${
-                    reminder.completed ? 'bg-gray-50 dark:bg-gray-900 opacity-75' : ''
-                  } ${overdue ? 'border-red-300 bg-red-50 dark:bg-red-900/40' : ''}`}
+                    reminder.completed ? 'bg-gray-50 opacity-75' : ''
+                  } ${overdue ? 'border-red-300 bg-red-50' : ''}`}
                 >
                   <div className="flex items-start gap-3 flex-1">
                     <button
@@ -169,7 +169,7 @@ const RemindersBoard = () => {
                       className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center ${
                         reminder.completed
                           ? 'bg-green-500 border-green-500 text-white'
-                          : 'border-gray-300 dark:border-gray-600 hover:border-green-500'
+                          : 'border-gray-300 hover:border-green-500'
                       }`}
                     >
                       {reminder.completed && <Check size={12} />}
@@ -177,19 +177,19 @@ const RemindersBoard = () => {
                     
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className={`font-medium ${reminder.completed ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}>
+                        <span className={`font-medium ${reminder.completed ? 'line-through text-gray-500' : ''}`}>
                           {reminder.title}
                         </span>
                         <span className={`px-2 py-1 rounded-full text-xs ${priorityInfo.color}`}>
                           {priorityInfo.label}
                         </span>
                         {overdue && (
-                          <span className="px-2 py-1 rounded-full text-xs bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300">
+                          <span className="px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
                             Overdue
                           </span>
                         )}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <div className="text-sm text-gray-600 mt-1">
                         Due: {formatDate(reminder.dueDate)}
                       </div>
                     </div>
@@ -207,7 +207,7 @@ const RemindersBoard = () => {
             })}
             
             {sortedReminders.length === 0 && (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <div className="text-center py-8 text-gray-500">
                 {filter === 'completed' 
                   ? 'No completed reminders yet.'
                   : 'No reminders yet. Add your first reminder to get started.'

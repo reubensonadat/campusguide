@@ -12,8 +12,8 @@ const Accommodation = () => {
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
-          <div className="bg-slate-50 dark:bg-gray-800/50 p-5 rounded-xl border border-slate-100 dark:border-gray-700 shadow-sm">
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
+            <p className="text-gray-700 leading-relaxed">
               UCC operates a collegiate system where every student is affiliated with a Hall of Residence.
               Due to the <strong>"In-Out-Out-Out"</strong> policy, freshers are prioritized for on-campus rooms.
             </p>
@@ -22,22 +22,22 @@ const Accommodation = () => {
           {/* --- HALLS GRID --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Old Site Card */}
-            <div className="bg-blue-50 dark:bg-blue-900/40 p-6 rounded-xl border border-blue-100 dark:border-blue-800/50 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-blue-900 dark:text-blue-400 text-lg mb-3 flex items-center">
-                <span className="bg-blue-200 dark:bg-blue-800/50 text-blue-800 dark:text-blue-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Old Site</span>
+            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
+                <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Old Site</span>
                 Southern Campus
               </h4>
-              <p className="text-sm text-blue-800 dark:text-blue-300/70 mb-4"></p>
-              <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-                <li className="flex items-center bg-white dark:bg-gray-800/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 dark:bg-blue-400 rounded-full mr-3"></span>
+              <p className="text-sm text-blue-800/70 mb-4"></p>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
                   <strong>Oguaa Hall</strong> <span className="text-xs ml-auto text-gray-500">Mixed</span>
                 </li>
-                <li className="flex items-center bg-white dark:bg-gray-800/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 dark:bg-blue-400 rounded-full mr-3"></span>
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
                   <strong>Atlantic Hall</strong> <span className="text-xs ml-auto text-gray-500">Mixed</span>
                 </li>
-                <li className="flex items-center bg-white dark:bg-gray-800/60 p-2 rounded">
+                <li className="flex items-center bg-white/60 p-2 rounded">
                   <span className="w-2 h-2 bg-pink-400 rounded-full mr-3"></span>
                   <strong>Adehye Hall</strong> <span className="text-xs ml-auto text-pink-600 font-bold">Females Only</span>
                 </li>
@@ -45,23 +45,23 @@ const Accommodation = () => {
             </div>
 
             {/* New Site Card */}
-            <div className="bg-emerald-50 dark:bg-emerald-900/40 p-6 rounded-xl border border-emerald-100 dark:border-emerald-800/50 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-emerald-900 dark:text-emerald-400 text-lg mb-3 flex items-center">
-                <span className="bg-emerald-200 dark:bg-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">New Site</span>
+            <div className="bg-emerald-50 p-6 rounded-xl border border-emerald-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-emerald-900 text-lg mb-3 flex items-center">
+                <span className="bg-emerald-200 text-emerald-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">New Site</span>
                 Northern Campus
               </h4>
-              <p className="text-sm text-emerald-800 dark:text-emerald-300/70 mb-4"></p>
-              <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-                <li className="flex items-center bg-white dark:bg-gray-800/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full mr-3"></span>
+              <p className="text-sm text-emerald-800/70 mb-4"></p>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
                   <strong>Casely Hayford</strong> <span className="text-xs ml-auto text-blue-600 font-bold">Males Only</span>
                 </li>
-                <li className="flex items-center bg-white dark:bg-gray-800/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full mr-3"></span>
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
                   <strong>Valco Hall</strong> <span className="text-xs ml-auto text-gray-500">Mixed</span>
                 </li>
-                <li className="flex items-center bg-white dark:bg-gray-800/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full mr-3"></span>
+                <li className="flex items-center bg-white/60 p-2 rounded">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
                   <strong>Kwame Nkrumah</strong> <span className="text-xs ml-auto text-gray-500">Mixed</span>
                 </li>
               </ul>
@@ -70,71 +70,71 @@ const Accommodation = () => {
 
           {/* --- STEPS AS SUBTLE COLORED CARDS --- */}
           <div className="pt-4">
-            <h3 className="font-bold text-gray-800 dark:text-gray-200 text-xl mb-6 flex items-center">
-              <span className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
+            <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
+              <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
               Application Process
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
               {/* Step 1 - Subtle Blue */}
-              <div className="bg-sky-50 dark:bg-sky-900/40 p-5 rounded-xl border border-sky-100 dark:border-sky-800/50 hover:shadow-md transition-all duration-300">
+              <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-sky-900 dark:text-sky-400 text-lg">Admission Letter</h5>
-                  <span className="text-3xl font-bold text-sky-200/80 dark:text-sky-800/80 -mt-1">01</span>
+                  <h5 className="font-bold text-sky-900 text-lg">Admission Letter</h5>
+                  <span className="text-3xl font-bold text-sky-200/80 -mt-1">01</span>
                 </div>
-                <p className="text-xs uppercase tracking-wider text-sky-700 dark:text-sky-300 font-semibold mb-2">Prerequisite</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-xs uppercase tracking-wider text-sky-700 font-semibold mb-2">Prerequisite</p>
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Locate your <strong>Student ID</strong> and <strong>Reference Number</strong> on your official letter. You cannot log in without these.
                 </p>
               </div>
 
               {/* Step 2 - Subtle Indigo */}
-              <div className="bg-indigo-50 dark:bg-indigo-900/40 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800/50 hover:shadow-md transition-all duration-300">
+              <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-indigo-900 dark:text-indigo-400 text-lg">Access Portal</h5>
+                  <h5 className="font-bold text-indigo-900 text-lg">Access Portal</h5>
                   <span className="text-3xl font-bold text-indigo-200/80 -mt-1">02</span>
                 </div>
                 <p className="text-xs uppercase tracking-wider text-indigo-700 font-semibold mb-2">Timing is Key</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Visit <strong>portal.ucc.edu.gh</strong>. Be logged in 15 minutes before the announced opening time (usually 10:00 AM).
                 </p>
               </div>
 
               {/* Step 3 - Subtle Purple */}
 
-              <div className="bg-amber-50 dark:bg-amber-900/40 p-5 rounded-xl border border-amber-100 dark:border-amber-800/50 hover:shadow-md transition-all duration-300">
+              <div className="bg-amber-50 p-5 rounded-xl border border-amber-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-amber-900 dark:text-amber-400 text-lg">Instant Payment</h5>
-                  <span className="text-3xl font-bold text-amber-200/80 dark:text-amber-800/80 -mt-1">03</span>
+                  <h5 className="font-bold text-amber-900 text-lg">Instant Payment</h5>
+                  <span className="text-3xl font-bold text-amber-200/80 -mt-1">03</span>
                 </div>
-                <p className="text-xs uppercase tracking-wider text-amber-700 dark:text-amber-300 font-semibold mb-2">Secure the Bed</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-xs uppercase tracking-wider text-amber-700 font-semibold mb-2">Secure the Bed</p>
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Print the invoice and pay <strong>immediately</strong> at GCB, Zenith, or Prudential Bank to lock it in.
                 </p>
               </div>
 
 
               {/* Step 4 - Subtle Amber */}
-              <div className="bg-violet-50 dark:bg-violet-900/40 p-5 rounded-xl border border-violet-100 dark:border-violet-800/50 hover:shadow-md transition-all duration-300">
+              <div className="bg-violet-50 p-5 rounded-xl border border-violet-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-violet-900 dark:text-violet-400 text-lg">Select Room</h5>
-                  <span className="text-3xl font-bold text-violet-200/80 dark:text-violet-800/80 -mt-1">04</span>
+                  <h5 className="font-bold text-violet-900 text-lg">Select Room</h5>
+                  <span className="text-3xl font-bold text-violet-200/80 -mt-1">04</span>
                 </div>
-                <p className="text-xs uppercase tracking-wider text-violet-700 dark:text-violet-300 font-semibold mb-2">Fast Fingers</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-xs uppercase tracking-wider text-violet-700 font-semibold mb-2">Fast Fingers</p>
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Navigate to 'Accommodation'. Rooms disappear in seconds. Casford & Adehye fill up fastest.
                 </p>
               </div>
 
               {/* Step 5 - Subtle Teal */}
-              <div className="bg-teal-50 dark:bg-teal-900/40 p-5 rounded-xl border border-teal-100 dark:border-teal-800/50 hover:shadow-md transition-all duration-300">
+              <div className="bg-teal-50 p-5 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
                 <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-teal-900 dark:text-teal-400 text-lg">Confirm</h5>
-                  <span className="text-3xl font-bold text-teal-200/80 dark:text-teal-800/80 -mt-1">05</span>
+                  <h5 className="font-bold text-teal-900 text-lg">Confirm</h5>
+                  <span className="text-3xl font-bold text-teal-200/80 -mt-1">05</span>
                 </div>
-                <p className="text-xs uppercase tracking-wider text-teal-700 dark:text-teal-300 font-semibold mb-2">Undertaking Form</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-xs uppercase tracking-wider text-teal-700 font-semibold mb-2">Undertaking Form</p>
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Log back in to verify payment reflection and print your Residential Undertaking Form.
                 </p>
               </div>
@@ -191,47 +191,47 @@ const Accommodation = () => {
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
-          <div className="bg-orange-50 dark:bg-orange-900/40 p-5 rounded-xl border border-orange-100 dark:border-orange-800/50">
-            <p className="text-gray-700 dark:text-gray-300">
+          <div className="bg-orange-50 p-5 rounded-xl border border-orange-100">
+            <p className="text-gray-700">
               Continuing students (Level 200-400) usually move to private hostels in the communities surrounding the university, collectively known as the <strong>"Diaspora"</strong>.
             </p>
           </div>
 
           {/* --- COMMUNITIES GRID --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-orange-50 dark:bg-orange-900/40 p-6 rounded-xl border border-orange-100 dark:border-orange-800/50 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-orange-900 dark:text-orange-400 text-lg mb-2">Amamoma & School Bus Road</h4>
+            <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-orange-900 text-lg mb-2">Amamoma & School Bus Road</h4>
               <p className="text-xs font-bold text-orange-600 uppercase mb-3 tracking-wide">Near LT & Main Library</p>
-              <p className="text-sm text-gray-700 dark:text-gray-300">Closest to the <strong>Large Lecture Theatre (LLT)</strong> and <strong>Sam Jonah Library</strong>. Very lively student atmosphere with many food spots, though rent can be higher due to the prime location.</p>
+              <p className="text-sm text-gray-700">Closest to the <strong>Large Lecture Theatre (LLT)</strong> and <strong>Sam Jonah Library</strong>. Very lively student atmosphere with many food spots, though rent can be higher due to the prime location.</p>
             </div>
-            <div className="bg-teal-50 dark:bg-teal-900/40 p-6 rounded-xl border border-teal-100 dark:border-teal-800/50 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-teal-900 dark:text-teal-400 text-lg mb-2">Kwaprow & Ayensu</h4>
+            <div className="bg-teal-50 p-6 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
+              <h4 className="font-bold text-teal-900 text-lg mb-2">Kwaprow & Ayensu</h4>
               <p className="text-xs font-bold text-teal-600 uppercase mb-3 tracking-wide">Near Sandwich Lecture Theatre</p>
-              <p className="text-sm text-gray-700 dark:text-gray-300">Strategic choice if you have frequent classes at the <strong>Sandwich Lecture Theatre (SWLT)</strong>. These areas often offer more affordable housing options while remaining accessible.</p>
+              <p className="text-sm text-gray-700">Strategic choice if you have frequent classes at the <strong>Sandwich Lecture Theatre (SWLT)</strong>. These areas often offer more affordable housing options while remaining accessible.</p>
             </div>
           </div>
 
           {/* --- RENTING STEPS AS VISUAL CARDS --- */}
           <div className="pt-4">
-            <h3 className="font-bold text-gray-800 dark:text-gray-200 text-xl mb-6 flex items-center">
-              <span className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
+            <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
+              <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
               Renting Process
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
-              <div className="bg-blue-50 dark:bg-blue-900/40 p-5 rounded-xl border border-blue-100 dark:border-blue-800/50 hover:shadow-md transition-all duration-300">
-                <h5 className="font-bold text-blue-900 dark:text-blue-400 text-lg mb-1">1. Physical Inspection</h5>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2"><strong>Never</strong> pay without seeing the room. Check water flow, ventilation, and security personally.</p>
+              <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300">
+                <h5 className="font-bold text-blue-900 text-lg mb-1">1. Physical Inspection</h5>
+                <p className="text-sm text-gray-600 mt-2"><strong>Never</strong> pay without seeing the room. Check water flow, ventilation, and security personally.</p>
               </div>
 
-              <div className="bg-red-50 dark:bg-red-900/40 p-5 rounded-xl border border-red-100 dark:border-red-800/50 hover:shadow-md transition-all duration-300">
-                <h5 className="font-bold text-red-900 dark:text-red-400 text-lg mb-1">2. Verify Ownership</h5>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Ensure you are paying the actual landlord or caretaker. Ask for ID. Avoid "agents" without official credentials.</p>
+              <div className="bg-red-50 p-5 rounded-xl border border-red-100 hover:shadow-md transition-all duration-300">
+                <h5 className="font-bold text-red-900 text-lg mb-1">2. Verify Ownership</h5>
+                <p className="text-sm text-gray-600 mt-2">Ensure you are paying the actual landlord or caretaker. Ask for ID. Avoid "agents" without official credentials.</p>
               </div>
 
               <div className="bg-green-50 p-5 rounded-xl border border-green-100 hover:shadow-md transition-all duration-300">
                 <h5 className="font-bold text-green-900 text-lg mb-1">3. Sign & Pay</h5>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Read the tenancy agreement (check utility bills/refund policies) before paying via Bank Deposit.</p>
+                <p className="text-sm text-gray-600 mt-2">Read the tenancy agreement (check utility bills/refund policies) before paying via Bank Deposit.</p>
               </div>
 
             </div>
@@ -265,7 +265,7 @@ const Accommodation = () => {
       tips: [
         "Start searching early (immediately before the second semester ends).",
       ],
-
+    
     },
     {
       title: "Expert Advice & Resources",
@@ -273,12 +273,12 @@ const Accommodation = () => {
       content: (
         <div className="space-y-6">
           {/* --- TIMING ADVICE --- */}
-          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-100 dark:border-purple-800/50 shadow-sm">
-            <h4 className="font-bold text-purple-900 dark:text-purple-400 text-lg mb-4 flex items-center">
-              <span className="w-8 h-8 rounded-full bg-purple-200 dark:bg-purple-800/50 flex items-center justify-center text-purple-700 dark:text-purple-300 mr-3 text-sm">💡</span>
+          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-100 shadow-sm">
+            <h4 className="font-bold text-purple-900 text-lg mb-4 flex items-center">
+              <span className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 mr-3 text-sm">💡</span>
               The "Golden Window" Rule
             </h4>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+            <p className="text-gray-700 leading-relaxed mb-6">
               <strong>End of Second Semester = Hunt Begins.</strong><br />
               Many students make the mistake of waiting until the long vacation is over.
               To live a happy life in Level 200 and beyond, you must start looking for accommodation
@@ -286,9 +286,9 @@ const Accommodation = () => {
             </p>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-white dark:bg-gray-800/60 dark:bg-[#1a1d27]/80 p-4 rounded-lg border border-purple-100 dark:border-purple-800/50">
+              <div className="bg-white/80 p-4 rounded-lg border border-purple-100">
                 <h5 className="font-bold text-green-700 text-xs uppercase mb-2">Why Start Early?</h5>
-                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+                <ul className="text-sm text-gray-600 space-y-2">
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2 font-bold">✓</span>
                     <span><strong>Better Prices:</strong> Secure rooms before demand spikes prices.</span>
@@ -303,9 +303,9 @@ const Accommodation = () => {
                   </li>
                 </ul>
               </div>
-              <div className="bg-white dark:bg-gray-800/60 dark:bg-[#1a1d27]/80 p-4 rounded-lg border border-red-100 dark:border-red-800/50">
-                <h5 className="font-bold text-red-700 dark:text-red-300 text-xs uppercase mb-2">Risks of Delay</h5>
-                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+              <div className="bg-white/80 p-4 rounded-lg border border-red-100">
+                <h5 className="font-bold text-red-700 text-xs uppercase mb-2">Risks of Delay</h5>
+                <ul className="text-sm text-gray-600 space-y-2">
                   <li className="flex items-start">
                     <span className="text-red-400 mr-2 font-bold">⚠</span>
                     <span><strong>Expensive Leftovers:</strong> You'll pay premium for sub-par rooms.</span>
@@ -324,26 +324,26 @@ const Accommodation = () => {
           </div>
 
           {/* --- SRC INITIATIVE --- */}
-          <div className="bg-blue-50 dark:bg-blue-900/40 p-6 rounded-xl border border-blue-100 dark:border-blue-800/50">
+          <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="font-bold text-blue-900 dark:text-blue-400 text-lg">SRC Hostel Directory</h4>
-              <span className="bg-blue-200 dark:bg-blue-800/50 text-blue-800 dark:text-blue-300 text-xs font-bold px-2 py-1 rounded">Update</span>
+              <h4 className="font-bold text-blue-900 text-lg">SRC Hostel Directory</h4>
+              <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded">Update</span>
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+            <p className="text-sm text-gray-700 mb-4">
               The current SRC President (2025-2026) promised a centralized directory in his campaign.
               However, the resource provided below is strictly from the <strong>previous administration (2024-2025)</strong>.
             </p>
 
             <div className="mt-4 pt-4 border-t border-blue-200/50">
-              <div className="bg-white dark:bg-gray-800/60 dark:bg-[#1a1d27]/60 p-3 rounded-lg text-xs text-gray-600 dark:text-gray-400 mb-3 border border-blue-100 dark:border-blue-800/50">
-                <strong className="text-blue-800 dark:text-blue-300">Note:</strong> While this list is a helpful initiative, it is
+              <div className="bg-white/60 p-3 rounded-lg text-xs text-gray-600 mb-3 border border-blue-100">
+                <strong className="text-blue-800">Note:</strong> While this list is a helpful initiative, it is
                 <strong> just a small collection of contacts</strong> and may not be the "best thing in the world."
                 It is better to physically go around and search for yourself, but this can help you make initial inquiries in the meantime.
               </div>
 
               <p className="text-xs font-bold text-gray-500 uppercase mb-2">In the meantime, verify listings here:</p>
               <a href="https://www.capevars.com/" target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-between bg-white dark:bg-gray-800/60 dark:bg-[#1a1d27] p-3 rounded-lg border border-blue-200 hover:border-blue-400 dark:hover:border-blue-600 transition-all group shadow-sm">
+                className="flex items-center justify-between bg-white p-3 rounded-lg border border-blue-200 hover:border-blue-400 transition-all group shadow-sm">
                 <span className="font-bold text-blue-700">CapeVars.com</span>
                 <span className="text-blue-400 group-hover:translate-x-1 transition-transform">→</span>
               </a>

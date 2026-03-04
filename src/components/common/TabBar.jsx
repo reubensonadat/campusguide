@@ -18,7 +18,7 @@ const TabBar = () => {
   };
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-50 transition-colors duration-300 bg-white dark:bg-[#1a1d27] border-t border-gray-100 dark:border-white/5`}>
+    <div className={`fixed bottom-0 left-0 right-0 z-50 transition-colors duration-300 bg-white`}>
       <div className="flex justify-around items-center h-16">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
@@ -29,8 +29,8 @@ const TabBar = () => {
               key={tab.id}
               onClick={() => handleTabClick(tab.path)}
               className={`flex flex-col items-center justify-center w-full h-full py-1 px-2 focus:outline-none transition-colors ${isActive
-                ? 'text-indigo-600 dark:text-indigo-300'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                ? 'text-primary-600'
+                : 'text-gray-500 hover:text-gray-700'
                 }`}
               aria-label={tab.label}
             >
