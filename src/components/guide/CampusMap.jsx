@@ -92,7 +92,7 @@ const MapView = () => {
     };
 
     return (
-        <div className="flex-1 h-full w-full relative bg-gray-100 dark:bg-gray-900 flex flex-col min-h-[400px] animate-in fade-in overflow-hidden">
+        <div className="flex-1 h-full w-full relative bg-gray-100 dark:bg-gray-900 flex flex-col min-h-[800px] animate-in fade-in overflow-hidden">
 
             {/* --- MAP CONTAINER (LEAFLET) --- */}
             <div className="absolute inset-0 z-0 h-full w-full">
