@@ -9,7 +9,7 @@ const LaptopBuyingGuide = () => {
     {
       title: "Your Academic Powerhouse",
       summary: "Choosing the perfect laptop for your UCC journey.",
-      
+
       // --- OVERVIEW CONTENT (RICH UI) ---
       content: (
         <div className="space-y-12 font-sans">
@@ -18,14 +18,14 @@ const LaptopBuyingGuide = () => {
             {/* Abstract Background Shapes */}
             <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-blue-500 dark:bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
             <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-60 h-60 bg-purple-400/10 rounded-full blur-3xl"></div>
-            
+
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-left space-y-4 max-w-2xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-gray-800/60 border border-white/20 text-xs font-bold uppercase tracking-wider text-blue-200">
                   <Sparkles size={12} /> Academic Excellence
                 </div>
                 <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-                  Your Digital <br/>
+                  Your Digital <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200">Academic Companion</span>
                 </h2>
                 <p className="text-blue-100/90 text-lg leading-relaxed">
@@ -33,7 +33,7 @@ const LaptopBuyingGuide = () => {
                   Make an informed choice that will serve you throughout your program.
                 </p>
               </div>
-              
+
               {/* Mock Laptop Spec Card */}
               <div className="bg-white dark:bg-gray-800/60 backdrop-blur-md border border-white/20 p-5 rounded-2xl min-w-[200px] text-center shadow-lg transform hover:scale-105 transition-transform">
                 <Laptop size={40} className="mx-auto mb-3 text-blue-200" />
@@ -56,13 +56,13 @@ const LaptopBuyingGuide = () => {
                   Special Offer for UCC Students
                 </h3>
                 <p className="text-indigo-700">
-                  Get exclusive discounts on recommended laptops through our partner store. 
+                  Get exclusive discounts on recommended laptops through our partner store.
                   All devices are pre-configured with essential academic software.
                 </p>
               </div>
-              <a 
-                href="https://www.laptopconnect.shop/" 
-                target="_blank" 
+              <a
+                href="https://www.laptopconnect.shop/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-lg transform hover:scale-105"
               >
@@ -76,7 +76,7 @@ const LaptopBuyingGuide = () => {
           <div>
             <SectionHeader icon={<Cpu size={20} />} title="Core Specifications" />
             <div className="grid md:grid-cols-2 gap-6">
-              <SpecCard 
+              <SpecCard
                 icon={<HardDrive size={24} />}
                 title="Storage"
                 theme="blue"
@@ -88,7 +88,7 @@ const LaptopBuyingGuide = () => {
                   "Cloud storage is not enough"
                 ]}
               />
-              <SpecCard 
+              <SpecCard
                 icon={<Zap size={24} />}
                 title="Performance"
                 theme="purple"
@@ -105,55 +105,55 @@ const LaptopBuyingGuide = () => {
 
           {/* --- THE "PERFECT MATCH" (Department-Specific Requirements) --- */}
           <div>
-             <SectionHeader icon={<Package size={20} />} title="Department-Specific Recommendations" />
-             <div className="bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-2xl p-6">
-               <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
-                 Different programs have different needs. Here's what we recommend for your specific field of study.
-               </p>
-               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-                  {/* Business & Social Sciences */}
-                  <div>
-                    <h5 className="font-bold text-gray-800 dark:text-gray-200 border-b-2 border-blue-500 pb-2 mb-3 flex items-center">
-                      <TrendingUp size={16} className="text-blue-500 mr-2" /> Business & Social Sciences
-                    </h5>
-                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                      <li>• <strong>Focus:</strong> Portability & Battery Life</li>
-                      <li>• <strong>Minimum:</strong> 8GB RAM, 256GB SSD</li>
-                      <li>• <strong>Screen:</strong> 13-14" for portability</li>
-                      <li>• <strong>Battery:</strong> 8+ hours ideal</li>
-                      <li>• <strong>OS:</strong> Windows or macOS</li>
-                    </ul>
-                  </div>
-                  
-                  {/* Science & Engineering */}
-                  <div>
-                    <h5 className="font-bold text-gray-800 dark:text-gray-200 border-b-2 border-green-500 pb-2 mb-3 flex items-center">
-                      <Cpu size={16} className="text-green-500 mr-2" /> Science & Engineering
-                    </h5>
-                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                      <li>• <strong>Focus:</strong> Processing Power & Graphics</li>
-                      <li>• <strong>Minimum:</strong> 16GB RAM, 512GB SSD</li>
-                      <li>• <strong>Graphics:</strong> Dedicated GPU recommended</li>
-                      <li>• <strong>Screen:</strong> 15" or larger</li>
-                      <li>• <strong>OS:</strong> Windows (for compatibility)</li>
-                    </ul>
-                  </div>
+            <SectionHeader icon={<Package size={20} />} title="Department-Specific Recommendations" />
+            <div className="bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-2xl p-6">
+              <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
+                Different programs have different needs. Here's what we recommend for your specific field of study.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                {/* Business & Social Sciences */}
+                <div>
+                  <h5 className="font-bold text-gray-800 dark:text-gray-200 border-b-2 border-blue-500 pb-2 mb-3 flex items-center">
+                    <TrendingUp size={16} className="text-blue-500 mr-2" /> Business & Social Sciences
+                  </h5>
+                  <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>• <strong>Focus:</strong> Portability & Battery Life</li>
+                    <li>• <strong>Minimum:</strong> 8GB RAM, 256GB SSD</li>
+                    <li>• <strong>Screen:</strong> 13-14" for portability</li>
+                    <li>• <strong>Battery:</strong> 8+ hours ideal</li>
+                    <li>• <strong>OS:</strong> Windows or macOS</li>
+                  </ul>
+                </div>
 
-                  {/* Arts & Humanities */}
-                  <div>
-                    <h5 className="font-bold text-gray-800 dark:text-gray-200 border-b-2 border-purple-500 pb-2 mb-3 flex items-center">
-                      <Sparkles size={16} className="text-purple-500 mr-2" /> Arts & Humanities
-                    </h5>
-                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                      <li>• <strong>Focus:</strong> Display Quality & Storage</li>
-                      <li>• <strong>Minimum:</strong> 8GB RAM, 256GB SSD</li>
-                      <li>• <strong>Display:</strong> Full HD (1920x1080)</li>
-                      <li>• <strong>Keyboard:</strong> Comfortable for long typing</li>
-                      <li>• <strong>OS:</strong> Windows or macOS</li>
-                    </ul>
-                  </div>
-               </div>
-             </div>
+                {/* Science & Engineering */}
+                <div>
+                  <h5 className="font-bold text-gray-800 dark:text-gray-200 border-b-2 border-green-500 pb-2 mb-3 flex items-center">
+                    <Cpu size={16} className="text-green-500 mr-2" /> Science & Engineering
+                  </h5>
+                  <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>• <strong>Focus:</strong> Processing Power & Graphics</li>
+                    <li>• <strong>Minimum:</strong> 16GB RAM, 512GB SSD</li>
+                    <li>• <strong>Graphics:</strong> Dedicated GPU recommended</li>
+                    <li>• <strong>Screen:</strong> 15" or larger</li>
+                    <li>• <strong>OS:</strong> Windows (for compatibility)</li>
+                  </ul>
+                </div>
+
+                {/* Arts & Humanities */}
+                <div>
+                  <h5 className="font-bold text-gray-800 dark:text-gray-200 border-b-2 border-purple-500 pb-2 mb-3 flex items-center">
+                    <Sparkles size={16} className="text-purple-500 mr-2" /> Arts & Humanities
+                  </h5>
+                  <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>• <strong>Focus:</strong> Display Quality & Storage</li>
+                    <li>• <strong>Minimum:</strong> 8GB RAM, 256GB SSD</li>
+                    <li>• <strong>Display:</strong> Full HD (1920x1080)</li>
+                    <li>• <strong>Keyboard:</strong> Comfortable for long typing</li>
+                    <li>• <strong>OS:</strong> Windows or macOS</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* --- BUDGET CONSIDERATIONS --- */}
@@ -173,7 +173,7 @@ const LaptopBuyingGuide = () => {
               </div>
             </div>
 
-             <div className="bg-amber-50 dark:bg-amber-900/40 p-6 rounded-2xl border border-amber-100 dark:border-amber-800/50">
+            <div className="bg-amber-50 dark:bg-amber-900/40 p-6 rounded-2xl border border-amber-100 dark:border-amber-800/50">
               <h4 className="text-amber-900 dark:text-amber-400 font-bold text-lg mb-3 flex items-center">
                 <Shield size={20} className="mr-2" /> Warranty & Support
               </h4>
@@ -328,20 +328,20 @@ const SpecCard = ({ icon, title, details, theme, desc }) => {
 const DiscountOffer = ({ brand, desc, discount }) => (
   <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
     {/* Icon/Dot */}
-    <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+    <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white dark:border-gray-900 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
       <CreditCard size={18} />
     </div>
-    
+
     {/* Content Card */}
-    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] p-5 rounded-2xl border border-slate-100 dark:border-gray-700 bg-white dark:bg-gray-800/60 shadow-sm hover:shadow-lg transition-all duration-300 relative">
-      <div className="absolute top-4 right-4 opacity-10 text-indigo-600">
-         <DollarSign size={40} />
+    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] p-5 rounded-2xl border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-700/60 shadow-sm hover:shadow-lg dark:hover:shadow-indigo-900/20 hover:border-indigo-200 dark:hover:border-indigo-600/50 transition-all duration-300 relative">
+      <div className="absolute top-4 right-4 opacity-20 text-indigo-400 dark:text-indigo-300">
+        <DollarSign size={40} />
       </div>
-      <div className="flex flex-col mb-1">
-        <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 text-xl">{brand}</span>
-        <span className="text-xs font-bold text-green-600 uppercase tracking-widest">{discount}</span>
+      <div className="flex flex-col mb-2">
+        <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 text-xl">{brand}</span>
+        <span className="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-widest">{discount}</span>
       </div>
-      <p className="text-sm text-slate-600 leading-relaxed">{desc}</p>
+      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{desc}</p>
     </div>
   </div>
 );

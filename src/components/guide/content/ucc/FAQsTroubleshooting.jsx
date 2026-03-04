@@ -9,7 +9,7 @@ const FAQsTroubleshooting = () => {
     {
       title: "Portal & Academic Issues",
       summary: "Quick fixes for when the UCC Portal or your Grades go wrong.",
-      
+
       // --- OVERVIEW CONTENT ---
       content: (
         <div className="space-y-8">
@@ -22,9 +22,9 @@ const FAQsTroubleshooting = () => {
 
           {/* --- PROBLEM / SOLUTION GRID --- */}
           <div className="grid gap-6">
-            
+
             {/* Issue 1: Portal Login */}
-            <div className="bg-white dark:bg-gray-800/60 border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
               <div className="bg-red-50 dark:bg-red-900/40 px-5 py-3 border-b border-red-100 dark:border-red-800/50 flex justify-between items-center">
                 <h4 className="font-bold text-red-900 dark:text-red-400">Problem: "Invalid Credentials"</h4>
                 <span className="text-xs font-bold bg-red-200 dark:bg-red-800/50 text-red-800 dark:text-red-300 px-2 py-1 rounded">Portal</span>
@@ -33,8 +33,8 @@ const FAQsTroubleshooting = () => {
                 <p className="text-gray-700 dark:text-gray-300 mb-3 text-sm">
                   You are typing the correct password, but the portal refuses to let you in.
                 </p>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
-                  <strong>Solution:</strong> The UCC portal caches old passwords aggressively. 
+                <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-100 dark:border-green-800/40 text-sm">
+                  <strong className="text-gray-800 dark:text-gray-200">Solution:</strong> The UCC portal caches old passwords aggressively.
                   <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600 dark:text-gray-400">
                     <li>Switch to <strong>Incognito Mode</strong> (Chrome) or Private Window.</li>
                     <li>Clear your browser cache/history.</li>
@@ -45,7 +45,7 @@ const FAQsTroubleshooting = () => {
             </div>
 
             {/* Issue 2: Financial Hold */}
-            <div className="bg-white dark:bg-gray-800/60 border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
               <div className="bg-amber-50 dark:bg-amber-900/40 px-5 py-3 border-b border-amber-100 dark:border-amber-800/50 flex justify-between items-center">
                 <h4 className="font-bold text-amber-900 dark:text-amber-400">Problem: "Financial Hold"</h4>
                 <span className="text-xs font-bold bg-amber-200 dark:bg-amber-800/50 text-amber-800 dark:text-amber-300 px-2 py-1 rounded">Registration</span>
@@ -54,8 +54,8 @@ const FAQsTroubleshooting = () => {
                 <p className="text-gray-700 dark:text-gray-300 mb-3 text-sm">
                   You have paid fees, but the portal still says you cannot register courses.
                 </p>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
-                  <strong>Solution:</strong> Bank transfers are not instant.
+                <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-100 dark:border-green-800/40 text-sm">
+                  <strong className="text-gray-800 dark:text-gray-200">Solution:</strong> Bank transfers are not instant.
                   <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600 dark:text-gray-400">
                     <li>Wait <strong>24 hours</strong> after payment for the system to update.</li>
                     <li>Ensure you paid via <strong>Transflow</strong> (not direct deposit).</li>
@@ -66,7 +66,7 @@ const FAQsTroubleshooting = () => {
             </div>
 
             {/* Issue 3: Missing Results */}
-            <div className="bg-white dark:bg-gray-800/60 border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
               <div className="bg-blue-50 dark:bg-blue-900/40 px-5 py-3 border-b border-blue-100 dark:border-blue-800/50 flex justify-between items-center">
                 <h4 className="font-bold text-blue-900 dark:text-blue-400">Problem: Missing Grade / "IC"</h4>
                 <span className="text-xs font-bold bg-blue-200 dark:bg-blue-800/50 text-blue-800 dark:text-blue-300 px-2 py-1 rounded">Results</span>
@@ -75,8 +75,8 @@ const FAQsTroubleshooting = () => {
                 <p className="text-gray-700 dark:text-gray-300 mb-3 text-sm">
                   Your results are released, but one course is blank or marked "IC" (Incomplete).
                 </p>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
-                  <strong>Solution:</strong> Act immediately (within 2 weeks).
+                <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-100 dark:border-green-800/40 text-sm">
+                  <strong className="text-gray-800 dark:text-gray-200">Solution:</strong> Act immediately (within 2 weeks).
                   <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600 dark:text-gray-400">
                     <li>Check the Department Notice Board for "IC Lists".</li>
                     <li>Contact the <strong>Lecturer</strong> </li>

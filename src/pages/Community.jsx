@@ -168,7 +168,7 @@ const Community = () => {
                             onClick={() => setSelectedCategory(category.id)}
                             className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 shadow-sm ${selectedCategory === category.id
                                 ? 'bg-primary-600 text-white shadow-md shadow-primary-200 scale-105'
-                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
                                 }`}
                         >
                             {category.label}
@@ -180,7 +180,7 @@ const Community = () => {
                 {isLoading ? (
                     <div className="py-20 flex flex-col items-center justify-center text-center">
                         <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-                        <p className="text-gray-500 font-bold animate-pulse">Loading community feed...</p>
+                        <p className="text-gray-500 dark:text-gray-400 font-bold animate-pulse">Loading community feed...</p>
                     </div>
                 ) : filteredFeed.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
@@ -199,7 +199,7 @@ const Community = () => {
                         </p>
                         <button
                             onClick={() => navigate('/advertise')}
-                            className="mt-6 px-6 py-2.5 bg-primary-50 text-primary-700 font-bold rounded-xl hover:bg-primary-100 transition-colors"
+                            className="mt-6 px-6 py-2.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-bold rounded-xl hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors"
                         >
                             Create Ad
                         </button>

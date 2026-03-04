@@ -305,7 +305,7 @@ const Guide = () => {
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">The Pastel Edition</p>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-4 pb-20 lg:pb-8 space-y-6 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto px-4 pb-32 lg:pb-16 space-y-6 custom-scrollbar">
 
             {/* Search Input */}
             <div className="sticky top-0 bg-gray-50 dark:bg-[#0f1117] pt-2 pb-4 z-10 px-2">
@@ -425,20 +425,22 @@ const Guide = () => {
             </div>
           )
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-[#0b0d12] h-full pb-24">
-            <div className="relative w-full max-w-lg -mr-6">
-              <img
-                src={CampusIllustration}
-                alt="Campus illustration"
-                className="w-full h-auto object-contain drop-shadow-lg dark:brightness-90 dark:contrast-125"
-                style={{ WebkitTransform: 'translateZ(0)' }}
-              />
-              <div className="pointer-events-none absolute inset-0 rounded-lg" aria-hidden="true"></div>
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <div className="min-h-full flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-[#0b0d12] pb-28 pt-20 lg:pt-8">
+              <div className="relative w-full max-w-lg -mr-6">
+                <img
+                  src={CampusIllustration}
+                  alt="Campus illustration"
+                  className="w-full h-auto object-contain drop-shadow-lg dark:brightness-90 dark:contrast-125"
+                  style={{ WebkitTransform: 'translateZ(0)' }}
+                />
+                <div className="pointer-events-none absolute inset-0 rounded-lg" aria-hidden="true"></div>
+              </div>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Welcome to the Guide</h2>
+              <p className="max-w-md text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
+                Select a topic from the sidebar to get started. Everything you need to know about campus life, in one place.
+              </p>
             </div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Welcome to the Guide</h2>
-            <p className="max-w-md text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
-              Select a topic from the sidebar to get started. Everything you need to know about campus life, in one place.
-            </p>
           </div>
         )}
       </div>

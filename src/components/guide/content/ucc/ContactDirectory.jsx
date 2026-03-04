@@ -9,13 +9,13 @@ const ContactDirectory = () => {
     {
       title: "Emergency & Essential Contacts",
       summary: "Save these numbers. They are your lifeline on campus.",
-      
+
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
           <div className="bg-slate-50 dark:bg-gray-800/50 p-5 rounded-xl border border-slate-100 dark:border-gray-700 shadow-sm">
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              In case of any emergency on campus (theft, fire, medical), call the <strong>UCC Emergency Line</strong> or <strong>Campus Security</strong> immediately. 
+              In case of any emergency on campus (theft, fire, medical), call the <strong>UCC Emergency Line</strong> or <strong>Campus Security</strong> immediately.
               Do not rely solely on 191/192/193 as campus response is often faster.
             </p>
           </div>
@@ -66,14 +66,14 @@ const ContactDirectory = () => {
 
 // Helper Component for clean list
 const ContactRow = ({ name, number }) => (
-  <div className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
+  <div className="p-4 flex justify-between items-center hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors group">
     <div className="flex flex-col">
-      <span className="font-medium text-gray-700 dark:text-gray-300">{name}</span>
-      <span className="text-xs text-gray-400 uppercase">SRC Representative</span>
+      <span className="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-white transition-colors">{name}</span>
+      <span className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide group-hover:text-indigo-500 dark:group-hover:text-indigo-300 transition-colors">SRC Representative</span>
     </div>
-    <a 
-      href={`tel:${number.replace(/\s/g, '')}`} 
-      className="text-indigo-600 font-bold hover:underline flex items-center gap-2"
+    <a
+      href={`tel:${number.replace(/\s/g, '')}`}
+      className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline flex items-center gap-2 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors"
     >
       <Phone size={14} />
       {number}
