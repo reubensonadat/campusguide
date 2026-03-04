@@ -207,7 +207,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
               onPaymentSuccess={handlePaymentSuccess}
               onPaymentError={handlePaymentError}
               disabled={!getCurrentAmount() || getCurrentAmount() < 5}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <span className="flex items-center justify-center gap-2">
                 <Heart className="w-5 h-5 fill-current" />

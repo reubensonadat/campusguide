@@ -81,17 +81,17 @@ const GettingStarted = () => {
           {/* --- THE "SURVIVAL KIT" (Packing Guide) --- */}
           <div>
             <SectionHeader icon={<Truck size={20} />} title="The 'Old Site' Survival Kit (Packing)" />
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
-              <p className="text-gray-600 mb-6 text-sm">
+            <div className="bg-[var(--gray-100-soft)] border border-[var(--gray-200)] rounded-2xl p-6 transition-colors duration-300">
+              <p className="text-[var(--gray-600)] mb-6 text-sm">
                 UCC Halls are strict. Data sourced from Adehye & CoverGhana guides.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
                 {/* Must Haves */}
                 <div>
-                  <h5 className="font-bold text-gray-800 border-b-2 border-green-500 pb-2 mb-3 flex items-center">
+                  <h5 className="font-bold text-[var(--gray-900)] border-b-2 border-green-500 pb-2 mb-3 flex items-center">
                     <CheckCircle size={16} className="text-green-500 mr-2" /> Must Haves
                   </h5>
-                  <ul className="space-y-2 text-sm text-gray-600">
+                  <ul className="space-y-2 text-sm text-[var(--gray-700)]">
                     <li>• <strong>White Bed Sheets</strong> (Recommended, not mandatory)</li>
                     <li>• Pillow & Pillowcases</li>
                     <li>• Bucket & Pail (Water is life)</li>
@@ -102,10 +102,10 @@ const GettingStarted = () => {
 
                 {/* Contraband - UPDATED based on Image Evidence */}
                 <div>
-                  <h5 className="font-bold text-gray-800 border-b-2 border-red-500 pb-2 mb-3 flex items-center">
+                  <h5 className="font-bold text-[var(--gray-900)] border-b-2 border-red-500 pb-2 mb-3 flex items-center">
                     <AlertTriangle size={16} className="text-red-500 mr-2" /> Prohibited
                   </h5>
-                  <ul className="space-y-2 text-sm text-gray-600">
+                  <ul className="space-y-2 text-sm text-[var(--gray-700)]">
                     <li>• <strong>Trunks</strong> (Use Suitcases)</li>
                     <li>• <strong>Chop Boxes</strong></li>
                     <li>• Mattresses (Provided by Hall)</li>
@@ -116,10 +116,10 @@ const GettingStarted = () => {
 
                 {/* Allowed Electricals - UPDATED based on Flyer */}
                 <div>
-                  <h5 className="font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-3 flex items-center">
+                  <h5 className="font-bold text-[var(--gray-900)] border-b-2 border-blue-500 pb-2 mb-3 flex items-center">
                     <Plug size={16} className="text-blue-500 mr-2" /> Allowed Electricals
                   </h5>
-                  <ul className="space-y-2 text-sm text-gray-600">
+                  <ul className="space-y-2 text-sm text-[var(--gray-700)]">
                     <li>• Rice Cooker</li>
                     <li>• Electric Kettle</li>
                     <li>• Electric Iron</li>
@@ -133,27 +133,27 @@ const GettingStarted = () => {
 
           {/* --- HALL CULTURE (Traditions) --- */}
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-orange-50 p-6 rounded-2xl border border-orange-100">
-              <h4 className="text-orange-900 font-bold text-lg mb-3">Hall Traditions</h4>
-              <p className="text-sm text-orange-800/80 mb-4 leading-relaxed">
+            <div className="bg-[var(--accent-50)] p-6 rounded-2xl border border-[var(--accent-100)] transition-colors duration-300">
+              <h4 className="text-[var(--accent-900)] font-bold text-lg mb-3">Hall Traditions</h4>
+              <p className="text-sm text-[var(--accent-800)] mb-4 leading-relaxed">
                 UCC is famous for its hall culture. Expect <strong>"Processions"</strong> and <strong>"Morale"</strong> (singing and drumming) on Friday nights.
                 <strong> Casford</strong> and <strong>Adehye</strong> have a strong alliance.
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Royals</span>
-                <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Super-Powers</span>
-                <span className="px-2 py-1 bg-white/60 text-orange-700 text-xs rounded font-bold border border-orange-200">Mariners</span>
+                <span className="px-2 py-1 bg-[var(--white)] text-[var(--accent-800)] text-xs rounded font-bold border border-[var(--accent-200)] transition-colors duration-300">Royals</span>
+                <span className="px-2 py-1 bg-[var(--white)] text-[var(--accent-800)] text-xs rounded font-bold border border-[var(--accent-200)] transition-colors duration-300">Super-Powers</span>
+                <span className="px-2 py-1 bg-[var(--white)] text-[var(--accent-800)] text-xs rounded font-bold border border-[var(--accent-200)] transition-colors duration-300">Mariners</span>
               </div>
             </div>
 
-            <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
-              <h4 className="text-indigo-900 font-bold text-lg mb-3">Medical Exam Rule</h4>
-              <p className="text-sm text-indigo-800/80 mb-4 leading-relaxed">
+            <div className="bg-[var(--primary-50)] p-6 rounded-2xl border border-[var(--primary-100)] transition-colors duration-300">
+              <h4 className="text-[var(--primary-900)] font-bold text-lg mb-3">Medical Exam Rule</h4>
+              <p className="text-sm text-[var(--primary-800)] mb-4 leading-relaxed">
                 The Medical Exam is <strong>mandatory</strong>. You cannot graduate without clearing it.
                 It involves a Chest X-Ray, Lab Tests, and a Physical Exam.
                 <strong> Pro Tip:</strong> Go as early as 6:00 AM to beat the queue.
               </p>
-              <div className="flex items-center text-indigo-700 text-xs font-bold">
+              <div className="flex items-center text-[var(--primary-700)] text-xs font-bold">
                 <MapPin size={14} className="mr-1" />
                 University Health Services (Old Site)
               </div>
@@ -163,18 +163,18 @@ const GettingStarted = () => {
           {/* --- CRITICAL DATES TIMELINE --- */}
           <div>
             <SectionHeader icon={<Calendar size={20} />} title="Freshers' Timeline (Jan - Feb 2026)" />
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-[var(--white)] border border-[var(--gray-200)] rounded-2xl p-6 shadow-sm transition-colors duration-300">
               <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800 flex gap-3">
                 <AlertTriangle size={20} className="shrink-0" />
                 <div>
                   <p className="font-bold mb-1">IMPORTANT DISCLAIMER: DATES ARE SUBJECT TO CHANGE</p>
-                  <p className="mb-2">
+                  <p className="mb-2 opacity-90">
                     These dates are provided for planning purposes but are <strong>not final</strong>.
                     The University reserves the right to change these dates under any circumstances.
                   </p>
                   <p>
                     For the latest official information, ALWAYS check the Directorate of Academic Affairs (DAA) website: <br />
-                    <a href="https://daa.ucc.edu.gh" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-600 underline hover:text-blue-800">
+                    <a href="https://daa.ucc.edu.gh" target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--primary-600)] underline hover:text-[var(--primary-800)]">
                       daa.ucc.edu.gh
                     </a>
                     <br />
@@ -185,7 +185,7 @@ const GettingStarted = () => {
                 </div>
               </div>
 
-              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[var(--gray-300)] before:to-transparent">
                 <TimelineEvent date="Jan 05" day="Monday" title="Freshers Report" desc="Arrival at Halls. Key collection starts early." />
                 <TimelineEvent date="Jan 06" day="Tuesday" title="Orientation Begins" desc="Online Orientation and Registration begins. (Dates subject to university confirmation)." />
                 <TimelineEvent date="Jan 12" day="Monday" title="Lectures Begin (Provisional)" desc="Classes usually start immediately, but officially depend on the Timetable release." />
@@ -193,35 +193,35 @@ const GettingStarted = () => {
               </div>
 
               {/* --- ORIENTATION ATTENDANCE NOTE --- */}
-              <div className="mt-6 p-4 bg-purple-50 border border-purple-100 rounded-lg">
-                <h4 className="font-bold text-purple-900 mb-2 flex items-center">
+              <div className="mt-6 p-4 bg-[var(--primary-50)] border border-[var(--primary-100)] rounded-lg transition-colors duration-300">
+                <h4 className="font-bold text-[var(--primary-900)] mb-2 flex items-center">
                   <User size={18} className="mr-2" />
                   Orientation Attendance Rules
                 </h4>
                 <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div className="bg-white/60 p-3 rounded border border-purple-100">
-                    <span className="font-bold text-purple-800 block mb-1">🌍 In Diaspora (Private Hostels/Home)</span>
-                    <p className="text-gray-700">
+                  <div className="bg-[var(--white)] p-3 rounded border border-[var(--primary-200)] transition-colors duration-300">
+                    <span className="font-bold text-[var(--primary-800)] block mb-1">🌍 In Diaspora (Private Hostels/Home)</span>
+                    <p className="text-[var(--gray-700)]">
                       You can attend orientation <strong>online</strong>. You do not strictly need to come to your Hall of Affiliation.
                       Links will be provided at the appropriate time.
                     </p>
                   </div>
-                  <div className="bg-white/60 p-3 rounded border border-purple-100">
-                    <span className="font-bold text-purple-800 block mb-1">🏫 Inside Hall of Affiliation</span>
-                    <p className="text-gray-700">
+                  <div className="bg-[var(--white)] p-3 rounded border border-[var(--primary-200)] transition-colors duration-300">
+                    <span className="font-bold text-[var(--primary-800)] block mb-1">🏫 Inside Hall of Affiliation</span>
+                    <p className="text-[var(--gray-700)]">
                       If you are physically in the Hall, it is <strong>mandatory to attend</strong> the sessions organized there.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-lg text-sm text-blue-800">
+              <div className="mt-6 p-4 bg-[var(--gray-100-soft)] border border-[var(--gray-200)] rounded-lg text-sm text-[var(--gray-800)] transition-colors duration-300">
                 <p className="flex items-start gap-2">
                   <Info size={16} className="mt-1 shrink-0" />
                   <span>
                     <strong>Note on Lectures:</strong> Lectures typically begin when the official timetable is released.
                     If the timetable is not out, do not panic. Relax and wait for official communication from your Course Reps
-                    or the <a href="https://daa.ucc.edu.gh" className="underline font-bold">DAA website</a>.
+                    or the <a href="https://daa.ucc.edu.gh" className="underline font-bold text-[var(--primary-600)] hover:text-[var(--primary-800)]">DAA website</a>.
                   </span>
                 </p>
               </div>
@@ -304,8 +304,8 @@ const GettingStarted = () => {
 // --- INTERNAL HELPER COMPONENTS FOR PREMIUM STYLING ---
 
 const SectionHeader = ({ icon, title }) => (
-  <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center border-b border-gray-100 pb-2">
-    <span className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mr-3 shadow-sm border border-indigo-100">
+  <h3 className="text-xl font-bold text-[var(--gray-900)] mb-6 flex items-center border-b border-[var(--gray-200)] pb-2 transition-colors duration-300">
+    <span className="w-10 h-10 rounded-xl bg-[var(--primary-50)] text-[var(--primary-600)] flex items-center justify-center mr-3 shadow-sm border border-[var(--primary-100)] transition-colors duration-300">
       {icon}
     </span>
     {title}
@@ -314,26 +314,26 @@ const SectionHeader = ({ icon, title }) => (
 
 const ActionCard = ({ step, title, details, theme, desc }) => {
   const isGreen = theme === 'green';
-  const bgClass = isGreen ? 'bg-emerald-50' : 'bg-blue-50';
-  const borderClass = isGreen ? 'border-emerald-100' : 'border-blue-100';
-  const textMain = isGreen ? 'text-emerald-900' : 'text-blue-900';
-  const badgeBg = isGreen ? 'bg-emerald-200' : 'bg-blue-200';
-  const badgeText = isGreen ? 'text-emerald-800' : 'text-blue-800';
-  const tickColor = isGreen ? 'text-emerald-600' : 'text-blue-600';
+  const bgClass = isGreen ? 'bg-[var(--accent-50)]' : 'bg-[var(--primary-50)]';
+  const borderClass = isGreen ? 'border-[var(--accent-100)]' : 'border-[var(--primary-100)]';
+  const textMain = isGreen ? 'text-[var(--accent-900)]' : 'text-[var(--primary-900)]';
+  const badgeBg = isGreen ? 'bg-[var(--accent-200)]' : 'bg-[var(--primary-200)]';
+  const badgeText = isGreen ? 'text-[var(--accent-800)]' : 'text-[var(--primary-800)]';
+  const tickColor = isGreen ? 'text-[var(--accent-600)]' : 'text-[var(--primary-600)]';
 
   return (
     <div className={`${bgClass} p-6 rounded-2xl border ${borderClass} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full`}>
       <div className="flex items-center mb-3">
-        <span className={`${badgeBg} ${badgeText} text-xs font-extrabold px-3 py-1 rounded-lg uppercase tracking-wide mr-3 shadow-sm`}>
+        <span className={`${badgeBg} ${badgeText} text-xs font-extrabold px-3 py-1 rounded-lg uppercase tracking-wide mr-3 shadow-sm transition-colors duration-300`}>
           Step {step}
         </span>
-        <h4 className={`font-bold text-xl ${textMain}`}>{title}</h4>
+        <h4 className={`font-bold text-xl ${textMain} transition-colors duration-300`}>{title}</h4>
       </div>
-      <p className={`text-sm ${textMain} opacity-80 mb-4 italic`}>{desc}</p>
+      <p className={`text-sm ${textMain} opacity-80 mb-4 italic transition-colors duration-300`}>{desc}</p>
       <ul className="space-y-3 mt-auto">
         {details.map((item, idx) => (
-          <li key={idx} className={`flex items-start text-sm ${textMain} font-medium`}>
-            <CheckCircle size={16} className={`${tickColor} mt-0.5 mr-2 flex-shrink-0`} />
+          <li key={idx} className={`flex items-start text-sm ${textMain} font-medium transition-colors duration-300`}>
+            <CheckCircle size={16} className={`${tickColor} mt-0.5 mr-2 flex-shrink-0 transition-colors duration-300`} />
             <span dangerouslySetInnerHTML={{ __html: item }} />
           </li>
         ))}
@@ -345,21 +345,21 @@ const ActionCard = ({ step, title, details, theme, desc }) => {
 const TimelineEvent = ({ date, day, title, desc }) => (
   <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
     {/* Icon/Dot */}
-    <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+    <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-[var(--white)] bg-[var(--primary-100)] text-[var(--primary-600)] group-hover:bg-[var(--primary-600)] group-hover:text-[var(--white)] transition-colors duration-300 shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
       <Calendar size={18} />
     </div>
 
     {/* Content Card */}
-    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] p-5 rounded-2xl border border-slate-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 relative">
-      <div className="absolute top-4 right-4 opacity-10 text-indigo-600">
+    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] p-5 rounded-2xl border border-[var(--gray-200)] bg-[var(--white)] shadow-sm hover:shadow-lg transition-all duration-300 relative">
+      <div className="absolute top-4 right-4 opacity-10 text-[var(--primary-400)]">
         <Info size={40} />
       </div>
       <div className="flex flex-col mb-1">
-        <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 text-xl">{date}</span>
-        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{day}</span>
+        <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-600)] to-[var(--accent-600)] text-xl">{date}</span>
+        <span className="text-xs font-bold text-[var(--gray-500)] uppercase tracking-widest transition-colors duration-300">{day}</span>
       </div>
-      <h5 className="font-bold text-slate-800 text-lg mb-2">{title}</h5>
-      <p className="text-sm text-slate-600 leading-relaxed">{desc}</p>
+      <h5 className="font-bold text-[var(--gray-900)] text-lg mb-2 transition-colors duration-300">{title}</h5>
+      <p className="text-sm text-[var(--gray-600)] leading-relaxed transition-colors duration-300">{desc}</p>
     </div>
   </div>
 );

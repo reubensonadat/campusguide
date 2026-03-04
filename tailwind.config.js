@@ -4,11 +4,12 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
-          50:  '#eef2ff',
+          50: '#eef2ff',
           100: '#e0e7ff',
           200: '#c7d2fe',
           300: '#a5b4fc',
@@ -20,7 +21,7 @@ export default {
           900: '#1e1b4b',
         },
         accent: {
-          50:  '#f5f3ff',
+          50: '#f5f3ff',
           100: '#ede9fe',
           200: '#ddd6fe',
           300: '#c4b5fd',
@@ -36,3 +37,4 @@ export default {
   },
   plugins: [],
 };
+// Trigger rebuild

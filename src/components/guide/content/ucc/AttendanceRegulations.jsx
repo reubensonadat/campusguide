@@ -15,47 +15,47 @@ const AttendanceRegulations = () => {
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-            <p className="text-gray-700 leading-relaxed">
+          <div className="bg-[var(--gray-100-soft)] p-5 rounded-xl border border-[var(--gray-200)] transition-colors duration-300">
+            <p className="text-[var(--gray-700)] leading-relaxed">
               At UCC, paying school fees registers you for the semester, but <strong>attending lectures</strong> qualifies you to write the exam.
               The University enforces a strict <strong>"Contact Hour"</strong> policy rather than a simple percentage.
             </p>
           </div>
 
           {/* --- THE 3-WEEK RULE (Visual Breakdown) --- */}
-          <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100 shadow-sm">
-            <h4 className="font-bold text-indigo-900 text-lg mb-4 flex items-center">
-              <span className="bg-indigo-200 text-indigo-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Regulation 11.0</span>
+          <div className="bg-[var(--primary-50)] p-6 rounded-xl border border-[var(--primary-100)] shadow-sm transition-colors duration-300">
+            <h4 className="font-bold text-[var(--primary-900)] text-lg mb-4 flex items-center">
+              <span className="bg-[var(--primary-200)] text-[var(--primary-800)] text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Regulation 11.0</span>
               The "3-Week" Rule
             </h4>
-            <p className="text-sm text-indigo-800/80 mb-4">
+            <p className="text-sm text-[var(--primary-800)] opacity-80 mb-4">
               You are automatically withdrawn from a course if you miss more than the cumulative equivalent of <strong>three weeks</strong> of contact hours.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-              <div className="bg-white p-3 rounded-lg border border-indigo-100 text-center">
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">1 Credit Course</div>
-                <div className="text-xl font-bold text-indigo-600">Max 3 Hours</div>
-                <div className="text-xs text-gray-400 mt-1">Missed</div>
+              <div className="bg-[var(--white)] p-3 rounded-lg border border-[var(--primary-100)] text-center transition-colors duration-300">
+                <div className="text-xs text-[var(--gray-600)] uppercase tracking-wider mb-1">1 Credit Course</div>
+                <div className="text-xl font-bold text-[var(--primary-700)]">Max 3 Hours</div>
+                <div className="text-xs text-[var(--gray-500)] mt-1">Missed</div>
               </div>
-              <div className="bg-white p-3 rounded-lg border border-indigo-100 text-center">
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">2 Credit Course</div>
-                <div className="text-xl font-bold text-indigo-600">Max 6 Hours</div>
-                <div className="text-xs text-gray-400 mt-1">Missed</div>
+              <div className="bg-[var(--white)] p-3 rounded-lg border border-[var(--primary-100)] text-center transition-colors duration-300">
+                <div className="text-xs text-[var(--gray-600)] uppercase tracking-wider mb-1">2 Credit Course</div>
+                <div className="text-xl font-bold text-[var(--primary-700)]">Max 6 Hours</div>
+                <div className="text-xs text-[var(--gray-500)] mt-1">Missed</div>
               </div>
-              <div className="bg-white p-3 rounded-lg border border-indigo-100 text-center">
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">3 Credit Course</div>
-                <div className="text-xl font-bold text-indigo-600">Max 9 Hours</div>
-                <div className="text-xs text-gray-400 mt-1">Missed</div>
+              <div className="bg-[var(--white)] p-3 rounded-lg border border-[var(--primary-100)] text-center transition-colors duration-300">
+                <div className="text-xs text-[var(--gray-600)] uppercase tracking-wider mb-1">3 Credit Course</div>
+                <div className="text-xl font-bold text-[var(--primary-700)]">Max 9 Hours</div>
+                <div className="text-xs text-[var(--gray-500)] mt-1">Missed</div>
               </div>
             </div>
           </div>
 
           {/* --- MEDICAL EXCUSES --- */}
-          <div className="bg-red-50 p-6 rounded-xl border border-red-100 shadow-sm flex flex-col md:flex-row items-start gap-4">
+          <div className="bg-[var(--accent-50)] p-6 rounded-xl border border-[var(--accent-200)] shadow-sm flex flex-col md:flex-row items-start gap-4 transition-colors duration-300">
             <div className="flex-1">
-              <h4 className="font-bold text-red-900 text-lg mb-2">Medical Absences</h4>
-              <p className="text-sm text-gray-700 leading-relaxed">
+              <h4 className="font-bold text-[var(--accent-900)] text-lg mb-2">Medical Absences</h4>
+              <p className="text-sm text-[var(--gray-700)] leading-relaxed">
                 While a note from a private hospital may be accepted, please note that <strong>the lecturer reserves the right to verify this information</strong>.
                 Providing false medical information or forged documents is a serious offense that can lead to severe disciplinary action, including rustication.
               </p>

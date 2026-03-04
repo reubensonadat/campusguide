@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Book, ChevronRight, MapPin, Phone, Info, Layout, CheckCircle, List, ArrowRight, MousePointer2, BookOpen, Search, X } from 'lucide-react';
 import { GUIDE_TOPICS } from '../data/guide';
+import { useCampus } from '../context/CampusContext';
 
 
 // new import for the illustration
@@ -11,6 +12,7 @@ const Guide = () => {
   const [selectedTopicId, setSelectedTopicId] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
+  const { selectedCampus } = useCampus();
 
   // Filter topics based on search query
   const filteredTopics = useMemo(() => {
@@ -59,8 +61,9 @@ const Guide = () => {
           // DO NOT return the component here, return a flag and reference
           return { isInteractive: true, component: found.component };
         }
-        // Initialize the component to get the data object
-        return { isInteractive: false, data: found.component() };
+        // Initialize the component to get the data object, passing campus context
+        // This is safe because component is now a pure function, not a Hook
+        return { isInteractive: false, data: found.component(selectedCampus) };
       }
     }
     return null;
@@ -96,32 +99,32 @@ const Guide = () => {
                       )}
 
                       {/* Content Card */}
-                      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                      <div className="bg-white dark:bg-[#1a1d27] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-700">
+                          <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/20 rounded-xl flex items-center justify-center text-yellow-700 dark:text-yellow-500">
                             <Info className="w-5 h-5" />
                           </div>
-                          <h3 className="text-xl font-bold text-gray-900">{section.title} Content</h3>
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">{section.title} Content</h3>
                         </div>
                         {/* Only show summary in card if we didn't show it in header above, or contextually */}
-                        {!section.summary ? null : <p className="text-gray-600 leading-relaxed font-medium mb-4">{section.summary}</p>}
+                        {!section.summary ? null : <p className="text-gray-600 dark:text-gray-400 leading-relaxed font-medium mb-4">{section.summary}</p>}
 
-                        <div className="prose prose-yellow max-w-none text-gray-600">
+                        <div className="prose prose-yellow dark:prose-invert max-w-none text-gray-600 dark:text-gray-400">
                           {section.content}
                         </div>
                       </div>
 
                       {/* Key Points */}
                       {section.keyPoints && (
-                        <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
-                          <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                        <div className="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-900/30">
+                          <h4 className="font-bold text-blue-900 dark:text-blue-300 mb-4 flex items-center gap-2">
                             <CheckCircle className="w-5 h-5" /> Key Takeaways
                           </h4>
                           <ul className="space-y-3">
                             {section.keyPoints.map((point, idx) => (
                               <li key={idx} className="flex items-start gap-3">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></div>
-                                <span className="text-sm font-medium text-blue-800 leading-relaxed">{point}</span>
+                                <div className="w-1.5 h-1.5 bg-blue-500 dark:bg-blue-400 rounded-full mt-2 shrink-0"></div>
+                                <span className="text-sm font-medium text-blue-800 dark:text-blue-200 leading-relaxed">{point}</span>
                               </li>
                             ))}
                           </ul>
@@ -136,33 +139,33 @@ const Guide = () => {
                     <div className="space-y-6">
                       {/* Section Title for Steps */}
                       {data.sections.length > 1 && (
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">{section.title}</h3>
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{section.title}</h3>
                       )}
 
-                      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-                        <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                          <List className="w-5 h-5 text-yellow-500" /> Action Steps
+                      <div className="bg-white dark:bg-[#1a1d27] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                          <List className="w-5 h-5 text-yellow-500 dark:text-yellow-400" /> Action Steps
                         </h3>
-                        <div className="space-y-8 relative before:absolute before:left-4 before:top-4 before:h-full before:w-0.5 before:bg-gray-100">
+                        <div className="space-y-8 relative before:absolute before:left-4 before:top-4 before:h-full before:w-0.5 before:bg-gray-100 dark:before:bg-gray-800">
                           {section.steps?.map((step, idx) => (
                             <div key={idx} className="relative pl-12">
-                              <div className="absolute left-0 top-0 w-8 h-8 bg-white border-2 border-yellow-400 text-yellow-600 rounded-full flex items-center justify-center font-bold text-sm z-10">
+                              <div className="absolute left-0 top-0 w-8 h-8 bg-white dark:bg-[#1a1d27] border-2 border-yellow-400 dark:border-yellow-500 text-yellow-600 dark:text-yellow-400 rounded-full flex items-center justify-center font-bold text-sm z-10">
                                 {idx + 1}
                               </div>
-                              <h4 className="font-bold text-gray-900 text-base mb-1">{step.title}</h4>
-                              <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
+                              <h4 className="font-bold text-gray-900 dark:text-white text-base mb-1">{step.title}</h4>
+                              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{step.description}</p>
                             </div>
                           ))}
                         </div>
                       </div>
 
                       {section.tips && (
-                        <div className="bg-purple-50 p-6 rounded-3xl border border-purple-100">
-                          <h4 className="font-bold text-purple-900 mb-3">Pro Tips</h4>
+                        <div className="bg-purple-50 dark:bg-purple-900/10 p-6 rounded-3xl border border-purple-100 dark:border-purple-900/30">
+                          <h4 className="font-bold text-purple-900 dark:text-purple-300 mb-3">Pro Tips</h4>
                           <ul className="grid gap-3">
                             {section.tips.map((tip, i) => (
-                              <li key={i} className="text-sm font-medium text-purple-800 flex items-start gap-2">
-                                <span className="text-purple-400">★</span> {tip}
+                              <li key={i} className="text-sm font-medium text-purple-800 dark:text-purple-200 flex items-start gap-2">
+                                <span className="text-purple-400 dark:text-purple-500">★</span> {tip}
                               </li>
                             ))}
                           </ul>
@@ -185,14 +188,14 @@ const Guide = () => {
                             href={res.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="bg-white p-5 rounded-2xl border border-gray-200 hover:border-yellow-400 hover:shadow-md transition-all group"
+                            className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-yellow-400 dark:hover:border-yellow-500/50 hover:shadow-md transition-all group"
                           >
                             <div className="flex justify-between items-start">
                               <div>
-                                <h4 className="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">{res.title}</h4>
-                                <p className="text-sm text-gray-500 mt-1">{res.description}</p>
+                                <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">{res.title}</h4>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{res.description}</p>
                               </div>
-                              <MousePointer2 className="w-5 h-5 text-gray-300 group-hover:text-yellow-500 transform group-hover:-rotate-45 transition-all" />
+                              <MousePointer2 className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-yellow-500 transform group-hover:-rotate-45 transition-all" />
                             </div>
                           </a>
                         ))}
@@ -200,14 +203,14 @@ const Guide = () => {
 
                       {/* Show buildings only once, typically with the first section or separate */}
                       {sectionIdx === 0 && data.buildings?.map((b, idx) => (
-                        <div key={`b-${idx}`} className="bg-white p-5 rounded-2xl border border-gray-200 flex justify-between items-center">
+                        <div key={`b-${idx}`} className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 flex justify-between items-center">
                           <div>
-                            <h4 className="font-bold text-gray-900">{b.fullName} <span className="text-xs text-gray-400 ml-2">({b.shortForm})</span></h4>
-                            <p className="text-xs text-gray-500">{b.description}</p>
+                            <h4 className="font-bold text-gray-900 dark:text-white">{b.fullName} <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">({b.shortForm})</span></h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{b.description}</p>
                           </div>
                           <button
                             onClick={() => data.openGoogleMaps?.(b.url)}
-                            className="text-xs font-bold bg-gray-100 px-3 py-2 rounded-lg hover:bg-black hover:text-white transition-colors"
+                            className="text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-lg hover:bg-black dark:hover:bg-accent-500 hover:text-white transition-colors"
                           >
                             Locate
                           </button>
@@ -219,13 +222,13 @@ const Guide = () => {
                 case 'checklist':
                   if (!section.checklist || section.checklist.length === 0) return null;
                   return (
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
-                      <h3 className="text-lg font-bold text-gray-900 mb-4">{section.title} Checklist</h3>
+                    <div className="bg-white dark:bg-[#1a1d27] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{section.title} Checklist</h3>
                       <div className="space-y-3">
                         {section.checklist?.map((item, idx) => (
-                          <label key={idx} className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors group">
-                            <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-yellow-400 focus:ring-yellow-400 transition-all" />
-                            <span className="font-medium text-gray-700 group-hover:text-gray-900">{item.text}</span>
+                          <label key={idx} className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors group">
+                            <input type="checkbox" className="w-5 h-5 rounded border-gray-300 dark:border-gray-700 text-yellow-400 dark:text-yellow-500 focus:ring-yellow-400 dark:focus:ring-yellow-500 transition-all bg-transparent" />
+                            <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">{item.text}</span>
                           </label>
                         ))}
                       </div>
@@ -235,14 +238,14 @@ const Guide = () => {
                 case 'warnings':
                   if (!section.commonMistakes && !section.consequences) return null;
                   return (
-                    <div className="bg-red-50 p-6 rounded-3xl border border-red-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
-                      <h3 className="text-lg font-bold text-red-900 mb-4">{section.title} Warnings</h3>
+                    <div className="bg-red-50 dark:bg-red-900/10 p-6 rounded-3xl border border-red-100 dark:border-red-900/30 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                      <h3 className="text-lg font-bold text-red-900 dark:text-red-400 mb-4">{section.title} Warnings</h3>
                       {section.commonMistakes && (
                         <div className="mb-6">
-                          <h4 className="font-bold text-red-800 mb-3">Common Mistakes</h4>
+                          <h4 className="font-bold text-red-800 dark:text-red-300 mb-3 text-sm uppercase tracking-wider">Common Mistakes</h4>
                           <ul className="space-y-2">
                             {section.commonMistakes.map((mistake, idx) => (
-                              <li key={idx} className="flex items-start gap-2 text-red-700 text-sm">
+                              <li key={idx} className="flex items-start gap-2 text-red-700 dark:text-red-300/80 text-sm">
                                 <span>•</span> {mistake}
                               </li>
                             ))}
@@ -250,9 +253,9 @@ const Guide = () => {
                         </div>
                       )}
                       {section.consequences && (
-                        <div className="bg-white/60 p-4 rounded-xl border border-red-200">
-                          <h4 className="font-bold text-red-800 mb-2">Consequences</h4>
-                          <p className="text-sm text-red-700">{section.consequences}</p>
+                        <div className="bg-white/60 dark:bg-black/20 p-4 rounded-xl border border-red-200 dark:border-red-900/40">
+                          <h4 className="font-bold text-red-800 dark:text-red-300 mb-2">Consequences</h4>
+                          <p className="text-sm text-red-700 dark:text-red-300/80">{section.consequences}</p>
                         </div>
                       )}
                     </div>
@@ -277,14 +280,14 @@ const Guide = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex bg-gray-50/30 lg:h-screen lg:overflow-hidden min-h-screen relative font-sans selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-300">
+    <div className="flex bg-gray-50/30 dark:bg-[#0b0d12] lg:h-screen lg:overflow-hidden min-h-screen relative font-sans selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-300">
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-50">
-        <span className="font-bold text-lg text-gray-900">Student Guide</span>
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/80 dark:bg-[#0f1117]/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 flex items-center justify-between px-4 z-50">
+        <span className="font-bold text-lg text-gray-900 dark:text-white">Student Guide</span>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2 -mr-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+          className="p-2 -mr-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
         >
           {isSidebarOpen ? <List className="w-6 h-6" /> : <List className="w-6 h-6" />}
         </button>
@@ -292,20 +295,20 @@ const Guide = () => {
 
       {/* Sidebar Navigation */}
       <div className={`
-                fixed inset-y-0 left-0 z-40 w-72 bg-gray-50/80 backdrop-blur-xl border-r border-gray-200 transform transition-transform duration-300 ease-in-out
-                lg:relative lg:translate-x-0 lg:bg-gray-50 lg:backdrop-blur-none
-                ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:shadow-none'}
+                fixed inset-y-0 left-0 z-40 w-72 bg-gray-50/80 dark:bg-[#0f1117]/80 backdrop-blur-xl border-r border-gray-200 dark:border-white/5 transform transition-transform duration-300 ease-in-out
+                lg:relative lg:translate-x-0 lg:bg-gray-50 dark:lg:bg-[#0f1117] lg:backdrop-blur-none
+                ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0 lg:shadow-none'}
             `}>
         <div className="h-full flex flex-col">
           <div className="p-6 pt-20 lg:pt-8">
-            <h2 className="text-xl font-black text-gray-900 tracking-tight mb-1">Campus Guide</h2>
+            <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight mb-1">Campus Guide</h2>
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">The Pastel Edition</p>
           </div>
 
           <div className="flex-1 overflow-y-auto px-4 pb-20 lg:pb-8 space-y-6 custom-scrollbar">
 
             {/* Search Input */}
-            <div className="sticky top-0 bg-gray-50 pt-2 pb-4 z-10 px-2">
+            <div className="sticky top-0 bg-gray-50 dark:bg-[#0f1117] pt-2 pb-4 z-10 px-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
@@ -313,7 +316,7 @@ const Guide = () => {
                   placeholder="Search guides..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 text-gray-900 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -327,13 +330,13 @@ const Guide = () => {
             </div>
 
             {Object.keys(filteredTopics).length === 0 ? (
-              <div className="text-center py-8 text-gray-500 text-sm">
+              <div className="text-center py-8 text-gray-500 text-sm font-medium dark:text-gray-400">
                 <p>No guides found matching "{searchQuery}"</p>
               </div>
             ) : (
               Object.entries(filteredTopics).map(([category, topics]) => (
                 <div key={category}>
-                  <h3 className="px-4 text-xs font-black text-indigo-900 uppercase tracking-widest mb-3 mt-2 border-b-2 border-indigo-100 pb-2">{category}</h3>
+                  <h3 className="px-4 text-xs font-black text-indigo-900 dark:text-indigo-400 uppercase tracking-widest mb-3 mt-2 border-b-2 border-indigo-100 dark:border-indigo-950/50 pb-2">{category}</h3>
                   <div className="space-y-1">
                     {topics.map((topic) => (
                       <button
@@ -343,10 +346,10 @@ const Guide = () => {
                           if (!searchQuery) setActiveCategory(category); // Only switch category context if not searching
                           if (window.innerWidth < 1024) setIsSidebarOpen(false);
                         }}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${selectedTopicId === topic.id ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-gray-200' : 'text-gray-500 hover:bg-white hover:shadow-sm hover:text-gray-900'}`}
+                        className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${selectedTopicId === topic.id ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-sm ring-1 ring-gray-200 dark:ring-white/5' : 'text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm dark:hover:shadow-none hover:text-gray-900 dark:hover:text-white'}`}
                       >
                         <span>{topic.title}</span>
-                        {selectedTopicId === topic.id && <div className="w-2 h-2 rounded-full bg-indigo-600 shadow-sm" />}
+                        {selectedTopicId === topic.id && <div className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-accent-500 shadow-sm" />}
                       </button>
                     ))}
                   </div>
@@ -366,7 +369,7 @@ const Guide = () => {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full lg:overflow-hidden relative w-full bg-white transition-colors duration-300">
+      <div className="flex-1 flex flex-col h-full lg:overflow-hidden relative w-full bg-white dark:bg-[#0b0d12] transition-colors duration-300">
         {selectedTopicId && currentTopicData ? (
           currentTopicData.isInteractive ? (
             <div className="w-full flex-1 relative mt-16 lg:mt-0 flex flex-col h-[calc(100svh-8rem)] min-h-[500px] lg:h-[calc(100vh-4rem)] z-0">
@@ -377,22 +380,22 @@ const Guide = () => {
               <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 md:py-16">
 
                 {/* Topic Header */}
-                <div className="mb-12 border-b border-gray-100 pb-8">
-                  <div className="flex items-center gap-3 text-sm font-bold text-indigo-600 mb-4 bg-indigo-50 w-fit px-3 py-1 rounded-full border border-indigo-100">
+                <div className="mb-12 border-b border-gray-100 dark:border-gray-800 pb-8">
+                  <div className="flex items-center gap-3 text-sm font-bold text-indigo-600 dark:text-indigo-400 mb-4 bg-indigo-50 dark:bg-indigo-900/20 w-fit px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-800">
                     <BookOpen className="w-4 h-4" />
                     {activeCategory}
                   </div>
-                  <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tight">
+                  <h1 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white mb-6 leading-tight tracking-tight">
                     {currentTopicData.data?.sections[0].title}
                   </h1>
 
                   {/* Tabs */}
-                  <div className="flex gap-8 border-b border-gray-100 -mb-8 overflow-x-auto no-scrollbar mask-linear-fade pb-1">
+                  <div className="flex gap-8 border-b border-gray-100 dark:border-gray-800 -mb-8 overflow-x-auto no-scrollbar mask-linear-fade pb-1">
                     {currentTopicData.data?.tabs?.map(tab => (
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 ${activeTab === tab.id ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                        className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 ${activeTab === tab.id ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400' : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
                       >
                         {tab.label}
                       </button>
@@ -406,13 +409,13 @@ const Guide = () => {
                 </div>
 
                 {/* Simple Footer */}
-                <div className="mt-16 pt-8 border-t border-gray-100 text-center">
-                  <p className="text-xs text-gray-400 font-medium">Was this guide helpful?
+                <div className="mt-16 pt-8 border-t border-gray-100 dark:border-gray-800 text-center">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Was this guide helpful?
                     <a
                       href="https://wa.me/233201534711?text=Hello%2C%20I%20have%20feedback%20regarding%20the%20Campus%20Guide"
                       target="_blank"
                       rel="noreferrer"
-                      className="ml-1 underline cursor-pointer hover:text-indigo-600 transition-colors"
+                      className="ml-1 underline cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                     >
                       Send Feedback via WhatsApp
                     </a>
@@ -422,18 +425,18 @@ const Guide = () => {
             </div>
           )
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white h-full pb-24">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-[#0b0d12] h-full pb-24">
             <div className="relative w-full max-w-lg -mr-6">
               <img
                 src={CampusIllustration}
                 alt="Campus illustration"
-                className="w-full h-auto object-contain drop-shadow-lg"
+                className="w-full h-auto object-contain drop-shadow-lg dark:brightness-90 dark:contrast-125"
                 style={{ WebkitTransform: 'translateZ(0)' }}
               />
               <div className="pointer-events-none absolute inset-0 rounded-lg" aria-hidden="true"></div>
             </div>
-            <h2 className="text-2xl font-black text-gray-900 mb-3">Welcome to the Guide</h2>
-            <p className="max-w-md text-gray-500 font-medium leading-relaxed">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Welcome to the Guide</h2>
+            <p className="max-w-md text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
               Select a topic from the sidebar to get started. Everything you need to know about campus life, in one place.
             </p>
           </div>

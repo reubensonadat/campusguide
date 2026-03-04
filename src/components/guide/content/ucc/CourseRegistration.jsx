@@ -14,63 +14,63 @@ const CourseRegistration = () => {
       content: (
         <div className="space-y-8">
           {/* --- INTRO CARD --- */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-sm">
-            <p className="text-gray-700 leading-relaxed">
+          <div className="bg-[var(--gray-100-soft)] p-5 rounded-xl border border-[var(--gray-200)] transition-colors duration-300 shadow-sm">
+            <p className="text-[var(--gray-700)] leading-relaxed">
               Registration is the official process of enrolling in specific courses.
               <strong> No Registration = No Student Status.</strong> Even if you pay fees, you are not a student until you register courses on the portal.
             </p>
           </div>
 
           {/* --- THE ROTATIONAL SYSTEM (CRITICAL UPDATE) --- */}
-          <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100 shadow-sm">
-            <h4 className="font-bold text-indigo-900 text-lg mb-3">🔄 The "Rotational" System (Liberals & African Studies)</h4>
-            <p className="text-sm text-indigo-800/80 mb-4 leading-relaxed">
+          <div className="bg-[var(--primary-50)] p-6 rounded-xl border border-[var(--primary-200)] shadow-sm transition-colors duration-300">
+            <h4 className="font-bold text-[var(--primary-900)] text-lg mb-3">🔄 The "Rotational" System (Liberals & African Studies)</h4>
+            <p className="text-sm text-[var(--primary-800)] opacity-80 mb-4 leading-relaxed">
               UCC splits Freshers into two groups based on College/Faculty. You generally do <strong>not</strong> choose these courses; they are randomly assigned to you on the portal.
             </p>
             <div className="grid md:grid-cols-2 gap-4 mt-4">
-              <div className="bg-white p-4 rounded-lg border border-indigo-100">
-                <h5 className="font-bold text-indigo-700 mb-2">Group A Pattern</h5>
-                <ul className="text-xs text-gray-600 space-y-1">
+              <div className="bg-[var(--white)] p-4 rounded-lg border border-[var(--primary-100)] transition-colors duration-300">
+                <h5 className="font-bold text-[var(--primary-700)] mb-2">Group A Pattern</h5>
+                <ul className="text-xs text-[var(--gray-600)] space-y-1">
                   <li>• <strong>Sem 1:</strong> African Studies + ITS (Info Tech Skills)</li>
                   <li>• <strong>Sem 2:</strong> Liberal Course + Information Literacy</li>
                 </ul>
               </div>
-              <div className="bg-white p-4 rounded-lg border border-indigo-100">
-                <h5 className="font-bold text-indigo-700 mb-2">Group B Pattern</h5>
-                <ul className="text-xs text-gray-600 space-y-1">
+              <div className="bg-[var(--white)] p-4 rounded-lg border border-[var(--primary-100)] transition-colors duration-300">
+                <h5 className="font-bold text-[var(--primary-700)] mb-2">Group B Pattern</h5>
+                <ul className="text-xs text-[var(--gray-600)] space-y-1">
                   <li>• <strong>Sem 1:</strong> Liberal Course + Information Literacy</li>
                   <li>• <strong>Sem 2:</strong> African Studies + ITS (Info Tech Skills)</li>
                 </ul>
               </div>
             </div>
-            <p className="text-xs text-indigo-600 mt-3 italic">
+            <p className="text-xs text-[var(--primary-600)] mt-3 italic">
               * <strong>Communication Skills</strong> is mandatory for EVERYONE in both semesters.
             </p>
-            <p className="text-xs text-indigo-600 mt-1 italic">
+            <p className="text-xs text-[var(--primary-600)] mt-1 italic">
               * <strong>ITS Groups:</strong> ITS is not picked; you are placed in groups. Check notice boards for your group's time.
             </p>
           </div>
 
           {/* --- COURSE TYPES --- */}
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-blue-900 text-lg mb-3">Fixed / Block Courses</h4>
-              <p className="text-sm text-blue-800/80 mb-4">
+            <div className="bg-[var(--primary-50)] p-6 rounded-xl border border-[var(--primary-100)] hover:shadow-md transition-all">
+              <h4 className="font-bold text-[var(--primary-800)] text-lg mb-3">Fixed / Block Courses</h4>
+              <p className="text-sm text-[var(--primary-700)] opacity-80 mb-4">
                 Common in <strong>Medical School, Nursing, Pharmacy, & Engineering</strong>.
               </p>
-              <ul className="space-y-2 text-sm text-gray-700">
+              <ul className="space-y-2 text-sm text-[var(--gray-700)]">
                 <li>● Courses are pre-determined.</li>
                 <li>● "Add/Drop" is rarely needed.</li>
                 <li>● Registration is usually one click: "Register All".</li>
               </ul>
             </div>
 
-            <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-orange-900 text-lg mb-3">Flexible / Elective Courses</h4>
-              <p className="text-sm text-orange-800/80 mb-4">
+            <div className="bg-[var(--accent-50)] p-6 rounded-xl border border-[var(--accent-100)] hover:shadow-md transition-all">
+              <h4 className="font-bold text-[var(--accent-900)] text-lg mb-3">Flexible / Elective Courses</h4>
+              <p className="text-sm text-[var(--accent-800)] opacity-80 mb-4">
                 Common in <strong>Arts, Social Sciences, & Business</strong>.
               </p>
-              <ul className="space-y-2 text-sm text-gray-700">
+              <ul className="space-y-2 text-sm text-[var(--gray-700)]">
                 <li>● Mix of <strong>Core</strong> and <strong>Electives</strong>.</li>
                 <li>● You must manually select electives to meet credit hours.</li>
                 <li>● <strong>Auditing:</strong> You can "Audit" a course (attend for knowledge, no exams) but you must register it as "Audit".</li>
@@ -79,17 +79,17 @@ const CourseRegistration = () => {
           </div>
 
           {/* --- THE FEE BARRIER --- */}
-          <div className="bg-green-50 p-5 rounded-xl border border-green-100">
-            <h4 className="font-bold text-green-900 text-lg mb-2">The "Financial Hold" Rule</h4>
-            <p className="text-sm text-gray-700">
+          <div className="bg-[var(--accent-50)] p-5 rounded-xl border border-[var(--accent-200)] transition-colors duration-300">
+            <h4 className="font-bold text-[var(--accent-900)] text-lg mb-2">The "Financial Hold" Rule</h4>
+            <p className="text-sm text-[var(--gray-700)]">
               The portal locks registration until you pay ~60% fees. Payment via Transflow usually takes 2-24 hours to clear the "Hold" on the portal.
             </p>
           </div>
 
           {/* --- LECTURE START DISCLAIMER --- */}
-          <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
-            <h4 className="font-bold text-blue-900 text-lg mb-2">When Do Lectures Start?</h4>
-            <div className="p-3 bg-white/60 rounded-lg border border-blue-100/50 text-sm text-gray-800">
+          <div className="bg-[var(--primary-50)] p-5 rounded-xl border border-[var(--primary-100)] transition-colors duration-300">
+            <h4 className="font-bold text-[var(--primary-800)] text-lg mb-2">When Do Lectures Start?</h4>
+            <div className="p-3 bg-[var(--white)] rounded-lg border border-[var(--primary-100)] transition-colors duration-300 text-sm text-[var(--gray-800)]">
               Lectures typically begin <strong>when the official timetable is released</strong>.
               If the timetable is not out, relax. Wait for official communication from your Course Reps regarding the start of lectures.
             </div>
