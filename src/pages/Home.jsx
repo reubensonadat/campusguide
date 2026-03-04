@@ -155,12 +155,13 @@ const Home = () => {
               </p>
 
               <div className="flex flex-col gap-3">
-                <Button
+                <button
                   onClick={() => navigate('/guide')}
-                  className="bg-white text-gray-900 hover:bg-white/90 font-bold py-4 rounded-xl shadow-lg border-none"
+                  style={{ backgroundColor: '#ffffff' }}
+                  className="w-full font-bold py-4 rounded-xl shadow-lg border-none hover:bg-gray-50 flex items-center justify-center transition-colors"
                 >
-                  Open Guide
-                </Button>
+                  <span className="force-black-text">Open Guide</span>
+                </button>
                 <Button
                   onClick={() => navigate('/tools')}
                   className="bg-white/10 text-white hover:bg-white/20 backdrop-blur-md font-bold py-4 rounded-xl border border-white/20"
@@ -187,7 +188,7 @@ const Home = () => {
               <div className="flex items-center gap-6">
                 <Button
                   onClick={() => navigate('/guide')}
-                  className="bg-indigo-600# dark:bg-accent-500 text-white hover:opacity-90 font-black px-10 py-5 rounded-2xl shadow-xl transition-all hover:-translate-y-1 block border-none text-lg"
+                  className="bg-indigo-600 dark:bg-accent-500 text-white hover:opacity-90 font-black px-10 py-5 rounded-2xl shadow-xl transition-all hover:-translate-y-1 block border-none text-lg"
                 >
                   Open Guide
                 </Button>
