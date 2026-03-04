@@ -196,22 +196,22 @@ const Advertise = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900 mb-24 sm:pb-0">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900 mb-24 sm:pb-0">
 
             {/* Header */}
-            <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-30">
+            <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-4 sticky top-0 z-30">
                 <div className="max-w-3xl mx-auto flex items-center gap-4">
                     <button
                         onClick={() => step === 1 ? navigate(-1) : prevStep()}
-                        className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
+                        className="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                         <ArrowLeft size={20} />
                     </button>
                     <div>
-                        <h1 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+                        <h1 className="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
                             Create Ad Campaign <Sparkles size={18} className="text-amber-500" />
                         </h1>
-                        <p className="text-sm font-medium text-gray-500">
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                             {step === 4 ? `Step ${step} of 4: Checkout` : `Step ${step} of 4: ${STEPS[step - 1].title}`}
                         </p>
                     </div>
@@ -219,7 +219,7 @@ const Advertise = () => {
             </header>
 
             {/* Progress Bar */}
-            <div className="h-1.5 w-full bg-gray-100">
+            <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800">
                 <div
                     className="h-full bg-indigo-600 transition-all duration-500 ease-out"
                     style={{ width: `${(step / 4) * 100}%` }}
@@ -231,34 +231,34 @@ const Advertise = () => {
                 {/* STEP 1: GUIDELINES */}
                 {step === 1 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-6">
+                        <div className="w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-6">
                             <CheckCircle2 size={32} />
                         </div>
-                        <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-4">Quality & Trust Framework</h2>
-                        <p className="text-lg text-gray-600 mb-8 font-medium leading-relaxed">
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-4">Quality & Trust Framework</h2>
+                        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 font-medium leading-relaxed">
                             To maintain a premium experience for students, all advertisements are subject to manual review before going live.
                         </p>
 
                         <div className="space-y-4 mb-10">
-                            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
+                            <div className="bg-white dark:bg-gray-800/60 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex gap-4">
                                 <div className="mt-1 text-emerald-500"><Check size={20} /></div>
                                 <div>
-                                    <h4 className="font-bold text-gray-900">100% Student Focus</h4>
-                                    <p className="text-sm text-gray-500 mt-1">Offers must be relevant to university life (Hostels, Food, Tech, Transport, Events).</p>
+                                    <h4 className="font-bold text-gray-900 dark:text-white">100% Student Focus</h4>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Offers must be relevant to university life (Hostels, Food, Tech, Transport, Events).</p>
                                 </div>
                             </div>
-                            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
+                            <div className="bg-white dark:bg-gray-800/60 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex gap-4">
                                 <div className="mt-1 text-indigo-500"><Check size={20} /></div>
                                 <div>
-                                    <h4 className="font-bold text-gray-900">Manual Verification</h4>
-                                    <p className="text-sm text-gray-500 mt-1">Ads are reviewed within 2 hours. If rejected for violating terms, you receive a full automated refund.</p>
+                                    <h4 className="font-bold text-gray-900 dark:text-white">Manual Verification</h4>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Ads are reviewed within 2 hours. If rejected for violating terms, you receive a full automated refund.</p>
                                 </div>
                             </div>
-                            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
+                            <div className="bg-white dark:bg-gray-800/60 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex gap-4">
                                 <div className="mt-1 text-pink-500"><Check size={20} /></div>
                                 <div>
-                                    <h4 className="font-bold text-gray-900">Direct WhatsApp Connections</h4>
-                                    <p className="text-sm text-gray-500 mt-1">Students will be routed directly to your WhatsApp to seamlessly complete their purchases.</p>
+                                    <h4 className="font-bold text-gray-900 dark:text-white">Direct WhatsApp Connections</h4>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Students will be routed directly to your WhatsApp to seamlessly complete their purchases.</p>
                                 </div>
                             </div>
                         </div>
@@ -275,14 +275,14 @@ const Advertise = () => {
                 {/* STEP 2: BUSINESS DETAILS */}
                 {step === 2 && (
                     <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-                        <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Business Details</h2>
-                        <p className="text-gray-500 mb-8 font-medium">How should students contact you?</p>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-2">Business Details</h2>
+                        <p className="text-gray-500 dark:text-gray-400 mb-8 font-medium">How should students contact you?</p>
 
-                        <div className="space-y-6 bg-white p-6 sm:p-8 rounded-[2rem] shadow-sm border border-gray-100">
+                        <div className="space-y-6 bg-white dark:bg-gray-800/60 p-6 sm:p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700">
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Brand or Vendor Name</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Brand or Vendor Name</label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
                                         <Building2 size={18} />
                                     </div>
                                     <input
@@ -291,18 +291,18 @@ const Advertise = () => {
                                         value={formData.businessName}
                                         onChange={handleInputChange}
                                         placeholder="e.g. The boys kitchen, Chedar chops..."
-                                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900"
+                                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Marketing Category</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Marketing Category</label>
                                 <select
                                     name="category"
                                     value={formData.category}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium text-gray-900 appearance-none"
+                                    className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium text-gray-900 dark:text-white appearance-none"
                                 >
                                     <option value="" disabled>Select a category</option>
                                     <option value="food">Food & Delivery</option>
@@ -314,14 +314,14 @@ const Advertise = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2 flex justify-between">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 flex justify-between">
                                     <span>WhatsApp Business Number</span>
                                     {formData.whatsapp && !isValidPhone && (
                                         <span className="text-red-500 text-xs">Invalid number length</span>
                                     )}
                                 </label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
                                         <Phone size={18} />
                                     </div>
                                     <input
@@ -330,7 +330,7 @@ const Advertise = () => {
                                         value={formData.whatsapp}
                                         onChange={handleInputChange}
                                         placeholder="024 123 4567"
-                                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900"
+                                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                     />
                                 </div>
                                 <p className="text-xs text-gray-400 mt-2 font-medium flex items-center gap-1">
@@ -354,15 +354,15 @@ const Advertise = () => {
                 {/* STEP 3: CREATIVE / MEDIA */}
                 {step === 3 && (
                     <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-                        <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">The Creative</h2>
-                        <p className="text-gray-500 mb-8 font-medium">Upload your flyer and describe your offer.</p>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-2">The Creative</h2>
+                        <p className="text-gray-500 dark:text-gray-400 mb-8 font-medium">Upload your flyer and describe your offer.</p>
 
-                        <div className="space-y-6 bg-white p-6 sm:p-8 rounded-[2rem] shadow-sm border border-gray-100">
+                        <div className="space-y-6 bg-white dark:bg-gray-800/60 p-6 sm:p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700">
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Campaign Flyer (16:9 or Square)</label>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Campaign Flyer (16:9 or Square)</label>
 
-                                <div className={`relative border-2 rounded-3xl flex flex-col items-center justify-center text-center transition-colors cursor-pointer group overflow-hidden ${formData.imagePreview ? 'border-solid border-indigo-100 bg-black/5' : 'border-dashed border-gray-300 p-8 hover:bg-gray-50 hover:border-indigo-400 bg-gray-50'}`}>
+                                <div className={`relative border-2 rounded-3xl flex flex-col items-center justify-center text-center transition-colors cursor-pointer group overflow-hidden ${formData.imagePreview ? 'border-solid border-indigo-100 dark:border-indigo-800 bg-black/5' : 'border-dashed border-gray-300 dark:border-gray-600 p-8 hover:bg-gray-50 dark:hover:bg-gray-700/30 hover:border-indigo-400 bg-gray-50 dark:bg-gray-900/30'}`}>
 
                                     <input
                                         type="file"
@@ -387,17 +387,17 @@ const Advertise = () => {
                                             <div className="w-16 h-16 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm">
                                                 <UploadCloud size={32} />
                                             </div>
-                                            <span className="font-bold text-gray-700">Tap to upload flyer</span>
-                                            <span className="text-xs text-gray-400 mt-1 font-medium">JPEG or PNG under 5MB. High quality strongly advised.</span>
+                                            <span className="font-bold text-gray-700 dark:text-gray-300">Tap to upload flyer</span>
+                                            <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">JPEG or PNG under 5MB. High quality strongly advised.</span>
                                         </>
                                     )}
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2 flex justify-between">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 flex justify-between">
                                     <span>Description / Caption</span>
-                                    <span className={`${formData.description.length > 250 ? 'text-red-500' : 'text-gray-400'}`}>
+                                    <span className={`${formData.description.length > 250 ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}`}>
                                         {formData.description.length}/300
                                     </span>
                                 </label>
@@ -408,7 +408,7 @@ const Advertise = () => {
                                     maxLength={300}
                                     rows={4}
                                     placeholder="Keep it extremely punchy. e.g. 'Get 20% off your first meal when you show this ad...'"
-                                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900 resize-none"
+                                    className="w-full p-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 resize-none"
                                 />
                                 <p className="text-xs text-gray-400 mt-2 font-medium">Note: Only the first 3 lines show automatically on the feed to keep the UI clean.</p>
                             </div>
@@ -429,8 +429,8 @@ const Advertise = () => {
                 {/* STEP 4: PACKAGE SELECTION & CHECKOUT */}
                 {step === 4 && (
                     <div className="animate-in fade-in slide-in-from-right-8 duration-500 pb-12">
-                        <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Checkout</h2>
-                        <p className="text-gray-500 mb-8 font-medium">Preview your ad, select your placement tier, and duration.</p>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-2">Checkout</h2>
+                        <p className="text-gray-500 dark:text-gray-400 mb-8 font-medium">Preview your ad, select your placement tier, and duration.</p>
 
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                             {/* Left Side: Package Selection */}
@@ -445,20 +445,20 @@ const Advertise = () => {
                                     return (
                                         <div
                                             key={pkg.id}
-                                            className={`relative transition-all duration-300 rounded-[2rem] border-2 p-1 bg-white
+                                            className={`relative transition-all duration-300 rounded-[2rem] border-2 p-1 bg-white dark:bg-gray-800/70
                                                 ${isSelected ? C.border + ' shadow-xl' : 'border-transparent shadow-sm hover:shadow-md'}
                                             `}
                                         >
-                                            <div className={`rounded-[1.75rem] p-6 border ${isSelected ? C.lightBorder : 'border-gray-100'}`}>
+                                            <div className={`rounded-[1.75rem] p-6 border ${isSelected ? C.lightBorder : 'border-gray-100 dark:border-gray-700'}`}>
                                                 <div className="flex items-start gap-4 mb-5">
-                                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isSelected ? C.iconBg + ' ' + C.text : 'bg-gray-100 text-gray-500'}`}>
+                                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isSelected ? C.iconBg + ' ' + C.text : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
                                                         <Icon size={24} />
                                                     </div>
                                                     <div>
-                                                        <h4 className={`font-semibold text-xl mb-1 leading-none ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>
+                                                        <h4 className={`font-semibold text-xl mb-1 leading-none ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
                                                             {pkg.name}
                                                         </h4>
-                                                        <p className="text-sm text-gray-500 font-medium leading-relaxed pr-4">
+                                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed pr-4">
                                                             {pkg.description}
                                                         </p>
                                                     </div>
@@ -474,7 +474,7 @@ const Advertise = () => {
                                                                 onClick={() => handlePriceSelection(pkg.id, price.days, price.price)}
                                                                 className={`relative cursor-pointer flex flex-col items-center justify-center py-4 px-2 rounded-2xl border-2 transition-all ${isSpecificPriceSelected
                                                                     ? C.border + ' ' + C.highlightBg
-                                                                    : 'border-gray-100 bg-gray-50 hover:bg-gray-100/80'
+                                                                    : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 hover:bg-gray-100/80 dark:hover:bg-gray-700/50'
                                                                     }`}
                                                             >
                                                                 {price.tag && (
@@ -482,10 +482,10 @@ const Advertise = () => {
                                                                         {price.tag}
                                                                     </span>
                                                                 )}
-                                                                <span className={`text-xs font-bold mb-1 ${isSpecificPriceSelected ? C.text : 'text-gray-500'}`}>
+                                                                <span className={`text-xs font-bold mb-1 ${isSpecificPriceSelected ? C.text : 'text-gray-500 dark:text-gray-400'}`}>
                                                                     {price.days} Days
                                                                 </span>
-                                                                <span className={`font-black text-lg sm:text-xl tracking-tight ${isSpecificPriceSelected ? 'text-gray-900' : 'text-gray-700'}`}>
+                                                                <span className={`font-black text-lg sm:text-xl tracking-tight ${isSpecificPriceSelected ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
                                                                     GH₵{price.price}
                                                                 </span>
                                                             </div>
@@ -501,7 +501,7 @@ const Advertise = () => {
                             {/* Right Side: Live Ad Preview */}
                             <div className="lg:col-span-5">
                                 <div className="sticky top-24">
-                                    <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                                    <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
                                         <ExternalLink size={18} className="text-gray-400" />
                                         Live Feed Preview
                                     </h3>
@@ -526,10 +526,10 @@ const Advertise = () => {
                         </div>
 
                         {/* Summary & Checkout Stick to bottom of screen on mobile, inline on desktop */}
-                        <div className="mt-8 bg-white p-6 sm:p-8 rounded-[2rem] border border-gray-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <div className="mt-8 bg-white dark:bg-gray-800/60 p-6 sm:p-8 rounded-[2rem] border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
                             <div className="w-full sm:w-auto text-center sm:text-left">
-                                <span className="font-bold text-gray-500 block mb-1">Total to Pay</span>
-                                <div className="font-black text-3xl sm:text-4xl text-gray-900 tracking-tight">GH₵{calculatedPrice}.00</div>
+                                <span className="font-bold text-gray-500 dark:text-gray-400 block mb-1">Total to Pay</span>
+                                <div className="font-black text-3xl sm:text-4xl text-gray-900 dark:text-white tracking-tight">GH₵{calculatedPrice}.00</div>
                                 <div className="text-sm text-indigo-600 font-bold mt-1">
                                     {activePackage?.name} • {selectedDuration} Days
                                 </div>

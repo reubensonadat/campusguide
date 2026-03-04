@@ -15,14 +15,14 @@ const CommunityCard = ({ post }) => {
     const buttonText = actionText || defaultActionText;
 
     const buttonStyle = isAd
-        ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
+        ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50"
         : "bg-indigo-600 text-white hover:bg-indigo-700";
 
     return (
-        <div className="bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-gray-100 mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 h-full">
+        <div className="bg-white dark:bg-gray-800/80 rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] dark:shadow-[0_4px_20px_rgb(0,0,0,0.3)] border border-gray-100 dark:border-gray-700/60 mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)] transition-all duration-300 h-full">
 
             {/* Full Image Container (Flyer) */}
-            <div className="relative w-full bg-gray-100 flex items-center justify-center shrink-0 lg:h-64">
+            <div className="relative w-full bg-gray-100 dark:bg-gray-700/50 flex items-center justify-center shrink-0 lg:h-64">
                 <img
                     src={image || "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=600&auto=format&fit=crop"}
                     alt={title}
@@ -38,13 +38,13 @@ const CommunityCard = ({ post }) => {
 
             {/* Post Content */}
             <div className="p-6 flex-1 flex flex-col min-h-0">
-                <h3 className="text-xl sm:text-[22px] font-bold text-gray-900 leading-tight mb-3 group-hover:text-indigo-600 transition-colors line-clamp-2 shrink-0">
+                <h3 className="text-xl sm:text-[22px] font-bold text-gray-900 dark:text-white leading-tight mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 shrink-0">
                     {title}
                 </h3>
 
                 {description && (
                     <div className="mb-5 flex-1 min-h-0 flex flex-col">
-                        <p className={`text-[15px] text-gray-600 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}>
+                        <p className={`text-[15px] text-gray-600 dark:text-gray-400 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}>
                             {description}
                         </p>
                         {description.length > 120 && (
