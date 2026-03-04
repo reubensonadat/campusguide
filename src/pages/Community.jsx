@@ -3,6 +3,8 @@ import { Megaphone, ChevronRight, Sparkles, Star } from 'lucide-react';
 import CommunityCard from '../components/community/CommunityCard';
 import { useNavigate } from 'react-router-dom';
 
+import { supabase } from '../lib/supabase';
+
 // Categories matching Advertise.jsx options
 const CATEGORIES = [
     { id: 'all', label: 'All Listings' },
@@ -13,64 +15,80 @@ const CATEGORIES = [
     { id: 'event', label: 'Commercial Event' },
 ];
 
-// Dummy Mock Data updated with categories
-const MOCK_FEED = [
-    {
-        id: 1,
-        type: 'announcement',
-        category: 'event',
-        tag: 'OCT 12',
-        title: 'Freshers Orientation Gathering',
-        description: 'Welcome to all incoming students! Join us for a comprehensive overview of campus life, academic expectations, and support services available to you.',
-        image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
-        location: 'Great Hall, Main Campus',
-        date: '10:00 AM - 2:00 PM',
-        actionText: 'Join Group'
-    },
-    {
-        id: 2,
-        type: 'ad',
-        category: 'food',
-        title: 'Bush Canteen Fresh Meals',
-        description: 'Get 20% off your first meal at Bush Canteen when you show this ad! Serving hot Jollof packed with chicken and assorted meats. Our food is sourced organically and prepared in a highly hygienic premium setting. This text is long to demonstrate the read more button working effectively so it does not clutter the feed!',
-        image: 'https://images.unsplash.com/photo-1604328698692-f76ea9498e76?q=80&w=800&auto=format&fit=crop',
-        actionText: 'Message via WhatsApp',
-        link: 'https://wa.me/1234567890' // Dummy WhatsApp link
-    },
-    {
-        id: 3,
-        type: 'announcement',
-        category: 'event',
-        tag: 'OCT 15',
-        title: 'Matriculation Ceremony',
-        description: 'The official induction of incoming students into the university community. Dress code is strictly formal.',
-        image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=800&auto=format&fit=crop',
-        location: 'Casely Hayford Forecourt',
-        date: '9:00 AM Prompt',
-        actionText: 'View Details'
-    },
-    {
-        id: 4,
-        type: 'ad',
-        category: 'services',
-        title: 'Excel Hostels - Room Available',
-        description: 'One slot left in a 4-in-a-room setup. AC, WiFi, and dedicated study desks included. GH₵3500/yr.',
-        image: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=800&auto=format&fit=crop',
-        actionText: 'Contact Manager',
-        link: 'https://wa.me/1987654321'
-    }
-];
-
 const Community = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
+    const [feedData, setFeedData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     React.useEffect(() => {
         window.scrollTo(0, 0);
+
+        const fetchCommunityData = async () => {
+            setIsLoading(true);
+            try {
+                // 1. Fetch Active Advertisements
+                const { data: adsData, error: adsError } = await supabase
+                    .from('advertisements')
+                    .select('*')
+                    .ilike('status', 'active'); // Handle 'Active', 'ACTIVE', 'active'
+
+                if (adsError) throw adsError;
+
+                // 2. Fetch University Announcements
+                const { data: announcementsData, error: annError } = await supabase
+                    .from('announcements')
+                    .select('*');
+
+                if (annError) throw annError;
+
+                // 3. Format Ads for CommunityCard
+                const formattedAds = (adsData || []).map(ad => ({
+                    id: `ad-${ad.id}`,
+                    type: 'ad',
+                    category: ad.category,
+                    title: ad.title,
+                    description: ad.description,
+                    image: ad.image_url,
+                    actionText: 'Message via WhatsApp',
+                    link: ad.phone_number
+                        ? `https://wa.me/${ad.phone_number}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${ad.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`
+                        : '#',
+                    createdAt: new Date(ad.created_at).getTime(),
+                }));
+
+                // 4. Format Announcements for CommunityCard
+                const formattedAnnouncements = (announcementsData || []).map(ann => ({
+                    id: `ann-${ann.id}`,
+                    type: 'announcement',
+                    category: 'event', // General category for announcements so they show up everywhere or under suitable filters
+                    tag: 'OFFICIAL',
+                    title: ann.title,
+                    description: ann.description || ann.content, // Handling both naming conventions
+                    image: ann.flyer_url,
+                    actionText: ann.action_text || 'View Details',
+                    link: ann.action_link || null,
+                    createdAt: new Date(ann.created_at).getTime(),
+                }));
+
+                // 5. Combine and Sort (Newest First)
+                const combinedFeed = [...formattedAnnouncements, ...formattedAds]
+                    .sort((a, b) => b.createdAt - a.createdAt);
+
+                setFeedData(combinedFeed);
+            } catch (error) {
+                console.error("Error fetching community feed:", error);
+                // Optionally handle error UI here, but falling back to empty feed is okay for MVP
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCommunityData();
     }, []);
 
     const navigate = useNavigate();
 
-    const filteredFeed = MOCK_FEED.filter(post => 
+    const filteredFeed = feedData.filter(post =>
         selectedCategory === 'all' || post.category === selectedCategory
     );
 
@@ -148,11 +166,10 @@ const Community = () => {
                         <button
                             key={category.id}
                             onClick={() => setSelectedCategory(category.id)}
-                            className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 shadow-sm ${
-                                selectedCategory === category.id
-                                    ? 'bg-primary-600 text-white shadow-md shadow-primary-200 scale-105'
-                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                            }`}
+                            className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 shadow-sm ${selectedCategory === category.id
+                                ? 'bg-primary-600 text-white shadow-md shadow-primary-200 scale-105'
+                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                }`}
                         >
                             {category.label}
                         </button>
@@ -160,7 +177,12 @@ const Community = () => {
                 </div>
 
                 {/* Render Feed using CSS Grid or Empty State */}
-                {filteredFeed.length > 0 ? (
+                {isLoading ? (
+                    <div className="py-20 flex flex-col items-center justify-center text-center">
+                        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                        <p className="text-gray-500 font-bold animate-pulse">Loading community feed...</p>
+                    </div>
+                ) : filteredFeed.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
                         {filteredFeed.map(post => (
                             <CommunityCard key={post.id} post={post} />
@@ -175,7 +197,7 @@ const Community = () => {
                         <p className="text-gray-500 font-medium max-w-sm">
                             There are currently no items under this category. Be the first to advertise here!
                         </p>
-                        <button 
+                        <button
                             onClick={() => navigate('/advertise')}
                             className="mt-6 px-6 py-2.5 bg-primary-50 text-primary-700 font-bold rounded-xl hover:bg-primary-100 transition-colors"
                         >
