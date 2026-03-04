@@ -69,12 +69,12 @@ const BudgetTracker = () => {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Balance</p>
-                <p className={`text-2xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Balance</p>
+                <p className={`text-2xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600 dark:text-red-400'}`}>
                   GH₵ {balance.toFixed(2)}
                 </p>
               </div>
-              {balance >= 0 ? <TrendingUp className="text-green-600" /> : <TrendingDown className="text-red-600" />}
+              {balance >= 0 ? <TrendingUp className="text-green-600" /> : <TrendingDown className="text-red-600 dark:text-red-400" />}
             </div>
           </CardContent>
         </Card>
@@ -83,7 +83,7 @@ const BudgetTracker = () => {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Income</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Income</p>
                 <p className="text-2xl font-bold text-green-600">GH₵ {totalIncome.toFixed(2)}</p>
               </div>
               <TrendingUp className="text-green-600" />
@@ -95,10 +95,10 @@ const BudgetTracker = () => {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Expenses</p>
-                <p className="text-2xl font-bold text-red-600">GH₵ {totalExpenses.toFixed(2)}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Expenses</p>
+                <p className="text-2xl font-bold text-red-600 dark:text-red-400">GH₵ {totalExpenses.toFixed(2)}</p>
               </div>
-              <TrendingDown className="text-red-600" />
+              <TrendingDown className="text-red-600 dark:text-red-400" />
             </div>
           </CardContent>
         </Card>
@@ -182,13 +182,13 @@ const BudgetTracker = () => {
               <div key={transaction.id} className="flex items-center justify-between p-3 border rounded">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className={`font-semibold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className={`font-semibold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600 dark:text-red-400'}`}>
                       {transaction.type === 'income' ? '+' : '-'} GH₵ {transaction.amount.toFixed(2)}
                     </span>
-                    <span className="text-sm text-gray-600">{transaction.category}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{transaction.category}</span>
                   </div>
-                  <div className="text-sm text-gray-600">{transaction.description}</div>
-                  <div className="text-xs text-gray-500">{formatDate(transaction.date)}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{transaction.description}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{formatDate(transaction.date)}</div>
                 </div>
                 <Button
                   variant="ghost"
@@ -201,7 +201,7 @@ const BudgetTracker = () => {
             ))}
 
             {transactions.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 No transactions yet. Add your first transaction to get started.
               </div>
             )}

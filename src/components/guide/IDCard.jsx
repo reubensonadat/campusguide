@@ -3,19 +3,18 @@ import UCC from './content/ucc/IDCard.jsx';
 import KNUST from './content/knust/IDCard.jsx';
 import UG from './content/ug/IDCard.jsx';
 
-const IDCard = () => {
-  // Safe access to hook (must be called within React render flow, which Guide.jsx does)
+const IDCard = (selectedCampus) => {
+  // Pass selectedCampus as argument to avoid Hook violation in Guide.jsx
   try {
-      const { selectedCampus } = useCampus();
-      const campusId = selectedCampus?.id || 'ucc';
+    const campusId = selectedCampus?.id || 'ucc';
 
-      if (campusId === 'knust') return KNUST();
-      if (campusId === 'ug') return UG();
-      return UCC();
+    if (campusId === 'knust') return KNUST();
+    if (campusId === 'ug') return UG();
+    return UCC();
   } catch (e) {
-      // Fallback if context missing or error
-      console.error("Campus Context Error inWrapper:", e);
-      return UCC();
+    // Fallback if error
+    console.error("Error in IDCard data factory:", e);
+    return UCC();
   }
 };
 

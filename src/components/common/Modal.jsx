@@ -56,7 +56,7 @@ const Modal = ({
         x: e.clientX - position.x,
         y: e.clientY - position.y
       });
-      
+
       // Prevent text selection while dragging
       e.preventDefault();
     }
@@ -79,7 +79,7 @@ const Modal = ({
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
-      
+
       return () => {
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
@@ -96,7 +96,7 @@ const Modal = ({
     >
       <div
         ref={modalRef}
-        className={`modal-content bg-white rounded-lg shadow-xl w-[90vw] max-h-[90vh] flex flex-col ${className}`}
+        className={`modal-content bg-white dark:bg-[#0f1117] rounded-lg shadow-xl w-[90vw] max-h-[90vh] flex flex-col border border-transparent dark:border-gray-800 ${className}`}
         style={{
           position: 'relative',
           transform: `translate(${position.x}px, ${position.y}px)`,
@@ -108,17 +108,17 @@ const Modal = ({
         onMouseDown={handleMouseDown}
       >
         {title && (
-          <div 
+          <div
             ref={headerRef}
-            className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 cursor-move select-none"
+            className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 flex-shrink-0 cursor-move select-none"
           >
-            <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
+            <h2 id="modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">
               {title}
             </h2>
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-1 rounded-md hover:bg-gray-100 focus:outline-none"
+                className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 focus:outline-none"
                 aria-label="Close"
               >
                 <X size={20} />
@@ -126,7 +126,7 @@ const Modal = ({
             )}
           </div>
         )}
-        
+
         <div className="flex-1 overflow-y-auto p-4 pb-6">
           {children}
         </div>

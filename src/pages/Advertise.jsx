@@ -200,7 +200,7 @@ const Advertise = () => {
 
                         <button
                             onClick={nextStep}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5"
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg transition-all hover:-translate-y-0.5"
                         >
                             I Agree, Start Setup
                         </button>
@@ -278,7 +278,7 @@ const Advertise = () => {
                             <button
                                 onClick={nextStep}
                                 disabled={!formData.businessName || !formData.category || !formData.whatsapp}
-                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all"
+                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg transition-all"
                             >
                                 Continue to Media
                             </button>
@@ -353,7 +353,7 @@ const Advertise = () => {
                             <button
                                 onClick={nextStep}
                                 disabled={!formData.description || !formData.imagePreview}
-                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all"
+                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg transition-all"
                             >
                                 Continue to Packages
                             </button>
@@ -381,7 +381,7 @@ const Advertise = () => {
                                         <div
                                             key={pkg.id}
                                             className={`relative transition-all duration-300 rounded-[2rem] border-2 p-1 bg-white
-                                                ${isSelected ? C.border + ' shadow-xl shadow-' + pkg.color + '-200/40' : 'border-transparent shadow-sm hover:shadow-md'}
+                                                ${isSelected ? C.border + ' shadow-xl' : 'border-transparent shadow-sm hover:shadow-md'}
                                             `}
                                         >
                                             <div className={`rounded-[1.75rem] p-6 border ${isSelected ? C.lightBorder : 'border-gray-100'}`}>
@@ -475,7 +475,7 @@ const Advertise = () => {
                                     amount={calculatedPrice}
                                     email={"vendor@uccguide.com"}
                                     onPaymentSuccess={handleSuccess}
-                                    className="w-full py-5 rounded-2xl font-bold text-white text-lg shadow-xl shadow-indigo-200 transition-all hover:-translate-y-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700"
+                                    className="w-full py-5 rounded-2xl font-bold text-white text-lg shadow-xl transition-all hover:-translate-y-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700"
                                 >
                                     Pay & Submit Ad <ExternalLink size={20} />
                                 </PaymentButton>

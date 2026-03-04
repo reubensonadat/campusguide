@@ -16,7 +16,7 @@ const CommunityCard = ({ post }) => {
 
     const buttonStyle = isAd
         ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
-        : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200";
+        : "bg-indigo-600 text-white hover:bg-indigo-700";
 
     return (
         <div className="bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-gray-100 mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 h-full">

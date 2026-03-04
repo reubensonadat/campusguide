@@ -123,101 +123,94 @@ const Home = () => {
   ];
 
   return (
-    <div className="pb-24 bg-gray-50/30 min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="pb-24 bg-gray-50/30 dark:bg-[#0b0d12] min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-300">
 
-      {/* Premium Hero Section (layout updated for tighter spacing + mobile blue card) */}
-      <div className="relative overflow-hidden bg-white border-b border-gray-100/80 py-8 px-4 sm:py-12 sm:px-6 min-h-[50vh]">
-        {/* Subtle Background Gradients (unchanged) */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-40">
-          <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
-          <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
+      {/* Premium Hero Section */}
+      <div className="relative overflow-hidden bg-white dark:bg-[#0f1117] border-b border-gray-100/80 dark:border-gray-800/50 py-8 px-4 sm:py-12 sm:px-6 min-h-[50vh]">
+        {/* Subtle Background Gradients */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-40 dark:opacity-20">
+          <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-200 dark:bg-indigo-900/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+          <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-violet-200 dark:bg-violet-900/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-pink-200 dark:bg-pink-900/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
         </div>
 
         <div className="relative max-w-6xl mx-auto z-10">
-          {/* Mobile: compact blue card (left-aligned, 60% height) */}
-
-          <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden lg:hidden">
+          {/* Mobile: compact blue card */}
+          <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden lg:hidden dark:from-[#1a1d27] dark:via-[#15171f] dark:to-[#0f1117] border dark:border-white/5">
             {/* Decorative Elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/10 rounded-full -ml-10 -mb-10 blur-2xl"></div>
 
             <div className="relative z-10 text-center">
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
                 <BookOpen size={40} className="text-white drop-shadow-md" />
               </div>
 
               <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
-                Your Essential<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
-                  Campus Companion
-                </span>
+                Your Essential <br />
+                <span className="text-indigo-400 dark:text-accent-400">Campus Companion</span>
               </h1>
-
-              <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
-                Everything you need to navigate university life seamlessly. Academic guides, essential tools, and campus maps all in one place.
+              <p className="text-indigo-50/80 text-lg mb-8 max-w-sm mx-auto font-medium">
+                Navigate campus life with clear guides and essential tools - all in one place.
               </p>
 
-              <div className="flex flex-col md:flex-row gap-4 justify-center">
+              <div className="flex flex-col gap-3">
                 <Button
-                  variant="secondary"
                   onClick={() => navigate('/guide')}
-                  className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+                  className="bg-white text-[#0f1117] hover:bg-white/90 font-bold py-4 rounded-xl shadow-lg border-none"
                 >
-                  <BookOpen size={20} /> Open Guide
+                  Open Guide
                 </Button>
                 <Button
-                  variant="outline"
                   onClick={() => navigate('/tools')}
-                  className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
+                  className="bg-white/10 text-white hover:bg-white/20 backdrop-blur-md font-bold py-4 rounded-xl border border-white/20"
                 >
-                  <WrenchIcon size={20} /> Open Tools
+                  Explore Tools
                 </Button>
               </div>
             </div>
           </div>
 
-          {/* Desktop / large screens: two-column layout (text left, illustration right) */}
-          <div className="hidden lg:grid lg:grid-cols-12 lg:items-center lg:gap-6">
-            <div className="col-span-7 text-left mt-8">
+          {/* Desktop/Tablet Hero */}
+          <div className="hidden lg:grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-left animate-fade-in order-1">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-gray-800/40 text-indigo-600 dark:text-indigo-400 rounded-full text-sm font-bold mb-6 border border-indigo-100 dark:border-gray-700 shadow-sm transition-all hover:scale-105">
+                <Sparkles size={16} />
+                <span>Built by Synapse Tech</span>
+              </div>
 
-              <h1 className="text-5xl font-black text-gray-900 mb-4 tracking-tight leading-tight">
-                Your Essential <span className="block lg:inline bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600">Campus Companion</span>
+              <h1 className="text-6xl md:text-7xl font-black text-gray-950 dark:text-white mb-6 leading-tight tracking-tight">
+                Your Essential <br />
+                <span className="text-indigo-600 dark:text-accent-500">Campus</span> Companion
               </h1>
-
-              <p className="text-lg text-gray-500 mb-6 max-w-xl font-medium">
-                Navigate campus life with clear guides, essential tools, and quick access to services all in a compact, easy-to-use hub.
+              <p className="text-gray-500 dark:text-gray-400 text-xl md:text-2xl mb-10 max-w-xl leading-relaxed font-medium">
+                Navigate campus life with clear guides, essential tools, and quick access to services — all in a compact, easy-to-use hub.
               </p>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <Button
-                  variant="primary"
                   onClick={() => navigate('/guide')}
-                  className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-semibold shadow-soft btn-hover flex items-center gap-3"
+                  className="bg-indigo-600 dark:bg-accent-500 text-white hover:opacity-90 font-black px-10 py-5 rounded-2xl shadow-xl transition-all hover:-translate-y-1 block border-none text-lg"
                 >
-                  <BookOpen size={18} /> Open Guide
+                  Open Guide
                 </Button>
-
                 <Button
                   variant="outline"
                   onClick={() => navigate('/tools')}
-                  className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-2xl font-semibold shadow-sm flex items-center gap-3"
+                  className="bg-white dark:bg-transparent border-2 border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/40 px-10 py-5 rounded-2xl font-black transition-all hover:-translate-y-1 text-lg shadow-sm"
                 >
-                  <Wrench size={18} className="text-gray-400" /> Open Tools
+                  <Wrench size={20} className="mr-2" /> Open Tools
                 </Button>
               </div>
             </div>
 
-            <div className="col-span-5 flex items-center justify-end">
-              <div className="relative w-full max-w-lg -mr-6">
-                <img
-                  src={CampusIllustration}
-                  alt="Campus illustration"
-                  className="w-full h-auto object-contain drop-shadow-lg"
-                  style={{ WebkitTransform: 'translateZ(0)' }}
-                />
-                <div className="pointer-events-none absolute inset-0 rounded-lg" aria-hidden="true"></div>
-              </div>
+            <div className="relative animate-float order-2 flex justify-end">
+              <div className="absolute -inset-4 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-50"></div>
+              <img
+                src={CampusIllustration}
+                alt="Campus"
+                className="relative w-full max-w-lg z-10 drop-shadow-2xl dark:brightness-90 transition-all duration-700"
+              />
             </div>
           </div>
         </div>
@@ -228,12 +221,11 @@ const Home = () => {
         {/* Bento Quick Actions Grid */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quick Actions</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Quick Actions</h2>
             <Zap className="w-5 h-5 text-indigo-400 opacity-50" />
           </div>
 
-          {/* Mobile: stacked; Desktop: horizontal snap with hidden scrollbar and exactly 3 cards fit */}
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4 text-gray-800 dark:text-gray-100">
             <div
               className="grid grid-cols-1 gap-4 lg:flex lg:gap-6 lg:py-2 lg:px-2 snap-x snap-mandatory lg:overflow-x-auto hide-scrollbar"
             >
@@ -243,19 +235,19 @@ const Home = () => {
                   <button
                     key={index}
                     onClick={action.action}
-                    className="group relative overflow-hidden text-left p-5 bg-white border border-gray-100 rounded-3xl hover:border-indigo-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 flex items-center justify-between lg:flex-none snap-start"
+                    className="group relative overflow-hidden text-left p-5 bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-3xl hover:border-indigo-100 dark:hover:border-indigo-900 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 flex items-center justify-between lg:flex-none snap-start"
                     style={{ minWidth: 'min(24rem, calc((100vw - 96px) / 4))' }}
                   >
                     <div className="flex items-center gap-4 relative z-10">
-                      <div className={`w-14 h-14 ${action.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                      <div className={`w-14 h-14 ${action.bg} dark:bg-gray-800/80 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                         <Icon size={24} className={action.color} />
                       </div>
                       <div>
-                        <h4 className="font-bold text-gray-900 text-base">{action.title}</h4>
-                        <p className="text-sm text-gray-500 font-medium mt-0.5">{action.description}</p>
+                        <h4 className="font-bold text-gray-900 dark:text-white text-base">{action.title}</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">{action.description}</p>
                       </div>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+                    <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 relative z-10">
                       <ArrowRight size={16} className={action.color} />
                     </div>
                   </button>
@@ -268,7 +260,7 @@ const Home = () => {
         {/* Elegant Features Overview */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Explore the App</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Explore the App</h2>
             <Compass className="w-5 h-5 text-indigo-400 opacity-50" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -278,17 +270,16 @@ const Home = () => {
                 <button
                   key={index}
                   onClick={feature.action}
-                  className={`relative overflow-hidden p-8 rounded-[2rem] bg-white border border-gray-100 text-left w-full hover:shadow-[0_20px_40px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-500 group`}
+                  className={`relative overflow-hidden p-8 rounded-[2rem] bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 text-left w-full hover:shadow-[0_20px_40px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-500 group`}
                 >
-                  {/* Subtle blur accent behind icon */}
-                  <div className={`absolute top-0 right-0 w-32 h-32 ${feature.bg} rounded-full blur-3xl opacity-50 -mr-10 -mt-10 transition-opacity group-hover:opacity-100`}></div>
+                  <div className={`absolute top-0 right-0 w-32 h-32 ${feature.bg} dark:bg-indigo-900/20 rounded-full blur-3xl opacity-50 -mr-10 -mt-10 transition-opacity group-hover:opacity-100`}></div>
 
-                  <div className={`w-16 h-16 rounded-2xl ${feature.bg} border ${feature.border} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 relative z-10`}>
+                  <div className={`w-16 h-16 rounded-2xl ${feature.bg} dark:bg-gray-800/80 border ${feature.border} dark:border-gray-700 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 relative z-10`}>
                     <Icon className={`w-8 h-8 ${feature.color}`} strokeWidth={1.5} />
                   </div>
 
-                  <h3 className="font-bold text-xl mb-3 text-gray-900 relative z-10">{feature.title}</h3>
-                  <p className="text-base text-gray-500 font-medium leading-relaxed relative z-10">{feature.description}</p>
+                  <h3 className="font-bold text-xl mb-3 text-gray-900 dark:text-white relative z-10">{feature.title}</h3>
+                  <p className="text-base text-gray-500 dark:text-gray-400 font-medium leading-relaxed relative z-10">{feature.description}</p>
 
                   <div className={`mt-8 flex items-center gap-2 font-bold text-sm ${feature.color} opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 relative z-10`}>
                     Explore <ArrowRight size={16} />
@@ -300,15 +291,13 @@ const Home = () => {
         </section>
 
         <section>
-          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-[2.5rem] p-10 sm:p-14 border border-indigo-100 shadow-sm transition-all duration-300">
-            {/* Background Accent */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-100/30 rounded-full blur-3xl -mr-32 -mt-32"></div>
+          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white dark:from-[#1a1d27] dark:to-[#0f1117] rounded-[2.5rem] p-10 sm:p-14 border border-indigo-100 dark:border-gray-800 shadow-sm transition-all duration-300">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-100/30 dark:bg-accent-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
 
             <div className="relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 text-center lg:text-left">
-              {/* Text Content */}
               <div className="flex-1">
-                <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">Support This Project</h2>
-                <p className="text-gray-500 mb-10 max-w-lg mx-auto lg:mx-0 text-lg font-medium">
+                <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">Support This Project</h2>
+                <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-lg mx-auto lg:mx-0 text-lg font-medium">
                   Help us keep the UCC Campus Guide free, ad-free, and regularly updated for every student.
                 </p>
 
@@ -318,31 +307,26 @@ const Home = () => {
                     email={supportEmail}
                     onPaymentSuccess={handlePaymentSuccess}
                     onPaymentError={handlePaymentError}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-indigo-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2"
+                    className="w-full bg-indigo-600 dark:bg-accent-500 hover:bg-indigo-700 dark:hover:bg-accent-600 text-white font-bold py-4 px-8 rounded-2xl shadow-lg transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
                   >
                     Support Now (GH₵5)
                   </PaymentButton>
-                  <p className="text-sm font-medium text-gray-500">
-                    Issues or suggestions? <a href="mailto:uccguide25@gmail.com" className="text-indigo-600 hover:underline transition-colors">Contact us</a>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Issues or suggestions? <a href="mailto:uccguide25@gmail.com" className="text-indigo-600 dark:text-accent-400 hover:underline transition-colors">Contact us</a>
                   </p>
                 </div>
               </div>
 
-              {/* Image Content */}
               <div className="flex-1 flex justify-center lg:justify-end">
                 <img
                   src="/Savings.png"
                   alt="Support Development"
-                  className="w-full max-w-sm object-contain drop-shadow-2xl max-w-[300px]"
+                  className="w-full max-w-sm object-contain drop-shadow-2xl max-w-[300px] dark:brightness-90"
                 />
               </div>
             </div>
           </div>
         </section>
-
-
-
-
       </div>
     </div>
   );

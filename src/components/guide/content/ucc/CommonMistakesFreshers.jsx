@@ -14,8 +14,8 @@ const CommonMistakesFreshers = () => {
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-            <p className="text-gray-700 leading-relaxed">
+          <div className="bg-slate-50 dark:bg-gray-800/50 p-5 rounded-xl border border-slate-100 dark:border-gray-700">
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               First year at UCC is a test of freedom. The biggest mistake is thinking <strong>"Level 100 doesn't count."</strong>
               In reality, your First Class starts from Semester 1. Recovering a bad GPA is mathematically harder than maintaining a good one.
             </p>
@@ -23,25 +23,25 @@ const CommonMistakesFreshers = () => {
 
           {/* --- THE "BIG 3" ACADEMIC TRAPS --- */}
           <div className="grid md:grid-cols-3 gap-4">
-            <div className="bg-red-50 p-5 rounded-xl border border-red-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-red-900 mb-2">The "CA" Trap</h4>
-              <p className="text-sm text-gray-700">
+            <div className="bg-red-50 dark:bg-red-900/40 p-5 rounded-xl border border-red-100 dark:border-red-800/50 hover:shadow-md transition-all">
+              <h4 className="font-bold text-red-900 dark:text-red-400 mb-2">The "CA" Trap</h4>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
                 Ignoring quizzes because they are "just 5 marks."
                 <strong> Reality:</strong> CA is 40% of your grade. You can fail a course before you even write the final exam.
               </p>
             </div>
 
-            <div className="bg-orange-50 p-5 rounded-xl border border-orange-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-orange-900 mb-2">The "IC" Grade</h4>
-              <p className="text-sm text-gray-700">
+            <div className="bg-orange-50 dark:bg-orange-900/40 p-5 rounded-xl border border-orange-100 dark:border-orange-800/50 hover:shadow-md transition-all">
+              <h4 className="font-bold text-orange-900 dark:text-orange-400 mb-2">The "IC" Grade</h4>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
                 Forgetting to sign the attendance sheet at an exam.
                 <strong> Reality:</strong> You get an "Incomplete" (IC). If not fixed you cannot graduate.
               </p>
             </div>
 
-            <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-blue-900 mb-2">The "3-Week" Rule</h4>
-              <p className="text-sm text-gray-700">
+            <div className="bg-blue-50 dark:bg-blue-900/40 p-5 rounded-xl border border-blue-100 dark:border-blue-800/50 hover:shadow-md transition-all">
+              <h4 className="font-bold text-blue-900 dark:text-blue-400 mb-2">The "3-Week" Rule</h4>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
                 Skipping lectures thinking nobody cares.
                 <strong> Reality:</strong> Missing more than 9 hours (3 weeks) of a 3-credit course = Barred from exams.
               </p>
@@ -53,7 +53,7 @@ const CommonMistakesFreshers = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-pink-50 p-5 rounded-xl border border-pink-100 hover:shadow-md transition-all">
                 <h5 className="font-bold text-pink-900 mb-2">Relationship Drama</h5>
-                <p className="text-sm text-gray-700 italic mb-2">
+                <p className="text-sm text-gray-700 dark:text-gray-300 italic mb-2">
                   "Don't skip lectures because your boyfriend or girlfriend wants something from you. It's not worth it."
                 </p>
                 <p className="text-xs text-pink-800 font-bold">
@@ -61,13 +61,13 @@ const CommonMistakesFreshers = () => {
                 </p>
               </div>
 
-              <div className="bg-emerald-50 p-5 rounded-xl border border-emerald-100 hover:shadow-md transition-all">
-                <h5 className="font-bold text-emerald-900 mb-2">Senior Helpers</h5>
-                <p className="text-sm text-gray-700 mb-2">
+              <div className="bg-emerald-50 dark:bg-emerald-900/40 p-5 rounded-xl border border-emerald-100 dark:border-emerald-800/50 hover:shadow-md transition-all">
+                <h5 className="font-bold text-emerald-900 dark:text-emerald-400 mb-2">Senior Helpers</h5>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
                   If a senior wants to "help" you with studies, remember:
                   <strong> Use public spaces</strong> like the Library, Lecture Theatres, or Summer Huts.
                 </p>
-                <p className="text-xs text-emerald-800 font-bold">
+                <p className="text-xs text-emerald-800 dark:text-emerald-300 font-bold">
                   "It is better to be safe than sorry."
                 </p>
               </div>

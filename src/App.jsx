@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AppProvider } from './context/AppContext';
+import { AppProvider, useAppContext } from './context/AppContext';
 import { CampusProvider, useCampus } from './context/CampusContext';
 
 import { useSupportModal } from './hooks/useSupportModal';
@@ -19,6 +19,7 @@ import PWAInstallButton from './components/common/PWAInstallButton';
 import { preloadPaystack } from './services/paymentService';
 import { useOnboarding } from './hooks/useOnboarding';
 import { Onboarding } from './components/onboarding/Onboarding';
+import { ThemeToggle } from './components/common/ThemeToggle';
 
 // Page imports
 import Home from './pages/Home';
@@ -31,9 +32,22 @@ import Contact from './pages/Contact';
 import Settings from './pages/Settings';
 
 function AppContent() {
+  const { state, actions } = useAppContext();
   const { selectedCampusId } = useCampus();
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
   const { resetTimer } = useSupportTimer();
+
+  // Dark Mode Synchronization
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (state.settings.darkMode) {
+      root.classList.add('dark');
+      root.style.colorScheme = 'dark';
+    } else {
+      root.classList.remove('dark');
+      root.style.colorScheme = 'light';
+    }
+  }, [state.settings.darkMode]);
 
   // Feedback Modal Logic
   useFeedbackTimer();
@@ -100,6 +114,7 @@ function AppContent() {
         onPrev={prevStep}
         onClose={closeOnboarding}
       />
+      <ThemeToggle />
     </div>
   );
 }

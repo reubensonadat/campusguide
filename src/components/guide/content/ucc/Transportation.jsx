@@ -28,27 +28,27 @@ const Transportation = () => {
         <div className="space-y-8">
 
           {/* --- SHUTTLE CARD SYSTEM --- */}
-          <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100 shadow-sm">
-            <h3 className="text-xl font-bold text-indigo-900 mb-4 flex items-center">
+          <div className="bg-indigo-50 dark:bg-indigo-900/40 p-6 rounded-xl border border-indigo-100 dark:border-indigo-800/50 shadow-sm">
+            <h3 className="text-xl font-bold text-indigo-900 dark:text-indigo-400 mb-4 flex items-center">
               The Shuttle Card System
-              <span className="ml-3 text-xs font-bold bg-indigo-200 text-indigo-800 px-2 py-1 rounded uppercase">Cashless</span>
+              <span className="ml-3 text-xs font-bold bg-indigo-200 dark:bg-indigo-800/50 text-indigo-800 dark:text-indigo-300 px-2 py-1 rounded uppercase">Cashless</span>
             </h3>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-white p-4 rounded-lg border border-indigo-100">
-                <h4 className="font-bold text-gray-800 mb-2">1. Mandatory Card</h4>
-                <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800/50">
+                <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">1. Mandatory Card</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 leading-relaxed">
                   The shuttle service has ceased ticket sales. You <strong>cannot use cash</strong>. You must purchase a Shuttle Card.
                 </p>
                 <div className="flex items-center text-sm font-medium text-indigo-700">
-                  <span className="bg-indigo-100 p-1 rounded mr-2">Price</span>
+                  <span className="bg-indigo-100 dark:bg-indigo-900/40 p-1 rounded mr-2">Price</span>
                   GHS 20.00 (One-time purchase)
                 </div>
               </div>
 
-              <div className="bg-white p-4 rounded-lg border border-indigo-100">
-                <h4 className="font-bold text-gray-800 mb-2">2. The "Tap-In / Tap-Out" Rule</h4>
-                <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800/50">
+                <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">2. The "Tap-In / Tap-Out" Rule</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 leading-relaxed">
                   The deduction system is unique. You must be mindful to avoid overpaying.
                 </p>
                 <ul className="space-y-2 text-sm">
@@ -65,7 +65,7 @@ const Transportation = () => {
                     <span className="text-green-600 font-bold">+ GHS 2.00 refunded</span>
                   </li>
                 </ul>
-                <p className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded">
+                <p className="mt-2 text-xs text-red-600 bg-red-50 dark:bg-red-900/40 p-2 rounded">
                   <strong>Warning:</strong> If you forget to tap out when exiting, you lose the extra 2 cedis!
                 </p>
               </div>
@@ -73,22 +73,22 @@ const Transportation = () => {
           </div>
 
           {/* --- ROUTES & DESTINATIONS --- */}
-          <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
+          <div className="bg-slate-50 dark:bg-gray-800/50 p-6 rounded-xl border border-slate-100 dark:border-gray-700">
             <h3 className="font-bold text-slate-800 text-xl mb-4">Shuttle Routes & Destinations</h3>
-            <p className="text-gray-700 mb-6 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
               All shuttles converge at the <strong>Science Shuttle Station</strong> (opposite Sam Jonah Library).
               Look for the <strong>LED Screen</strong> on top of the bus to know its destination.
             </p>
 
             <div className="grid sm:grid-cols-3 gap-4">
               {/* Old Site */}
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 hover:shadow-md transition-all">
-                <div className="bg-blue-200 text-blue-800 text-xs font-bold inline-block px-2 py-0.5 rounded mb-2">OLD SITE</div>
-                <h4 className="font-bold text-blue-900 text-lg mb-1">"OLD SITE"</h4>
-                <p className="text-xs text-blue-800/70 mb-3">Bus Display Text</p>
+              <div className="bg-blue-50 dark:bg-blue-900/40 p-4 rounded-lg border border-blue-100 dark:border-blue-800/50 hover:shadow-md transition-all">
+                <div className="bg-blue-200 dark:bg-blue-800/50 text-blue-800 dark:text-blue-300 text-xs font-bold inline-block px-2 py-0.5 rounded mb-2">OLD SITE</div>
+                <h4 className="font-bold text-blue-900 dark:text-blue-400 text-lg mb-1">"OLD SITE"</h4>
+                <p className="text-xs text-blue-800 dark:text-blue-300/70 mb-3">Bus Display Text</p>
                 <hr className="border-blue-200 mb-3" />
-                <p className="text-sm text-gray-700 font-medium mb-1">Stops At:</p>
-                <ul className="text-sm text-gray-600 space-y-1">
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">Stops At:</p>
+                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                   <li>• Oguaa Hall (Front)</li>
                   <li>• Adehye Hall</li>
                   <li>• Atlantic Hall</li>
@@ -97,13 +97,13 @@ const Transportation = () => {
               </div>
 
               {/* New Site */}
-              <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-100 hover:shadow-md transition-all">
-                <div className="bg-emerald-200 text-emerald-800 text-xs font-bold inline-block px-2 py-0.5 rounded mb-2">NEW SITE</div>
-                <h4 className="font-bold text-emerald-900 text-lg mb-1">"VALCO HALL"</h4>
-                <p className="text-xs text-emerald-800/70 mb-3">Bus Display Text</p>
+              <div className="bg-emerald-50 dark:bg-emerald-900/40 p-4 rounded-lg border border-emerald-100 dark:border-emerald-800/50 hover:shadow-md transition-all">
+                <div className="bg-emerald-200 dark:bg-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold inline-block px-2 py-0.5 rounded mb-2">NEW SITE</div>
+                <h4 className="font-bold text-emerald-900 dark:text-emerald-400 text-lg mb-1">"VALCO HALL"</h4>
+                <p className="text-xs text-emerald-800 dark:text-emerald-300/70 mb-3">Bus Display Text</p>
                 <hr className="border-emerald-200 mb-3" />
-                <p className="text-sm text-gray-700 font-medium mb-1">Stops At:</p>
-                <ul className="text-sm text-gray-600 space-y-1">
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">Stops At:</p>
+                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                   <li>• Valco Hall (Main Stop)</li>
                   <li>• Casely Hayford Hall</li>
                   <li>• Kwame Nkrumah Hall</li>
@@ -116,8 +116,8 @@ const Transportation = () => {
                 <h4 className="font-bold text-orange-900 text-lg mb-1">"SRC HALL"</h4>
                 <p className="text-xs text-orange-800/70 mb-3">Bus Display Text</p>
                 <hr className="border-orange-200 mb-3" />
-                <p className="text-sm text-gray-700 font-medium mb-1">Service For:</p>
-                <ul className="text-sm text-gray-600 space-y-1">
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">Service For:</p>
+                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                   <li>• SRC Hall Residents</li>
                   <li>• Superannuation Hall</li>
                   <li>• <em>(Note: Superannuation residents must walk from SRC stop)</em></li>
