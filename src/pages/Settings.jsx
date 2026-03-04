@@ -273,52 +273,65 @@ const Settings = () => {
             Data Management
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <Button
-              variant="outline"
-              onClick={handleExportData}
-              className="w-full flex items-center justify-center gap-2 border-blue-200 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:bg-blue-900/40 font-medium"
-            >
-              <Download size={18} />
-              Export All Data
-            </Button>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-4 gap-2">
 
-            <Button
-              variant="outline"
+            {/* Export Data */}
+            <button
+              onClick={handleExportData}
+              className="group flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 text-center"
+            >
+              <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Download size={16} className="text-blue-600 dark:text-blue-400" />
+              </div>
+              <span className="text-xs font-bold text-blue-700 dark:text-blue-400 leading-tight">Export Data</span>
+            </button>
+
+            {/* Clear Guide Progress */}
+            <button
               onClick={() => {
                 if (window.confirm('Clear guide completion data only?')) {
                   localStorage.removeItem('ucc_guide_completion');
                   actions.showToast('Guide data cleared', 'success');
                 }
               }}
-              className="w-full border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:bg-purple-900/40 font-medium"
+              className="group flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/40 hover:bg-purple-100 dark:hover:bg-purple-900/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 text-center"
             >
-              Clear Guide Progress
-            </Button>
+              <div className="w-9 h-9 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Shield size={16} className="text-purple-600 dark:text-purple-400" />
+              </div>
+              <span className="text-xs font-bold text-purple-700 dark:text-purple-400 leading-tight">Clear Guide</span>
+            </button>
 
-            <Button
-              variant="outline"
+            {/* Reset Feedback */}
+            <button
               onClick={() => {
                 localStorage.removeItem('ucc_feedback_submitted_v2');
                 actions.showToast('Feedback status reset.', 'success');
               }}
-              className="w-full border-green-200 text-green-600 hover:bg-green-50 font-medium"
+              className="group flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/40 hover:bg-green-100 dark:hover:bg-green-900/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 text-center"
             >
-              Reset Feedback Status (Test Mode)
-            </Button>
+              <div className="w-9 h-9 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Bell size={16} className="text-green-600 dark:text-green-400" />
+              </div>
+              <span className="text-xs font-bold text-green-700 dark:text-green-400 leading-tight">Reset Feedback</span>
+            </button>
 
-            <Button
-              variant="outline"
+            {/* Clear All Data */}
+            <button
               onClick={handleClearAllData}
-              className="w-full flex items-center justify-center gap-2 border-red-200 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 dark:bg-red-900/40 font-medium"
+              className="group flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/40 hover:bg-red-100 dark:hover:bg-red-900/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 text-center"
             >
-              <Trash2 size={18} />
-              Clear All Data
-            </Button>
+              <div className="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/40 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Trash2 size={16} className="text-red-600 dark:text-red-400" />
+              </div>
+              <span className="text-xs font-bold text-red-700 dark:text-red-400 leading-tight">Clear All</span>
+            </button>
+
           </div>
         </CardContent>
       </Card>
+
 
       {/* About Section - Simplified for brevity */}
       <Card className="mb-8 border-none shadow-sm bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
