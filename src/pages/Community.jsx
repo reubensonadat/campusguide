@@ -65,7 +65,7 @@ const Community = () => {
                     title: ann.title,
                     description: ann.description || ann.content, // Handling both naming conventions
                     image: ann.flyer_url,
-                    actionText: ann.action_text || 'View Details',
+                    actionText: ann.action_text || null,
                     link: ann.action_link || null,
                     createdAt: new Date(ann.created_at).getTime(),
                 }));
@@ -134,9 +134,7 @@ const Community = () => {
 
                     <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between h-full w-full">
                         <div className="max-w-2xl">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-xs font-bold uppercase tracking-widest text-indigo-50 mb-4 shadow-sm">
-                                <Star size={14} className="text-amber-300 fill-amber-300" /> Premium reach
-                            </div>
+                            
                             <h3 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight mb-3 lg:mb-4 tracking-tight">
                                 Showcase to the World
                             </h3>
