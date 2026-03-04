@@ -60,7 +60,7 @@ const CommunityCard = ({ post }) => {
 
                 {/* Bottom Action Button - Pinned to bottom using mt-auto */}
                 <div className="mt-auto shrink-0 pt-2">
-                    {isAd && link ? (
+                    {isAd || link? (
                         <a
                             href={link}
                             target="_blank"
