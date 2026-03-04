@@ -65,7 +65,7 @@ const Community = () => {
                     title: ann.title,
                     description: ann.description || ann.content, // Handling both naming conventions
                     image: ann.flyer_url,
-                    actionText: ann.action_text || 'View Details',
+                    actionText: ann.action_text || null,
                     link: ann.action_link || null,
                     createdAt: new Date(ann.created_at).getTime(),
                 }));
