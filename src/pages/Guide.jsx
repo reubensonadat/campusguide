@@ -302,7 +302,7 @@ const Guide = () => {
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">The Pastel Edition</p>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-4 pb-20 lg:pb-8 space-y-6 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto px-4 pb-20 lg:pb-8 space-y-6 custom-scrollbar mb-20">
 
             {/* Search Input */}
             <div className="sticky top-0 bg-gray-50 pt-2 pb-4 z-10 px-2">
