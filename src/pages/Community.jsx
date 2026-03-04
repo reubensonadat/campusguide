@@ -8,11 +8,11 @@ import { supabase } from '../lib/supabase';
 // Categories matching Advertise.jsx options
 const CATEGORIES = [
     { id: 'all', label: 'All Listings' },
+    { id: 'event', label: 'School update' },
     { id: 'food', label: 'Food & Delivery' },
     { id: 'clothing', label: 'Clothing & Fashion' },
     { id: 'tech', label: 'Tech & Electronics' },
     { id: 'services', label: 'Student Services' },
-    { id: 'event', label: 'Commercial Event' },
 ];
 
 const Community = () => {
