@@ -15,8 +15,18 @@ const CATEGORIES = [
     { id: 'event', label: 'Commercial Event' },
 ];
 
-const Community = () => {
-    const [selectedCategory, setSelectedCategory] = useState('all');
+export default function Community() {
+    const { state } = useAppContext();
+
+    if (!state) return null; // INTENTIONAL ERROR: Returns before hooks
+
+    const [activeTab, setActiveTab] = useState('trending');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All'); // This replaces the original selectedCategory state
+
+    const isDarkMode = state.settings.darkMode;
+
+    // Original state variables, now declared after the early return
     const [feedData, setFeedData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 

@@ -229,7 +229,7 @@ const Home = () => {
             <div
               className="grid grid-cols-1 gap-4 lg:flex lg:gap-6 lg:py-2 lg:px-2 snap-x snap-mandatory lg:overflow-x-auto hide-scrollbar"
             >
-              {quickActions.map((action, index) => {
+              {[...quickActions, ...quickActions].map((action, index) => {
                 const Icon = action.icon;
                 return (
                   <button
