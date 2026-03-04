@@ -109,7 +109,7 @@ const Support = () => {
                       onClick={() => handleAmountSelect(val)}
                       className={`py-4 rounded-xl font-bold text-base transition-all border
                                     ${amount === val && !customAmount
-                          ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg scale-105'
+                          ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200 scale-105'
                           : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-white'}`}
                     >
                       GH₵{val}
@@ -174,7 +174,7 @@ const Support = () => {
                   }}
                   onPaymentSuccess={handlePaymentSuccess}
                   onPaymentError={handlePaymentError}
-                  className="w-full py-4 text-base bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full py-4 text-base bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all transform active:scale-95 flex items-center justify-center gap-2"
                 >
                   <span>Donate GH₵{amount}</span>
                 </PaymentButton>

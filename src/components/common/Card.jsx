@@ -12,15 +12,15 @@ const Card = ({
   type = 'default',
   ...props
 }) => {
-  const baseClasses = 'transition-colors duration-300';
-
+  const baseClasses = 'bg-white';
+  
   const paddings = {
     none: '',
     sm: 'p-3',
     md: 'p-4',
     lg: 'p-6'
   };
-
+  
   const shadows = {
     none: '',
     sm: 'shadow-sm',
@@ -28,7 +28,7 @@ const Card = ({
     lg: 'shadow-lg',
     xl: 'shadow-xl'
   };
-
+  
   const roundeds = {
     none: '',
     sm: 'rounded-sm',
@@ -39,15 +39,15 @@ const Card = ({
   };
 
   const typeStyles = {
-    default: 'bg-[var(--white)] border border-[var(--gray-200)] dark:bg-gray-800 dark:border-gray-700',
-    info: 'bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800/50',
-    success: 'bg-green-50 dark:bg-green-900/40 border border-green-200 dark:border-green-800/50',
-    warning: 'bg-yellow-50 dark:bg-yellow-900/40 border border-yellow-200 dark:border-yellow-800/50',
-    error: 'bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-800/50',
-    guide: 'bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800/50',
-    resource: 'bg-green-50 dark:bg-green-900/40 border border-green-200 dark:border-green-800/50',
-    tip: 'bg-purple-50 dark:bg-purple-900/40 border border-purple-200 dark:border-purple-800/50',
-    checklist: 'bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700/50'
+    default: '',
+    info: 'bg-blue-50 border border-blue-200',
+    success: 'bg-green-50 border border-green-200',
+    warning: 'bg-yellow-50 border border-yellow-200',
+    error: 'bg-red-50 border border-red-200',
+    guide: 'bg-indigo-50 border border-indigo-200',
+    resource: 'bg-green-50 border border-green-200',
+    tip: 'bg-purple-50 border border-purple-200',
+    checklist: 'bg-gray-50 border border-gray-200'
   };
 
   return (
@@ -81,13 +81,13 @@ const CardHeader = ({ children, className = '', icon, iconColor = 'text-gray-500
 );
 
 const CardTitle = ({ children, className = '', ...props }) => (
-  <h3 className={`text-lg font-semibold text-[var(--gray-900)] transition-colors duration-300 ${className}`} {...props}>
+  <h3 className={`text-lg font-semibold text-gray-900 ${className}`} {...props}>
     {children}
   </h3>
 );
 
 const CardDescription = ({ children, className = '', ...props }) => (
-  <p className={`text-sm text-[var(--gray-600)] mt-1 transition-colors duration-300 ${className}`} {...props}>
+  <p className={`text-sm text-gray-600 mt-1 ${className}`} {...props}>
     {children}
   </p>
 );
@@ -99,7 +99,7 @@ const CardContent = ({ children, className = '', ...props }) => (
 );
 
 const CardFooter = ({ children, className = '', ...props }) => (
-  <div className={`mt-4 pt-4 border-t border-[var(--gray-200)] transition-colors duration-300 ${className}`} {...props}>
+  <div className={`mt-4 pt-4 border-t border-gray-200 ${className}`} {...props}>
     {children}
   </div>
 );
@@ -144,11 +144,11 @@ const ResourceCard = ({ title, description, url, children, className = '', ...pr
     {children && <CardContent>{children}</CardContent>}
     {url && (
       <CardFooter>
-        <a
-          href={url}
-          target="_blank"
+        <a 
+          href={url} 
+          target="_blank" 
           rel="noopener noreferrer"
-          className="inline-flex items-center text-sm font-medium text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300"
+          className="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-800"
         >
           View Resource
           <ExternalLink size={16} className="ml-1" />
@@ -179,13 +179,11 @@ const ChecklistCard = ({ title, items, className = '', ...props }) => (
           <li key={index} className="flex items-start">
             <input
               type="checkbox"
-              className="h-4 w-4 border-[var(--gray-300)] rounded bg-[var(--white)] mr-2 mt-0.5 transition-colors duration-300 accent-[var(--primary-600)]"
+              className="h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500 mr-2 mt-0.5"
               defaultChecked={item.checked}
               readOnly
             />
-            <span className={`text-sm transition-colors duration-300 ${item.checked
-              ? 'text-[var(--gray-400)] line-through'
-              : 'text-[var(--gray-700)]'}`}>
+            <span className={`text-sm ${item.checked ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
               {item.text}
             </span>
           </li>
@@ -195,12 +193,12 @@ const ChecklistCard = ({ title, items, className = '', ...props }) => (
   </Card>
 );
 
-export {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
+export { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription, 
+  CardContent, 
   CardFooter,
   InfoCard,
   WarningCard,

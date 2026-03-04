@@ -3,18 +3,19 @@ import UCC from './content/ucc/ExamsAssessmentRules.jsx';
 import KNUST from './content/knust/ExamsAssessmentRules.jsx';
 import UG from './content/ug/ExamsAssessmentRules.jsx';
 
-const ExamsAssessmentRules = (selectedCampus) => {
-  // Pass selectedCampus as argument to avoid Hook violation in Guide.jsx
+const ExamsAssessmentRules = () => {
+  // Safe access to hook (must be called within React render flow, which Guide.jsx does)
   try {
-    const campusId = selectedCampus?.id || 'ucc';
+      const { selectedCampus } = useCampus();
+      const campusId = selectedCampus?.id || 'ucc';
 
-    if (campusId === 'knust') return KNUST();
-    if (campusId === 'ug') return UG();
-    return UCC();
+      if (campusId === 'knust') return KNUST();
+      if (campusId === 'ug') return UG();
+      return UCC();
   } catch (e) {
-    // Fallback if error
-    console.error("Error in ExamsAssessmentRules data factory:", e);
-    return UCC();
+      // Fallback if context missing or error
+      console.error("Campus Context Error inWrapper:", e);
+      return UCC();
   }
 };
 

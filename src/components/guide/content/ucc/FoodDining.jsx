@@ -20,8 +20,8 @@ const FoodDining = () => {
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
-          <div className="bg-slate-50 dark:bg-gray-800/50 p-5 rounded-xl border border-slate-100 dark:border-gray-700 shadow-sm">
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-sm">
+            <p className="text-gray-700 leading-relaxed">
               Hungry? Don't just read about it—<strong>click to find it</strong>. 
               Whether you need the heavy "mpu ne mpu" at <strong>Bush Canteen</strong> or a quick snack at <strong>Science Market</strong>, use this guide to navigate to the best spots.
             </p>
@@ -29,7 +29,7 @@ const FoodDining = () => {
 
           {/* --- INTERACTIVE FOOD MAP GRID --- */}
           <div className="pt-2">
-            <h3 className="font-bold text-gray-800 dark:text-gray-200 text-xl mb-4 flex items-center">
+            <h3 className="font-bold text-gray-800 text-xl mb-4 flex items-center">
               <span className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">📍</span>
               Tap to Locate (Google Maps)
             </h3>
@@ -51,8 +51,8 @@ const FoodDining = () => {
 
           {/* --- ZONAL BREAKDOWN --- */}
           <div className="grid md:grid-cols-2 gap-6 mt-6">
-            <div className="bg-orange-50 dark:bg-orange-900/40 p-5 rounded-xl border border-orange-100 dark:border-orange-800/50">
-              <h4 className="font-bold text-orange-900 dark:text-orange-400 mb-3">New Site (Science)</h4>
+            <div className="bg-orange-50 p-5 rounded-xl border border-orange-100">
+              <h4 className="font-bold text-orange-900 mb-3">New Site (Science)</h4>
               <div className="flex flex-wrap gap-2">
                 <Pill text="Bush Canteen" />
                 <Pill text="Science Market" />
@@ -177,11 +177,11 @@ const FoodDining = () => {
 const FoodCard = ({ name, type, desc, onClick }) => (
   <button 
     onClick={() => onClick(name)} 
-    className="group text-left bg-white dark:bg-gray-800/60 p-3 rounded-xl border border-orange-100 dark:border-orange-800/50 hover:border-orange-400 hover:shadow-md transition-all w-full h-full flex flex-col"
+    className="group text-left bg-white p-3 rounded-xl border border-orange-100 hover:border-orange-400 hover:shadow-md transition-all w-full h-full flex flex-col"
   >
     <div className="flex justify-between items-start w-full mb-1">
-      <span className="text-sm font-bold text-gray-800 dark:text-gray-200 group-hover:text-orange-600">{name}</span>
-      <span className="text-[9px] bg-orange-50 dark:bg-orange-900/40 text-orange-600 px-2 py-0.5 rounded-full whitespace-nowrap">
+      <span className="text-sm font-bold text-gray-800 group-hover:text-orange-600">{name}</span>
+      <span className="text-[9px] bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full whitespace-nowrap">
         {type}
       </span>
     </div>
@@ -190,7 +190,7 @@ const FoodCard = ({ name, type, desc, onClick }) => (
 );
 
 const Pill = ({ text }) => (
-  <span className="text-[10px] font-semibold bg-white dark:bg-gray-800/60 px-2 py-1 rounded-lg border border-black/5 text-gray-700 dark:text-gray-300 whitespace-nowrap">
+  <span className="text-[10px] font-semibold bg-white/60 px-2 py-1 rounded-lg border border-black/5 text-gray-700 whitespace-nowrap">
     {text}
   </span>
 );

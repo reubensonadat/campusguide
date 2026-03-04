@@ -31,16 +31,16 @@ const CampusMap = () => {
       content: (
         <div className="space-y-8">
           {/* --- INTRO --- */}
-          <div className="bg-slate-50 dark:bg-gray-800/50 p-5 rounded-xl border border-slate-100 dark:border-gray-700 shadow-sm">
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-sm">
+            <p className="text-gray-700 leading-relaxed">
               Welcome to the definitive guide to UCC. Whether you are looking for <strong>"Science Market"</strong>, <strong>"CALC"</strong>, or the <strong>"Ceremonial grounds"</strong>, this map has every acronym and local name you need to survive.
             </p>
           </div>
 
           {/* --- MASTER ACRONYM DECODER (Interactive) --- */}
           <div className="pt-2">
-            <h3 className="font-bold text-gray-800 dark:text-white text-xl mb-4 flex items-center">
-              <span className="bg-indigo-600 dark:bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">?</span>
+            <h3 className="font-bold text-gray-800 text-xl mb-4 flex items-center">
+              <span className="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">?</span>
               Daily Acronyms (Click to Locate)
             </h3>
 
@@ -81,8 +81,8 @@ const CampusMap = () => {
 
           {/* --- QUICK ZONAL REFERENCES --- */}
           <div className="grid md:grid-cols-2 gap-6 mt-6">
-            <div className="bg-blue-50 dark:bg-blue-900/10 p-5 rounded-xl border border-blue-100 dark:border-blue-900/20">
-              <h4 className="font-bold text-blue-900 dark:text-blue-300 mb-3">Old Site (Southern)</h4>
+            <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
+              <h4 className="font-bold text-blue-900 mb-3">Old Site (Southern)</h4>
               <div className="flex flex-wrap gap-2">
                 <Pill text="Admin Block" />
                 <Pill text="Faculty of Arts" />
@@ -94,8 +94,8 @@ const CampusMap = () => {
                 <Pill text="Atlantic" />
               </div>
             </div>
-            <div className="bg-emerald-50 dark:bg-emerald-900/10 p-5 rounded-xl border border-emerald-100 dark:border-emerald-900/20">
-              <h4 className="font-bold text-emerald-900 dark:text-emerald-300 mb-3">New Site (Northern)</h4>
+            <div className="bg-emerald-50 p-5 rounded-xl border border-emerald-100">
+              <h4 className="font-bold text-emerald-900 mb-3">New Site (Northern)</h4>
               <div className="flex flex-wrap gap-2">
                 <Pill text="Science" />
                 <Pill text="Medical School" />
@@ -238,20 +238,20 @@ const CampusMap = () => {
 const AcronymCard = ({ code, full, site, onClick }) => (
   <button
     onClick={() => onClick(full)}
-    className="group text-left bg-white dark:bg-gray-800/60 p-3 rounded-xl border border-indigo-100 dark:border-gray-700/50 hover:border-indigo-300 dark:hover:border-indigo-500 hover:shadow-md transition-all w-full h-full flex flex-col"
+    className="group text-left bg-white p-3 rounded-xl border border-indigo-100 hover:border-indigo-300 hover:shadow-md transition-all w-full h-full flex flex-col"
   >
     <div className="flex justify-between items-start w-full mb-2">
-      <span className="text-base font-bold text-indigo-700 dark:text-indigo-400 group-hover:text-indigo-900 dark:group-hover:text-indigo-300">{code}</span>
-      <span className={`text-[9px] px-2 py-0.5 rounded-full whitespace-nowrap ${site.includes('Old') ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : site.includes('New') ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
+      <span className="text-base font-bold text-indigo-700 group-hover:text-indigo-900">{code}</span>
+      <span className={`text-[9px] px-2 py-0.5 rounded-full whitespace-nowrap ${site.includes('Old') ? 'bg-blue-100 text-blue-600' : site.includes('New') ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-600'}`}>
         {site}
       </span>
     </div>
-    <div className="text-xs text-gray-500 dark:text-gray-400 leading-tight font-medium">{full}</div>
+    <div className="text-xs text-gray-500 leading-tight font-medium">{full}</div>
   </button>
 );
 
 const Pill = ({ text }) => (
-  <span className="text-[10px] font-semibold bg-white/60 dark:bg-gray-800/80 px-2 py-1 rounded-lg border border-black/5 dark:border-indigo-500/20 text-gray-700 dark:text-indigo-300 whitespace-nowrap">
+  <span className="text-[10px] font-semibold bg-white/60 px-2 py-1 rounded-lg border border-black/5 text-gray-700 whitespace-nowrap">
     {text}
   </span>
 );

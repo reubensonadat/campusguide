@@ -59,9 +59,9 @@ const GPACalculator = () => {
 
   const getGradeColor = (grade) => {
     if (grade === 'A') return 'text-green-600 bg-green-50';
-    if (['B+', 'B'].includes(grade)) return 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40';
+    if (['B+', 'B'].includes(grade)) return 'text-blue-600 bg-blue-50';
     if (['C+', 'C'].includes(grade)) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/40';
+    return 'text-red-600 bg-red-50';
   };
 
   return (
@@ -69,11 +69,11 @@ const GPACalculator = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="border-indigo-100 dark:border-indigo-800/50 bg-indigo-50 dark:bg-indigo-900/60">
+        <Card className="border-indigo-100 bg-indigo-50/50">
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-2">Current GPA</p>
-              <p className="text-5xl font-black text-indigo-600 dark:text-indigo-400 mb-2">{currentGPA}</p>
+              <p className="text-5xl font-black text-indigo-600 mb-2">{currentGPA}</p>
               <div className="text-xs font-medium text-indigo-400">cumulative score</div>
             </div>
           </CardContent>
@@ -82,9 +82,9 @@ const GPACalculator = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Total Credits</p>
-              <p className="text-4xl font-black text-gray-800 dark:text-gray-200 mb-2">{totalCredits}</p>
-              <div className="text-xs font-medium text-gray-400 dark:text-gray-500">hours registered</div>
+              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Total Credits</p>
+              <p className="text-4xl font-black text-gray-800 mb-2">{totalCredits}</p>
+              <div className="text-xs font-medium text-gray-400">hours registered</div>
             </div>
           </CardContent>
         </Card>
@@ -92,9 +92,9 @@ const GPACalculator = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Grade Points</p>
-              <p className="text-4xl font-black text-gray-800 dark:text-gray-200 mb-2">{totalGradePoints.toFixed(1)}</p>
-              <div className="text-xs font-medium text-gray-400 dark:text-gray-500">weighted points</div>
+              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Grade Points</p>
+              <p className="text-4xl font-black text-gray-800 mb-2">{totalGradePoints.toFixed(1)}</p>
+              <div className="text-xs font-medium text-gray-400">weighted points</div>
             </div>
           </CardContent>
         </Card>
@@ -106,8 +106,8 @@ const GPACalculator = () => {
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle className="text-indigo-900 dark:text-indigo-400 text-lg flex items-center gap-2">
-                  <Calculator className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+                <CardTitle className="text-indigo-900 text-lg flex items-center gap-2">
+                  <Calculator className="w-5 h-5 text-indigo-500" />
                   Course List
                 </CardTitle>
                 <Button
@@ -123,21 +123,21 @@ const GPACalculator = () => {
             </CardHeader>
             <CardContent>
               {showAddForm && (
-                <div className="mb-6 bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-top-2">
-                  <h4 className="font-bold text-gray-900 dark:text-gray-100 mb-4">Calculate New Grade</h4>
+                <div className="mb-6 bg-gray-50 p-6 rounded-2xl border border-gray-100 animate-in fade-in slide-in-from-top-2">
+                  <h4 className="font-bold text-gray-900 mb-4">Calculate New Grade</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input
                       type="text"
                       placeholder="Course Name (Optional)"
                       value={newCourse.name}
                       onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
-                      className="p-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                      className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                     />
 
                     <select
                       value={newCourse.creditHours}
                       onChange={(e) => setNewCourse({ ...newCourse, creditHours: parseInt(e.target.value) })}
-                      className="p-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                      className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                     >
                       <option value={1}>1 Credit Hour</option>
                       <option value={2}>2 Credit Hours</option>
@@ -152,7 +152,7 @@ const GPACalculator = () => {
                       onChange={(e) => setNewCourse({ ...newCourse, score: e.target.value })}
                       min="0"
                       max="100"
-                      className="p-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all md:col-span-2"
+                      className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all md:col-span-2"
                     />
                   </div>
 
@@ -165,15 +165,15 @@ const GPACalculator = () => {
 
               <div className="space-y-3">
                 {courses.map(course => (
-                  <div key={course.id} className="flex items-center justify-between p-4 border border-gray-100 dark:border-gray-800 rounded-xl hover:border-indigo-100 dark:border-indigo-800/50 transition-colors bg-white dark:bg-gray-900 group shadow-sm">
+                  <div key={course.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-indigo-100 transition-colors bg-white group shadow-sm">
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
                         <span className={`font-bold px-2 py-1 rounded text-sm ${getGradeColor(course.grade)}`}>
                           {course.grade}
                         </span>
-                        <span className="font-bold text-gray-900 dark:text-gray-100">{course.name || 'Untitled Course'}</span>
+                        <span className="font-bold text-gray-900">{course.name || 'Untitled Course'}</span>
                       </div>
-                      <div className="flex items-center gap-4 mt-2 text-xs font-medium text-gray-400 dark:text-gray-500">
+                      <div className="flex items-center gap-4 mt-2 text-xs font-medium text-gray-400">
                         <span>{course.creditHours} Credit(s)</span>
                         <span>•</span>
                         <span>Score: {course.score}%</span>
@@ -185,7 +185,7 @@ const GPACalculator = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDeleteCourse(course.id)}
-                      className="text-gray-300 hover:text-red-500 dark:text-red-400"
+                      className="text-gray-300 hover:text-red-500"
                     >
                       <Trash2 size={16} />
                     </Button>
@@ -193,11 +193,11 @@ const GPACalculator = () => {
                 ))}
 
                 {courses.length === 0 && (
-                  <div className="text-center py-12 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                  <div className="text-center py-12 rounded-2xl border border-dashed border-gray-200 bg-gray-50/50">
                     <Calculator className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-900 dark:text-gray-100 font-bold">No grades added</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Add your separate course grades to calculate your GPA.</p>
-                    <Button variant="link" onClick={() => setShowAddForm(true)} className="text-indigo-600 dark:text-indigo-400 mt-2">Add First Grade</Button>
+                    <p className="text-gray-900 font-bold">No grades added</p>
+                    <p className="text-gray-500 text-sm mt-1">Add your separate course grades to calculate your GPA.</p>
+                    <Button variant="link" onClick={() => setShowAddForm(true)} className="text-indigo-600 mt-2">Add First Grade</Button>
                   </div>
                 )}
               </div>
@@ -207,22 +207,22 @@ const GPACalculator = () => {
 
         {/* Grade Reference */}
         <div>
-          <Card className="bg-gray-50 dark:bg-gray-900 border-gray-100 dark:border-gray-800">
+          <Card className="bg-gray-50 border-gray-100">
             <CardHeader>
-              <CardTitle className="text-base text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <Info className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+              <CardTitle className="text-base text-gray-900 flex items-center gap-2">
+                <Info className="w-4 h-4 text-gray-400" />
                 Grading Scale
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
                 {Object.entries(GRADE_RANGES).map(([grade, range]) => (
-                  <div key={grade} className="flex justify-between items-center p-2 border-b border-gray-200 dark:border-gray-700 last:border-0">
+                  <div key={grade} className="flex justify-between items-center p-2 border-b border-gray-200 last:border-0">
                     <div className="flex items-center gap-3">
                       <span className={`font-bold w-8 ${getGradeColor(grade).split(' ')[0]}`}>{grade}</span>
-                      <span className="text-gray-500 dark:text-gray-400 font-medium text-xs">{range.min}-{range.max}%</span>
+                      <span className="text-gray-500 font-medium text-xs">{range.min}-{range.max}%</span>
                     </div>
-                    <span className="font-mono text-gray-400 dark:text-gray-500 font-bold">{GRADE_POINTS[grade]}</span>
+                    <span className="font-mono text-gray-400 font-bold">{GRADE_POINTS[grade]}</span>
                   </div>
                 ))}
               </div>
