@@ -174,10 +174,7 @@ const Home = () => {
           {/* Desktop/Tablet Hero */}
           <div className="hidden lg:grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-left animate-fade-in order-1">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-gray-800/40 text-indigo-600 dark:text-indigo-400 rounded-full text-sm font-bold mb-6 border border-indigo-100 dark:border-gray-700 shadow-sm transition-all hover:scale-105">
-                <Sparkles size={16} />
-                <span>Built by Synapse Tech</span>
-              </div>
+
 
               <h1 className="text-6xl md:text-7xl font-black text-gray-950 dark:text-white mb-6 leading-tight tracking-tight">
                 Your Essential <br />
@@ -190,7 +187,7 @@ const Home = () => {
               <div className="flex items-center gap-6">
                 <Button
                   onClick={() => navigate('/guide')}
-                  className="bg-indigo-600 dark:bg-accent-500 text-white hover:opacity-90 font-black px-10 py-5 rounded-2xl shadow-xl transition-all hover:-translate-y-1 block border-none text-lg"
+                  className="bg-indigo-600# dark:bg-accent-500 text-white hover:opacity-90 font-black px-10 py-5 rounded-2xl shadow-xl transition-all hover:-translate-y-1 block border-none text-lg"
                 >
                   Open Guide
                 </Button>
