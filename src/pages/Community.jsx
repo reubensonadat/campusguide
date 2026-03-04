@@ -161,7 +161,7 @@ const Community = () => {
                 </div>
 
                 {/* Filter Categories - Horizontally Scrollable */}
-                <div className="flex overflow-x-auto hide-scrollbar gap-3 pb-6 mb-2 -mx-5 px-5 md:mx-0 md:px-0">
+                <div className="flex overflow-x-auto hide-scrollbar gap-3 pb-6 mb-2 mx-5 px-5 md:mx-0 md:px-0 pt-2 lg:pl-2">
                     {CATEGORIES.map(category => (
                         <button
                             key={category.id}
