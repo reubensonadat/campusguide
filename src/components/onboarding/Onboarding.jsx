@@ -58,7 +58,7 @@ const Onboarding = ({ isOpen, onClose, currentStep, onNext, onPrev }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-0 md:p-6 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 dark:bg-black/60 backdrop-blur-sm p-0 md:p-6 animate-in fade-in duration-200">
       <MobileOnboardingView {...viewProps} />
       <DesktopOnboardingView {...viewProps} />
     </div>
@@ -66,30 +66,30 @@ const Onboarding = ({ isOpen, onClose, currentStep, onNext, onPrev }) => {
 };
 
 const MobileOnboardingView = ({ steps, currentStep, currentStepData, isLastStep, onClose, onNext, onPrev }) => (
-  <div className="bg-white w-full h-full flex flex-col relative overflow-hidden shadow-2xl md:hidden">
+  <div className="bg-white dark:bg-gray-950 w-full h-full flex flex-col relative overflow-hidden shadow-2xl md:hidden">
     {/* Header */}
-    <div className="flex items-center justify-between px-6 pt-8 pb-4 shrink-0 relative z-20 bg-white">
+    <div className="flex items-center justify-between px-6 pt-8 pb-4 shrink-0 relative z-20 bg-white dark:bg-gray-950">
       <button
         onClick={currentStep === 0 ? onClose : onPrev}
-        className="w-10 h-10 flex items-center justify-start text-primary-900 focus:outline-none hover:opacity-80 transition-opacity"
+        className="w-10 h-10 flex items-center justify-start text-primary-900 dark:text-primary-100 focus:outline-none hover:opacity-80 transition-opacity"
       >
         {currentStep === 0 ? <X size={28} strokeWidth={2.5} /> : <ChevronLeft size={32} strokeWidth={2.5} />}
       </button>
 
-      <div className="font-bold text-primary-900 text-lg flex-1 text-center">
+      <div className="font-bold text-primary-900 dark:text-primary-100 text-lg flex-1 text-center">
         {/* No steps indicator */}
       </div>
 
       <button
         onClick={onClose}
-        className="text-primary-600 font-bold text-lg px-2 py-2 focus:outline-none flex-none text-right w-16 hover:opacity-80 transition-opacity"
+        className="text-primary-600 dark:text-primary-400 font-bold text-lg px-2 py-2 focus:outline-none flex-none text-right w-16 hover:opacity-80 transition-opacity"
       >
         Skip
       </button>
     </div>
 
     {/* Content Area */}
-    <div className="flex-1 flex flex-col justify-center overflow-y-auto w-full bg-white relative z-10">
+    <div className="flex-1 flex flex-col justify-center overflow-y-auto w-full bg-white dark:bg-gray-950 relative z-10">
 
       {/* External Image Area - Full width */}
       <div className="relative w-full flex justify-center mb-6">
@@ -101,23 +101,23 @@ const MobileOnboardingView = ({ steps, currentStep, currentStepData, isLastStep,
       </div>
 
       <div className="text-center w-full px-8 flex flex-col justify-center pb-4">
-        <h2 className="text-3xl font-black text-primary-900 mb-4 tracking-tight whitespace-pre-line leading-[1.2]">
+        <h2 className="text-3xl font-black text-primary-900 dark:text-white mb-4 tracking-tight whitespace-pre-line leading-[1.2]">
           {currentStepData.title}
         </h2>
-        <p className="text-gray-500 text-base leading-relaxed max-w-[340px] mx-auto font-medium whitespace-pre-line">
+        <p className="text-gray-500 dark:text-gray-400 text-base leading-relaxed max-w-[340px] mx-auto font-medium whitespace-pre-line">
           {currentStepData.subtitle}
         </p>
       </div>
     </div>
 
     {/* Footer Area */}
-    <div className="px-8 pb-10 bg-white shrink-0 relative z-20">
+    <div className="px-8 pb-10 bg-white dark:bg-gray-950 shrink-0 relative z-20">
       {/* Navigation Dots */}
       <div className="flex justify-center items-center gap-2.5 mb-8">
         {steps.map((_, i) => (
           <div
             key={i}
-            className={`h-2.5 rounded-full transition-all duration-300 ${i === currentStep ? "w-8 bg-primary-600" : "w-2.5 bg-primary-100"}`}
+            className={`h-2.5 rounded-full transition-all duration-300 ${i === currentStep ? "w-8 bg-primary-600 dark:bg-primary-500" : "w-2.5 bg-primary-100 dark:bg-gray-800"}`}
           />
         ))}
       </div>
@@ -125,7 +125,7 @@ const MobileOnboardingView = ({ steps, currentStep, currentStepData, isLastStep,
       {/* Primary Action Button */}
       <button
         onClick={isLastStep ? onClose : onNext}
-        className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-bold text-lg shadow-[0_8px_20px_rgba(37,99,235,0.3)] transition-transform active:scale-95 flex items-center justify-center gap-2"
+        className="w-full py-4 bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-500 text-white rounded-2xl font-bold text-lg shadow-[0_8px_20px_rgba(37,99,235,0.3)] dark:shadow-[0_8px_20px_rgba(37,99,235,0.2)] transition-transform active:scale-95 flex items-center justify-center gap-2"
       >
         {isLastStep ? "Get Started" : "Continue"}
         {!isLastStep && <ArrowRight size={22} strokeWidth={2.5} />}
@@ -135,30 +135,30 @@ const MobileOnboardingView = ({ steps, currentStep, currentStepData, isLastStep,
 );
 
 const DesktopOnboardingView = ({ steps, currentStep, currentStepData, isLastStep, onClose, onNext, onPrev }) => (
-  <div className="hidden md:flex bg-white w-[60%] h-[90vh] max-h-[900px] min-h-[600px] rounded-[2.5rem] flex-col relative overflow-hidden shadow-2xl">
+  <div className="hidden md:flex bg-white dark:bg-gray-950 w-[60%] h-[90vh] max-h-[900px] min-h-[600px] rounded-[2.5rem] flex-col relative overflow-hidden shadow-2xl">
     {/* Header */}
-    <div className="flex items-center justify-between px-6 pt-8 pb-4 shrink-0 relative z-10 bg-white">
+    <div className="flex items-center justify-between px-6 pt-8 pb-4 shrink-0 relative z-10 bg-white dark:bg-gray-950">
       <button
         onClick={currentStep === 0 ? onClose : onPrev}
-        className="w-10 h-10 flex items-center justify-start text-primary-900 focus:outline-none hover:opacity-80 transition-opacity"
+        className="w-10 h-10 flex items-center justify-start text-primary-900 dark:text-primary-100 focus:outline-none hover:opacity-80 transition-opacity"
       >
         {currentStep === 0 ? <X size={28} strokeWidth={2.5} /> : <ChevronLeft size={32} strokeWidth={2.5} />}
       </button>
 
-      <div className="font-bold text-primary-900 text-lg flex-1 text-center">
+      <div className="font-bold text-primary-900 dark:text-primary-100 text-lg flex-1 text-center">
         {/* No steps indicator */}
       </div>
 
       <button
         onClick={onClose}
-        className="text-primary-600 font-bold text-lg px-2 py-2 focus:outline-none flex-none text-right w-16 hover:opacity-80 transition-opacity"
+        className="text-primary-600 dark:text-primary-400 font-bold text-lg px-2 py-2 focus:outline-none flex-none text-right w-16 hover:opacity-80 transition-opacity"
       >
         Skip
       </button>
     </div>
 
     {/* Content Area */}
-    <div className="flex-1 flex flex-row items-center justify-center overflow-y-auto w-full bg-white px-8 gap-8">
+    <div className="flex-1 flex flex-col md:flex-row items-center justify-center overflow-y-auto w-full bg-white dark:bg-gray-950 px-8 gap-8">
 
       {/* External Image Area - Left side */}
       <div className="relative w-1/2 flex justify-end">
@@ -170,23 +170,23 @@ const DesktopOnboardingView = ({ steps, currentStep, currentStepData, isLastStep
       </div>
 
       <div className="text-left w-1/2 flex flex-col justify-center">
-        <h2 className="text-4xl font-black text-primary-900 mb-6 tracking-tight whitespace-pre-line leading-[1.2]">
+        <h2 className="text-4xl font-black text-primary-900 dark:text-white mb-6 tracking-tight whitespace-pre-line leading-[1.2]">
           {currentStepData.title}
         </h2>
-        <p className="text-gray-500 text-lg leading-relaxed max-w-[400px] font-medium whitespace-pre-line">
+        <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed max-w-[400px] font-medium whitespace-pre-line">
           {currentStepData.subtitle}
         </p>
       </div>
     </div>
 
     {/* Footer Area */}
-    <div className="px-8 pb-10 bg-white shrink-0">
+    <div className="px-8 pb-10 bg-white dark:bg-gray-950 shrink-0">
       {/* Navigation Dots */}
       <div className="flex justify-center items-center gap-2.5 mb-8">
         {steps.map((_, i) => (
           <div
             key={i}
-            className={`h-2.5 rounded-full transition-all duration-300 ${i === currentStep ? "w-8 bg-primary-600" : "w-2.5 bg-primary-100"}`}
+            className={`h-2.5 rounded-full transition-all duration-300 ${i === currentStep ? "w-8 bg-primary-600 dark:bg-primary-500" : "w-2.5 bg-primary-100 dark:bg-gray-800"}`}
           />
         ))}
       </div>
@@ -194,7 +194,7 @@ const DesktopOnboardingView = ({ steps, currentStep, currentStepData, isLastStep
       {/* Primary Action Button */}
       <button
         onClick={isLastStep ? onClose : onNext}
-        className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-bold text-lg shadow-[0_8px_20px_rgba(37,99,235,0.3)] transition-transform active:scale-95 flex items-center justify-center gap-2"
+        className="w-full py-4 bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-500 text-white rounded-2xl font-bold text-lg shadow-[0_8px_20px_rgba(37,99,235,0.3)] dark:shadow-[0_8px_20px_rgba(37,99,235,0.2)] transition-transform active:scale-95 flex items-center justify-center gap-2"
       >
         {isLastStep ? "Get Started" : "Continue"}
         {!isLastStep && <ArrowRight size={22} strokeWidth={2.5} />}
