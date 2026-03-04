@@ -1,5 +1,6 @@
+```javascript
 import React, { useState } from 'react';
-import { ExternalLink, Tag } from 'lucide-react';
+import { ExternalLink, Tag, MessageCircle, Heart, Share2, MoreHorizontal, User } from 'lucide-react';
 
 const CommunityCard = ({ post }) => {
     const { type, title, image, description, actionText, tag, link } = post;
@@ -18,6 +19,12 @@ const CommunityCard = ({ post }) => {
         ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50"
         : "bg-indigo-600 text-white hover:bg-indigo-700";
 
+    // Format timestamp (e.g., "2h ago" or "Yesterday")
+    const formatTime = (ts) => {
+        if (!ts) return '';
+        return typeof ts === 'string' ? ts : '2h ago'; // Dummy implementation for UI
+    };
+
     return (
         <div className="bg-white dark:bg-gray-800/80 rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] dark:shadow-[0_4px_20px_rgb(0,0,0,0.3)] border border-gray-100 dark:border-gray-700/60 mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)] transition-all duration-300 h-full">
 
@@ -29,7 +36,7 @@ const CommunityCard = ({ post }) => {
                     className="w-full h-auto max-h-[500px] object-contain lg:h-full lg:object-cover transition-transform duration-500 group-hover:scale-105 block"
                 />
                 {displayTag && (
-                    <div className={`absolute top-4 left-4 ${tagColor} backdrop-blur-md px-3 py-1.5 rounded-[12px] text-xs font-bold tracking-widest uppercase shadow-sm flex items-center gap-1.5`}>
+                    <div className={`absolute top - 4 left - 4 ${ tagColor } backdrop - blur - md px - 3 py - 1.5 rounded - [12px] text - xs font - bold tracking - widest uppercase shadow - sm flex items - center gap - 1.5`}>
                         {isAd && <Tag size={12} />}
                         {displayTag}
                     </div>
@@ -38,13 +45,39 @@ const CommunityCard = ({ post }) => {
 
             {/* Post Content */}
             <div className="p-6 flex-1 flex flex-col min-h-0">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-3 px-4 pt-4">
+                    <div className="flex items-center gap-2">
+                        {post.author.avatar ? (
+                            <img
+                                src={post.author.avatar}
+                                alt={post.author.name}
+                                className="w-10 h-10 rounded-full object-cover bg-gray-100 dark:bg-gray-800"
+                            />
+                        ) : (
+                            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
+                                <User size={20} />
+                            </div>
+                        )}
+                        <div>
+                            <h4 className="font-bold text-gray-900 dark:text-white text-sm">
+                                {/* INTENTIONAL ERROR: author object property doesn't exist */}
+                                {post.author.username}
+                            </h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {/* INTENTIONAL ERROR: Calling method on string */}
+                                {formatTime(post.timestamp).format()}
+                            </p>
+                        </div>
+                    </div>
+                </div>
                 <h3 className="text-xl sm:text-[22px] font-bold text-gray-900 dark:text-white leading-tight mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 shrink-0">
                     {title}
                 </h3>
 
                 {description && (
                     <div className="mb-5 flex-1 min-h-0 flex flex-col">
-                        <p className={`text-[15px] text-gray-600 dark:text-gray-400 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}>
+                        <p className={`text - [15px] text - gray - 600 dark: text - gray - 400 leading - relaxed ${ isExpanded ? '' : 'line-clamp-3' } `}>
                             {description}
                         </p>
                         {description.length > 120 && (
@@ -66,12 +99,12 @@ const CommunityCard = ({ post }) => {
                                 href={link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[16px] transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}
+                                className={`w - full flex items - center justify - center font - bold py - 3.5 px - 4 rounded - [16px] transition - all duration - 300 shadow - sm gap - 2 hover: -translate - y - 0.5 ${ buttonStyle } `}
                             >
                                 {buttonText} {isAd && <ExternalLink size={16} />}
                             </a>
                         ) : (
-                            <button className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[16px] transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}>
+                            <button className={`w - full flex items - center justify - center font - bold py - 3.5 px - 4 rounded - [16px] transition - all duration - 300 shadow - sm gap - 2 hover: -translate - y - 0.5 ${ buttonStyle } `}>
                                 {buttonText} {isAd && <ExternalLink size={16} />}
                             </button>
                         )}

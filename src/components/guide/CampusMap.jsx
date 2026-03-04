@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Search, MapPin, Map as MapIcon, BookOpen, Navigation, ArrowLeft, ExternalLink, X } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
-import CampusMapData from './content/ucc/CampusMap';
+import 'leaflet/dist/leaflet.css';
+import { Locate, Navigation, MapPin } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import CampusMapData from './content/ucc/CampusMap';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for Leaflet default marker icons in React
