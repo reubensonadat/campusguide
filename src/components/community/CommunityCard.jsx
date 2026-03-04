@@ -59,22 +59,24 @@ const CommunityCard = ({ post }) => {
                 )}
 
                 {/* Bottom Action Button - Pinned to bottom using mt-auto */}
-                <div className="mt-auto shrink-0 pt-2">
-                    {isAd && link ? (
-                        <a
-                            href={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[16px] transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}
-                        >
-                            {buttonText} {isAd && <ExternalLink size={16} />}
-                        </a>
-                    ) : (
-                        <button className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[16px] transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}>
-                            {buttonText} {isAd && <ExternalLink size={16} />}
-                        </button>
-                    )}
-                </div>
+                {(isAd || actionText || link) && (
+                    <div className="mt-auto shrink-0 pt-2">
+                        {link ? (
+                            <a
+                                href={link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[16px] transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}
+                            >
+                                {buttonText} {isAd && <ExternalLink size={16} />}
+                            </a>
+                        ) : (
+                            <button className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[16px] transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}>
+                                {buttonText} {isAd && <ExternalLink size={16} />}
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
