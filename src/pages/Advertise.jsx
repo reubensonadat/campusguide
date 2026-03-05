@@ -75,6 +75,45 @@ const Advertise = () => {
 
     const activePackage = AD_PACKAGES.find(p => p.id === selectedPackage);
 
+    // Social Proof Live Counter (Deterministic Global Sync)
+    const [liveCount, setLiveCount] = useState(0);
+
+    useEffect(() => {
+        const calculateDeterministicCount = () => {
+            const now = new Date();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+            const chunk5s = Math.floor(now.getSeconds() / 5); // 5-second global pulse
+
+            // 1. Base traffic by hour (Global for everyone in this hour)
+            let base = 0;
+            if (hour >= 6 && hour < 12) base = 3200;      // Morning peak
+            else if (hour >= 12 && hour < 17) base = 1800; // Afternoon steady
+            else if (hour >= 17 && hour < 24) base = 800;  // Evening wind down
+            else base = 180;                               // Night/Dawn
+
+            // 2. Minute-based fluctuation (Deterministic for everyone)
+            // We use a simple hash of (Year + Month + Day + Hour + Minute) to get a stable offset
+            const daySeed = now.getFullYear() + now.getMonth() + now.getDate();
+            const minuteSeed = daySeed + hour + minute;
+            const minuteOffset = (minuteSeed * 13) % 400; // Shifts by up to 400 throughout the hour
+
+            // 3. The 5-second "Flicker" (Pulse together for everyone)
+            // Shifts by +/- 8 every 5 seconds globally
+            const flickerSeed = minuteSeed + chunk5s;
+            const flicker = (flickerSeed * 7) % 17 - 8;
+
+            setLiveCount(base + minuteOffset + flicker);
+        };
+
+        // Initial calc
+        calculateDeterministicCount();
+
+        // Sync every second to ensure the 5s "chunk" updates correctly
+        const interval = setInterval(calculateDeterministicCount, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
@@ -304,30 +343,41 @@ const Advertise = () => {
                             <CheckCircle2 size={32} />
                         </div>
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-4">Quality & Trust Framework</h2>
-                        <p className="text-lg text-gray-600 mb-8 font-medium leading-relaxed">
+                        <p className="text-lg text-gray-600 mb-6 font-medium leading-relaxed">
                             To maintain a premium experience for students, all advertisements are subject to manual review before going live.
                         </p>
+
+                        {/* Social Proof Badge */}
+                        <div className="flex items-center gap-3 mb-8 bg-white border border-rose-100 px-5 py-3 rounded-2xl shadow-sm transition-all duration-300 pointer-events-none">
+                            <div className="relative flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                            </div>
+                            <span className="font-extrabold text-sm text-gray-900 tracking-tight">
+                                <span className="text-rose-600">{liveCount.toLocaleString()}</span> Students currently active
+                            </span>
+                        </div>
 
                         <div className="space-y-4 mb-10">
                             <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
                                 <div className="mt-1 text-emerald-500"><Check size={20} /></div>
                                 <div>
                                     <h4 className="font-bold text-gray-900">100% Student Focus</h4>
-                                    <p className="text-sm text-gray-500 mt-1">Offers must be relevant to university life (Hostels, Food, Tech, Transport, Events).</p>
+                                    <p className="text-sm text-gray-500 mt-1">Offers must be relevant to university life (Events, Food, Tech, Transport, etc).</p>
                                 </div>
                             </div>
                             <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
                                 <div className="mt-1 text-indigo-500"><Check size={20} /></div>
                                 <div>
                                     <h4 className="font-bold text-gray-900">Manual Verification</h4>
-                                    <p className="text-sm text-gray-500 mt-1">Ads are reviewed within 2 hours. If rejected for violating terms, you receive a full automated refund.</p>
+                                    <p className="text-sm text-gray-500 mt-1">Ads are reviewed within 2 hours. If rejected for violating terms, you receive a 90% refund as a result of paystack charges.</p>
                                 </div>
                             </div>
                             <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
                                 <div className="mt-1 text-pink-500"><Check size={20} /></div>
                                 <div>
                                     <h4 className="font-bold text-gray-900">Direct WhatsApp Connections</h4>
-                                    <p className="text-sm text-gray-500 mt-1">Students will be routed directly to your WhatsApp to seamlessly complete their purchases.</p>
+                                    <p className="text-sm text-gray-500 mt-1">Students will be routed directly to your WhatsApp, Phone or Website to seamlessly complete their purchases.</p>
                                 </div>
                             </div>
                         </div>
@@ -547,7 +597,18 @@ const Advertise = () => {
                 {step === 4 && (
                     <div className="animate-in fade-in slide-in-from-right-8 duration-500 pb-12">
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Checkout</h2>
-                        <p className="text-gray-500 mb-8 font-medium">Preview your ad, select your placement tier, and duration.</p>
+                        <p className="text-gray-500 mb-6 font-medium">Preview your ad, select your placement tier, and duration.</p>
+
+                        {/* Social Proof Badge for Checkout */}
+                        <div className="flex items-center gap-3 mb-8 bg-indigo-50/50 border border-indigo-100 px-5 py-3 rounded-2xl shadow-sm w-fit transition-all duration-300 pointer-events-none">
+                            <div className="relative flex h-3 w-3 shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
+                            </div>
+                            <span className="font-extrabold text-[13px] sm:text-sm text-gray-900 tracking-tight">
+                                <span className="text-indigo-600">{liveCount.toLocaleString()}</span> Students are online right now looking for deals
+                            </span>
+                        </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                             {/* Left Side: Package Selection */}

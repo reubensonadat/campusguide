@@ -58,7 +58,7 @@ const Onboarding = ({ isOpen, onClose, currentStep, onNext, onPrev }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-0 md:p-6 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-0 md:p-6 animate-in fade-in duration-200">
       <MobileOnboardingView {...viewProps} />
       <DesktopOnboardingView {...viewProps} />
     </div>
