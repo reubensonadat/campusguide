@@ -204,6 +204,10 @@ const Advertise = () => {
                 finalImageUrl = publicUrlData.publicUrl;
             }
 
+            // Calculate Expiry Date based on selected duration
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + selectedDuration);
+
             // 2. Save Ad Data to Supabase Database
             const { error: dbError } = await supabase
                 .from('advertisements')
@@ -216,7 +220,8 @@ const Advertise = () => {
                     image_url: finalImageUrl,
                     category: formData.category,
                     status: 'PENDING',
-                    paystack_reference: res.reference // Important: Required for Cloudflare webhook verification
+                    paystack_reference: res.reference, // Important: Required for Cloudflare webhook verification
+                    expires_at: expiryDate.toISOString()
                 }]);
 
             if (dbError) {
@@ -228,8 +233,23 @@ const Advertise = () => {
             setSavedFormData({ businessName: '', category: '', whatsapp: '', contactMethod: 'whatsapp', contactUrl: '', description: '' });
             setStep(1); // Reset to beginning for next time
 
-            alert("Payment successful! Your ad is now pending manual review. We will reach out via WhatsApp once approved.");
-            navigate('/community');
+            // Construct WhatsApp Redirect Message
+            const adminPhone = "233201534711"; // Formatted without '+' for wa.me link
+            const contactDetail = formData.contactMethod !== 'link' ? `Contact: ${formData.whatsapp}` : `Link: ${formData.contactUrl}`;
+
+            const message = `Hi, please I have made an advertisement for:\n\n` +
+                `*Business Name:* ${formData.businessName}\n` +
+                `*Category:* ${formData.category}\n` +
+                `*${contactDetail}*\n` +
+                `*Description:* ${formData.description}\n\n` +
+                `I have paid using Paystack. Please verify my Paystack reference:\n` +
+                `*${res.reference}*\n\n` +
+                `Please verify and tell me how my ad will be shown.`;
+
+            const whatsappUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`;
+
+            // Redirect to WhatsApp - use window.location.href for a direct redirect, avoiding popup blockers
+            window.location.href = whatsappUrl;
 
         } catch (error) {
             console.error("Submission Error:", error);
