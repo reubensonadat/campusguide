@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sparkles, Building2, UploadCloud, CheckCircle2, AlertCircle, Phone, LayoutGrid, Star, ChevronRight, Check, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Sparkles, Building2, UploadCloud, CheckCircle2, AlertCircle, Phone, LayoutGrid, Star, ChevronRight, Check, ExternalLink, MessageCircle } from 'lucide-react';
 import { PaymentButton } from '../components/payment/PaymentButton'; // Simulated Paystack
 import CommunityCard from '../components/community/CommunityCard';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -44,6 +44,8 @@ const Advertise = () => {
         businessName: '',
         category: '',
         whatsapp: '',
+        contactMethod: 'whatsapp',
+        contactUrl: '',
         description: ''
     });
 
@@ -60,9 +62,11 @@ const Advertise = () => {
             businessName: formData.businessName,
             category: formData.category,
             whatsapp: formData.whatsapp,
+            contactMethod: formData.contactMethod,
+            contactUrl: formData.contactUrl,
             description: formData.description
         });
-    }, [formData.businessName, formData.category, formData.whatsapp, formData.description, setSavedFormData]);
+    }, [formData.businessName, formData.category, formData.whatsapp, formData.contactMethod, formData.contactUrl, formData.description, setSavedFormData]);
 
     // Package State (Persisted)
     const [selectedPackage, setSelectedPackage] = useLocalStorage('ucc_ad_selected_pkg', AD_PACKAGES[0].id);
@@ -74,14 +78,48 @@ const Advertise = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        // Strict WhatsApp Validation (Allows digits, optional + or spaces)
+        // Phone Validation (Allows digits, optional + or spaces)
         if (name === 'whatsapp') {
             if (!/^[\d\s+]*$/.test(value)) return;
             if (value.length > 20) return; // Prevent unreasonable lengths
         }
 
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(prev => {
+            const nextState = { ...prev, [name]: value };
+
+            // Automatically clear the other field to prevent users from typing both
+            if (name === 'contactMethod') {
+                if (value === 'link') {
+                    nextState.whatsapp = '';
+                } else {
+                    nextState.contactUrl = '';
+                }
+            }
+
+            return nextState;
+        });
     };
+
+    const formatPhoneNumber = (value) => {
+        let cleaned = value.replace(/\D/g, ''); // strip non-digits
+
+        // If it starts with 0 and has around 10 digits (like 0244...), convert it to 233
+        if (cleaned.startsWith('0') && cleaned.length >= 10 && cleaned.length <= 11) {
+            cleaned = '233' + cleaned.substring(1);
+        }
+
+        return cleaned;
+    };
+
+    const validateUrl = (urlStr) => {
+        if (!urlStr) return false;
+        try {
+            const url = new URL(urlStr);
+            return url.protocol === 'http:' || url.protocol === 'https:';
+        } catch (_) {
+            return false;
+        }
+    }
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
@@ -112,8 +150,17 @@ const Advertise = () => {
     };
 
     // Validation checks for buttons
-    const isValidPhone = formData.whatsapp ? formData.whatsapp.replace(/\D/g, '').length >= 9 && formData.whatsapp.replace(/\D/g, '').length <= 15 : false;
-    const isStep2Valid = formData.businessName.trim().length >= 3 && formData.category && isValidPhone;
+    const isContactMethodValid = () => {
+        if (formData.contactMethod === 'link') {
+            return validateUrl(formData.contactUrl);
+        } else {
+            // For whatsapp and phone
+            const cleaned = formData.whatsapp ? formData.whatsapp.replace(/\D/g, '') : '';
+            return cleaned.length >= 9 && cleaned.length <= 15;
+        }
+    };
+
+    const isStep2Valid = formData.businessName.trim().length >= 3 && formData.category && isContactMethodValid();
 
     // UI states
 
@@ -163,7 +210,9 @@ const Advertise = () => {
                 .insert([{
                     title: formData.businessName,
                     description: formData.description,
-                    phone_number: formData.whatsapp.replace(/\D/g, ''), // Cleaned number
+                    phone_number: formatPhoneNumber(formData.whatsapp), // Cleaned number
+                    contact_method: formData.contactMethod,
+                    contact_url: formData.contactMethod === 'link' ? formData.contactUrl : null,
                     image_url: finalImageUrl,
                     category: formData.category,
                     status: 'PENDING',
@@ -176,7 +225,7 @@ const Advertise = () => {
             }
 
             // Success! Clear local storage form data
-            setSavedFormData({ businessName: '', category: '', whatsapp: '', description: '' });
+            setSavedFormData({ businessName: '', category: '', whatsapp: '', contactMethod: 'whatsapp', contactUrl: '', description: '' });
             setStep(1); // Reset to beginning for next time
 
             alert("Payment successful! Your ad is now pending manual review. We will reach out via WhatsApp once approved.");
@@ -314,29 +363,77 @@ const Advertise = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2 flex justify-between">
-                                    <span>WhatsApp Business Number</span>
-                                    {formData.whatsapp && !isValidPhone && (
-                                        <span className="text-red-500 text-xs">Invalid number length</span>
-                                    )}
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                                        <Phone size={18} />
-                                    </div>
-                                    <input
-                                        type="tel"
-                                        name="whatsapp"
-                                        value={formData.whatsapp}
-                                        onChange={handleInputChange}
-                                        placeholder="024 123 4567"
-                                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900"
-                                    />
+                                <label className="block text-sm font-bold text-gray-700 mb-4">Preferred Contact Method</label>
+                                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                                    <label className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all ${formData.contactMethod === 'whatsapp' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600'}`}>
+                                        <input type="radio" name="contactMethod" value="whatsapp" checked={formData.contactMethod === 'whatsapp'} onChange={handleInputChange} className="hidden" />
+                                        <MessageCircle size={20} className="mb-1.5 sm:mb-2 sm:w-6 sm:h-6" />
+                                        <span className="font-bold text-[10px] sm:text-sm">WhatsApp</span>
+                                    </label>
+                                    <label className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all ${formData.contactMethod === 'phone' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600'}`}>
+                                        <input type="radio" name="contactMethod" value="phone" checked={formData.contactMethod === 'phone'} onChange={handleInputChange} className="hidden" />
+                                        <Phone size={20} className="mb-1.5 sm:mb-2 sm:w-6 sm:h-6" />
+                                        <span className="font-bold text-[10px] sm:text-sm">Phone Call</span>
+                                    </label>
+                                    <label className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all ${formData.contactMethod === 'link' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600'}`}>
+                                        <input type="radio" name="contactMethod" value="link" checked={formData.contactMethod === 'link'} onChange={handleInputChange} className="hidden" />
+                                        <ExternalLink size={20} className="mb-1.5 sm:mb-2 sm:w-6 sm:h-6" />
+                                        <span className="font-bold text-[10px] sm:text-sm">Ext. Link</span>
+                                    </label>
                                 </div>
-                                <p className="text-xs text-gray-400 mt-2 font-medium flex items-center gap-1">
-                                    <AlertCircle size={12} /> Students will tap a button to message you directly.
-                                </p>
                             </div>
+
+                            {formData.contactMethod !== 'link' ? (
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2 flex justify-between">
+                                        <span>{formData.contactMethod === 'whatsapp' ? 'WhatsApp Business Number' : 'Phone Number'}</span>
+                                        {formData.whatsapp && formData.whatsapp.replace(/\D/g, '').length > 0 && !(formData.whatsapp.replace(/\D/g, '').length >= 9 && formData.whatsapp.replace(/\D/g, '').length <= 15) && (
+                                            <span className="text-red-500 text-xs">Invalid number length</span>
+                                        )}
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                            <Phone size={18} />
+                                        </div>
+                                        <input
+                                            type="tel"
+                                            name="whatsapp"
+                                            value={formData.whatsapp}
+                                            onChange={handleInputChange}
+                                            placeholder="e.g. +233 24 123 4567 or 024 123 4567"
+                                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900"
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-400 mt-2 font-medium flex items-center gap-1">
+                                        <AlertCircle size={12} /> Students will tap a button to {formData.contactMethod === 'whatsapp' ? 'message you directly' : 'call you directly'}. Leading zeros are converted to +233.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2 flex justify-between">
+                                        <span>Website / Product Link</span>
+                                        {formData.contactUrl && !validateUrl(formData.contactUrl) && (
+                                            <span className="text-red-500 text-xs">Invalid URL format</span>
+                                        )}
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                            <ExternalLink size={18} />
+                                        </div>
+                                        <input
+                                            type="url"
+                                            name="contactUrl"
+                                            value={formData.contactUrl}
+                                            onChange={handleInputChange}
+                                            placeholder="https://yourwebsite.com/product"
+                                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900"
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-400 mt-2 font-medium flex items-center gap-1">
+                                        <AlertCircle size={12} /> Must include http:// or https://. External links are reviewed for safety.
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         <div className="mt-8 flex gap-4">
@@ -512,9 +609,14 @@ const Advertise = () => {
                                                 title: formData.businessName || 'Your Business Name',
                                                 description: formData.description || 'Your promotional description will appear here.',
                                                 image: formData.imagePreview,
-                                                link: formData.whatsapp
-                                                    ? `https://wa.me/${formData.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello, I saw an advertisement for ${formData.businessName || 'your business'} on Campus Guide. I would like to make a purchase / find out how much.`)}`
-                                                    : '#',
+                                                actionText: formData.contactMethod === 'link' ? 'Visit Link' : formData.contactMethod === 'phone' ? 'Call Now' : 'Message via WhatsApp',
+                                                link: formData.contactMethod === 'link'
+                                                    ? formData.contactUrl || '#'
+                                                    : formData.contactMethod === 'phone'
+                                                        ? formData.whatsapp ? `tel:+${formatPhoneNumber(formData.whatsapp)}` : '#'
+                                                        : formData.whatsapp
+                                                            ? `https://wa.me/${formatPhoneNumber(formData.whatsapp)}?text=${encodeURIComponent(`Hello, I saw an advertisement for ${formData.businessName || 'your business'} on Campus Guide. I would like to make a purchase / find out how much.`)}`
+                                                            : '#',
                                             }}
                                         />
                                     </div>
