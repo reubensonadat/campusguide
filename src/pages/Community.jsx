@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Megaphone, ChevronRight, Sparkles, Star } from 'lucide-react';
+import { Megaphone, ChevronRight, Sparkles, Star, X } from 'lucide-react';
 import CommunityCard from '../components/community/CommunityCard';
 import { useNavigate } from 'react-router-dom';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 import { supabase } from '../lib/supabase';
 
@@ -22,6 +23,7 @@ const Community = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [feedData, setFeedData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isHomeBannerDismissed, setIsHomeBannerDismissed] = useLocalStorage('ucc_home_banner_dismissed', false);
 
     React.useEffect(() => {
         window.scrollTo(0, 0);
@@ -144,56 +146,73 @@ const Community = () => {
             <div className="w-[90%] md:w-[95%] max-w-[1600px] mx-auto pt-6">
 
                 {/* Scrollable 'Showcase to the World' Gentle Banner */}
-                <div
-                    onClick={() => navigate('/advertise')}
-                    className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 p-6 sm:p-8 lg:p-12 lg:h-[35vh] lg:min-h-[300px] flex flex-col justify-center text-white shadow-xl shadow-indigo-200/50 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group mb-10"
-                >
-                    {/* Background decorations */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity duration-700"></div>
-                    <div className="absolute -bottom-10 right-4 lg:right-20 text-white/10 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-700">
-                        <Sparkles size={160} />
-                    </div>
+                {!isHomeBannerDismissed && (
+                    <div
+                        onClick={() => navigate('/advertise')}
+                        className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 p-6 sm:p-8 lg:p-12 lg:h-[35vh] lg:min-h-[300px] flex flex-col justify-center text-white shadow-xl shadow-indigo-200/50 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group mb-10"
+                    >
+                        {/* Close button */}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsHomeBannerDismissed(true);
+                            }}
+                            className="absolute top-4 right-4 z-20 text-white/50 hover:text-white bg-black/10 hover:bg-black/20 rounded-full p-2 transition-colors focus:outline-none"
+                            aria-label="Dismiss banner"
+                        >
+                            <X size={20} />
+                        </button>
 
-                    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between h-full w-full">
-                        <div className="max-w-2xl">
-
-                            <h3 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight mb-3 lg:mb-4 tracking-tight">
-                                Showcase to the World
-                            </h3>
-                            <p className="text-indigo-100/90 text-sm sm:text-base lg:text-lg font-medium max-w-xl leading-relaxed">
-                                Reach thousands of students daily. Post your product or service here and gain 100% student viewership monopoly on the most visited app pages.
-                            </p>
+                        {/* Background decorations */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity duration-700"></div>
+                        <div className="absolute -bottom-10 right-4 lg:right-20 text-white/10 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-700">
+                            <Sparkles size={160} />
                         </div>
 
-                        <div className="mt-6 lg:mt-0 flex items-center gap-4">
-                            <span className="font-bold text-sm lg:text-base text-white/90 group-hover:text-white transition-colors">Start Advertising</span>
-                            <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-white flex items-center justify-center shrink-0 shadow-lg text-indigo-600 group-hover:scale-110 transition-transform duration-300">
-                                <ChevronRight size={24} strokeWidth={3} />
+                        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between h-full w-full">
+                            <div className="max-w-2xl">
+
+                                <h3 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight mb-3 lg:mb-4 tracking-tight">
+                                    Showcase to the World
+                                </h3>
+                                <p className="text-indigo-100/90 text-sm sm:text-base lg:text-lg font-medium max-w-xl leading-relaxed">
+                                    Reach thousands of students daily. Post your product or service here and gain 100% student viewership monopoly on the most visited app pages.
+                                </p>
+                            </div>
+
+                            <div className="mt-6 lg:mt-0 flex items-center gap-4">
+                                <span className="font-bold text-sm lg:text-base text-white/90 group-hover:text-white transition-colors">Start Advertising</span>
+                                <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-white flex items-center justify-center shrink-0 shadow-lg text-indigo-600 group-hover:scale-110 transition-transform duration-300">
+                                    <ChevronRight size={24} strokeWidth={3} />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
 
-                <div className="flex items-center gap-4 mb-4">
-                    <div className="h-px bg-gray-200 flex-1"></div>
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2">Community Feed</span>
-                    <div className="h-px bg-gray-200 flex-1"></div>
-                </div>
+                {/* Sticky Feed Header & Filters */}
+                <div className="sticky top-[72px] z-20 bg-gray-50/95 backdrop-blur-md pt-2 pb-4 -mx-4 px-4 md:mx-0 md:px-0">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="h-px bg-gray-200 flex-1"></div>
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2">Community Feed</span>
+                        <div className="h-px bg-gray-200 flex-1"></div>
+                    </div>
 
-                {/* Filter Categories - Horizontally Scrollable */}
-                <div className="flex overflow-x-auto hide-scrollbar gap-3 pb-6 mb-2 mx-5 px-5 md:mx-0 md:px-0 pt-2 lg:pl-2">
-                    {CATEGORIES.map(category => (
-                        <button
-                            key={category.id}
-                            onClick={() => setSelectedCategory(category.id)}
-                            className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 shadow-sm ${selectedCategory === category.id
-                                ? 'bg-primary-600 text-white shadow-md shadow-primary-200 scale-105'
-                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                }`}
-                        >
-                            {category.label}
-                        </button>
-                    ))}
+                    {/* Filter Categories - Horizontally Scrollable */}
+                    <div className="flex overflow-x-auto hide-scrollbar gap-3 px-1 md:px-0 lg:pl-2">
+                        {CATEGORIES.map(category => (
+                            <button
+                                key={category.id}
+                                onClick={() => setSelectedCategory(category.id)}
+                                className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 shadow-sm ${selectedCategory === category.id
+                                    ? 'bg-primary-600 text-white shadow-md shadow-primary-200 scale-105'
+                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    }`}
+                            >
+                                {category.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Render Feed using CSS Grid or Empty State */}
