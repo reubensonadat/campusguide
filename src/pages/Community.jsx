@@ -8,11 +8,14 @@ import { supabase } from '../lib/supabase';
 // Categories matching Advertise.jsx options
 const CATEGORIES = [
     { id: 'all', label: 'All Listings' },
-    { id: 'event', label: 'School update' },
+    { id: 'update', label: 'School Updates' },
     { id: 'food', label: 'Food & Delivery' },
-    { id: 'clothing', label: 'Clothing & Fashion' },
-    { id: 'tech', label: 'Tech & Electronics' },
     { id: 'services', label: 'Student Services' },
+    { id: 'event', label: 'School event' },
+    { id: 'tech', label: 'Tech & Electronics' },
+    { id: 'clothing', label: 'Clothing & Fashion' },
+
+
 ];
 
 const Community = () => {
@@ -42,25 +45,44 @@ const Community = () => {
                 if (annError) throw annError;
 
                 // 3. Format Ads for CommunityCard
-                const formattedAds = (adsData || []).map(ad => ({
-                    id: `ad-${ad.id}`,
-                    type: 'ad',
-                    category: ad.category,
-                    title: ad.title,
-                    description: ad.description,
-                    image: ad.image_url,
-                    actionText: 'Message via WhatsApp',
-                    link: ad.phone_number
-                        ? `https://wa.me/${ad.phone_number}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${ad.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`
-                        : '#',
-                    createdAt: new Date(ad.created_at).getTime(),
-                }));
+                const formattedAds = (adsData || []).map(ad => {
+                    let actionText = 'Message via WhatsApp';
+                    let link = '#';
+
+                    const cleanPhone = ad.phone_number ? ad.phone_number.replace(/\D/g, '') : '';
+
+                    if (ad.contact_method === 'link' && ad.contact_url) {
+                        actionText = 'Visit Link';
+                        link = ad.contact_url;
+                    } else if (ad.contact_method === 'phone') {
+                        actionText = 'Call Now';
+                        link = cleanPhone ? `tel:+${cleanPhone}` : '#';
+                    } else {
+                        // Default to WhatsApp
+                        actionText = 'Message via WhatsApp';
+                        link = cleanPhone
+                            ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${ad.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`
+                            : '#';
+                    }
+
+                    return {
+                        id: `ad-${ad.id}`,
+                        type: 'ad',
+                        category: ad.category,
+                        title: ad.title,
+                        description: ad.description,
+                        image: ad.image_url,
+                        actionText: actionText,
+                        link: link,
+                        createdAt: new Date(ad.created_at).getTime(),
+                    };
+                });
 
                 // 4. Format Announcements for CommunityCard
                 const formattedAnnouncements = (announcementsData || []).map(ann => ({
                     id: `ann-${ann.id}`,
                     type: 'announcement',
-                    category: 'event', // General category for announcements so they show up everywhere or under suitable filters
+                    category: 'update', // Map Announcements to School Updates
                     tag: 'OFFICIAL',
                     title: ann.title,
                     description: ann.description || ann.content, // Handling both naming conventions
@@ -134,7 +156,7 @@ const Community = () => {
 
                     <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between h-full w-full">
                         <div className="max-w-2xl">
-                            
+
                             <h3 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight mb-3 lg:mb-4 tracking-tight">
                                 Showcase to the World
                             </h3>
