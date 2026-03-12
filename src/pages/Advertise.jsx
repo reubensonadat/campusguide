@@ -23,7 +23,7 @@ const AD_PACKAGES = [
     {
         id: 'home_banner',
         name: 'Premium Banner',
-        description: 'Injected directly into Home & Timetable pages. Maximum visibility.',
+        description: 'Maximum visibility on the Home page. Reach students the moment they open the app.',
         icon: Sparkles,
         popular: true,
         color: 'indigo',
@@ -258,6 +258,7 @@ const Advertise = () => {
                     contact_url: formData.contactMethod === 'link' ? formData.contactUrl : null,
                     image_url: finalImageUrl,
                     category: formData.category,
+                    package_id: selectedPackage, // 'community_dir' or 'home_banner'
                     status: 'PENDING',
                     paystack_reference: res.reference, // Important: Required for Cloudflare webhook verification
                     expires_at: expiryDate.toISOString()
