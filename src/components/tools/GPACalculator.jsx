@@ -12,7 +12,14 @@ const GPACalculator = () => {
   const [newCourse, setNewCourse] = useState({
     name: '',
     creditHours: 3,
-    score: ''
+    score: '',
+    isDetailed: false, // flag to toggle view
+    examWeight: 60,
+    examScore: '',
+    assessments: [
+      { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+      { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+    ]
   });
 
   const [currentGPA, setCurrentGPA] = useState(0);
@@ -20,6 +27,47 @@ const GPACalculator = () => {
   const [totalGradePoints, setTotalGradePoints] = useState(0);
 
   useEffect(() => {
+    // 1. Auto-merge timetable courses that have target grades
+    const timetableStr = localStorage.getItem('ucc_timetable');
+    if (timetableStr) {
+      try {
+        const timetableCourses = JSON.parse(timetableStr);
+        const newGpaCourses = timetableCourses
+          .map(course => {
+            // Check if we already have this course in GPA (don't overwrite detailed setups)
+            const existing = courses.find(c => c.id === course.id);
+            if (existing) return existing;
+            
+            return {
+              id: course.id,
+              name: course.name,
+              creditHours: course.creditHours || 3,
+              score: course.targetGrade ? GRADE_RANGES[course.targetGrade].min : 0,
+              grade: course.targetGrade || 'E',
+              gradePoint: course.targetGrade ? GRADE_POINTS[course.targetGrade] : 0,
+              isDetailed: false,
+              examWeight: 60,
+              examScore: '',
+              assessments: [
+                { id: Date.now() + Math.random(), name: 'Quiz 1', score: '', max: 20 },
+                { id: Date.now() + Math.random() + 1, name: 'Assignment 1', score: '', max: 20 }
+              ]
+            };
+          });
+
+        const gpaOnlyCourses = courses.filter(c => !timetableCourses.find(tc => tc.id === c.id));
+        const mergedCourses = [...gpaOnlyCourses, ...newGpaCourses];
+        
+        // If the merged array is different from current state, update it (prevents infinite loop)
+        if (JSON.stringify(mergedCourses) !== JSON.stringify(courses)) {
+          setCourses(mergedCourses);
+        }
+      } catch (e) {
+        console.error('Error auto-syncing timetable to GPA:', e);
+      }
+    }
+
+    // 2. Calculate Stats
     const gpa = calculateGPA(courses);
     const credits = courses.reduce((sum, course) => sum + course.creditHours, 0);
     const points = courses.reduce((sum, course) => sum + (course.gradePoint * course.creditHours), 0);
@@ -27,27 +75,67 @@ const GPACalculator = () => {
     setCurrentGPA(gpa);
     setTotalCredits(credits);
     setTotalGradePoints(points);
-  }, [courses]);
+  }, [courses, setCourses]);
 
   const handleAddCourse = () => {
-    if (newCourse.name && newCourse.score) {
-      const score = parseFloat(newCourse.score);
+    let finalScore = 0;
+    
+    if (newCourse.isDetailed) {
+      const examW = parseFloat(newCourse.examWeight) || 60;
+      const caW = 100 - examW;
+
+      let totalCAScore = 0;
+      let totalCAMax = 0;
+
+      newCourse.assessments.forEach(a => {
+        totalCAScore += (parseFloat(a.score) || 0);
+        totalCAMax += (parseFloat(a.max) || 0);
+      });
+
+      let caAchieved = 0;
+      if (totalCAMax > 0) {
+        caAchieved = (totalCAScore / totalCAMax) * caW;
+      } else {
+        caAchieved = totalCAScore;
+      }
+
+      let examAchieved = parseFloat(newCourse.examScore) || 0;
+
+      finalScore = caAchieved + examAchieved;
+    } else {
+      finalScore = parseFloat(newCourse.score) || 0;
+    }
+
+    if (newCourse.name && finalScore >= 0) {
+      const score = Math.min(100, Math.max(0, finalScore)); // clamp between 0 and 100
       const grade = getGradeFromScore(score);
       const gradePoint = GRADE_POINTS[grade];
 
-      const course = {
+      const courseObject = {
         ...newCourse,
-        id: Date.now(),
+        id: newCourse.id || Date.now(),
         score: score,
         grade: grade,
         gradePoint: gradePoint
       };
 
-      setCourses([...courses, course]);
+      if (courses.some(c => c.id === courseObject.id)) {
+        setCourses(courses.map(c => c.id === courseObject.id ? courseObject : c));
+      } else {
+        setCourses([...courses, courseObject]);
+      }
+      
       setNewCourse({
         name: '',
         creditHours: 3,
-        score: ''
+        score: '',
+        isDetailed: false,
+        examWeight: 60,
+        examScore: '',
+        assessments: [
+          { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+          { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+        ]
       });
       setShowAddForm(false);
     }
@@ -105,34 +193,102 @@ const GPACalculator = () => {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center flex-wrap gap-2">
                 <CardTitle className="text-indigo-900 text-lg flex items-center gap-2">
                   <Calculator className="w-5 h-5 text-indigo-500" />
                   Course List
                 </CardTitle>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => setShowAddForm(true)}
-                  className="bg-indigo-600 text-white"
-                >
-                  <Plus size={16} className="mr-1" />
-                  Add Course
-                </Button>
+                <div className="flex gap-2">
+                  {/* Sync button removed - handled automatically in useEffect */}
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => {
+                      setNewCourse({
+                        name: '',
+                        creditHours: 3,
+                        score: '',
+                        isDetailed: false,
+                        examWeight: 60,
+                        examScore: '',
+                        assessments: [
+                          { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+                          { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+                        ]
+                      });
+                      setShowAddForm(true);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="bg-indigo-600 text-white"
+                  >
+                    <Plus size={16} className="mr-1" />
+                    Add Result
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
               {showAddForm && (
                 <div className="mb-6 bg-gray-50 p-6 rounded-2xl border border-gray-100 animate-in fade-in slide-in-from-top-2">
-                  <h4 className="font-bold text-gray-900 mb-4">Calculate New Grade</h4>
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-bold text-gray-900">Calculate New Grade</h4>
+                    <button 
+                      className="text-xs font-bold bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-full hover:bg-indigo-200 transition-colors"
+                      onClick={() => setNewCourse({...newCourse, isDetailed: !newCourse.isDetailed})}
+                    >
+                      {newCourse.isDetailed ? 'Switch to Simple Score' : 'Use Detailed Breakdown (Quizzes & Assignments)'}
+                    </button>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input
-                      type="text"
-                      placeholder="Course Name (Optional)"
-                      value={newCourse.name}
-                      onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
-                      className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                    />
+                    {newCourse.id ? (
+                      <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl font-bold text-indigo-700 flex items-center justify-between">
+                        <span>{newCourse.name || 'Unknown Course'}</span>
+                        <span className="text-xs bg-white px-2 py-1 rounded-md border border-indigo-100">Editing</span>
+                      </div>
+                    ) : (
+                      <select
+                        value={newCourse.id || ''}
+                        onChange={(e) => {
+                          const selectedId = e.target.value;
+                          if (selectedId === 'new') {
+                             setNewCourse({
+                              name: '',
+                              creditHours: 3,
+                              score: '',
+                              isDetailed: false,
+                              examWeight: 60,
+                              examScore: '',
+                              assessments: [
+                                { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+                                { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+                              ]
+                            });
+                          } else {
+                            const c = courses.find(course => course.id.toString() === selectedId);
+                            if (c) {
+                              setNewCourse({
+                                ...c,
+                                isDetailed: c.isDetailed || false,
+                                examWeight: c.examWeight || 60,
+                                examScore: c.examScore || '',
+                                assessments: c.assessments || [
+                                  { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+                                  { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+                                ]
+                              });
+                            }
+                          }
+                        }}
+                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all cursor-pointer font-medium"
+                      >
+                        <option value="new">+ Add Custom Result</option>
+                        <optgroup label="Select Course">
+                          {courses.map(c => (
+                            <option key={c.id} value={c.id.toString()}>{c.name || 'Untitled Course'}</option>
+                          ))}
+                        </optgroup>
+                      </select>
+                    )}
 
                     <select
                       value={newCourse.creditHours}
@@ -145,19 +301,151 @@ const GPACalculator = () => {
                       <option value={4}>4 Credit Hours</option>
                     </select>
 
-                    <input
-                      type="number"
-                      placeholder="Score (0-100)"
-                      value={newCourse.score}
-                      onChange={(e) => setNewCourse({ ...newCourse, score: e.target.value })}
-                      min="0"
-                      max="100"
-                      className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all md:col-span-2"
-                    />
+                    {/* Show a Custom course name input only if 'Add Custom Result' is selected (id doesn't match a stored course) */}
+                    {(!newCourse.id || !courses.some(c => c.id === newCourse.id)) && (
+                      <input
+                        type="text"
+                        placeholder="Course Name..."
+                        value={newCourse.name}
+                        onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
+                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all md:col-span-2"
+                      />
+                    )}
+
+                    {!newCourse.isDetailed ? (
+                      <input
+                        type="number"
+                        placeholder="Total Score (0-100)"
+                        value={newCourse.score}
+                        onChange={(e) => setNewCourse({ ...newCourse, score: e.target.value })}
+                        min="0"
+                        max="100"
+                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all md:col-span-2"
+                      />
+                    ) : (
+                      <div className="md:col-span-2 space-y-4 pt-4 pb-4 border-t border-gray-100 mt-2">
+                        <div className="flex justify-between items-center bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                          <p className="text-xs font-bold text-indigo-700 uppercase tracking-widest flex items-center gap-2">
+                            Scheme
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs font-bold text-gray-500">Exam Weight:</label>
+                            <select 
+                              value={newCourse.examWeight || 60} 
+                              onChange={(e) => setNewCourse({...newCourse, examWeight: Number(e.target.value)})}
+                              className="p-1.5 rounded-lg bg-white text-xs border border-indigo-200 font-bold text-indigo-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                              <option value={40}>40% Exam / 60% CA</option>
+                              <option value={50}>50% Exam / 50% CA</option>
+                              <option value={60}>60% Exam / 40% CA</option>
+                              <option value={70}>70% Exam / 30% CA</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3 mt-4">
+                          <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest">Continuous Assessment ({(100 - (parseFloat(newCourse.examWeight) || 60))}%)</p>
+                          {newCourse.assessments.map((ca, index) => (
+                            <div key={ca.id} className="flex gap-2 bg-gray-50 p-2 rounded-xl border border-gray-100 items-center">
+                              <input 
+                                type="text" 
+                                placeholder="Name" 
+                                value={ca.name}
+                                onChange={(e) => {
+                                  const arr = [...newCourse.assessments];
+                                  arr[index].name = e.target.value;
+                                  setNewCourse({...newCourse, assessments: arr});
+                                }}
+                                className="flex-1 p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200"
+                              />
+                              <input 
+                                type="number" 
+                                placeholder="Score" 
+                                value={ca.score}
+                                onChange={(e) => {
+                                  const arr = [...newCourse.assessments];
+                                  arr[index].score = e.target.value;
+                                  setNewCourse({...newCourse, assessments: arr});
+                                }}
+                                className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200 text-center font-bold"
+                              />
+                              <span className="text-gray-400 font-bold text-sm">/</span>
+                              <input 
+                                type="number" 
+                                placeholder="Max" 
+                                value={ca.max}
+                                onChange={(e) => {
+                                  const arr = [...newCourse.assessments];
+                                  arr[index].max = e.target.value;
+                                  setNewCourse({...newCourse, assessments: arr});
+                                }}
+                                className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200 text-center text-gray-500"
+                              />
+                              <button 
+                                onClick={() => {
+                                  setNewCourse({...newCourse, assessments: newCourse.assessments.filter((_, i) => i !== index)})
+                                }}
+                                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          ))}
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => {
+                              setNewCourse({
+                                ...newCourse, 
+                                assessments: [...newCourse.assessments, { id: Date.now(), name: `Assessment ${newCourse.assessments.length + 1}`, score: '', max: 20 }]
+                              })
+                            }}
+                            className="w-full text-indigo-600 border-indigo-100 hover:bg-indigo-50 py-3 border-dashed"
+                          >
+                            <Plus size={14} className="mr-1" /> Add Component
+                          </Button>
+                        </div>
+
+                        <div className="mt-6 pt-4 border-t border-gray-100">
+                           <p className="text-xs font-bold text-green-600 uppercase tracking-widest mb-3">Final Exam ({newCourse.examWeight}%)</p>
+                          <div className="flex items-center gap-2 bg-green-50 p-2 rounded-xl border border-green-100">
+                            <div className="flex-1 px-2 font-bold text-green-700 text-sm">Exam Score</div>
+                            <input 
+                              type="number" 
+                              placeholder="Score" 
+                              value={newCourse.examScore}
+                              onChange={(e) => setNewCourse({...newCourse, examScore: e.target.value})}
+                              className="w-[5.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none border border-green-200 text-center font-bold text-green-700"
+                            />
+                            <span className="text-gray-400 font-bold text-sm">/</span>
+                            <div className="w-[4.5rem] p-2 bg-green-100/50 rounded-lg text-sm font-bold text-green-600 text-center flex items-center justify-center border border-green-200/50">
+                              {newCourse.examWeight}
+                            </div>
+                            <div className="w-[2.2rem]"></div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 p-4 bg-gray-900 text-white rounded-xl flex justify-between items-center shadow-lg">
+                          <div className="text-sm font-medium text-gray-300">Total Course Expected Score</div>
+                          <div className="text-2xl font-black text-indigo-400 flex items-baseline gap-1">
+                            {(() => {
+                              const examW = parseFloat(newCourse.examWeight) || 60;
+                              const caW = 100 - examW;
+                              let tCAScore = 0; let tCAMax = 0;
+                              newCourse.assessments.forEach(a => { tCAScore += (parseFloat(a.score)||0); tCAMax += (parseFloat(a.max)||0); });
+                              let caAchieved = tCAMax > 0 ? (tCAScore / tCAMax) * caW : tCAScore; // scale dynamic total score down to exact actual weight 
+                              let examAchieved = (parseFloat(newCourse.examScore) || 0);
+                              return (caAchieved + examAchieved).toFixed(1);
+                            })()} <span className="text-sm text-gray-500 font-medium">/ 100</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-2 mt-4">
-                    <Button onClick={handleAddCourse} className="bg-indigo-600 text-white">Add Grade</Button>
+                    <Button onClick={handleAddCourse} className="bg-indigo-600 text-white">{newCourse.id ? 'Save Changes' : 'Add Grade'}</Button>
                     <Button variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
                   </div>
                 </div>
@@ -165,7 +453,24 @@ const GPACalculator = () => {
 
               <div className="space-y-3">
                 {courses.map(course => (
-                  <div key={course.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-indigo-100 transition-colors bg-white group shadow-sm">
+                  <div 
+                    key={course.id} 
+                    className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-indigo-100 transition-colors bg-white group shadow-sm cursor-pointer hover:shadow-md"
+                    onClick={() => {
+                      setNewCourse({
+                        ...course,
+                        isDetailed: course.isDetailed || false,
+                        examWeight: course.examWeight || 60,
+                        examScore: course.examScore || '',
+                        assessments: course.assessments || [
+                          { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+                          { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+                        ]
+                      });
+                      setShowAddForm(true);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
                         <span className={`font-bold px-2 py-1 rounded text-sm ${getGradeColor(course.grade)}`}>
@@ -184,7 +489,7 @@ const GPACalculator = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDeleteCourse(course.id)}
+                      onClick={(e) => { e.stopPropagation(); handleDeleteCourse(course.id); }}
                       className="text-gray-300 hover:text-red-500"
                     >
                       <Trash2 size={16} />
