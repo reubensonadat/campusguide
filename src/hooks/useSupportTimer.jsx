@@ -8,6 +8,9 @@ export const useSupportTimer = () => {
     const processedRef = useRef(false);
 
     useEffect(() => {
+        // Disable automatic support modal trigger - we rely on advertisements and manual support now
+        return;
+        
         // Only run once per mount/session
         if (processedRef.current) return;
         processedRef.current = true;

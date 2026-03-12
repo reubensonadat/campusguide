@@ -14,7 +14,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
   const [paymentResult, setPaymentResult] = useState(null);
   const [showWhySupport, setShowWhySupport] = useState(false);
 
-  const quickAmounts = [5, 10, 20, 50];
+  const quickAmounts = [5, 10, 15, 20];
 
   const handlePaymentSuccess = (result) => {
     // Create a clean result object without circular references
@@ -95,7 +95,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
             <div className="text-center pb-2">
               <h3 className="text-lg font-bold text-gray-900 mb-1">Make a Difference</h3>
               <p className="text-gray-600 text-sm leading-relaxed px-4">
-                Help keep the UCC Campus Guide <strong className="text-indigo-600">free</strong> and <strong className="text-indigo-600">ad-free</strong> for every student.
+                Help keep the UCC Campus Guide <strong className="text-indigo-600">alive</strong> and <strong className="text-indigo-600">growing</strong> for every student.
               </p>
             </div>
 
@@ -233,7 +233,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                 <ul className="mt-3 space-y-2 text-xs text-gray-600">
                   <li className="flex gap-2 items-start">
                     <CheckCircle className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-                    <span>Keep the app <strong className="text-indigo-700">ad-free</strong> for everyone</span>
+                    <span>Support the <strong className="text-indigo-700">continued development</strong> of the app</span>
                   </li>
                   <li className="flex gap-2 items-start">
                     <CheckCircle className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
