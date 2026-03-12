@@ -78,10 +78,7 @@ const Home = () => {
         return;
       }
 
-      // 2. All announcements seen — show a random ad (pick once per session)
-      const sessionKey = 'ucc_session_ad_id';
-      const cachedAdId = sessionStorage.getItem(sessionKey);
-
+      // 2. All announcements seen — show a random ad (pick a new one on each mount)
       const { data: adsData } = await supabase
         .from('advertisements')
         .select('*')
@@ -101,13 +98,8 @@ const Home = () => {
         return;
       }
 
-      let ad;
-      if (cachedAdId) {
-        ad = adsData.find(a => String(a.id) === cachedAdId) || adsData[Math.floor(Math.random() * adsData.length)];
-      } else {
-        ad = adsData[Math.floor(Math.random() * adsData.length)];
-        sessionStorage.setItem(sessionKey, String(ad.id));
-      }
+      // Pick a random ad from the list
+      const ad = adsData[Math.floor(Math.random() * adsData.length)];
       setFeaturedContent({ kind: 'ad', data: ad });
     };
 
@@ -148,7 +140,7 @@ const Home = () => {
         <div className="px-4 -mt-8 relative z-10 space-y-3">
 
           {/* ── Today's Classes ─────────────────────── */}
-          <div className="bg-white rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.10)] p-5">
+          <div className="bg-white rounded-md shadow-[0_8px_32px_rgba(0,0,0,0.10)] p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-md bg-indigo-600 flex items-center justify-center">
@@ -174,7 +166,7 @@ const Home = () => {
             ) : (
               <div className="space-y-2">
                 {todaysClasses.map((cls, i) => (
-                  <div key={i} className="bg-indigo-50 rounded-lg px-4 py-3 flex items-center gap-3">
+                  <div key={i} className="bg-indigo-50 rounded-xl px-4 py-3 flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-indigo-700 truncate">
@@ -199,7 +191,7 @@ const Home = () => {
                 <button
                   key={i}
                   onClick={action.action}
-                  className="flex-none flex flex-col items-center gap-1.5 bg-white rounded-lg px-4 py-3 shadow-sm ring-1 ring-black/5 active:scale-95 transition-transform"
+                  className="flex-none flex flex-col items-center gap-1.5 bg-white rounded-xl px-4 py-3 shadow-sm ring-1 ring-black/5 active:scale-95 transition-transform"
                 >
                   <Icon size={18} className="text-indigo-600" />
                   <span className="text-[10px] font-semibold text-gray-600 whitespace-nowrap">{action.title}</span>
@@ -224,11 +216,11 @@ const Home = () => {
             }
 
             return (
-              <div className="bg-white rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden">
+              <div className="bg-white rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden">
                 {/* header */}
                 <div className="flex items-center justify-between px-5 pt-5 pb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-md bg-indigo-600 flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-xl bg-indigo-600 flex items-center justify-center">
                       <Megaphone size={14} className="text-white" />
                     </div>
                     <span className="text-sm font-bold text-gray-900">{isAd ? 'Featured' : 'Announcement'}</span>
@@ -245,7 +237,7 @@ const Home = () => {
 
                 {/* content */}
                 <div className="px-5 py-4">
-                  <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded mb-2 text-indigo-600 bg-indigo-50">
+                  <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-indigo-600 bg-indigo-50">
                     {isAd ? 'SPONSORED' : 'OFFICIAL'}
                   </span>
                   <h3 className="text-sm font-bold text-gray-900 leading-snug mb-1">{d.title}</h3>
@@ -274,7 +266,7 @@ const Home = () => {
           })()}
 
           {/* ── Support ──────────────────────────────── */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-lg border border-indigo-100 shadow-sm p-5">
+          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-xl border border-indigo-100 shadow-sm p-5">
             <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-100/30 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
             <div className="relative z-10 flex items-center gap-4">
               <img src="/Savings.png" alt="Support" className="w-24 h-24 object-contain flex-shrink-0 drop-shadow-md" />
@@ -285,7 +277,7 @@ const Home = () => {
                 </p>
                 <Button
                   onClick={() => actions?.setShowSupportModal(true)}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-md text-xs shadow-md shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-md shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
                   Support Now
                 </Button>
@@ -323,11 +315,11 @@ const Home = () => {
               </p>
               <div className="flex items-center gap-4">
                 <Button variant="primary" onClick={() => navigate('/guide')}
-                  className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-semibold shadow-soft btn-hover flex items-center gap-3">
+                  className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold shadow-soft btn-hover flex items-center gap-3">
                   <BookOpen size={18} /> Open Guide
                 </Button>
                 <Button variant="outline" onClick={() => navigate('/tools')}
-                  className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-2xl font-semibold shadow-sm flex items-center gap-3">
+                  className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-xl font-semibold shadow-sm flex items-center gap-3">
                   <Wrench size={18} className="text-gray-400" /> Open Tools
                 </Button>
               </div>
@@ -355,10 +347,10 @@ const Home = () => {
                 const Icon = action.icon;
                 return (
                   <button key={index} onClick={action.action}
-                    className="group relative overflow-hidden text-left p-5 bg-white border border-gray-100 rounded-3xl hover:border-indigo-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 flex items-center justify-between flex-none"
+                    className="group relative overflow-hidden text-left p-5 bg-white border border-gray-100 rounded-xl hover:border-indigo-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 flex items-center justify-between flex-none"
                     style={{ minWidth: 'min(24rem, calc((100vw - 96px) / 4))' }}>
                     <div className="flex items-center gap-4 relative z-10">
-                      <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                      <div className="w-14 h-14 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                         <Icon size={24} className="text-indigo-600" />
                       </div>
                       <h4 className="font-bold text-gray-900 text-base">{action.title}</h4>
@@ -374,7 +366,7 @@ const Home = () => {
 
           {/* Support */}
           <section>
-            <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-[2.5rem] p-10 sm:p-14 border border-indigo-100 shadow-sm">
+            <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-xl p-10 sm:p-14 border border-indigo-100 shadow-sm">
               <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-100/30 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
               <div className="relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 text-center lg:text-left">
                 <div className="flex-1">
@@ -385,7 +377,7 @@ const Home = () => {
                   <div className="max-w-sm mx-auto lg:mx-0 space-y-5">
                     <PaymentButton amount={5} email={supportEmail}
                       onPaymentSuccess={handlePaymentSuccess} onPaymentError={handlePaymentError}
-                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-indigo-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2">
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-indigo-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2">
                       Support Now (GH₵5)
                     </PaymentButton>
                     <p className="text-sm font-medium text-gray-500">

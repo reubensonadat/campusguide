@@ -75,44 +75,6 @@ const Advertise = () => {
 
     const activePackage = AD_PACKAGES.find(p => p.id === selectedPackage);
 
-    // Social Proof Live Counter (Deterministic Global Sync)
-    const [liveCount, setLiveCount] = useState(0);
-
-    useEffect(() => {
-        const calculateDeterministicCount = () => {
-            const now = new Date();
-            const hour = now.getHours();
-            const minute = now.getMinutes();
-            const chunk5s = Math.floor(now.getSeconds() / 5); // 5-second global pulse
-
-            // 1. Base traffic by hour (Global for everyone in this hour)
-            let base = 0;
-            if (hour >= 6 && hour < 12) base = 3200;      // Morning peak
-            else if (hour >= 12 && hour < 17) base = 1800; // Afternoon steady
-            else if (hour >= 17 && hour < 24) base = 800;  // Evening wind down
-            else base = 180;                               // Night/Dawn
-
-            // 2. Minute-based fluctuation (Deterministic for everyone)
-            // We use a simple hash of (Year + Month + Day + Hour + Minute) to get a stable offset
-            const daySeed = now.getFullYear() + now.getMonth() + now.getDate();
-            const minuteSeed = daySeed + hour + minute;
-            const minuteOffset = (minuteSeed * 13) % 400; // Shifts by up to 400 throughout the hour
-
-            // 3. The 5-second "Flicker" (Pulse together for everyone)
-            // Shifts by +/- 8 every 5 seconds globally
-            const flickerSeed = minuteSeed + chunk5s;
-            const flicker = (flickerSeed * 7) % 17 - 8;
-
-            setLiveCount(base + minuteOffset + flicker);
-        };
-
-        // Initial calc
-        calculateDeterministicCount();
-
-        // Sync every second to ensure the 5s "chunk" updates correctly
-        const interval = setInterval(calculateDeterministicCount, 1000);
-        return () => clearInterval(interval);
-    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -340,7 +302,7 @@ const Advertise = () => {
                 {/* STEP 1: GUIDELINES */}
                 {step === 1 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-6">
+                        <div className="w-16 h-16 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-6">
                             <CheckCircle2 size={32} />
                         </div>
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-4">Quality & Trust Framework</h2>
@@ -349,32 +311,32 @@ const Advertise = () => {
                         </p>
 
                         {/* Social Proof Badge */}
-                        <div className="flex items-center gap-3 mb-8 bg-white border border-rose-100 px-5 py-3 rounded-2xl shadow-sm transition-all duration-300 pointer-events-none">
+                        <div className="flex items-center gap-3 mb-8 bg-white border border-rose-100 px-5 py-3 rounded-xl shadow-sm transition-all duration-300 pointer-events-none">
                             <div className="relative flex h-3 w-3">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
                             </div>
                             <span className="font-extrabold text-sm text-gray-900 tracking-tight">
-                                <span className="text-rose-600">{liveCount.toLocaleString()}</span> Students currently active
+                                Reach <span className="text-rose-600">5,000+ Students</span> across campus
                             </span>
                         </div>
 
                         <div className="space-y-4 mb-10">
-                            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
+                            <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex gap-4">
                                 <div className="mt-1 text-emerald-500"><Check size={20} /></div>
                                 <div>
                                     <h4 className="font-bold text-gray-900">100% Student Focus</h4>
                                     <p className="text-sm text-gray-500 mt-1">Offers must be relevant to university life (Events, Food, Tech, Transport, etc).</p>
                                 </div>
                             </div>
-                            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
+                            <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex gap-4">
                                 <div className="mt-1 text-indigo-500"><Check size={20} /></div>
                                 <div>
                                     <h4 className="font-bold text-gray-900">Manual Verification</h4>
                                     <p className="text-sm text-gray-500 mt-1">Ads are reviewed within 2 hours. If rejected for violating terms, you receive a 90% refund as a result of paystack charges.</p>
                                 </div>
                             </div>
-                            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
+                            <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex gap-4">
                                 <div className="mt-1 text-pink-500"><Check size={20} /></div>
                                 <div>
                                     <h4 className="font-bold text-gray-900">Direct WhatsApp Connections</h4>
@@ -385,7 +347,7 @@ const Advertise = () => {
 
                         <button
                             onClick={nextStep}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5"
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5"
                         >
                             I Agree, Start Setup
                         </button>
@@ -511,7 +473,7 @@ const Advertise = () => {
                             <button
                                 onClick={nextStep}
                                 disabled={!isStep2Valid}
-                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all"
+                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all"
                             >
                                 Continue to Media
                             </button>
@@ -530,7 +492,7 @@ const Advertise = () => {
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Campaign Flyer (16:9 or Square)</label>
 
-                                <div className={`relative border-2 rounded-3xl flex flex-col items-center justify-center text-center transition-colors cursor-pointer group overflow-hidden ${formData.imagePreview ? 'border-solid border-indigo-100 bg-black/5' : 'border-dashed border-gray-300 p-8 hover:bg-gray-50 hover:border-indigo-400 bg-gray-50'}`}>
+                                <div className={`relative border-2 rounded-xl flex flex-col items-center justify-center text-center transition-colors cursor-pointer group overflow-hidden ${formData.imagePreview ? 'border-solid border-indigo-100 bg-black/5' : 'border-dashed border-gray-300 p-8 hover:bg-gray-50 hover:border-indigo-400 bg-gray-50'}`}>
 
                                     <input
                                         type="file"
@@ -586,7 +548,7 @@ const Advertise = () => {
                             <button
                                 onClick={nextStep}
                                 disabled={!formData.description.trim() || formData.description.length > 300 || !formData.imagePreview}
-                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all"
+                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all"
                             >
                                 Continue to Packages
                             </button>
@@ -601,13 +563,13 @@ const Advertise = () => {
                         <p className="text-gray-500 mb-6 font-medium">Preview your ad, select your placement tier, and duration.</p>
 
                         {/* Social Proof Badge for Checkout */}
-                        <div className="flex items-center gap-3 mb-8 bg-indigo-50/50 border border-indigo-100 px-5 py-3 rounded-2xl shadow-sm w-fit transition-all duration-300 pointer-events-none">
+                        <div className="flex items-center gap-3 mb-8 bg-indigo-50/50 border border-indigo-100 px-5 py-3 rounded-xl shadow-sm w-fit transition-all duration-300 pointer-events-none">
                             <div className="relative flex h-3 w-3 shrink-0">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
                             </div>
                             <span className="font-extrabold text-[13px] sm:text-sm text-gray-900 tracking-tight">
-                                <span className="text-indigo-600">{liveCount.toLocaleString()}</span> Students are online right now looking for deals
+                                Monopolize student attention on the most visited app pages
                             </span>
                         </div>
 
@@ -624,13 +586,13 @@ const Advertise = () => {
                                     return (
                                         <div
                                             key={pkg.id}
-                                            className={`relative transition-all duration-300 rounded-[2rem] border-2 p-1 bg-white
+                                            className={`relative transition-all duration-300 rounded-xl border-2 p-1 bg-white
                                                 ${isSelected ? C.border + ' shadow-xl shadow-' + pkg.color + '-200/40' : 'border-transparent shadow-sm hover:shadow-md'}
                                             `}
                                         >
-                                            <div className={`rounded-[1.75rem] p-6 border ${isSelected ? C.lightBorder : 'border-gray-100'}`}>
+                                            <div className={`rounded-xl p-6 border ${isSelected ? C.lightBorder : 'border-gray-100'}`}>
                                                 <div className="flex items-start gap-4 mb-5">
-                                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isSelected ? C.iconBg + ' ' + C.text : 'bg-gray-100 text-gray-500'}`}>
+                                                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${isSelected ? C.iconBg + ' ' + C.text : 'bg-gray-100 text-gray-500'}`}>
                                                         <Icon size={24} />
                                                     </div>
                                                     <div>
@@ -651,7 +613,7 @@ const Advertise = () => {
                                                             <div
                                                                 key={idx}
                                                                 onClick={() => handlePriceSelection(pkg.id, price.days, price.price)}
-                                                                className={`relative cursor-pointer flex flex-col items-center justify-center py-4 px-2 rounded-2xl border-2 transition-all ${isSpecificPriceSelected
+                                                                className={`relative cursor-pointer flex flex-col items-center justify-center py-4 px-2 rounded-xl border-2 transition-all ${isSpecificPriceSelected
                                                                     ? C.border + ' ' + C.highlightBg
                                                                     : 'border-gray-100 bg-gray-50 hover:bg-gray-100/80'
                                                                     }`}
@@ -710,7 +672,7 @@ const Advertise = () => {
                         </div>
 
                         {/* Summary & Checkout Stick to bottom of screen on mobile, inline on desktop */}
-                        <div className="mt-8 bg-white p-6 sm:p-8 rounded-[2rem] border border-gray-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <div className="mt-8 bg-white p-6 sm:p-8 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
                             <div className="w-full sm:w-auto text-center sm:text-left">
                                 <span className="font-bold text-gray-500 block mb-1">Total to Pay</span>
                                 <div className="font-black text-3xl sm:text-4xl text-gray-900 tracking-tight">GH₵{calculatedPrice}.00</div>
@@ -724,7 +686,7 @@ const Advertise = () => {
                                     amount={calculatedPrice}
                                     email={"vendor@uccguide.com"}
                                     onPaymentSuccess={handleSuccess}
-                                    className="w-full py-5 rounded-2xl font-bold text-white text-lg shadow-xl shadow-indigo-200 transition-all hover:-translate-y-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700"
+                                    className="w-full py-5 rounded-xl font-bold text-white text-lg shadow-xl shadow-indigo-200 transition-all hover:-translate-y-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700"
                                 >
                                     <span id="submit-ad-text">Pay & Submit Ad</span> <ExternalLink size={20} />
                                 </PaymentButton>

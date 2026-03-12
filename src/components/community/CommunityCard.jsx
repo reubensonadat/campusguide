@@ -19,7 +19,7 @@ const CommunityCard = ({ post }) => {
         : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200";
 
     return (
-        <div className="bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-gray-100 mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 h-full">
+        <div className="bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-gray-100 mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 h-full">
 
             {/* Full Image Container (Flyer) */}
             <div className="relative w-full bg-gray-100 flex items-center justify-center shrink-0 lg:h-64">
@@ -28,16 +28,18 @@ const CommunityCard = ({ post }) => {
                     alt={title}
                     className="w-full h-auto max-h-[500px] object-contain lg:h-full lg:object-cover transition-transform duration-500 group-hover:scale-105 block"
                 />
-                {displayTag && (
-                    <div className={`absolute top-4 left-4 ${tagColor} backdrop-blur-md px-3 py-1.5 rounded-[12px] text-xs font-bold tracking-widest uppercase shadow-sm flex items-center gap-1.5`}>
-                        {isAd && <Tag size={12} />}
-                        {displayTag}
-                    </div>
-                )}
             </div>
 
             {/* Post Content */}
             <div className="p-6 flex-1 flex flex-col min-h-0">
+                {displayTag && (
+                    <div className="flex mb-3">
+                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xl text-[10px] font-bold tracking-widest uppercase ${isAd ? 'bg-amber-50 text-amber-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                            {isAd && <Tag size={10} />}
+                            {displayTag}
+                        </span>
+                    </div>
+                )}
                 <h3 className="text-xl sm:text-[22px] font-bold text-gray-900 leading-tight mb-3 group-hover:text-indigo-600 transition-colors line-clamp-2 shrink-0">
                     {title}
                 </h3>
@@ -66,7 +68,7 @@ const CommunityCard = ({ post }) => {
                                 href={link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[16px] transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}
+                                className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}
                             >
                                 {buttonText} {isAd && <ExternalLink size={16} />}
                             </a>
