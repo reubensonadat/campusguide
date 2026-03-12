@@ -324,16 +324,16 @@ const GPACalculator = () => {
                       />
                     ) : (
                       <div className="md:col-span-2 space-y-4 pt-4 pb-4 border-t border-gray-100 mt-2">
-                        <div className="flex justify-between items-center bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center bg-indigo-50/50 p-3 rounded-xl border border-indigo-100 gap-3">
                           <p className="text-xs font-bold text-indigo-700 uppercase tracking-widest flex items-center gap-2">
                             Scheme
                           </p>
-                          <div className="flex items-center gap-2">
-                            <label className="text-xs font-bold text-gray-500">Exam Weight:</label>
+                          <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <label className="text-xs font-bold text-gray-500 whitespace-nowrap">Exam Weight:</label>
                             <select 
                               value={newCourse.examWeight || 60} 
                               onChange={(e) => setNewCourse({...newCourse, examWeight: Number(e.target.value)})}
-                              className="p-1.5 rounded-lg bg-white text-xs border border-indigo-200 font-bold text-indigo-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                              className="w-full sm:w-auto p-1.5 rounded-lg bg-white text-xs border border-indigo-200 font-bold text-indigo-700 outline-none focus:ring-2 focus:ring-indigo-500"
                             >
                               <option value={40}>40% Exam / 60% CA</option>
                               <option value={50}>50% Exam / 50% CA</option>
@@ -346,7 +346,7 @@ const GPACalculator = () => {
                         <div className="space-y-3 mt-4">
                           <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest">Continuous Assessment ({(100 - (parseFloat(newCourse.examWeight) || 60))}%)</p>
                           {newCourse.assessments.map((ca, index) => (
-                            <div key={ca.id} className="flex gap-2 bg-gray-50 p-2 rounded-xl border border-gray-100 items-center">
+                            <div key={ca.id} className="flex flex-wrap sm:flex-nowrap gap-2 bg-gray-50 p-2 rounded-xl border border-gray-100 items-center">
                               <input 
                                 type="text" 
                                 placeholder="Name" 
@@ -356,39 +356,41 @@ const GPACalculator = () => {
                                   arr[index].name = e.target.value;
                                   setNewCourse({...newCourse, assessments: arr});
                                 }}
-                                className="flex-1 p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200"
+                                className="w-full sm:flex-1 p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200"
                               />
-                              <input 
-                                type="number" 
-                                placeholder="Score" 
-                                value={ca.score}
-                                onChange={(e) => {
-                                  const arr = [...newCourse.assessments];
-                                  arr[index].score = e.target.value;
-                                  setNewCourse({...newCourse, assessments: arr});
-                                }}
-                                className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200 text-center font-bold"
-                              />
-                              <span className="text-gray-400 font-bold text-sm">/</span>
-                              <input 
-                                type="number" 
-                                placeholder="Max" 
-                                value={ca.max}
-                                onChange={(e) => {
-                                  const arr = [...newCourse.assessments];
-                                  arr[index].max = e.target.value;
-                                  setNewCourse({...newCourse, assessments: arr});
-                                }}
-                                className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200 text-center text-gray-500"
-                              />
-                              <button 
-                                onClick={() => {
-                                  setNewCourse({...newCourse, assessments: newCourse.assessments.filter((_, i) => i !== index)})
-                                }}
-                                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
-                              >
-                                <Trash2 size={16} />
-                              </button>
+                              <div className="flex flex-1 sm:flex-none justify-end sm:justify-center items-center gap-2 w-full sm:w-auto">
+                                <input 
+                                  type="number" 
+                                  placeholder="Score" 
+                                  value={ca.score}
+                                  onChange={(e) => {
+                                    const arr = [...newCourse.assessments];
+                                    arr[index].score = e.target.value;
+                                    setNewCourse({...newCourse, assessments: arr});
+                                  }}
+                                  className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200 text-center font-bold"
+                                />
+                                <span className="text-gray-400 font-bold text-sm">/</span>
+                                <input 
+                                  type="number" 
+                                  placeholder="Max" 
+                                  value={ca.max}
+                                  onChange={(e) => {
+                                    const arr = [...newCourse.assessments];
+                                    arr[index].max = e.target.value;
+                                    setNewCourse({...newCourse, assessments: arr});
+                                  }}
+                                  className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200 text-center text-gray-500"
+                                />
+                                <button 
+                                  onClick={() => {
+                                    setNewCourse({...newCourse, assessments: newCourse.assessments.filter((_, i) => i !== index)})
+                                  }}
+                                  className="p-2 ml-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
                             </div>
                           ))}
                           
@@ -409,20 +411,22 @@ const GPACalculator = () => {
 
                         <div className="mt-6 pt-4 border-t border-gray-100">
                            <p className="text-xs font-bold text-green-600 uppercase tracking-widest mb-3">Final Exam ({newCourse.examWeight}%)</p>
-                          <div className="flex items-center gap-2 bg-green-50 p-2 rounded-xl border border-green-100">
-                            <div className="flex-1 px-2 font-bold text-green-700 text-sm">Exam Score</div>
-                            <input 
-                              type="number" 
-                              placeholder="Score" 
-                              value={newCourse.examScore}
-                              onChange={(e) => setNewCourse({...newCourse, examScore: e.target.value})}
-                              className="w-[5.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none border border-green-200 text-center font-bold text-green-700"
-                            />
-                            <span className="text-gray-400 font-bold text-sm">/</span>
-                            <div className="w-[4.5rem] p-2 bg-green-100/50 rounded-lg text-sm font-bold text-green-600 text-center flex items-center justify-center border border-green-200/50">
-                              {newCourse.examWeight}
+                          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-green-50 p-2 rounded-xl border border-green-100">
+                            <div className="w-full sm:flex-1 px-2 font-bold text-green-700 text-sm mb-2 sm:mb-0">Exam Score</div>
+                            <div className="flex flex-1 sm:flex-none justify-end sm:justify-center items-center gap-2">
+                              <input 
+                                type="number" 
+                                placeholder="Score" 
+                                value={newCourse.examScore}
+                                onChange={(e) => setNewCourse({...newCourse, examScore: e.target.value})}
+                                className="w-[5.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none border border-green-200 text-center font-bold text-green-700"
+                              />
+                              <span className="text-gray-400 font-bold text-sm">/</span>
+                              <div className="w-[4.5rem] p-2 bg-green-100/50 rounded-lg text-sm font-bold text-green-600 text-center flex items-center justify-center border border-green-200/50">
+                                {newCourse.examWeight}
+                              </div>
+                              <div className="w-[2.2rem] hidden sm:block"></div>
                             </div>
-                            <div className="w-[2.2rem]"></div>
                           </div>
                         </div>
 
