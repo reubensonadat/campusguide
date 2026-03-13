@@ -11,8 +11,8 @@ const Tools = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Header Section */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+        <div className="mb-8 text-center md:text-left">
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center md:justify-start gap-2">
             <Sparkles className="w-6 h-6 text-indigo-600" />
             Student Tools
           </h1>
@@ -20,7 +20,7 @@ const Tools = () => {
         </div>
 
         {/* Custom Tab Switcher */}
-        <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-100 w-fit mb-8 flex gap-1">
+        <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-100 w-fit mb-8 mx-auto md:mx-0 flex gap-1">
           <button
             onClick={() => setActiveTool('timetable')}
             className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTool === 'timetable'
