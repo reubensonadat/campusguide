@@ -480,14 +480,16 @@ const GPACalculator = () => {
                         <span className={`font-bold px-2 py-1 rounded text-sm ${getGradeColor(course.grade)}`}>
                           {course.grade}
                         </span>
-                        <span className="font-bold text-gray-900">{course.name || 'Untitled Course'}</span>
+                        <span className="font-bold text-gray-900 truncate max-w-[150px] sm:max-w-none" title={course.name || 'Untitled Course'}>
+                          {course.name || 'Untitled Course'}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-4 mt-2 text-xs font-medium text-gray-400">
-                        <span>{course.creditHours} Credit(s)</span>
-                        <span>•</span>
-                        <span>Score: {course.score}%</span>
-                        <span>•</span>
-                        <span>{course.gradePoint} Points</span>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs font-medium text-gray-400">
+                        <span className="whitespace-nowrap">{course.creditHours} Credit(s)</span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="whitespace-nowrap">Score: {(parseFloat(course.score) || 0).toFixed(1)}%</span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="whitespace-nowrap">{course.gradePoint} Points</span>
                       </div>
                     </div>
                     <Button
