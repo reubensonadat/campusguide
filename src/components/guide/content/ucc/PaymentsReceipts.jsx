@@ -1,212 +1,22 @@
+import React from 'react';
+import { CreditCard, Wallet, Landmark, Smartphone, CheckCircle, Info, ShieldAlert, History } from 'lucide-react';
+import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const PaymentsReceipts = () => {
-  // UCC GUIDE: PAYMENTS & RECEIPTS
-  // "The Pastel Edition" - Verified UCC Data (2025)
-  // Features: Visual Step Cards in Overview, specific 'tabs' configuration for the app.
+  // UCC GUIDE: PAYMENTS & RECEIPTS (RESTORED GOLD EDITION 2025)
 
   const sections = [
     {
       title: "Fee Payments & Receipts",
       summary: "Making payments and keeping proper records.",
-      content: (
-        <div className="space-y-8">
-          {/* --- INTRO --- */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-            <p className="text-gray-700 leading-relaxed">
-              Proper fee payment and meticulous record-keeping are crucial for your smooth academic journey at UCC.
-              Every transaction, from tuition to residential fees, must be made through official channels and verified on the student portal.
-              <strong> Always keep your receipts; they are your only proof of payment.</strong>
-            </p>
-          </div>
-
-          {/* --- PAYMENT CHANNELS GRID --- */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Traditional Payments Card */}
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
-                <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Traditional</span>
-                Bank Payments
-              </h4>
-              <p className="text-sm text-blue-800/70 mb-4">Pay directly at designated bank branches for secure transactions.</p>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>GCB Bank</strong> <span className="text-xs ml-auto text-gray-500">Preferred</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Zenith Bank</strong> <span className="text-xs ml-auto text-gray-500">Available</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Prudential Bank</strong> <span className="text-xs ml-auto text-gray-500">On-campus</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Digital Payments Card */}
-            <div className="bg-emerald-50 p-6 rounded-xl border border-emerald-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-emerald-900 text-lg mb-3 flex items-center">
-                <span className="bg-emerald-200 text-emerald-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Digital</span>
-                Online & Mobile
-              </h4>
-              <p className="text-sm text-emerald-800/70 mb-4">Convenient online payment platforms for quick and easy transactions.</p>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Transflow</strong> <span className="text-xs ml-auto text-gray-500">Official</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Smartpay</strong> <span className="text-xs ml-auto text-gray-500">Integrated</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Mobile Money</strong> <span className="text-xs ml-auto text-gray-500">MTN/AirtelTigo</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* --- DEPARTMENTAL DUES CARD (NEW) --- */}
-          <div className="bg-purple-50 p-6 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-300 mt-6 md:col-span-2">
-            <h4 className="font-bold text-purple-900 text-lg mb-3 flex items-center">
-              <span className="bg-purple-200 text-purple-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Mandatory</span>
-              Departmental Dues
-            </h4>
-            <p className="text-sm text-purple-800/70 mb-4">
-              Separate from school fees. Paid to your Department's Student Association (e.g., PASAG, MASA, etc.).
-            </p>
-            <div className="grid md:grid-cols-2 gap-4">
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-start bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-1.5"></span>
-                  <span><strong>First Years Pay More:</strong> Freshers pay a higher amount (includes Souvenirs/T-shirt).</span>
-                </li>
-                <li className="flex items-start bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-1.5"></span>
-                  <span><strong>Verification:</strong> Payment is manually verified at the Department table.</span>
-                </li>
-              </ul>
-              <div className="bg-white/60 p-3 rounded text-sm text-gray-600 italic">
-                "You must pay your dues before you are allowed to do your manual course registration signing (if required) or collect souvenirs."
-              </div>
-            </div>
-          </div>
-
-
-          {/* --- PAYMENT PROCESS AS SUBTLE COLORED CARDS --- */}
-          <div className="pt-4">
-            <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
-              <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
-              The Payment Cycle
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-
-              {/* Step 1 - Subtle Blue */}
-              <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-sky-900 text-lg">Check Fees</h5>
-                  <span className="text-3xl font-bold text-sky-200/80 -mt-1">01</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-sky-700 font-semibold mb-2">Verify Amount</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Check the official <strong>Fee Structure</strong> on the UCC website for your program and level to avoid over or underpayment.
-                </p>
-              </div>
-
-              {/* Step 2 - Subtle Indigo */}
-              <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-indigo-900 text-lg">Generate Invoice</h5>
-                  <span className="text-3xl font-bold text-indigo-200/80 -mt-1">02</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-indigo-700 font-semibold mb-2">Portal Action</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Log in to the <strong>Student Portal</strong> to generate a payment invoice. This invoice contains the correct details for payment.
-                </p>
-              </div>
-
-              {/* Step 3 - Subtle Purple */}
-              <div className="bg-violet-50 p-5 rounded-xl border border-violet-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-violet-900 text-lg">Make Payment</h5>
-                  <span className="text-3xl font-bold text-violet-200/80 -mt-1">03</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-violet-700 font-semibold mb-2">Approved Channel</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Pay using any <strong>approved channel</strong>. Always use your Student ID as the primary reference.
-                </p>
-              </div>
-
-              {/* Step 4 - Subtle Amber */}
-              <div className="bg-amber-50 p-5 rounded-xl border border-amber-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-amber-900 text-lg">Secure Receipt</h5>
-                  <span className="text-3xl font-bold text-amber-200/80 -mt-1">04</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-amber-700 font-semibold mb-2">Proof of Payment</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Collect the <strong>official receipt</strong> from the bank or save the transaction confirmation from digital payments. This is crucial.
-                </p>
-              </div>
-
-              {/* Step 5 - Subtle Teal */}
-              <div className="bg-teal-50 p-5 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-teal-900 text-lg">Verify</h5>
-                  <span className="text-3xl font-bold text-teal-200/80 -mt-1">05</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-teal-700 font-semibold mb-2">Final Check</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Log back into the portal after 24-48 hours to <strong>verify your payment</strong> has reflected. If not, contact the Finance Directorate.
-                </p>
-              </div>
-
-            </div>
-          </div >
-        </div >
-      ),
-      keyPoints: [
-        "Multiple payment channels available (Bank, Online, Mobile Money).",
-        "Always keep payment receipts; they are your only proof.",
-        "Use your Student ID, not Reference Number, for payments.",
-        "Payment deadlines are strictly enforced.",
-        "It can take 24-48 hours for payments to reflect on the portal."
-      ],
+      
       steps: [
-        {
-          title: "Check Fee Structure",
-          description: "Verify the correct fees for your program and level on the official UCC website to avoid errors."
-        },
-        {
-          title: "Generate Invoice on Portal",
-          description: "Log in to the Student Portal and generate a payment invoice. This ensures you pay the correct amount to the right account."
-        },
-        {
-          title: "Choose Payment Method",
-          description: "Select from bank payment (GCB, Zenith, Prudential), online payment (Transflow, Smartpay), or Mobile Money."
-        },
-        {
-          title: "Make Payment",
-          description: "Complete the transaction using your Student ID as the reference number. Double-check all details before confirming."
-        },
-        {
-          title: "Secure Your Receipt",
-          description: "Collect the physical receipt from the bank teller or save the digital confirmation SMS/email. This is your proof of payment."
-        },
-        {
-          title: "Verify on Student Portal",
-          description: "After 24-48 hours, log back into the student portal to confirm that your payment has been successfully reflected."
-        }
-      ],
-      tips: [
-        "Pay well before the deadline to avoid last-minute system issues.",
-        "Take a clear photo of your physical receipt and store it securely online.",
-        "If paying via Mobile Money, save the transaction ID and confirmation message.",
-        "For large payments, consider bank transfers for better record-keeping.",
-        "Always ask for a receipt, even if the system is 'down'."
+        { title: "Check Fee Structure", description: "Verify the correct fees for your program and level on the official UCC website to avoid errors." },
+        { title: "Generate Invoice on Portal", description: "Log in to the Student Portal and generate a payment invoice for the correct amount." },
+        { title: "Choose Payment Method", description: "Select from bank payment (GCB, Zenith, Prudential), online (Transflow, Smartpay), or Mobile Money." },
+        { title: "Make Payment", description: "Complete the transaction using your Student ID as the reference. Double-check all details." },
+        { title: "Secure Your Receipt", description: "Collect the physical bank receipt or save the digital confirmation SMS/email immediately." },
+        { title: "Verify on Student Portal", description: "After 24-48 hours, log back into the student portal to confirm that your payment has reflected." }
       ],
       commonMistakes: [
         "Paying to wrong or unauthorized bank accounts.",
@@ -216,6 +26,7 @@ const PaymentsReceipts = () => {
         "Paying without getting an official receipt or transaction ID."
       ],
       consequences: "Incorrect or unverified payments will lead to being barred from examinations, inability to access halls, and obstruction of academic registration.",
+      resources: [], // Filled if needed
       checklist: [
         { text: "Checked correct fee schedule", checked: false },
         { text: "Generated invoice on portal", checked: false },
@@ -223,17 +34,97 @@ const PaymentsReceipts = () => {
         { text: "Paid with correct Student ID", checked: false },
         { text: "Secured official receipt", checked: false },
         { text: "Verified payment on portal", checked: false }
-      ]
+      ],
+
+      content: (
+        <div className="space-y-12">
+          <InfoBlock 
+            title="Payment Integrity"
+            icon={CreditCard}
+            content="Every transaction, from tuition to residential fees, must be made through official channels and verified on the student portal. <strong>Always keep your receipts; they are your only legal proof of payment.</strong>"
+          />
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <ActionCard 
+               title="Bank Channels" 
+               desc="Pay directly at designated bank branches."
+               details={[
+                 "<strong>GCB Bank</strong>: The primary and preferred channel.",
+                 "<strong>Zenith Bank</strong>: Reliable alternative for all fees.",
+                 "<strong>Prudential Bank</strong>: Available at on-campus branches.",
+                 "<strong>Transflow</strong>: The universal bank payment protocol."
+               ]}
+            />
+            <ActionCard 
+               title="Digital Channels" 
+               desc="Online and mobile payment platforms."
+               details={[
+                 "<strong>Smartpay</strong>: Integrated directly with the portal.",
+                 "<strong>MTN Mobile Money</strong>: Fast and widely accessible.",
+                 "<strong>AirtelTigo Cash</strong>: Supported via digital portals.",
+                 "<strong>Bank Apps</strong>: Use the Transflow option in-app."
+               ]}
+            />
+          </div>
+
+          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="relative">
+                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                   <Landmark size={24} /> Departmental Dues
+                </h4>
+                <p className="text-slate-600 font-medium leading-relaxed mb-6">
+                   Separate from school fees. Paid to your Department's Student Association (e.g., PASAG, MASA). These dues fund souvenirs, t-shirts, and social events.
+                </p>
+                <div className="grid md:grid-cols-2 gap-6">
+                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
+                      <h5 className="font-black text-indigo-700 mb-2 uppercase tracking-wider text-[10px]">Freshers Policy</h5>
+                      <p className="text-sm text-slate-600 font-medium">First-year students pay a higher one-time fee to cover departmental welfare and souvenirs.</p>
+                   </div>
+                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
+                      <h5 className="font-black text-indigo-700 mb-2 uppercase tracking-wider text-[10px]">Verification</h5>
+                      <p className="text-sm text-slate-600 font-medium">Dues are manually verified at the Department table. This is often required before manual registration signing.</p>
+                   </div>
+                </div>
+             </div>
+          </div>
+
+          <div className="pt-4">
+            <h3 className="font-black text-gray-900 text-2xl mb-8 flex items-center">
+              <span className="bg-indigo-50 text-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center text-sm mr-4 shadow-sm">i</span>
+              The Payment Cycle
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+               <CycleTile step="01" title="Verify Amount" text="Check the official Fee Structure on the UCC website for your specific program." />
+               <CycleTile step="02" title="Invoice" text="Generate a payment invoice on the portal to ensure correct accounting." />
+               <CycleTile step="03" title="Pay with ID" text="Use your Student ID as the primary reference, not your index number." />
+               <CycleTile step="04" title="Secure Receipt" text="Keep physical receipts safe. Take a photo as a digital backup." />
+               <CycleTile step="05" title="Final Check" text="Log back into the portal after 48 hours to ensure payment reflection." />
+            </div>
+          </div>
+        </div>
+      )
     }
   ];
 
   const tabs = [
     { id: 'overview', label: 'Guide & Context' },
     { id: 'steps', label: 'Payment Cycle' },
-    { id: 'warnings', label: 'Payment Pitfalls' },
+    { id: 'warnings', label: 'Pitfalls' },
   ];
 
   return { sections, tabs };
 };
+
+const CycleTile = ({ step, title, text }) => (
+  <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+    <div className="flex justify-between items-start mb-2">
+      <h5 className="font-black text-slate-900 text-lg leading-tight">{title}</h5>
+      <span className="text-3xl font-black text-indigo-50 group-hover:text-indigo-100 transition-colors">{step}</span>
+    </div>
+    <p className="text-sm text-slate-600 leading-relaxed font-medium">{text}</p>
+  </div>
+);
 
 export default PaymentsReceipts;

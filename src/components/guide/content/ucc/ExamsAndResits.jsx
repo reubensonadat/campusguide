@@ -1,211 +1,14 @@
 import React from 'react';
+import { AlertCircle, FileText, ShieldAlert, GraduationCap, ArrowRight, Info, CheckCircle } from 'lucide-react';
+import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const ExamsAndResits = () => {
-    // UCC GUIDE: EXAMS AND RESITS
-    // Detailed information on exam conduct, missing exams, and the resit policy.
+    // UCC GUIDE: EXAMS AND RESITS (RESTORED GOLD EDITION 2025)
 
     const sections = [
         {
             title: "Exams & Resits",
             summary: "Critical information on handling missed exams and understanding the resit policy.",
-
-            content: (
-                <div className="space-y-8">
-
-                    {/* --- MISSING AN EXAM --- */}
-                    <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
-                        <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
-                            Missed Exams
-                            <span className="ml-3 text-xs font-bold bg-slate-200 text-slate-700 px-2 py-1 rounded uppercase">Guidance</span>
-                        </h3>
-
-                        <p className="text-gray-700 mb-4 leading-relaxed">
-                            We beg you: <strong>Try your absolute best not to miss an exam.</strong> However, unforeseen circumstances like severe illness may occur.
-                        </p>
-
-                        <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                            <h4 className="font-bold text-slate-900 text-base mb-2">Protocol for Valid Absence</h4>
-                            <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                                If you miss an exam for a genuine reason (e.g., hospital admission), you must formally notify the university.
-                            </p>
-                            <ul className="space-y-3">
-                                <li className="flex items-start text-sm">
-                                    <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-bold mr-2 mt-0.5">STEP 1</span>
-                                    <span className="text-gray-700">Write an <strong>official letter</strong> to your Department explaining why you missed the paper.</span>
-                                </li>
-                                <li className="flex items-start text-sm">
-                                    <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-bold mr-2 mt-0.5">STEP 2</span>
-                                    <span className="text-gray-700">Attach strict <strong>proof</strong> (e.g., medical reports, admission letters).</span>
-                                </li>
-                                <li className="flex items-start text-sm">
-                                    <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-bold mr-2 mt-0.5">STEP 3</span>
-                                    <span className="text-gray-700">Your Department will appeal to the <strong>Examination Board</strong> on your behalf.</span>
-                                </li>
-                            </ul>
-                            <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded text-sm text-blue-900">
-                                <strong>Outcome:</strong> If approved, you will write the paper during the Resit period, but you will be graded as a <strong>regular exam candidate</strong> (your grade is not capped/penalized). This is the only way to "escape" the resit penalty.
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* --- THE REALITY OF RESITS --- */}
-                    <div className="bg-red-50 p-6 rounded-xl border border-red-100">
-                        <h3 className="text-xl font-bold text-red-900 mb-4 flex items-center">
-                            Resit Policy
-                            <span className="ml-3 text-xs font-bold bg-red-200 text-red-800 px-2 py-1 rounded uppercase">Important</span>
-                        </h3>
-
-                        <p className="text-gray-700 mb-6 leading-relaxed">
-                            If you fail a course (Grade E), that failure remains on your transcript. You must register for and pass a <strong>Resit Examination</strong> to rectify your CGPA.
-                        </p>
-
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {/* Rule Warning */}
-                            <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm md:col-span-2">
-                                <h4 className="font-bold text-red-800 flex items-center mb-2">
-                                    <span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
-                                    The 9-Credit Hour Rule (Dismissal)
-                                </h4>
-                                <p className="text-sm text-gray-700 leading-relaxed">
-                                    If you fail a total of <strong>more than 9 credit hours</strong> in an academic year (e.g., getting 'E' in four 3-credit courses across Sem 1 & 2), the university <strong>will withdraw (sack) you</strong> regardless of your level (100-400).
-                                    <br />
-                                    <span className="text-red-600 font-bold mt-1 block">Always register for resits immediately to avoid this.</span>
-                                </p>
-                            </div>
-
-                            {/* Registration Process */}
-                            <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm">
-                                <h4 className="font-bold text-gray-800 mb-2">Registration is Mandatory</h4>
-                                <p className="text-sm text-gray-600 leading-relaxed">
-                                    When resit registration opens (usually at a specific time of year):
-                                </p>
-                                <ul className="list-disc list-inside mt-2 text-sm text-gray-600 space-y-1">
-                                    <li>You <strong>must</strong> register online.</li>
-                                    <li>If you appear at the exam hall without registering, submitting a paper is impossible.</li>
-                                    <li>Effectively, you will "fail" again by absence.</li>
-                                </ul>
-                            </div>
-
-                            {/* Grading Reality */}
-                            <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm">
-                                <h4 className="font-bold text-gray-800 mb-2">Grading Reality</h4>
-                                <p className="text-sm text-gray-600 leading-relaxed">
-                                    It is extremely difficult to obtain an 'A' in a resit paper.
-                                </p>
-                                <ul className="list-disc list-inside mt-2 text-sm text-gray-600 space-y-1">
-                                    <li><strong>Likely Grades:</strong> C+, B (if lucky).</li>
-                                    <li><strong>Unlikely Grades:</strong> B+, A.</li>
-                                    <li>The resit grade will "salvage" your CGPA by averaging with the previous fail, lifting your score.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="mt-6 p-4 bg-red-100/50 rounded-lg text-sm text-red-900 italic text-center">
-                            "The 'E' will still be visible in your portal history, but the Resit grade comes to save your current CGPA."
-                        </div>
-                    </div>
-
-                    {/* --- PROGRESSION/WITHDRAWAL AFTER 2ND RESIT --- */}
-                    <div className="bg-orange-50 p-6 rounded-xl border border-orange-100">
-                        <h3 className="text-xl font-bold text-orange-900 mb-4 flex items-center">
-                            Progression/Withdrawal After Second Re-sit Examination
-                            <span className="ml-3 text-xs font-bold bg-orange-200 text-orange-800 px-2 py-1 rounded uppercase">Policy 9.1.3</span>
-                        </h3>
-
-                        <div className="space-y-4">
-                            <div className="bg-white p-4 rounded-lg border border-orange-100 shadow-sm">
-                                <h4 className="font-bold text-orange-900 mb-3">Core Courses vs University-Wide Courses</h4>
-                                <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                                    The outcome after your 2nd re-sit exam depends on the type of course you failed:
-                                </p>
-                                
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div className="bg-red-50 p-4 rounded border border-red-100">
-                                        <h5 className="font-bold text-red-800 mb-2 flex items-center">
-                                            <span className="w-2 h-2 rounded-full bg-red-600 mr-2"></span>
-                                            Failing a Core Course
-                                        </h5>
-                                        <p className="text-sm text-gray-700">
-                                            <strong>Result:</strong> <span className="text-red-700 font-bold">WITHDRAWAL from the program</span> with no progression to the next level.
-                                        </p>
-                                    </div>
-
-                                    <div className="bg-blue-50 p-4 rounded border border-blue-100">
-                                        <h5 className="font-bold text-blue-800 mb-2 flex items-center">
-                                            <span className="w-2 h-2 rounded-full bg-blue-600 mr-2"></span>
-                                            Failing a University-Wide Course
-                                        </h5>
-                                        <p className="text-sm text-gray-700">
-                                            <strong>Result:</strong> <span className="text-blue-700 font-bold">PROGRESSION to Level 200 ON PROBATION</span> with chances to retake the course.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white p-4 rounded-lg border border-orange-100 shadow-sm">
-                                <h4 className="font-bold text-orange-900 mb-2 flex items-center">
-                                    <span className="text-lg mr-2">ℹ️</span>
-                                    Level 100 Withdrawal Policy
-                                </h4>
-                                <p className="text-sm text-gray-700">
-                                    If you withdraw at Level 100, you <strong>can reapply for admission the following year</strong>. You may be re-admitted and start fresh, depending on university policies.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* --- PROGRESSION FROM LEVEL 200 UPWARDS --- */}
-                    <div className="bg-purple-50 p-6 rounded-xl border border-purple-100">
-                        <h3 className="text-xl font-bold text-purple-900 mb-4 flex items-center">
-                            Progression from Level 200 Upwards
-                            <span className="ml-3 text-xs font-bold bg-purple-200 text-purple-800 px-2 py-1 rounded uppercase">Policy 9.1.3</span>
-                        </h3>
-
-                        <p className="text-gray-700 mb-4 leading-relaxed">
-                            To progress from Level 200 → 300 or Level 300 → 400, a student <strong>must meet ALL three conditions</strong>:
-                        </p>
-
-                        <div className="space-y-3">
-                            <div className="flex gap-4 bg-white p-4 rounded-lg border border-purple-100">
-                                <div className="flex-shrink-0">
-                                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-600 text-white font-bold text-sm">(A)</span>
-                                </div>
-                                <div>
-                                    <h5 className="font-bold text-gray-800">Minimum CGPA of 1.0</h5>
-                                    <p className="text-sm text-gray-600">Your cumulative grade point average must be at least 1.0.</p>
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4 bg-white p-4 rounded-lg border border-purple-100">
-                                <div className="flex-shrink-0">
-                                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-600 text-white font-bold text-sm">(B)</span>
-                                </div>
-                                <div>
-                                    <h5 className="font-bold text-gray-800">Earn at Least 30 Credits for the Current Academic Year</h5>
-                                    <p className="text-sm text-gray-600">You must complete at least 30 credit hours during the academic year to show adequate progress.</p>
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4 bg-white p-4 rounded-lg border border-purple-100">
-                                <div className="flex-shrink-0">
-                                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-600 text-white font-bold text-sm">(C)</span>
-                                </div>
-                                <div>
-                                    <h5 className="font-bold text-gray-800">Not Lose More Than 9 Credits Among Registered Courses</h5>
-                                    <p className="text-sm text-gray-600">By the end of the academic year, you cannot have failed (or dropped) more than 9 credit hours from your registered courses.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <p className="text-sm text-red-900">
-                                <strong>Consequence:</strong> Failing any of these conditions leads to <strong>Probation</strong> or <strong>External-Candidate Status</strong>, depending on the severity of the failure.
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-            ),
 
             keyPoints: [
                 "Missing an exam without proof leads to an automatic E (Fail).",
@@ -214,9 +17,96 @@ const ExamsAndResits = () => {
                 "You must actively register for resits; it is not automatic.",
                 "Resits happen at a specific scheduled time of the year - watch the noticeboards.",
                 "Failing a core course at Level 100 results in withdrawal; failing a university-wide course allows progression to Level 200 on probation.",
-                "To progress from Level 200+, you need: CGPA ≥ 1.0, at least 30 credits earned, and not more than 9 failed credits in the year.",
-                "CGPA (Cumulative Grade Point Average) is calculated from ALL semesters, not just the average of semester GPAs."
-            ]
+                "To progress from Level 200+, you need: CGPA ≥ 1.0, at least 30 credits earned, and not more than 9 failed credits in the year."
+            ],
+
+            content: (
+                <div className="space-y-12">
+                    <InfoBlock 
+                        title="The Golden Rule"
+                        icon={ShieldAlert}
+                        content="We beg you: <strong>Try your absolute best not to miss an exam.</strong> However, unforeseen circumstances like severe illness may occur. In such cases, the University provides a specific appeal protocol."
+                    />
+
+                    <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+                        <div className="relative">
+                            <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                                <FileText size={24} /> Protocol for Valid Absence
+                            </h4>
+                            <p className="text-slate-600 font-medium leading-relaxed mb-8">
+                                If you miss an exam for a genuine reason (e.g., hospital admission), you must formally notify the university within 48 hours.
+                            </p>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <StepItem step="1" title="Write Letter" text="Submit an official letter to your Department explaining the absence." />
+                                <StepItem step="2" title="Attach Proof" text="Provide strict medical reports or official hospital admission letters." />
+                                <StepItem step="3" title="Dept Appeal" text="Your Department will appeal to the Examination Board for a deferred grade." />
+                            </div>
+                            <div className="mt-8 bg-indigo-50 p-6 rounded-3xl border border-indigo-100">
+                                <p className="text-sm text-indigo-900 font-bold leading-relaxed">
+                                    <strong>Outcome:</strong> If approved, you will write the paper during the Resit period, but you will be graded as a <strong>regular candidate</strong> (no grade penalty).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                        <ActionCard 
+                            title="The 9-Credit Hour Rule" 
+                            desc="The threshold for University dismissal."
+                            details={[
+                                "Fail > 9 credits in a year = Dismissal.",
+                                "Applies to all levels (100-400).",
+                                "E.g. Four 3-credit courses failed.",
+                                "<strong>Action</strong>: Register for resits immediately."
+                            ]}
+                        />
+                        <ActionCard 
+                            title="Resit Reality" 
+                            desc="How resits impact your CGPA."
+                            details={[
+                                "Failure remains on your transcript history.",
+                                "Resit grade averages with the 'E'.",
+                                "Registration is <strong>Mandatory</strong> on portal.",
+                                "Grades are rarely higher than B."
+                            ]}
+                        />
+                    </div>
+
+                    <div className="bg-orange-50/50 p-8 rounded-[2.5rem] border border-orange-100">
+                        <h4 className="font-black text-orange-900 text-xl mb-6 flex items-center gap-2">
+                            <GraduationCap size={24} /> Policy 9.1.3 (Level 100)
+                        </h4>
+                        <div className="grid md:grid-cols-2 gap-8">
+                            <div className="bg-white p-6 rounded-3xl border border-orange-100">
+                                <h5 className="font-bold text-red-700 mb-2">Fail Core Course</h5>
+                                <p className="text-sm text-slate-600 font-medium"><strong>Result:</strong> Withdrawal from the program with no progression.</p>
+                            </div>
+                            <div className="bg-white p-6 rounded-3xl border border-orange-100">
+                                <h5 className="font-bold text-indigo-700 mb-2">Fail Uni-Wide Course</h5>
+                                <p className="text-sm text-slate-600 font-medium"><strong>Result:</strong> Progression to Level 200 on <strong>Probation</strong>.</p>
+                            </div>
+                        </div>
+                        <p className="mt-6 text-xs text-orange-800 font-bold italic">* Withdrawn students can reapply for admission the following year.</p>
+                    </div>
+
+                    <div className="bg-slate-900 text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
+                        <div className="relative space-y-8">
+                            <h4 className="text-2xl font-black tracking-tight">Progression Protocol (Level 200+)</h4>
+                            <p className="text-slate-400 font-medium">To progress to the next level, you must satisfy ALL three conditions:</p>
+                            <div className="space-y-4">
+                                <ConditionItem label="A" title="Minimum CGPA of 1.0" text="Your cumulative grade point average must be at least 1.0." />
+                                <ConditionItem label="B" title="30 Credits Minimum" text="Earn at least 30 credit hours during the academic year." />
+                                <ConditionItem label="C" title="Max 9 Failed Credits" text="Cannot lose more than 9 credit hours from registered courses." />
+                            </div>
+                            <div className="bg-white/10 p-4 rounded-2xl border border-white/10 text-xs text-slate-300">
+                                <strong>Consequence:</strong> Failing any of these leads to Probation or External-Candidate Status.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
         }
     ];
 
@@ -226,5 +116,23 @@ const ExamsAndResits = () => {
 
     return { sections, tabs };
 };
+
+const StepItem = ({ step, title, text }) => (
+    <div className="space-y-2">
+        <div className="text-3xl font-black text-indigo-100">0{step}</div>
+        <h5 className="font-black text-slate-900 leading-tight">{title}</h5>
+        <p className="text-xs text-slate-500 font-medium leading-relaxed">{text}</p>
+    </div>
+);
+
+const ConditionItem = ({ label, title, text }) => (
+    <div className="flex gap-4 bg-white/5 p-5 rounded-2xl border border-white/10">
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center font-black text-sm">{label}</div>
+        <div>
+            <h5 className="font-bold text-white text-sm">{title}</h5>
+            <p className="text-xs text-slate-400 mt-1">{text}</p>
+        </div>
+    </div>
+);
 
 export default ExamsAndResits;

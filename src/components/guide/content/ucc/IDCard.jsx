@@ -1,164 +1,16 @@
+import React from 'react';
+import { CreditCard, Info } from 'lucide-react';
+import { ActionCard, InfoBlock } from '../../GuideStyles';
+
 const IDCard = () => {
-  // UCC GUIDE: STUDENT ID CARD (ACCURATE 2025 EDITION)
-  // Verified with actual UCC procedures – picture schedules, collection flow, and exam requirements.
+  // UCC GUIDE: STUDENT ID CARD (FULL 2025 EDITION - RESTORED)
 
   const sections = [
     {
       title: "Student ID Card Collection",
       summary: "How ID card pictures are taken, how cards are printed, and how to collect yours.",
-      content: (
-        <div className="space-y-8">
-
-          {/* INTRO */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-            <p className="text-gray-700 leading-relaxed">
-              Your student ID card is mainly used for <strong>examinations</strong>.
-              It is not required for most campus facilities.
-              You will receive it only after your department organizes the official photo-taking
-              exercise and a specific bank selected by the university prints the cards.
-            </p>
-          </div>
-
-          {/* TRUE FEATURES */}
-          <div className="grid md:grid-cols-2 gap-6">
-
-            {/* USES */}
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
-                <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded mr-2 uppercase">Uses</span>
-                Where You Need It
-              </h4>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Examination Entry</strong> <span className="text-xs ml-auto text-gray-500">Required</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Student Identity Verification</strong>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>No special access</strong> <span className="text-xs ml-auto text-gray-500">E.g., Library</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* IMPORTANT REAL NOTES */}
-            <div className="bg-amber-50 p-6 rounded-xl border border-amber-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-amber-900 text-lg mb-3 flex items-center">
-                <span className="bg-amber-200 text-amber-800 text-xs font-bold px-2 py-1 rounded mr-2 uppercase">Important</span>
-                What to Know
-              </h4>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-amber-400 rounded-full mr-3"></span>
-                  <strong>No Renewal</strong> (Valid for entire program)
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-amber-400 rounded-full mr-3"></span>
-                  <strong>Do NOT wait to take your picture</strong> (It delays your card)
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-amber-400 rounded-full mr-3"></span>
-                  <strong>Course reps announce collection</strong>
-                </li>
-              </ul>
-            </div>
-
-            {/* LOST ID CARD WARNING */}
-            <div className="bg-red-50 p-6 rounded-xl border border-red-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-red-900 text-lg mb-3 flex items-center">
-                <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded mr-2 uppercase">⚠️ Lost Your ID?</span>
-                Replacement Process
-              </h4>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-start bg-white/60 p-3 rounded">
-                  <span className="w-2 h-2 bg-red-400 rounded-full mr-3 mt-1.5"></span>
-                  <div>
-                    <strong className="block mb-1">Go to MIS Office</strong>
-                    <span className="text-xs text-gray-600">Located near the Education Library</span>
-                  </div>
-                </li>
-                <li className="flex items-start bg-white/60 p-3 rounded">
-                  <span className="w-2 h-2 bg-red-400 rounded-full mr-3 mt-1.5"></span>
-                  <div>
-                    <strong className="block mb-1">Report ID Card Missing</strong>
-                    <span className="text-xs text-gray-600">Inform them your ID card is lost</span>
-                  </div>
-                </li>
-                <li className="flex items-start bg-white/60 p-3 rounded">
-                  <span className="w-2 h-2 bg-red-400 rounded-full mr-3 mt-1.5"></span>
-                  <div>
-                    <strong className="block mb-1">Pay Replacement Fee</strong>
-                    <span className="text-xs text-gray-600">Fee required for new card processing</span>
-                  </div>
-                </li>
-                <li className="flex items-start bg-white/60 p-3 rounded">
-                  <span className="w-2 h-2 bg-red-400 rounded-full mr-3 mt-1.5"></span>
-                  <div>
-                    <strong className="block mb-1">Wait for Processing</strong>
-                    <span className="text-xs text-gray-600">MIS office will handle the replacement</span>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* TRUE COLLECTION PROCESS */}
-          <div className="pt-4">
-            <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
-              <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
-              Collection Process (Real UCC Flow)
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-
-              {/* Step 1 */}
-              <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all">
-                <h5 className="font-bold text-sky-900 text-lg">1. Follow Department Schedule</h5>
-                <p className="text-sm mt-2 text-gray-600">
-                  UCC announces picture-taking dates by department. Dress formally and go early.
-                </p>
-              </div>
-
-              {/* Step 2 */}
-              <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 hover:shadow-md transition-all">
-                <h5 className="font-bold text-indigo-900 text-lg">2. Take Your Official Photo</h5>
-                <p className="text-sm mt-2 text-gray-600">
-                  Photos are taken at designated locations like CALC, Sam Jonah, or ICT Centre.
-                </p>
-              </div>
-
-              {/* Step 3 */}
-              <div className="bg-violet-50 p-5 rounded-xl border border-violet-100 hover:shadow-md transition-all">
-                <h5 className="font-bold text-violet-900 text-lg">3. Printing by Bank</h5>
-                <p className="text-sm mt-2 text-gray-600">
-                  A specific bank selected by the university prints the ID cards. You cannot collect the card directly there.
-                </p>
-              </div>
-
-              {/* Step 4 */}
-              <div className="bg-amber-50 p-5 rounded-xl border border-amber-100 hover:shadow-md transition-all">
-                <h5 className="font-bold text-amber-900 text-lg">4. Wait for Announcement</h5>
-                <p className="text-sm mt-2 text-gray-600">
-                  Your course reps will announce the exact date and location for collection.
-                </p>
-              </div>
-
-              {/* Step 5 */}
-              <div className="bg-teal-50 p-5 rounded-xl border border-teal-100 hover:shadow-md transition-all">
-                <h5 className="font-bold text-teal-900 text-lg">5. Collect Your ID</h5>
-                <p className="text-sm mt-2 text-gray-600">
-                  Provide your name or index number. Cards are usually distributed by department reps.
-                </p>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      ),
-
+      
+      // --- ALL DATA ARRAYS RESTORED ---
       keyPoints: [
         "ID card is mainly for exams",
         "You must take your photo during department schedule",
@@ -166,7 +18,6 @@ const IDCard = () => {
         "Collection is done through course reps",
         "Admission letter can be used temporarily for mid-sem exams"
       ],
-
       steps: [
         { title: "Department Announces Photo Day", description: "Follow the official photo schedule for your department." },
         { title: "Take Your Formal Picture", description: "Dress formally. This photo appears on your portal and ID card." },
@@ -174,34 +25,114 @@ const IDCard = () => {
         { title: "Wait for Your Course Rep", description: "They will announce when the ID cards are ready." },
         { title: "Collect with Your Name/Index Number", description: "No additional documents required." },
       ],
-
       tips: [
         "Take your photo early to avoid delays",
         "Keep your ID safe — replacement takes time",
         "Take a picture of your ID card as backup",
         "Admission letter works only for early exams"
       ],
-
       resources: [
         { title: "UCC Handbook", description: "General student rules", url: "https://portal.ucc.edu.gh/downloads/hand.pdf" }
       ],
-
       requirements: [
         "Attend the official photo-taking exercise",
         "Formal dress code for the picture"
       ],
-
       operatingHours: [
         { day: "Photo sessions", time: "Based on departmental schedule" },
         { day: "Collection", time: "Announced by course reps" },
       ],
-
       checklist: [
         { text: "Attend photo-taking session", checked: false },
         { text: "Dress formally", checked: false },
         { text: "Wait for course rep announcement", checked: false },
         { text: "Collect ID card", checked: false }
-      ]
+      ],
+
+      // --- FULL TEXT CONTENT RESTORED ---
+      content: (
+        <div className="space-y-12">
+          <InfoBlock 
+            title="Essential Protocol"
+            icon={CreditCard}
+            content="Your student ID card is mainly used for <strong>examinations</strong>. It is not required for most campus facilities. You will receive it only after your department organizes the official photo-taking exercise and a specific bank selected by the university prints the cards."
+          />
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <ActionCard 
+               title="Where You Need It" 
+               desc="Primary uses for your student ID."
+               details={[
+                 "<strong>Examination Entry</strong>: Mandatory for all main exams.",
+                 "<strong>Student Identity Verification</strong>: Official proof of status.",
+                 "<strong>Facility Access</strong>: No special access required for Sam Jonah Library."
+               ]}
+            />
+            <ActionCard 
+               title="Important Rules" 
+               desc="What you must know about your ID card."
+               details={[
+                 "<strong>No Renewal</strong>: Valid for your entire program duration.",
+                 "<strong>Photo Schedule</strong>: Do NOT wait; delays your card issuance.",
+                 "<strong>Collection</strong>: Your course reps will announce batch availability."
+               ]}
+            />
+          </div>
+
+          <div className="pt-4">
+            <h3 className="font-black text-gray-900 text-2xl mb-8 flex items-center">
+              <span className="bg-indigo-50 text-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center text-sm mr-4 shadow-sm">i</span>
+              Collection Process (Real UCC Flow)
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <ProcessTile 
+                step="01" 
+                title="Follow Schedule" 
+                text="UCC announces picture-taking dates by department. Dress formally and go early." 
+              />
+              <ProcessTile 
+                step="02" 
+                title="Official Photo" 
+                text="Photos are taken at designated locations like CALC, Sam Jonah, or ICT Centre." 
+              />
+              <ProcessTile 
+                step="03" 
+                title="Bank Printing" 
+                text="A specific bank selected by the university prints the ID cards. You cannot collect the card directly there." 
+              />
+              <ProcessTile 
+                step="04" 
+                title="Wait for Rep" 
+                text="Your course reps will announce the exact date and location for collection." 
+              />
+              <ProcessTile 
+                step="05" 
+                title="Collect Your ID" 
+                text="Provide your name or index number. Cards are usually distributed by department reps." 
+              />
+            </div>
+          </div>
+
+          <div className="bg-rose-50/50 p-8 rounded-[2.5rem] border border-rose-100">
+             <div className="flex flex-col md:flex-row gap-8 items-start">
+                <div className="space-y-4">
+                   <h4 className="text-xl font-black text-rose-900 flex items-center gap-2">
+                     <span className="bg-rose-100 text-rose-600 px-3 py-1 rounded-lg text-xs uppercase font-black">Replacement</span>
+                     Lost Your ID Card?
+                   </h4>
+                   <p className="text-rose-800/70 text-sm font-medium leading-relaxed max-w-2xl">
+                     Go to the <strong>MIS Office</strong> (Located near the Education Library) to report the loss. You will need to pay a replacement fee before a new card is processed.
+                   </p>
+                </div>
+                <div className="flex flex-col gap-3 w-full md:w-64">
+                   <div className="bg-white/60 p-4 rounded-2xl border border-rose-100 text-xs font-black text-rose-900 uppercase tracking-widest">Report at MIS</div>
+                   <div className="bg-white/60 p-4 rounded-2xl border border-rose-100 text-xs font-black text-rose-900 uppercase tracking-widest">Pay Fee</div>
+                </div>
+             </div>
+          </div>
+        </div>
+      )
     }
   ];
 
@@ -211,7 +142,17 @@ const IDCard = () => {
     { id: 'resources', label: 'Helpful Links' },
   ];
 
-  return { sections, location, tabs };
+  return { sections, tabs };
 };
+
+const ProcessTile = ({ step, title, text }) => (
+  <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+    <div className="flex justify-between items-start mb-2">
+      <h5 className="font-black text-slate-900 text-lg leading-tight">{title}</h5>
+      <span className="text-3xl font-black text-indigo-50 group-hover:text-indigo-100 transition-colors">{step}</span>
+    </div>
+    <p className="text-sm text-slate-600 leading-relaxed font-medium">{text}</p>
+  </div>
+);
 
 export default IDCard;

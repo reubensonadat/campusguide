@@ -87,26 +87,24 @@ const Guide = () => {
                 case 'overview':
                   return (
                     <div className="space-y-6">
-                      {/* Section Header if multiple sections exist (Optional context) */}
-                      {data.sections.length > 1 && (
-                        <div className="mb-4">
-                          <h2 className="text-2xl font-black text-gray-800">{section.title}</h2>
-                          {section.summary && <p className="text-gray-500 font-medium">{section.summary}</p>}
+                      {/* Section Header */}
+                      {sectionIdx > 0 && (
+                        <div className="mb-6 px-1">
+                          <h2 className="text-2xl font-black text-gray-900 tracking-tight">{section.title}</h2>
+                          {section.summary && <p className="text-gray-500 font-medium mt-1">{section.summary}</p>}
                         </div>
                       )}
 
                       {/* Content Card */}
-                      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-700">
-                            <Info className="w-5 h-5" />
-                          </div>
-                          <h3 className="text-xl font-bold text-gray-900">{section.title} Content</h3>
-                        </div>
-                        {/* Only show summary in card if we didn't show it in header above, or contextually */}
-                        {!section.summary ? null : <p className="text-gray-600 leading-relaxed font-medium mb-4">{section.summary}</p>}
+                      <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden relative">
+                        {/* Summary for first section if not in header */}
+                        {sectionIdx === 0 && section.summary && (
+                           <div className="mb-8 border-b border-gray-50 pb-6">
+                              <p className="text-lg text-gray-600 leading-relaxed font-medium">{section.summary}</p>
+                           </div>
+                        )}
 
-                        <div className="prose prose-yellow max-w-none text-gray-600">
+                        <div className="prose prose-indigo max-w-none text-gray-600">
                           {section.content}
                         </div>
                       </div>
@@ -178,21 +176,21 @@ const Guide = () => {
                       {data.sections.length > 1 && section.resources?.length > 0 && (
                         <h3 className="text-lg font-bold text-gray-800 mt-2">{section.title} Resources</h3>
                       )}
-                      <div className="grid gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-1">
                         {section.resources?.map((res, idx) => (
                           <a
                             key={idx}
                             href={res.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="bg-white p-5 rounded-2xl border border-gray-200 hover:border-yellow-400 hover:shadow-md transition-all group"
+                            className="bg-white p-5 rounded-2xl border border-gray-200 hover:border-indigo-400 hover:shadow-md transition-all group flex flex-col justify-between"
                           >
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <h4 className="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">{res.title}</h4>
-                                <p className="text-sm text-gray-500 mt-1">{res.description}</p>
+                            <div>
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{res.title}</h4>
+                                <MousePointer2 className="w-5 h-5 text-gray-300 group-hover:text-indigo-500 transform group-hover:-rotate-45 transition-all" />
                               </div>
-                              <MousePointer2 className="w-5 h-5 text-gray-300 group-hover:text-yellow-500 transform group-hover:-rotate-45 transition-all" />
+                              <p className="text-sm text-gray-500">{res.description}</p>
                             </div>
                           </a>
                         ))}
@@ -374,15 +372,11 @@ const Guide = () => {
             </div>
           ) : (
             <div className="flex-1 lg:overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-32">
-              <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 md:py-16">
+              <div className="w-[95%] mx-auto py-8 md:px-8 md:py-12">
 
                 {/* Topic Header */}
-                <div className="mb-12 border-b border-gray-100 pb-8">
-                  <div className="flex items-center gap-3 text-sm font-bold text-indigo-600 mb-4 bg-indigo-50 w-fit px-3 py-1 rounded-full border border-indigo-100">
-                    <BookOpen className="w-4 h-4" />
-                    {activeCategory}
-                  </div>
-                  <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tight">
+                <div className="mb-10 border-b border-gray-100 pb-10 px-4 md:px-2">
+                  <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 leading-tight tracking-tight">
                     {currentTopicData.data?.sections[0].title}
                   </h1>
 

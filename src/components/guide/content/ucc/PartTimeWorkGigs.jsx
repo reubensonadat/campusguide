@@ -1,195 +1,92 @@
+import React from 'react';
+import { Briefcase, Wallet, Users, Clock, CheckCircle, Info, ShieldAlert, History, ArrowRight, Laptop, BookOpen } from 'lucide-react';
+import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const PartTimeWorkGigs = () => {
-  // UCC GUIDE: PART-TIME WORK & GIGS
-  // "The Pastel Edition" - Verified UCC Data (2025)
-  // Features: Visual Step Cards in Overview, specific 'tabs' configuration for the app.
+  // UCC GUIDE: PART-TIME WORK & GIGS (RESTORED GOLD EDITION 2025)
 
   const sections = [
     {
       title: "Part-time Work Opportunities",
       summary: "Finding and balancing work with studies.",
-      content: (
-        <div className="space-y-8">
-          {/* --- INTRO --- */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-            <p className="text-gray-700 leading-relaxed">
-              Working part-time can provide valuable experience and extra income while studying at UCC.
-              The key is finding opportunities that complement your academic journey rather than compromise it.
-              <strong> Remember, your studies should always come first.</strong>
-            </p>
-          </div>
-
-          {/* --- WORK OPPORTUNITIES GRID --- */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* On-Campus Work Card */}
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
-                <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">On-Campus</span>
-                University Jobs
-              </h4>
-              <p className="text-sm text-blue-800/70 mb-4">Flexible positions within the university that understand your academic schedule.</p>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Library Assistant</strong> <span className="text-xs ml-auto text-gray-500">Flexible Hours</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Lab Assistant</strong> <span className="text-xs ml-auto text-gray-500">Related to Field</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Administrative Support</strong> <span className="text-xs ml-auto text-gray-500">Office Skills</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Off-Campus Gigs Card */}
-            <div className="bg-emerald-50 p-6 rounded-xl border border-emerald-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-emerald-900 text-lg mb-3 flex items-center">
-                <span className="bg-emerald-200 text-emerald-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Off-Campus</span>
-                Local Opportunities
-              </h4>
-              <p className="text-sm text-emerald-800/70 mb-4">Part-time positions in Cape Coast that can accommodate student schedules.</p>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Retail & Hospitality</strong> <span className="text-xs ml-auto text-gray-500">Evenings/Weekends</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Tutoring Services</strong> <span className="text-xs ml-auto text-gray-500">Flexible</span>
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Freelance Gigs</strong> <span className="text-xs ml-auto text-gray-500">Remote Options</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* --- FINDING WORK AS SUBTLE COLORED CARDS --- */}
-          <div className="pt-4">
-            <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
-              <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
-              Finding the Right Opportunity
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-
-              {/* Step 1 - Subtle Blue */}
-              <div className="bg-sky-50 p-5 rounded-xl border border-sky-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-sky-900 text-lg">Update CV</h5>
-                  <span className="text-3xl font-bold text-sky-200/80 -mt-1">01</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-sky-700 font-semibold mb-2">First Step</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Create a professional <strong>CV</strong> highlighting your skills, education, and any previous experience.
-                </p>
-              </div>
-
-              {/* Step 2 - Subtle Indigo */}
-              <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-indigo-900 text-lg">Check Job Board</h5>
-                  <span className="text-3xl font-bold text-indigo-200/80 -mt-1">02</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-indigo-700 font-semibold mb-2">Resources</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Visit the <strong>Career Services Job Board</strong> for on-campus and off-campus opportunities.
-                </p>
-              </div>
-
-              {/* Step 3 - Subtle Purple */}
-              <div className="bg-violet-50 p-5 rounded-xl border border-violet-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-violet-900 text-lg">Apply Early</h5>
-                  <span className="text-3xl font-bold text-violet-200/80 -mt-1">03</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-violet-700 font-semibold mb-2">Be Proactive</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Apply for positions well in advance. <strong>Work-study</strong> programs fill up quickly at the start of semester.
-                </p>
-              </div>
-
-              {/* Step 4 - Subtle Amber */}
-              <div className="bg-amber-50 p-5 rounded-xl border border-amber-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-amber-900 text-lg">Create Schedule</h5>
-                  <span className="text-3xl font-bold text-amber-200/80 -mt-1">04</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-amber-700 font-semibold mb-2">Time Management</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Develop a <strong>study schedule</strong> that accommodates work hours without compromising academic performance.
-                </p>
-              </div>
-
-              {/* Step 5 - Subtle Teal */}
-              <div className="bg-teal-50 p-5 rounded-xl border border-teal-100 hover:shadow-md transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h5 className="font-bold text-teal-900 text-lg">Set Boundaries</h5>
-                  <span className="text-3xl font-bold text-teal-200/80 -mt-1">05</span>
-                </div>
-                <p className="text-xs uppercase tracking-wider text-teal-700 font-semibold mb-2">Balance</p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Limit work to <strong>20 hours/week</strong> during academic periods to ensure adequate study time.
-                </p>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      ),
+      
+      steps: [
+        { title: "Update Your CV", description: "Create a professional CV highlighting your skills and education. Visit Career Services for help." },
+        { title: "Check Job Board", description: "Regularly check the Career Services Job Board for on-campus and off-campus opportunities." },
+        { title: "Apply for Work-Study", description: "Submit applications for on-campus positions early; they fill up quickly in the first month." },
+        { title: "Create Study Schedule", description: "Develop a schedule that allocates sufficient time for classes, studying, work, and rest." },
+        { title: "Set Work Hour Limits", description: "Establish clear boundaries for work hours (max 20 hours/week) to ensure academics don't suffer." },
+        { title: "Track Earnings", description: "Create a budget to manage your income wisely and save for academic expenses." }
+      ],
       keyPoints: [
         "Work-study programs available on campus",
         "Part-time jobs should not exceed 20 hours/week",
-        "Academic performance should not suffer",
-        "Skills gained can boost your CV",
-        "Networking opportunities through work"
-      ],
-      steps: [
-        {
-          title: "Update Your CV",
-          description: "Create a professional CV highlighting your skills, education, and any previous experience. Visit Career Services for assistance."
-        },
-        {
-          title: "Check Job Board",
-          description: "Regularly check the Career Services Job Board for on-campus and off-campus opportunities that match your skills and schedule."
-        },
-        {
-          title: "Apply for Work-Study",
-          description: "Submit applications for on-campus work-study positions early, as they fill up quickly at the start of each semester."
-        },
-        {
-          title: "Create Study Schedule",
-          description: "Develop a comprehensive schedule that allocates sufficient time for classes, studying, work, and rest."
-        },
-        {
-          title: "Set Work Hour Limits",
-          description: "Establish clear boundaries for work hours (max 20 hours/week) to ensure academic performance doesn't suffer."
-        },
-        {
-          title: "Track Earnings & Expenses",
-          description: "Create a budget to manage your income wisely and save for emergencies and academic expenses."
-        }
+        "Academic performance should always be the priority",
+        "Skills gained can boost your future graduate CV"
       ],
       tips: [
-        "Prioritize studies over work",
+        "Prioritize studies over extra shifts",
         "Choose jobs related to your field when possible",
-        "Develop time management skills",
-        "Save portion of earnings for emergencies",
-        "Build professional relationships"
+        "Save a portion of earnings for emergencies",
+        "Build professional relationships with supervisors"
       ],
-
       checklist: [
         { text: "Update CV", checked: false },
         { text: "Check job board", checked: false },
         { text: "Apply for work-study", checked: false },
         { text: "Create study schedule", checked: false },
-        { text: "Set work hours limit", checked: false },
-        { text: "Track earnings", checked: false }
-      ]
+        { text: "Set work hours limit", checked: false }
+      ],
+
+      content: (
+        <div className="space-y-12">
+          <InfoBlock 
+            title="Professional Development"
+            icon={Briefcase}
+            content="Working part-time can provide valuable experience and extra income while studying at UCC. The key is finding opportunities that complement your academic journey rather than compromise it. <strong>Remember, your studies should always come first.</strong>"
+          />
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <ActionCard 
+               title="On-Campus Roles" 
+               desc="Flexible university-managed positions."
+               details={[
+                 "<strong>Library Assistant</strong>: Sam Jonah Lib support.",
+                 "<strong>Lab Assistant</strong>: Technical faculty roles.",
+                 "<strong>Admin Support</strong>: Office help in departments.",
+                 "<strong>Work-Study</strong>: Financial aid linked work."
+               ]}
+            />
+            <ActionCard 
+               title="Off-Campus Gigs" 
+               desc="Opportunities within Cape Coast city."
+               details={[
+                 "<strong>Retail & Hospitality</strong>: Malls & hotels.",
+                 "<strong>Tutoring</strong>: Home classes for SHS students.",
+                 "<strong>Freelance</strong>: Graphic design & data entry.",
+                 "<strong>Events</strong>: Ushering and protocol work."
+               ]}
+            />
+          </div>
+
+          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="relative">
+                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                   <Clock size={24} /> The 20-Hour Rule
+                </h4>
+                <p className="text-slate-600 font-medium leading-relaxed mb-8">
+                   To maintain a First Class or Second Upper CGPA, the University recommends that student workers do not exceed 20 hours of work per week.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                   <WorkTile step="01" title="Update CV" text="Create a clean, one-page professional CV at Career Services." />
+                   <WorkTile step="02" title="Apply Early" text="Work-study slots open in the first two weeks of the semester." />
+                   <WorkTile step="03" title="Set Limits" text="Be firm with employers about your exam and lecture schedule." />
+                </div>
+             </div>
+          </div>
+        </div>
+      )
     }
   ];
 
@@ -200,5 +97,13 @@ const PartTimeWorkGigs = () => {
 
   return { sections, tabs };
 };
+
+const WorkTile = ({ step, title, text }) => (
+  <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+     <div className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-2">Phase {step}</div>
+     <h5 className="font-black text-slate-900 mb-2">{title}</h5>
+     <p className="text-xs text-slate-500 leading-relaxed font-medium">{text}</p>
+  </div>
+);
 
 export default PartTimeWorkGigs;

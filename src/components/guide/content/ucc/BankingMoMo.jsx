@@ -1,119 +1,77 @@
 import React from 'react';
+import { Landmark, Smartphone, ShieldAlert, CreditCard, ArrowRight, Info, CheckCircle, Globe, MapPin } from 'lucide-react';
+import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const BankingMoMo = () => {
-  // UCC GUIDE: BANKING & MOBILE MONEY
-  // Verified Data: 2025 Campus Locations (Science Market vs Old Site)
-  // Focus: Fee Payment Platforms (Transflow/Smartpay) vs General Banking.
+  // UCC GUIDE: BANKING & MOBILE MONEY (RESTORED GOLD EDITION 2025)
 
   const sections = [
     {
       title: "Banking & Finance",
       summary: "Campus Bank Locations, ATMs, and how to pay fees without issues.",
       
-      // --- OVERVIEW CONTENT (Pastel Card Design) ---
-      content: (
-        <div className="space-y-8">
-          {/* --- INTRO CARD --- */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-            <p className="text-gray-700 leading-relaxed">
-              UCC has a robust financial ecosystem. Most major banks are located at the <strong>New Site (Science)</strong>, specifically around the Taxi Rank and Market area. 
-              <strong> GCB Bank</strong> is the primary bank serving the Old Site.
-            </p>
-          </div>
-
-          {/* --- LOCATION BREAKDOWN --- */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Old Site Card */}
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
-                <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">Old Site</span>
-                Southern Campus
-              </h4>
-              <p className="text-sm text-blue-800/70 mb-4">Focus: Administration & Arts</p>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>GCB Bank</strong> (Main Branch near Admin)
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>Ghana Post</strong> (For items & remittances)
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                  <strong>ATM:</strong> GCB (24/7 Access)
-                </li>
-              </ul>
-            </div>
-
-            {/* New Site Card */}
-            <div className="bg-emerald-50 p-6 rounded-xl border border-emerald-100 hover:shadow-md transition-all duration-300">
-              <h4 className="font-bold text-emerald-900 text-lg mb-3 flex items-center">
-                <span className="bg-emerald-200 text-emerald-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mr-2">New Site</span>
-                Science Market Area
-              </h4>
-              <p className="text-sm text-emerald-800/70 mb-4">The Financial Hub (Taxi Rank)</p>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Prudential Bank</strong> (Near Taxi Rank)
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Zenith Bank</strong> (Science Market)
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>Fidelity Bank</strong> (Behind Science Faculty)
-                </li>
-                <li className="flex items-center bg-white/60 p-2 rounded">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                  <strong>ADB</strong> (Agricultural Development Bank)
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* --- FEE PAYMENT PLATFORMS --- */}
-          <div className="pt-4">
-            <h3 className="font-bold text-gray-800 text-xl mb-6 flex items-center">
-              <span className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">i</span>
-              Paying School Fees
-            </h3>
-            
-            <div className="bg-amber-50 border border-amber-100 rounded-xl p-6">
-              <p className="text-amber-900 mb-4 font-medium">
-                Do not just "transfer" money. You must use the correct platform so the portal updates automatically.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded border border-amber-200 text-center">
-                  <div className="text-xs text-gray-500 uppercase mb-1">Prudential & ADB</div>
-                  <div className="font-bold text-gray-800">Transflow</div>
-                </div>
-                <div className="bg-white p-4 rounded border border-amber-200 text-center">
-                  <div className="text-xs text-gray-500 uppercase mb-1">GCB Bank</div>
-                  <div className="font-bold text-gray-800">Smartpay</div>
-                </div>
-                <div className="bg-white p-4 rounded border border-amber-200 text-center">
-                  <div className="text-xs text-gray-500 uppercase mb-1">Zenith Bank</div>
-                  <div className="font-bold text-gray-800">Xpath</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-
-
-      // --- WARNINGS TAB (Financial Safety) ---
-      // Triggered by 'commonMistakes' ID logic from the main app
       commonMistakes: [
         "Paying school fees via standard Mobile Money transfer (It won't reflect on the portal).",
         "Giving your ATM pin to roommates to withdraw cash for you.",
         "Ignoring SMS alerts for withdrawals you didn't make.",
         "Paying fees without quoting your Registration Number / Student ID."
       ],
-      consequences: "If you pay fees using the wrong method (e.g., direct deposit instead of Transflow), you will have to manually chase the Finance Office to update your portal, which can delay your registration by weeks."
+      consequences: "If you pay fees using the wrong method (e.g., direct deposit instead of Transflow), you will have to manually chase the Finance Office to update your portal, which can delay your registration by weeks.",
+
+      content: (
+        <div className="space-y-12">
+          <InfoBlock 
+            title="Financial Hub"
+            icon={Landmark}
+            content="UCC has a robust financial ecosystem. Most major banks are located at the <strong>New Site (Science)</strong>, specifically around the Taxi Rank and Market area. <strong>GCB Bank</strong> is the primary bank serving the Old Site campus."
+          />
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <ActionCard 
+               title="Old Site (Southern)" 
+               desc="Administrative & Arts center banking."
+               details={[
+                 "<strong>GCB Bank</strong>: Main branch near Admin.",
+                 "<strong>Ghana Post</strong>: Items & remittances.",
+                 "<strong>ATM</strong>: GCB (24/7 Access).",
+                 "<strong>Location</strong>: Old Site Taxi Rank area."
+               ]}
+            />
+            <ActionCard 
+               title="New Site (Science)" 
+               desc="The central financial hub (Science Market)."
+               details={[
+                 "<strong>Prudential Bank</strong>: Near Taxi Rank.",
+                 "<strong>Zenith Bank</strong>: Science Market area.",
+                 "<strong>Fidelity Bank</strong>: Behind Science Faculty.",
+                 "<strong>ADB</strong>: Science Market (Main)."
+               ]}
+            />
+          </div>
+
+          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="relative">
+                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                   <Smartphone size={24} /> Paying School Fees
+                </h4>
+                <p className="text-slate-600 font-medium leading-relaxed mb-8">
+                   Do not just "transfer" money. You must use the correct platform so the portal updates automatically. Direct Mobile Money transfers to bank accounts will <strong>NOT</strong> reflect.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                   <PlatformTile bank="Prudential & ADB" platform="Transflow" />
+                   <PlatformTile bank="GCB Bank" platform="Smartpay" />
+                   <PlatformTile bank="Zenith Bank" platform="Xpath" />
+                </div>
+                <div className="mt-8 bg-amber-50 p-6 rounded-3xl border border-amber-100">
+                   <p className="text-xs text-amber-900 font-bold leading-relaxed">
+                      <strong>Security Tip:</strong> UCC staff will NEVER call you to ask for your Mobile Money OTP or ATM Pin for fee processing. Report any suspicious calls to campus security.
+                   </p>
+                </div>
+             </div>
+          </div>
+        </div>
+      )
     }
   ];
 
@@ -124,5 +82,12 @@ const BankingMoMo = () => {
 
   return { sections, tabs };
 };
+
+const PlatformTile = ({ bank, platform }) => (
+  <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100 text-center">
+     <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{bank}</div>
+     <div className="text-xl font-black text-indigo-600">{platform}</div>
+  </div>
+);
 
 export default BankingMoMo;

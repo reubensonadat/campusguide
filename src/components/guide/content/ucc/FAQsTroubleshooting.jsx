@@ -1,94 +1,75 @@
 import React from 'react';
+import { HelpCircle, ShieldAlert, Key, CreditCard, Award, CheckCircle, Info, History, Users, ArrowRight, Laptop, MessageSquare } from 'lucide-react';
+import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const FAQsTroubleshooting = () => {
-  // UCC GUIDE: FAQS & TROUBLESHOOTING
-  // Verified Data: Solutions for Portal Login, Financial Holds, and Missing Grades.
-  // Design: Problem-Solution Card Layout for easy scanning.
+  // UCC GUIDE: FAQS & TROUBLESHOOTING (RESTORED GOLD EDITION 2025)
 
   const sections = [
     {
       title: "Portal & Academic Issues",
       summary: "Quick fixes for when the UCC Portal or your Grades go wrong.",
       
-      // --- OVERVIEW CONTENT ---
       content: (
-        <div className="space-y-8">
-          {/* --- INTRO --- */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-sm">
-            <p className="text-gray-700 leading-relaxed">
-              Technical glitches happen. Before you panic or walk all the way to the MIS office, try these verified fixes for common portal and academic issues.
-            </p>
+        <div className="space-y-12">
+          <InfoBlock 
+            title="Emergency Troubleshooting"
+            icon={HelpCircle}
+            content="Technical glitches happen. Before you panic or walk all the way to the MIS office, try these verified fixes for common portal and academic issues."
+          />
+
+          <div className="grid gap-8">
+            <ActionCard 
+               title="Problem: 'Invalid Credentials'" 
+               desc="Portal refuses login despite correct password."
+               details={[
+                 "<strong>Incognito Mode</strong>: Fixes aggressive caching.",
+                 "<strong>Clear Cache</strong>: Delete browser site data.",
+                 "<strong>Forgot Password</strong>: Reset via institutional email.",
+                 "<strong>Student ID</strong>: Ensure no leading/trailing spaces."
+               ]}
+            />
+            <ActionCard 
+               title="Problem: 'Financial Hold'" 
+               desc="Fees paid but registration is blocked."
+               details={[
+                 "<strong>Wait 24 Hours</strong>: System syncing delay.",
+                 "<strong>Transflow Only</strong>: Direct deposits don't auto-sync.",
+                 "<strong>Cash Office</strong>: Visit Old Admin with your receipt.",
+                 "<strong>Verification</strong>: Check 'Finance' tab in portal."
+               ]}
+            />
+            <ActionCard 
+               title="Problem: Missing Grade / 'IC'" 
+               desc="Results released but one course is blank."
+               details={[
+                 "<strong>Act Early</strong>: Must resolve within 2 weeks.",
+                 "<strong>IC List</strong>: Check department notice boards.",
+                 "<strong>Contact Lecturer</strong>: Bring proof of attendance.",
+                 "<strong>IC Penalty</strong>: You cannot graduate with an IC."
+               ]}
+            />
           </div>
 
-          {/* --- PROBLEM / SOLUTION GRID --- */}
-          <div className="grid gap-6">
-            
-            {/* Issue 1: Portal Login */}
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-              <div className="bg-red-50 px-5 py-3 border-b border-red-100 flex justify-between items-center">
-                <h4 className="font-bold text-red-900">Problem: "Invalid Credentials"</h4>
-                <span className="text-xs font-bold bg-red-200 text-red-800 px-2 py-1 rounded">Portal</span>
-              </div>
-              <div className="p-5">
-                <p className="text-gray-700 mb-3 text-sm">
-                  You are typing the correct password, but the portal refuses to let you in.
-                </p>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
-                  <strong>Solution:</strong> The UCC portal caches old passwords aggressively. 
-                  <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600">
-                    <li>Switch to <strong>Incognito Mode</strong> (Chrome) or Private Window.</li>
-                    <li>Clear your browser cache/history.</li>
-                    <li>If that fails, use the "Forgot Password" link to reset it via your institutional email.</li>
-                  </ul>
+          <div className="bg-indigo-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+             <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+             <div className="relative flex flex-col md:flex-row items-center gap-8">
+                <div className="bg-white/10 p-6 rounded-full border border-white/20">
+                   <MessageSquare size={40} className="text-white" />
                 </div>
-              </div>
-            </div>
-
-            {/* Issue 2: Financial Hold */}
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-              <div className="bg-amber-50 px-5 py-3 border-b border-amber-100 flex justify-between items-center">
-                <h4 className="font-bold text-amber-900">Problem: "Financial Hold"</h4>
-                <span className="text-xs font-bold bg-amber-200 text-amber-800 px-2 py-1 rounded">Registration</span>
-              </div>
-              <div className="p-5">
-                <p className="text-gray-700 mb-3 text-sm">
-                  You have paid fees, but the portal still says you cannot register courses.
-                </p>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
-                  <strong>Solution:</strong> Bank transfers are not instant.
-                  <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600">
-                    <li>Wait <strong>24 hours</strong> after payment for the system to update.</li>
-                    <li>Ensure you paid via <strong>Transflow</strong> (not direct deposit).</li>
-                    <li>If 48 hours pass, take your receipt to the <strong>Cash Office</strong> (Old Admin) or Finance Directorate.</li>
-                  </ul>
+                <div>
+                   <h4 className="text-2xl font-black mb-2">Still Stuck?</h4>
+                   <p className="text-indigo-100 text-xs font-medium leading-relaxed mb-4 max-w-md">
+                      If these steps don't resolve your issue, visit the MIS (Management Information Systems) office located at the Main Library, Ground Floor.
+                   </p>
+                   <div className="inline-flex bg-white text-indigo-900 px-6 py-2 rounded-2xl font-black text-sm uppercase shadow-sm">
+                      Visit MIS Office
+                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Issue 3: Missing Results */}
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-              <div className="bg-blue-50 px-5 py-3 border-b border-blue-100 flex justify-between items-center">
-                <h4 className="font-bold text-blue-900">Problem: Missing Grade / "IC"</h4>
-                <span className="text-xs font-bold bg-blue-200 text-blue-800 px-2 py-1 rounded">Results</span>
-              </div>
-              <div className="p-5">
-                <p className="text-gray-700 mb-3 text-sm">
-                  Your results are released, but one course is blank or marked "IC" (Incomplete).
-                </p>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-100 text-sm">
-                  <strong>Solution:</strong> Act immediately (within 2 weeks).
-                  <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600">
-                    <li>Check the Department Notice Board for "IC Lists".</li>
-                    <li>Contact the <strong>Lecturer</strong> </li>
-                    <li>Do not wait; If you have an IC in your portal, <strong>you cannot graduate</strong>.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
+             </div>
           </div>
         </div>
-      ),
+      )
     }
   ];
 

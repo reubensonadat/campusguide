@@ -1,131 +1,23 @@
 import React from 'react';
+import { BookOpen, RefreshCw, Lock, Terminal, CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const CourseRegistration = () => {
-  // UCC GUIDE: COURSE REGISTRATION
-  // Verified Data: 2025 Academic Policies (Financial Clearance, Core vs Electives)
-  // UPDATES: Added "Rotational Policy" for African Studies/Liberals, ITS/Info Lit pairing, and Auditing.
+  // UCC GUIDE: COURSE REGISTRATION (RESTORED GOLD EDITION 2025)
 
   const sections = [
     {
       title: "Course Registration",
       summary: "Navigating the Portal, Financial Clearance, and the 'Rotational' Course System.",
 
-      // --- OVERVIEW CONTENT ---
-      content: (
-        <div className="space-y-8">
-          {/* --- INTRO CARD --- */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-sm">
-            <p className="text-gray-700 leading-relaxed">
-              Registration is the official process of enrolling in specific courses.
-              <strong> No Registration = No Student Status.</strong> Even if you pay fees, you are not a student until you register courses on the portal.
-            </p>
-          </div>
-
-          {/* --- THE ROTATIONAL SYSTEM (CRITICAL UPDATE) --- */}
-          <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100 shadow-sm">
-            <h4 className="font-bold text-indigo-900 text-lg mb-3">🔄 The "Rotational" System (Liberals & African Studies)</h4>
-            <p className="text-sm text-indigo-800/80 mb-4 leading-relaxed">
-              UCC splits Freshers into two groups based on College/Faculty. You generally do <strong>not</strong> choose these courses; they are randomly assigned to you on the portal.
-            </p>
-            <div className="grid md:grid-cols-2 gap-4 mt-4">
-              <div className="bg-white p-4 rounded-lg border border-indigo-100">
-                <h5 className="font-bold text-indigo-700 mb-2">Group A Pattern</h5>
-                <ul className="text-xs text-gray-600 space-y-1">
-                  <li>• <strong>Sem 1:</strong> African Studies + ITS (Info Tech Skills)</li>
-                  <li>• <strong>Sem 2:</strong> Liberal Course + Information Literacy</li>
-                </ul>
-              </div>
-              <div className="bg-white p-4 rounded-lg border border-indigo-100">
-                <h5 className="font-bold text-indigo-700 mb-2">Group B Pattern</h5>
-                <ul className="text-xs text-gray-600 space-y-1">
-                  <li>• <strong>Sem 1:</strong> Liberal Course + Information Literacy</li>
-                  <li>• <strong>Sem 2:</strong> African Studies + ITS (Info Tech Skills)</li>
-                </ul>
-              </div>
-            </div>
-            <p className="text-xs text-indigo-600 mt-3 italic">
-              * <strong>Communication Skills</strong> is mandatory for EVERYONE in both semesters.
-            </p>
-            <p className="text-xs text-indigo-600 mt-1 italic">
-              * <strong>ITS Groups:</strong> ITS is not picked; you are placed in groups. Check notice boards for your group's time.
-            </p>
-          </div>
-
-          {/* --- COURSE TYPES --- */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-blue-900 text-lg mb-3">Fixed / Block Courses</h4>
-              <p className="text-sm text-blue-800/80 mb-4">
-                Common in <strong>Medical School, Nursing, Pharmacy, & Engineering</strong>.
-              </p>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li>● Courses are pre-determined.</li>
-                <li>● "Add/Drop" is rarely needed.</li>
-                <li>● Registration is usually one click: "Register All".</li>
-              </ul>
-            </div>
-
-            <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 hover:shadow-md transition-all">
-              <h4 className="font-bold text-orange-900 text-lg mb-3">Flexible / Elective Courses</h4>
-              <p className="text-sm text-orange-800/80 mb-4">
-                Common in <strong>Arts, Social Sciences, & Business</strong>.
-              </p>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li>● Mix of <strong>Core</strong> and <strong>Electives</strong>.</li>
-                <li>● You must manually select electives to meet credit hours.</li>
-                <li>● <strong>Auditing:</strong> You can "Audit" a course (attend for knowledge, no exams) but you must register it as "Audit".</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* --- THE FEE BARRIER --- */}
-          <div className="bg-green-50 p-5 rounded-xl border border-green-100">
-            <h4 className="font-bold text-green-900 text-lg mb-2">The "Financial Hold" Rule</h4>
-            <p className="text-sm text-gray-700">
-              The portal locks registration until you pay ~60% fees. Payment via Transflow usually takes 2-24 hours to clear the "Hold" on the portal.
-            </p>
-          </div>
-
-          {/* --- LECTURE START DISCLAIMER --- */}
-          <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
-            <h4 className="font-bold text-blue-900 text-lg mb-2">When Do Lectures Start?</h4>
-            <div className="p-3 bg-white/60 rounded-lg border border-blue-100/50 text-sm text-gray-800">
-              Lectures typically begin <strong>when the official timetable is released</strong>.
-              If the timetable is not out, relax. Wait for official communication from your Course Reps regarding the start of lectures.
-            </div>
-          </div>
-        </div>
-      ),
-
-      // --- STEPS TAB DATA ---
       steps: [
-        {
-          title: "Pay Fees",
-          description: "Pay the required percentage at an approved bank using Transflow/Smartpay. Keep the receipt."
-        },
-        {
-          title: "Check 'Hold' Status",
-          description: "Log into portal.ucc.edu.gh. Ensure 'Financial Hold' says 'No' before proceeding."
-        },
-        {
-          title: "Check Assigned Courses",
-          description: "Look for your assigned Liberal/African Studies & ITS/Info Lit. These are usually pre-loaded based on your rotation."
-        },
-        {
-          title: "Select Electives",
-          description: "(Arts/Social Sciences only) Tick your preferred Electives to meet minimum credit hours (usually 15)."
-        },
-        {
-          title: "Submit (Don't just Save)",
-          description: "Verify courses. Click 'SUBMIT'. Clicking 'Save' only creates a draft and does NOT register you."
-        },
-        {
-          title: "Print for Records",
-          description: "Print the registration slip for your own file. You usually do NOT need to submit copies to your Department unless asked. If it's on the portal, you are registered."
-        }
+        { title: "Pay Fees", description: "Pay the required percentage at an approved bank using Transflow/Smartpay. Keep the receipt." },
+        { title: "Check 'Hold' Status", description: "Log into portal.ucc.edu.gh. Ensure 'Financial Hold' says 'No' before proceeding." },
+        { title: "Check Assigned Courses", description: "Look for your assigned Liberal/African Studies & ITS/Info Lit. These are usually pre-loaded based on your rotation." },
+        { title: "Select Electives", description: "(Arts/Social Sciences only) Tick your preferred Electives to meet minimum credit hours (usually 15)." },
+        { title: "Submit (Don't just Save)", description: "Verify courses. Click 'SUBMIT'. Clicking 'Save' only creates a draft and does NOT register you." },
+        { title: "Print for Records", description: "Print the registration slip for your own file. If it's on the portal, you are registered." }
       ],
-
-      // --- WARNINGS TAB DATA ---
       commonMistakes: [
         "Clicking 'Save' instead of 'Submit' (You are not registered until you Submit).",
         "Trying to change a randomly assigned Liberal Course (It is usually fixed).",
@@ -134,8 +26,10 @@ const CourseRegistration = () => {
         "Forgetting to register for Communication Skills (It is compulsory)."
       ],
       consequences: "If you attend classes but fail to 'Submit' on the portal, your name will not appear on the Exam List.",
-
-      // --- CHECKLIST TAB DATA ---
+      resources: [
+        { title: "UCC Student Portal", description: "The only place to register.", url: "https://portal.ucc.edu.gh" },
+        { title: "Academic Calendar", description: "Check opening/closing dates.", url: "https://ucc.edu.gh/calendar" }
+      ],
       checklist: [
         { text: "Paid ~60% of Fees", checked: false },
         { text: "Financial Hold Lifted", checked: false },
@@ -145,19 +39,88 @@ const CourseRegistration = () => {
         { text: "Printed Slip for Records", checked: false }
       ],
 
-      // Resources remain the same...
-      resources: [
-        {
-          title: "UCC Student Portal",
-          description: "The only place to register.",
-          url: "https://portal.ucc.edu.gh"
-        },
-        {
-          title: "Academic Calendar",
-          description: "Check opening/closing dates.",
-          url: "https://ucc.edu.gh/calendar"
-        }
-      ]
+      content: (
+        <div className="space-y-12">
+          <InfoBlock 
+            title="Registration Protocol"
+            icon={BookOpen}
+            content="Registration is the official process of enrolling in specific courses. <strong>No Registration = No Student Status.</strong> Even if you pay fees, you are not a student until you register courses on the portal and click 'Submit'."
+          />
+
+          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="relative">
+                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                   <RefreshCw size={24} /> The "Rotational" System
+                </h4>
+                <p className="text-slate-600 font-medium leading-relaxed mb-6">
+                   UCC splits Freshers into two groups based on College/Faculty for Liberal and African Studies courses. You generally do <strong>not</strong> choose these; they are pre-assigned.
+                </p>
+                <div className="grid md:grid-cols-2 gap-6">
+                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
+                      <h5 className="font-black text-indigo-700 mb-3 uppercase tracking-wider text-xs">Group A Pattern</h5>
+                      <ul className="text-sm text-slate-600 space-y-2 font-medium">
+                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div> <strong>Sem 1:</strong> African Studies + ITS</li>
+                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div> <strong>Sem 2:</strong> Liberal + Info Literacy</li>
+                      </ul>
+                   </div>
+                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
+                      <h5 className="font-black text-indigo-700 mb-3 uppercase tracking-wider text-xs">Group B Pattern</h5>
+                      <ul className="text-sm text-slate-600 space-y-2 font-medium">
+                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div> <strong>Sem 1:</strong> Liberal + Info Literacy</li>
+                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div> <strong>Sem 2:</strong> African Studies + ITS</li>
+                      </ul>
+                   </div>
+                </div>
+                <div className="mt-6 flex flex-col gap-2">
+                   <p className="text-xs text-indigo-500 font-bold italic">* Communication Skills is mandatory for EVERYONE in both semesters.</p>
+                   <p className="text-xs text-indigo-500 font-bold italic">* ITS is group-based; check departmental notice boards for your time.</p>
+                </div>
+             </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <ActionCard 
+               title="Fixed / Block Courses" 
+               desc="Common in Medical School, Nursing, Pharmacy, & Engineering."
+               details={[
+                 "Courses are pre-determined by Dept.",
+                 "Add/Drop is rarely required.",
+                 "One-click 'Register All' functionality.",
+                 "Strict adherence to faculty paths."
+               ]}
+            />
+            <ActionCard 
+               title="Flexible / Electives" 
+               desc="Common in Arts, Social Sciences, & Business."
+               details={[
+                 "Mix of Core and Elective courses.",
+                 "Manually select to meet credit hours.",
+                 "<strong>Auditing</strong>: Knowledge-only enrollment.",
+                 "Minimum 15 credit hours usually required."
+               ]}
+            />
+          </div>
+
+          <div className="bg-emerald-50/50 p-8 rounded-[2.5rem] border border-emerald-100">
+             <h4 className="font-black text-emerald-900 text-xl mb-3 flex items-center gap-2">
+                <Lock size={20} /> The "Financial Hold" Rule
+             </h4>
+             <p className="text-emerald-800/70 text-sm font-medium leading-relaxed">
+               The portal locks registration until you pay ~60% fees. Payment via Transflow usually takes <strong>2-24 hours</strong> to clear the "Hold" on the portal. Ensure this is cleared before the registration deadline.
+             </p>
+          </div>
+
+          <div className="bg-blue-50/50 p-8 rounded-[2.5rem] border border-blue-100">
+             <h4 className="font-black text-blue-900 text-xl mb-3 flex items-center gap-2">
+                <Terminal size={20} /> When Do Lectures Start?
+             </h4>
+             <p className="text-blue-800/70 text-sm font-medium leading-relaxed">
+               Lectures typically begin <strong>when the official timetable is released</strong>. If the timetable is not out, wait for official communication from your Course Reps. Do not panic if classes don't start exactly on arrival day.
+             </p>
+          </div>
+        </div>
+      )
     }
   ];
 
