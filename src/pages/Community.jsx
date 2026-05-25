@@ -178,20 +178,17 @@ const Community = () => {
 
                     {/* Buttons in upper right */}
                     <div className={`flex items-center gap-2 transition-all duration-300 overflow-hidden ${isScrolled ? 'w-0 opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
-                        <button
+                                                <button
                             onClick={() => setIsLostFoundModalOpen(true)}
-                            className="flex flex-col items-center justify-center px-3 py-2 rounded-xl bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors border border-primary-100/50 active:scale-95 group whitespace-nowrap"
+                            className="flex items-center justify-center p-2 rounded-xl bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors border border-primary-100/50 active:scale-95 group"
                             aria-label="Report Lost/Found"
                         >
-                            <div className="relative">
-                                <Star size={20} className="group-hover:rotate-12 transition-transform duration-300" />
-                            </div>
-                            <span className="text-[10px] font-bold tracking-tight mt-1">Lost/Found</span>
+                            <Star size={20} className="group-hover:rotate-12 transition-transform duration-300" />
                         </button>
-
+                        
                         <button
                             onClick={() => navigate('/advertise')}
-                            className="flex flex-col items-center justify-center px-3 py-2 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors border border-amber-100/50 active:scale-95 group whitespace-nowrap"
+                            className={`whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 shadow-sm ${'bg-white text-amber-600 shadow-md scale-105 border border-gray-100'}`}
                             aria-label="Showcase to the world"
                         >
                             <div className="relative">
@@ -264,7 +261,7 @@ const Community = () => {
                     </div>
 
                     {/* Filter Categories - Horizontally Scrollable */}
-                    <div className="flex overflow-x-auto hide-scrollbar gap-3 px-4 py-3 md:px-4 lg:pl-4">
+                   <div className="flex overflow-x-auto hide-scrollbar gap-2 px-4 py-2 md:px-4 lg:pl-4">
                         {CATEGORIES.map(category => (
                             <button
                                 key={category.id}

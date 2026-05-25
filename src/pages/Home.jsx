@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Button } from '../components/common/Button';
-import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User } from 'lucide-react';
+import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell } from 'lucide-react'; // 🛎️ NEW: Added Bell
 import { CustomGuide, CustomTools } from '../components/common/CustomIcons';
+import NotificationDropdown from '../components/common/NotificationDropdown'; // 🛎️ NEW: Import
 
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -44,6 +45,10 @@ const Home = () => {
   const [timetable] = useLocalStorage('ucc_timetable', []);
   const [profile]    = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' });
 
+  // 🛎️ NEW: NOTIFICATION LOGIC STATES
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [hasClearedNotifDot, setHasClearedNotifDot] = useState(false);
+
   const supportEmail = state?.supportEmail || 'anonymous@uccguide.com';
   const handlePaymentSuccess = () => alert('Thank you for your support!');
   const handlePaymentError = (e) => alert(`Payment failed: ${e.message}`);
@@ -59,6 +64,9 @@ const Home = () => {
   // ── Announcement → Ad rotation logic ─────────────────────────────────────
   const [featuredContent, setFeaturedContent] = useState(null); 
   const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(false);
+
+  // 🛎️ NEW: Derive the boolean for the red dot
+  const hasUnseen = featuredContent?.kind === 'announcement' && !hasClearedNotifDot;
 
   useEffect(() => {
     const seenIds = JSON.parse(localStorage.getItem('ucc_seen_announcements') || '[]');
@@ -138,18 +146,50 @@ const Home = () => {
               <span className="text-white font-bold tracking-widest text-xs uppercase opacity-90">Campus Guide</span>
             </div>
             
-            {profile.avatarUrl ? (
-              <button 
-                onClick={() => navigate('/profile')}
-                className="w-10 h-10 rounded-full border-2 border-white/20 shadow-lg overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white/10 p-0.5"
-              >
-                <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-full bg-white" />
-              </button>
-            ) : (
-              <button onClick={() => navigate('/profile')} className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform">
-                <User size={18} />
-              </button>
-            )}
+            {/* 🛎️ NEW: Right side container for Bell + Avatar */}
+            <div className="flex items-center gap-3">
+              {/* Notification Bell */}
+              <div id="bell-anchor-mobile" className="relative">
+                <button 
+                  onClick={() => {
+                    setIsNotifOpen(!isNotifOpen); 
+                    if(hasUnseen) setHasClearedNotifDot(true);
+                  }} 
+                  className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform"
+                >
+                  <Bell size={18} />
+                  {hasUnseen && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-[#001a26]"></span>
+                  )}
+                </button>
+                
+                {/* Dropdown Panel */}
+                <NotificationDropdown 
+                  isOpen={isNotifOpen} 
+                  onClose={() => setIsNotifOpen(false)} 
+                  announcement={featuredContent?.kind === 'announcement' ? featuredContent.data : null}
+                  onSeeMore={() => {
+                    // NOTE: Change '/community?tab=announcements' to match your exact app route and tab ID
+                    navigate('/community?tab=announcements'); 
+                    setIsNotifOpen(false);
+                  }}
+                />
+              </div>
+
+              {/* Profile Avatar */}
+              {profile.avatarUrl ? (
+                <button 
+                  onClick={() => navigate('/profile')}
+                  className="w-10 h-10 rounded-full border-2 border-white/20 shadow-lg overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white/10 p-0.5"
+                >
+                  <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-full bg-white" />
+                </button>
+              ) : (
+                <button onClick={() => navigate('/profile')} className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform">
+                  <User size={18} />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Hero Greeting Text */}
@@ -340,11 +380,38 @@ const Home = () => {
                     <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-xl bg-gray-50" />
                   </div>
                 )}
-                <div>
-                  <p className="text-primary-600 text-sm font-semibold tracking-widest uppercase mb-1">{TODAY_LABEL}</p>
-                  <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight">
-                    {getGreeting()}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''} 👋
-                  </h1>
+                <div className="flex-1 flex items-center justify-between">
+                  <div>
+                    <p className="text-primary-600 text-sm font-semibold tracking-widest uppercase mb-1">{TODAY_LABEL}</p>
+                    <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight">
+                      {getGreeting()}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''} 👋
+                    </h1>
+                  </div>
+                  
+                  {/* 🛎️ NEW: Desktop Bell Icon */}
+                  <div id="bell-anchor-desktop" className="relative">
+                    <button 
+                      onClick={() => {
+                        setIsNotifOpen(!isNotifOpen); 
+                        if(hasUnseen) setHasClearedNotifDot(true);
+                      }} 
+                      className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-200 cursor-pointer transition-all"
+                    >
+                      <Bell size={18} />
+                      {hasUnseen && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                      )}
+                    </button>
+                    <NotificationDropdown 
+                      isOpen={isNotifOpen} 
+                      onClose={() => setIsNotifOpen(false)} 
+                      announcement={featuredContent?.kind === 'announcement' ? featuredContent.data : null}
+                      onSeeMore={() => {
+                        navigate('/community?tab=announcements'); 
+                        setIsNotifOpen(false);
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
               
