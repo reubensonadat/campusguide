@@ -46,7 +46,7 @@ const Card = ({
     success: 'bg-green-50 border border-green-200',
     warning: 'bg-yellow-50 border border-yellow-200',
     error: 'bg-red-50 border border-red-200',
-    guide: 'bg-indigo-50 border border-indigo-200',
+    guide: 'bg-primary-50 border border-primary-200',
     resource: 'bg-green-50 border border-green-200',
     tip: 'bg-purple-50 border border-purple-200',
     checklist: 'bg-gray-50 border border-gray-200'
@@ -129,7 +129,7 @@ const WarningCard = ({ title, description, children, className = '', ...props })
 
 const GuideCard = ({ title, description, children, className = '', ...props }) => (
   <Card type="guide" className={className} {...props}>
-    <CardHeader icon={<CustomGuide size={20} />} iconColor="text-indigo-500">
+    <CardHeader icon={<CustomGuide size={20} />} iconColor="text-primary-500">
       <CardTitle>{title}</CardTitle>
       {description && <CardDescription>{description}</CardDescription>}
     </CardHeader>

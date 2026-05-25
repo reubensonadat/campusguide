@@ -19,7 +19,18 @@ export const LS_KEYS = {
   BUDGET: 'ucc_budget',
   GPA: 'ucc_gpa',
   REMINDERS: 'ucc_reminders',
-  SETTINGS: 'ucc_settings'
+  SETTINGS: 'ucc_settings',
+  HOME_WIDGETS: 'ucc_home_widgets'
+};
+
+// Default home widget visibility
+export const DEFAULT_HOME_WIDGETS = {
+  classes: true,
+  tasks: true,
+  calendar: false,
+  weather: true,
+  library: false,
+  quickNote: true
 };
 
 // Grade points for GPA calculation

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Button } from '../common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../common/Card';
+import { Modal } from '../common/Modal';
 import { Plus, Trash2, Calculator, Save, Info } from 'lucide-react';
 import { GRADE_POINTS, GRADE_RANGES } from '../../utils/constants';
 import { calculateGPA, getGradeFromScore } from '../../utils/helpers';
@@ -157,12 +158,12 @@ const GPACalculator = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="border-indigo-100 bg-indigo-50/50">
+        <Card className="border-primary-100 bg-[#002F45]/5">
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-2">Current GPA</p>
-              <p className="text-5xl font-black text-indigo-600 mb-2">{currentGPA}</p>
-              <div className="text-xs font-medium text-indigo-400">cumulative score</div>
+              <p className="text-sm font-bold text-primary-400 uppercase tracking-widest mb-2">Current GPA</p>
+              <p className="text-5xl font-black text-primary-600 mb-2">{currentGPA}</p>
+              <div className="text-xs font-medium text-primary-400">cumulative score</div>
             </div>
           </CardContent>
         </Card>
@@ -194,8 +195,8 @@ const GPACalculator = () => {
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center flex-wrap gap-2">
-                <CardTitle className="text-indigo-900 text-lg flex items-center gap-2">
-                  <Calculator className="w-5 h-5 text-indigo-500" />
+                <CardTitle className="text-primary-900 text-lg flex items-center gap-2">
+                  <Calculator className="w-5 h-5 text-primary-500" />
                   Course List
                 </CardTitle>
                 <div className="flex gap-2">
@@ -217,9 +218,8 @@ const GPACalculator = () => {
                         ]
                       });
                       setShowAddForm(true);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className="bg-indigo-600 text-white"
+                    className="bg-primary-600 text-white"
                   >
                     <Plus size={16} className="mr-1" />
                     Add Result
@@ -228,22 +228,20 @@ const GPACalculator = () => {
               </div>
             </CardHeader>
             <CardContent>
-              {showAddForm && (
-                <div className="mb-6 bg-gray-50 p-6 rounded-2xl border border-gray-100 animate-in fade-in slide-in-from-top-2">
-                  <div className="flex justify-between items-center mb-4">
-                    <h4 className="font-bold text-gray-900">Calculate New Grade</h4>
-                    <button 
-                      className="text-xs font-bold bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-full hover:bg-indigo-200 transition-colors"
+              <Modal isOpen={showAddForm} onClose={() => setShowAddForm(false)} title={newCourse.id ? 'Edit Grade' : 'Calculate New Grade'}>
+                  <div className="flex justify-end mb-4">
+                    <button
+                      className="text-xs font-bold bg-primary-100 text-primary-700 px-3 py-1.5 rounded-full hover:bg-primary-200 transition-colors"
                       onClick={() => setNewCourse({...newCourse, isDetailed: !newCourse.isDetailed})}
                     >
-                      {newCourse.isDetailed ? 'Switch to Simple Score' : 'Use Detailed Breakdown (Quizzes & Assignments)'}
+                      {newCourse.isDetailed ? 'Simple Score' : 'Detailed Breakdown'}
                     </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {newCourse.id ? (
-                      <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl font-bold text-indigo-700 flex items-center justify-between">
+                      <div className="p-3 bg-primary-50 border border-primary-100 rounded-xl font-bold text-primary-700 flex items-center justify-between">
                         <span>{newCourse.name || 'Unknown Course'}</span>
-                        <span className="text-xs bg-white px-2 py-1 rounded-md border border-indigo-100">Editing</span>
+                        <span className="text-xs bg-white px-2 py-1 rounded-md border border-primary-100">Editing</span>
                       </div>
                     ) : (
                       <select
@@ -279,7 +277,7 @@ const GPACalculator = () => {
                             }
                           }
                         }}
-                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all cursor-pointer font-medium"
+                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all cursor-pointer font-medium"
                       >
                         <option value="new">+ Add Custom Result</option>
                         <optgroup label="Select Course">
@@ -293,7 +291,7 @@ const GPACalculator = () => {
                     <select
                       value={newCourse.creditHours}
                       onChange={(e) => setNewCourse({ ...newCourse, creditHours: parseInt(e.target.value) })}
-                      className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                      className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
                     >
                       <option value={1}>1 Credit Hour</option>
                       <option value={2}>2 Credit Hours</option>
@@ -308,7 +306,7 @@ const GPACalculator = () => {
                         placeholder="Course Name..."
                         value={newCourse.name}
                         onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
-                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all md:col-span-2"
+                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all md:col-span-2"
                       />
                     )}
 
@@ -320,12 +318,12 @@ const GPACalculator = () => {
                         onChange={(e) => setNewCourse({ ...newCourse, score: e.target.value })}
                         min="0"
                         max="100"
-                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all md:col-span-2"
+                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all md:col-span-2"
                       />
                     ) : (
                       <div className="md:col-span-2 space-y-4 pt-4 pb-4 border-t border-gray-100 mt-2">
-                        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center bg-indigo-50/50 p-3 rounded-xl border border-indigo-100 gap-3">
-                          <p className="text-xs font-bold text-indigo-700 uppercase tracking-widest flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center bg-[#002F45]/5 p-3 rounded-xl border border-primary-100 gap-3">
+                          <p className="text-xs font-bold text-primary-700 uppercase tracking-widest flex items-center gap-2">
                             Scheme
                           </p>
                           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -333,7 +331,7 @@ const GPACalculator = () => {
                             <select 
                               value={newCourse.examWeight || 60} 
                               onChange={(e) => setNewCourse({...newCourse, examWeight: Number(e.target.value)})}
-                              className="w-full sm:w-auto p-1.5 rounded-lg bg-white text-xs border border-indigo-200 font-bold text-indigo-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                              className="w-full sm:w-auto p-1.5 rounded-lg bg-white text-xs border border-primary-200 font-bold text-primary-700 outline-none focus:ring-2 focus:ring-primary-500"
                             >
                               <option value={40}>40% Exam / 60% CA</option>
                               <option value={50}>50% Exam / 50% CA</option>
@@ -344,7 +342,7 @@ const GPACalculator = () => {
                         </div>
 
                         <div className="space-y-3 mt-4">
-                          <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest">Continuous Assessment ({(100 - (parseFloat(newCourse.examWeight) || 60))}%)</p>
+                          <p className="text-xs font-bold text-primary-500 uppercase tracking-widest">Continuous Assessment ({(100 - (parseFloat(newCourse.examWeight) || 60))}%)</p>
                           {newCourse.assessments.map((ca, index) => (
                             <div key={ca.id} className="flex flex-wrap sm:flex-nowrap gap-2 bg-gray-50 p-2 rounded-xl border border-gray-100 items-center">
                               <input 
@@ -356,7 +354,7 @@ const GPACalculator = () => {
                                   arr[index].name = e.target.value;
                                   setNewCourse({...newCourse, assessments: arr});
                                 }}
-                                className="w-full sm:flex-1 p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200"
+                                className="w-full sm:flex-1 p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none border border-gray-200"
                               />
                               <div className="flex flex-1 sm:flex-none justify-end sm:justify-center items-center gap-2 w-full sm:w-auto">
                                 <input 
@@ -368,7 +366,7 @@ const GPACalculator = () => {
                                     arr[index].score = e.target.value;
                                     setNewCourse({...newCourse, assessments: arr});
                                   }}
-                                  className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200 text-center font-bold"
+                                  className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none border border-gray-200 text-center font-bold"
                                 />
                                 <span className="text-gray-400 font-bold text-sm">/</span>
                                 <input 
@@ -380,7 +378,7 @@ const GPACalculator = () => {
                                     arr[index].max = e.target.value;
                                     setNewCourse({...newCourse, assessments: arr});
                                   }}
-                                  className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none border border-gray-200 text-center text-gray-500"
+                                  className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none border border-gray-200 text-center text-gray-500"
                                 />
                                 <button 
                                   onClick={() => {
@@ -403,7 +401,7 @@ const GPACalculator = () => {
                                 assessments: [...newCourse.assessments, { id: Date.now(), name: `Assessment ${newCourse.assessments.length + 1}`, score: '', max: 20 }]
                               })
                             }}
-                            className="w-full text-indigo-600 border-indigo-100 hover:bg-indigo-50 py-3 border-dashed"
+                            className="w-full text-primary-600 border-primary-100 hover:bg-primary-50 py-3 border-dashed"
                           >
                             <Plus size={14} className="mr-1" /> Add Component
                           </Button>
@@ -432,7 +430,7 @@ const GPACalculator = () => {
 
                         <div className="mt-4 p-4 bg-gray-900 text-white rounded-xl flex justify-between items-center shadow-lg">
                           <div className="text-sm font-medium text-gray-300">Total Course Expected Score</div>
-                          <div className="text-2xl font-black text-indigo-400 flex items-baseline gap-1">
+                          <div className="text-2xl font-black text-primary-400 flex items-baseline gap-1">
                             {(() => {
                               const examW = parseFloat(newCourse.examWeight) || 60;
                               const caW = 100 - examW;
@@ -449,17 +447,16 @@ const GPACalculator = () => {
                   </div>
 
                   <div className="flex gap-2 mt-4">
-                    <Button onClick={handleAddCourse} className="bg-indigo-600 text-white">{newCourse.id ? 'Save Changes' : 'Add Grade'}</Button>
+                    <Button onClick={handleAddCourse} className="bg-primary-600 text-white">{newCourse.id ? 'Save Changes' : 'Add Grade'}</Button>
                     <Button variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
                   </div>
-                </div>
-              )}
+              </Modal>
 
               <div className="space-y-3">
                 {courses.map(course => (
                   <div 
                     key={course.id} 
-                    className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-indigo-100 transition-colors bg-white group shadow-sm cursor-pointer hover:shadow-md"
+                    className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-primary-100 transition-colors bg-white group shadow-sm cursor-pointer hover:shadow-md"
                     onClick={() => {
                       setNewCourse({
                         ...course,
@@ -508,7 +505,7 @@ const GPACalculator = () => {
                     <Calculator className="w-10 h-10 text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-900 font-bold">No grades added</p>
                     <p className="text-gray-500 text-sm mt-1">Add your separate course grades to calculate your GPA.</p>
-                    <Button variant="link" onClick={() => setShowAddForm(true)} className="text-indigo-600 mt-2">Add First Grade</Button>
+                    <Button variant="link" onClick={() => setShowAddForm(true)} className="text-primary-600 mt-2">Add First Grade</Button>
                   </div>
                 )}
               </div>

@@ -9,7 +9,7 @@ const SupportButton = () => {
   return (
     <button
       onClick={openModal}
-      className="fixed bottom-24 right-4 z-40 bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
+      className="fixed bottom-24 right-4 z-40 bg-gradient-to-r from-[#002F45] to-[#004a6e] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
       aria-label="Support Us"
     >
       <Heart 

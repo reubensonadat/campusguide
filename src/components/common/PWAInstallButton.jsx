@@ -83,7 +83,7 @@ const PWAInstallButton = () => {
 
     return (
         <div className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-[9999] animate-in slide-in-from-bottom duration-500">
-            <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl shadow-2xl p-4 pr-3 flex items-center gap-3 max-w-sm backdrop-blur-sm border border-indigo-400/20">
+            <div className="bg-gradient-to-r from-primary-600 to-blue-600 text-white rounded-2xl shadow-2xl p-4 pr-3 flex items-center gap-3 max-w-sm backdrop-blur-sm border border-primary-400/20">
                 {installed ? (
                     <>
                         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
@@ -91,7 +91,7 @@ const PWAInstallButton = () => {
                         </div>
                         <div className="flex-1">
                             <h4 className="font-bold text-sm">Installed!</h4>
-                            <p className="text-xs text-indigo-100">Thank you for installing</p>
+                            <p className="text-xs text-primary-100">Thank you for installing</p>
                         </div>
                     </>
                 ) : (
@@ -101,12 +101,12 @@ const PWAInstallButton = () => {
                         </div>
                         <div className="flex-1">
                             <h4 className="font-bold text-sm">Download App</h4>
-                            <p className="text-xs text-indigo-100">Install for offline access</p>
+                            <p className="text-xs text-primary-100">Install for offline access</p>
                         </div>
                         <button
                             onClick={handleInstallClick}
                             disabled={installing}
-                            className="bg-white text-indigo-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-indigo-50 transition-all active:scale-95 disabled:opacity-50 shrink-0"
+                            className="bg-white text-primary-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-primary-50 transition-all active:scale-95 disabled:opacity-50 shrink-0"
                         >
                             {installing ? 'Installing...' : 'Install'}
                         </button>

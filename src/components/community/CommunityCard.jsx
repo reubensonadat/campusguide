@@ -8,7 +8,7 @@ const CommunityCard = ({ post }) => {
     // Design: Unified Card Architecture (Both "University Post" & "Ad" use the same flyer layout)
     const isAd = type === 'ad';
     const displayTag = isAd ? "SPONSORED" : tag;
-    const tagColor = isAd ? "bg-amber-500/90 text-amber-950" : "bg-indigo-600/90 text-white";
+    const tagColor = isAd ? "bg-amber-500/90 text-amber-950" : "bg-primary-600/90 text-white";
 
     // Decide default button text based on type if not provided
     const defaultActionText = isAd ? "Message via WhatsApp" : "View Details";
@@ -34,13 +34,13 @@ const CommunityCard = ({ post }) => {
             <div className="p-6 flex-1 flex flex-col min-h-0">
                 {displayTag && (
                     <div className="flex mb-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xl text-[10px] font-bold tracking-widest uppercase ${isAd ? 'bg-amber-50 text-amber-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xl text-[10px] font-bold tracking-widest uppercase ${isAd ? 'bg-amber-50 text-amber-600' : 'bg-primary-50 text-primary-600'}`}>
                             {isAd && <Tag size={10} />}
                             {displayTag}
                         </span>
                     </div>
                 )}
-                <h3 className="text-xl sm:text-[22px] font-bold text-gray-900 leading-tight mb-3 group-hover:text-indigo-600 transition-colors line-clamp-2 shrink-0">
+                <h3 className="text-xl sm:text-[22px] font-bold text-gray-900 leading-tight mb-3 group-hover:text-primary-600 transition-colors line-clamp-2 shrink-0">
                     {title}
                 </h3>
 
@@ -52,7 +52,7 @@ const CommunityCard = ({ post }) => {
                         {description.length > 120 && (
                             <button
                                 onClick={() => setIsExpanded(!isExpanded)}
-                                className="text-indigo-600 font-bold text-sm mt-2 hover:underline focus:outline-none self-start shrink-0"
+                                className="text-primary-600 font-bold text-sm mt-2 hover:underline focus:outline-none self-start shrink-0"
                             >
                                 {isExpanded ? 'Show Less' : 'Read More...'}
                             </button>

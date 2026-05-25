@@ -1,8 +1,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Button } from '../components/common/Button';
-import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell } from 'lucide-react'; // 🛎️ NEW: Added Bell
+import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, MapPin, Circle, Calendar } from 'lucide-react';
 import { CustomGuide, CustomTools } from '../components/common/CustomIcons';
 import NotificationDropdown from '../components/common/NotificationDropdown'; // 🛎️ NEW: Import
+import { getIconComponent } from '../components/tools/PlanYourDay';
+import { getUpcomingAcademicEvents } from '../data/academicCalendar';
+import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -35,6 +38,51 @@ const formatTime12Hour = (time24) => {
   return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
 };
 
+const getTimeMinutes = (timeStr) => {
+  if (!timeStr) return 0;
+  const [h, m] = timeStr.split(':').map(Number);
+  return (h || 0) * 60 + (m || 0);
+};
+
+// Custom SVG weather icons
+const renderWeatherSvg = (type, size = 14, className = '') => {
+  const props = { width: size, height: size, className, viewBox: '0 0 256 256', fill: 'currentColor' };
+  switch (type) {
+    case 'sunny':
+      return <svg {...props}><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></svg>;
+    case 'cloudy':
+      return <svg {...props}><path d="M160,40A88.09,88.09,0,0,0,81.29,88.67,64,64,0,1,0,72,216h88a88,88,0,0,0,0-176Zm0,160H72a48,48,0,0,1,0-96c1.1,0,2.2,0,3.29.11A88,88,0,0,0,72,128a8,8,0,0,0,16,0,72,72,0,1,1,72,72Z"/></svg>;
+    case 'rainy':
+      return <svg {...props}><path d="M158.66,196.44l-32,48a8,8,0,1,1-13.32-8.88l32-48a8,8,0,0,1,13.32,8.88ZM232,92a76.08,76.08,0,0,1-76,76H132.28l-29.62,44.44a8,8,0,1,1-13.32-8.88L113.05,168H76A52,52,0,0,1,76,64a53.26,53.26,0,0,1,8.92.76A76.08,76.08,0,0,1,232,92Zm-16,0A60.06,60.06,0,0,0,96,88.46a8,8,0,0,1-16-.92q.21-3.66.77-7.23A38.11,38.11,0,0,0,76,80a36,36,0,0,0,0,72h80A60.07,60.07,0,0,0,216,92Z"/></svg>;
+    case 'cloudy-sun':
+      return <svg {...props}><path d="M164,72a76.2,76.2,0,0,0-20.26,2.73,55.63,55.63,0,0,0-9.41-11.54l9.51-13.57a8,8,0,1,0-13.11-9.18L121.22,54A55.9,55.9,0,0,0,96,48c-.58,0-1.16,0-1.74,0L91.37,31.71a8,8,0,1,0-15.75,2.77L78.5,50.82A56.1,56.1,0,0,0,55.23,65.67L41.61,56.14a8,8,0,1,0-9.17,13.11L46,78.77A55.55,55.55,0,0,0,40,104c0,.57,0,1.15,0,1.72L23.71,108.6a8,8,0,0,0,1.38,15.88,8.24,8.24,0,0,0,1.39-.12l16.32-2.88a55.74,55.74,0,0,0,5.86,12.42A52,52,0,0,0,84,224h80a76,76,0,0,0,0-152ZM56,104a40,40,0,0,1,72.54-23.24,76.26,76.26,0,0,0-35.62,40,52.14,52.14,0,0,0-31,4.17A40,40,0,0,1,56,104ZM164,208H84a36,36,0,1,1,4.78-71.69c-.37,2.37-.63,4.79-.77,7.23a8,8,0,0,0,16,.92,58.91,58.91,0,0,1,1.88-11.81c0-.16.09-.32.12-.48A60.06,60.06,0,1,1,164,208Z"/></svg>;
+    default:
+      return <svg {...props}><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></svg>;
+  }
+};
+
+// Custom SVG library icon
+const LibrarySvg = ({ size = 16, className = '' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}>
+    <path d="M231.65,194.55,198.46,36.75a16,16,0,0,0-19-12.39L132.65,34.42a16.08,16.08,0,0,0-12.3,19l33.19,157.8A16,16,0,0,0,169.16,224a16.25,16.25,0,0,0,3.38-.36l46.81-10.06A16.09,16.09,0,0,0,231.65,194.55ZM136,50.15c0-.06,0-.09,0-.09l46.8-10,3.33,15.87L139.33,66Zm6.62,31.47,46.82-10.05,3.34,15.9L146,97.53Zm6.64,31.57,46.82-10.06,13.3,63.24-46.82,10.06ZM216,197.94l-46.8,10-3.33-15.87L212.67,182,216,197.85C216,197.91,216,197.94,216,197.94ZM104,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32ZM56,48h48V64H56Zm0,32h48v96H56Zm48,128H56V192h48v16Z"/>
+  </svg>
+);
+
+// Weather mapping helper
+const getWeatherIconAndAdvice = (code, temp) => {
+  if (temp > 32) return { svgType: 'sunny', color: 'text-orange-500', bg: 'bg-orange-500/10', advice: 'Very hot today. Walk in the shade!' };
+  if (temp < 22) return { svgType: 'cloudy', color: 'text-blue-500', bg: 'bg-blue-500/10', advice: 'Cool weather today.' };
+  
+  if (code === 0) return { svgType: 'sunny', color: 'text-yellow-500', bg: 'bg-yellow-500/10', advice: 'Clear skies. Perfect for walking.' };
+  if (code >= 1 && code <= 3) return { svgType: 'cloudy-sun', color: 'text-slate-500', bg: 'bg-slate-500/10', advice: 'Partly cloudy. Good walking weather.' };
+  if (code >= 45 && code <= 48) return { svgType: 'cloudy', color: 'text-slate-400', bg: 'bg-slate-400/10', advice: 'Foggy morning.' };
+  if (code >= 51 && code <= 55) return { svgType: 'rainy', color: 'text-blue-400', bg: 'bg-blue-400/10', advice: 'Drizzling. Might want a light jacket.' };
+  if (code >= 61 && code <= 82) return { svgType: 'rainy', color: 'text-blue-600', bg: 'bg-blue-600/10', advice: 'Raining. Grab an umbrella!' };
+  if (code >= 95) return { svgType: 'rainy', color: 'text-purple-600', bg: 'bg-purple-600/10', advice: 'Thunderstorms. Seek shelter!' };
+  
+  return { svgType: 'sunny', color: 'text-yellow-500', bg: 'bg-yellow-500/10', advice: 'Beautiful day on campus.' };
+};
+
 // ── component ─────────────────────────────────────────────────────────────────
 
 const Home = () => {
@@ -44,6 +92,10 @@ const Home = () => {
   const { state, actions } = useAppContext();
   const [timetable] = useLocalStorage('ucc_timetable', []);
   const [profile]    = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' });
+  const [tasks, setTasks] = useLocalStorage('ucc_daily_tasks', []);
+  const [quickNotes, setQuickNotes] = useLocalStorage('ucc_quick_notes', '');
+  const [homeWidgetsRaw] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
+  const homeWidgets = useMemo(() => ({ ...DEFAULT_HOME_WIDGETS, ...homeWidgetsRaw }), [homeWidgetsRaw]);
 
   // 🛎️ NEW: NOTIFICATION LOGIC STATES
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -53,13 +105,106 @@ const Home = () => {
   const handlePaymentSuccess = () => alert('Thank you for your support!');
   const handlePaymentError = (e) => alert(`Payment failed: ${e.message}`);
 
+  // Live time tracker for classes
+  const [currentTimeMinutes, setCurrentTimeMinutes] = useState(() => {
+    const d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
+  });
+
+  useEffect(() => {
+    const update = () => {
+      const d = new Date();
+      setCurrentTimeMinutes(d.getHours() * 60 + d.getMinutes());
+    };
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Today's classes
-  const todaysClasses = useMemo(() => {
+  const todaysClassesWithStatus = useMemo(() => {
     if (!Array.isArray(timetable)) return [];
     return timetable
       .filter(c => c.day && c.day.toLowerCase() === TODAY_NAME.toLowerCase())
-      .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
-  }, [timetable]);
+      .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
+      .map(c => {
+        const startMins = getTimeMinutes(c.startTime);
+        const endMins = c.endTime ? getTimeMinutes(c.endTime) : startMins + 60; // Assume 1hr duration if no end time
+        let status = 'upcoming';
+        if (currentTimeMinutes >= endMins) status = 'completed';
+        else if (currentTimeMinutes >= startMins && currentTimeMinutes < endMins) status = 'ongoing';
+        return { ...c, status, startMins, endMins };
+      });
+  }, [timetable, currentTimeMinutes]);
+
+  const upcomingOrOngoingClasses = todaysClassesWithStatus.filter(c => c.status !== 'completed');
+  const allCompleted = todaysClassesWithStatus.length > 0 && upcomingOrOngoingClasses.length === 0;
+
+  // Today's Tasks
+  const todaysTasks = useMemo(() => {
+    const d = new Date();
+    const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    return tasks.filter(t => t.date === todayStr).sort((a, b) => a.time.localeCompare(b.time));
+  }, [tasks]);
+
+  // Upcoming planned tasks (next 14 days, excluding today)
+  const upcomingPlannedTasks = useMemo(() => {
+    const d = new Date();
+    const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const limit = new Date(d);
+    limit.setDate(limit.getDate() + 14);
+    const limitStr = `${limit.getFullYear()}-${String(limit.getMonth() + 1).padStart(2, '0')}-${String(limit.getDate()).padStart(2, '0')}`;
+    return tasks
+      .filter(t => t.date > todayStr && t.date <= limitStr)
+      .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  }, [tasks]);
+
+  const toggleTaskStatus = (id) => {
+    setTasks(prev => prev.map(t => {
+      if (t.id === id) {
+        return { ...t, status: t.status === 'completed' ? 'pending' : 'completed' };
+      }
+      return t;
+    }));
+  };
+
+  // Upcoming Academic Events
+  const upcomingAcademicEvents = useMemo(() => getUpcomingAcademicEvents(2), []);
+
+  // Sam Jonah Library status
+  const libraryStatus = useMemo(() => {
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    // Sunday - closed
+    if (day === 0) {
+      return { isOpen: false, label: 'Closed', detail: 'Closed today (Sunday). Opens Monday at 9:00 AM.' };
+    }
+
+    let openMin, closeMin, closeStr;
+    if (day === 6) {
+      // Saturday: 9:00 AM – 4:30 PM
+      openMin = 9 * 60;
+      closeMin = 16 * 60 + 30;
+      closeStr = '4:30 PM';
+    } else {
+      // Mon–Fri: 9:00 AM – 10:00 PM
+      openMin = 9 * 60;
+      closeMin = 22 * 60;
+      closeStr = '10:00 PM';
+    }
+
+    if (currentMinutes >= openMin && currentMinutes < closeMin) {
+      return { isOpen: true, label: 'Open', detail: `Closes at ${closeStr}` };
+    } else if (currentMinutes < openMin) {
+      return { isOpen: false, label: 'Closed', detail: 'Opens today at 9:00 AM' };
+    } else {
+      if (day === 6) {
+        return { isOpen: false, label: 'Closed', detail: 'Closed for today. Opens Monday at 9:00 AM.' };
+      }
+      return { isOpen: false, label: 'Closed', detail: 'Closed for today. Opens tomorrow at 9:00 AM.' };
+    }
+  }, [currentTimeMinutes]);
 
   // ── Announcement → Ad rotation logic ─────────────────────────────────────
   const [featuredContent, setFeaturedContent] = useState(null); 
@@ -110,6 +255,24 @@ const Home = () => {
     };
 
     checkAnnouncement();
+  }, []);
+
+  // ── Weather Fetching Logic ───────────────────────────────────────────────
+  const [weatherData, setWeatherData] = useState(null);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=5.1165&longitude=-1.2929&current_weather=true');
+        const data = await res.json();
+        if (data && data.current_weather) {
+          setWeatherData(data.current_weather);
+        }
+      } catch (err) {
+        console.error("Failed to fetch weather", err);
+      }
+    };
+    fetchWeather();
   }, []);
 
   const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
@@ -192,14 +355,31 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Hero Greeting Text */}
-          <div className="relative z-10">
-            <h2 className="text-white text-[1.8rem] font-black leading-tight tracking-tight mb-1">
-              {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'} 👋
-            </h2>
-            <p className="text-[#6EABC6] text-sm font-semibold flex items-center gap-1 cursor-pointer active:opacity-70 transition-opacity">
-              {TODAY_LABEL}
-            </p>
+          {/* Hero Greeting Text & Weather */}
+          <div className="relative z-10 flex flex-col items-start gap-4 mt-2">
+            <div>
+              <h2 className="text-white text-[1.8rem] font-black leading-tight tracking-tight mb-1">
+                {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'} 👋
+              </h2>
+              <p className="text-[#6EABC6] text-sm font-semibold flex items-center gap-1 cursor-pointer active:opacity-70 transition-opacity">
+                {TODAY_LABEL}
+              </p>
+            </div>
+
+            {homeWidgets.weather && weatherData && (() => {
+              const { svgType, color, bg, advice } = getWeatherIconAndAdvice(weatherData.weathercode, weatherData.temperature);
+              return (
+                <div className="flex items-center gap-2 bg-[#002F45]/50 backdrop-blur-md border border-[#6EABC6]/20 px-3 py-1.5 rounded-2xl shadow-sm">
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center bg-white/10`}>
+                    {renderWeatherSvg(svgType, 14, 'text-[#6EABC6]')}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-white font-bold text-xs">{weatherData.temperature}°C</span>
+                    <span className="text-[#6EABC6] text-[10px] font-medium leading-none">{advice}</span>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
 
@@ -207,7 +387,7 @@ const Home = () => {
         <div className="px-5 -mt-8 relative z-20 space-y-6 pb-6">
 
           {/* 1. Overlapping Floating Card (Today's Classes) */}
-          <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 min-h-[140px] border border-gray-100 flex flex-col justify-center">
+          {homeWidgets.classes && (<div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 min-h-[140px] border border-gray-100 flex flex-col justify-center">
             <div className="flex justify-between items-start mb-4">
               <span className="text-sm font-black text-gray-900 tracking-tight">Today's Classes</span>
               <button onClick={() => navigate('/tools')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
@@ -215,29 +395,62 @@ const Home = () => {
               </button>
             </div>
 
-            {todaysClasses.length === 0 ? (
+            {todaysClassesWithStatus.length === 0 ? (
+              <div className="flex items-center justify-between py-2">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#002F45]/5 flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#002F45" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"></path></svg>
+                  </div>
+                  <div>
+                    <p className="text-[15px] font-bold text-gray-900">No classes today!</p>
+                    <p className="text-xs text-gray-500 mt-0.5 font-medium">Enjoy your free time.</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => navigate('/tools?tab=plan-day')}
+                  className="flex bg-primary-50 text-primary-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-100 transition-colors"
+                >
+                  Plan Day
+                </button>
+              </div>
+            ) : allCompleted ? (
               <div className="flex items-center gap-4 py-2">
-                <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">🎉</span>
+                <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center flex-shrink-0 border border-green-100">
+                  <CheckCircle2 size={24} className="text-green-500" />
                 </div>
                 <div>
-                  <p className="text-[15px] font-bold text-gray-900">No classes today!</p>
-                  <p className="text-xs text-gray-500 mt-0.5 font-medium">Enjoy your free time.</p>
+                  <p className="text-[15px] font-bold text-gray-900">All classes ended!</p>
+                  <p className="text-xs text-gray-500 mt-0.5 font-medium">You've successfully completed all classes for today.</p>
                 </div>
               </div>
             ) : (
               <div className="space-y-3">
-                {todaysClasses.slice(0, 2).map((cls, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-[#002F45]/5 flex items-center justify-center flex-shrink-0">
-                      <Clock size={16} className="text-[#002F45]" />
+                {todaysClassesWithStatus.slice(0, 3).map((cls, i) => (
+                  <div key={i} className={`flex items-center gap-4 transition-opacity ${cls.status === 'completed' ? 'opacity-40' : 'opacity-100'}`}>
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                        cls.status === 'completed' ? 'bg-gray-100' :
+                        cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' : 
+                        'bg-[#002F45]/5'
+                    }`}>
+                      {cls.status === 'completed' ? <CheckCircle2 size={16} className="text-gray-400" /> :
+                       cls.status === 'ongoing' ? <Loader2 size={16} className="text-blue-600 animate-spin" /> :
+                       <Clock size={16} className="text-[#002F45]" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-gray-900 truncate">
+                      <p className={`text-sm font-bold truncate ${cls.status === 'completed' ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
                         {cls.courseName || cls.name || 'Class'}
                       </p>
-                      <p className="text-xs text-gray-500 font-medium mt-0.5">
-                        {cls.startTime && cls.endTime ? `${formatTime12Hour(cls.startTime)} – ${formatTime12Hour(cls.endTime)}` : formatTime12Hour(cls.startTime) || ''}
+                      <p className={`text-xs font-medium mt-0.5 flex flex-wrap items-center gap-1 ${cls.status === 'ongoing' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
+                        <span>
+                            {cls.status === 'ongoing' ? 'Happening Now • ' : ''}
+                            {cls.status === 'completed' ? 'Completed • ' : ''}
+                            {cls.startTime && cls.endTime ? `${formatTime12Hour(cls.startTime)} – ${formatTime12Hour(cls.endTime)}` : formatTime12Hour(cls.startTime) || ''}
+                        </span>
+                        {cls.location && (
+                            <span className="flex items-center gap-0.5 font-bold opacity-90">
+                                • <MapPin size={10} /> {cls.location}
+                            </span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -245,10 +458,175 @@ const Home = () => {
               </div>
             )}
           </div>
+          )}
+
+          {/* 1.5 Overlapping Floating Card (Today's Tasks) */}
+          {homeWidgets.tasks && (<div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
+            <div className="flex justify-between items-start mb-4">
+              <span className="text-sm font-black text-gray-900 tracking-tight">Today's Tasks</span>
+              <button onClick={() => navigate('/tools?tab=plan-day')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
+                Manage <ChevronRight size={13} />
+              </button>
+            </div>
+
+            {todaysTasks.length === 0 ? (
+              <div className="flex items-center justify-between py-2 bg-slate-50 p-4 rounded-xl border border-slate-100 border-dashed">
+                <div>
+                  <p className="text-sm font-bold text-slate-800">No tasks planned</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Want to organize your day?</p>
+                </div>
+                <button 
+                  onClick={() => navigate('/tools?tab=plan-day')}
+                  className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:border-primary-200 transition-all"
+                >
+                  Plan Day
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {todaysTasks.slice(0, 3).map((task) => {
+                  const IconCmp = getIconComponent(task.icon);
+                  const isCompleted = task.status === 'completed';
+                  return (
+                    <div key={task.id} className={`flex items-center gap-3 p-2 -mx-2 rounded-xl transition-all hover:bg-slate-50 ${isCompleted ? 'opacity-60' : 'opacity-100'}`}>
+                      {/* Interactive Checkbox */}
+                      <button 
+                          onClick={() => toggleTaskStatus(task.id)}
+                          className="flex-shrink-0 text-slate-300 hover:text-primary-600 transition-colors p-1"
+                      >
+                          {isCompleted ? <CheckCircle2 size={22} className="text-primary-500" /> : <Circle size={22} />}
+                      </button>
+
+                      {/* Icon Block */}
+                      <div 
+                          className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                              isCompleted ? 'bg-slate-100 text-slate-400' : 'bg-primary-50 text-primary-600 shadow-sm border border-primary-100/50'
+                          }`}
+                      >
+                        <IconCmp size={18} />
+                      </div>
+
+                      {/* Text */}
+                      <div className="flex-1 min-w-0 cursor-pointer" onClick={() => toggleTaskStatus(task.id)}>
+                        <p className={`text-sm font-bold truncate ${isCompleted ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
+                          {task.title}
+                        </p>
+                        <p className="text-[11px] font-medium mt-0.5 text-slate-500">
+                          {formatTime12Hour(task.time)}
+                          {task.endTime ? ` – ${formatTime12Hour(task.endTime)}` : ''}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+                {todaysTasks.length > 3 && (
+                    <button onClick={() => navigate('/tools?tab=plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
+                        +{todaysTasks.length - 3} more tasks
+                    </button>
+                )}
+              </div>
+            )}
+          </div>
+          )}
+
+          {/* 1.55 Sam Jonah Library Status */}
+          {homeWidgets.library && (
+            <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
+              <div className="flex items-center gap-2 mb-3">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${libraryStatus.isOpen ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}>
+                  <LibrarySvg size={16} className={libraryStatus.isOpen ? 'text-green-600' : 'text-red-500'} />
+                </div>
+                <span className="text-sm font-black text-gray-900 tracking-tight">Sam Jonah Library</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                  libraryStatus.isOpen
+                    ? 'bg-green-50 text-green-700 border border-green-100'
+                    : 'bg-red-50 text-red-600 border border-red-100'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${libraryStatus.isOpen ? 'bg-green-500 animate-pulse' : 'bg-red-400'}`}></span>
+                  {libraryStatus.label}
+                </span>
+                <span className="text-xs text-gray-500 font-medium">{libraryStatus.detail}</span>
+              </div>
+            </div>
+          )}
+
+          {/* 1.5b Upcoming Planned Events */}
+          {homeWidgets.tasks && upcomingPlannedTasks.length > 0 && (
+            <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-sm font-black text-gray-900 tracking-tight">Upcoming Events</span>
+                <button onClick={() => navigate('/tools?tab=plan-day')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
+                  View all <ChevronRight size={13} />
+                </button>
+              </div>
+              <div className="space-y-3">
+                {upcomingPlannedTasks.slice(0, 4).map((task) => {
+                  const IconCmp = getIconComponent(task.icon);
+                  const taskDate = new Date(task.date + 'T00:00:00');
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const diffDays = Math.ceil((taskDate - today) / (1000 * 60 * 60 * 24));
+                  let dayLabel = '';
+                  if (diffDays === 1) dayLabel = 'Tomorrow';
+                  else if (diffDays <= 7) dayLabel = `In ${diffDays} days`;
+                  else dayLabel = `In ${Math.ceil(diffDays / 7)} week${Math.ceil(diffDays / 7) > 1 ? 's' : ''}`;
+                  return (
+                    <div key={task.id} className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-slate-50 transition-colors">
+                      <div className="w-10 h-10 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center flex-shrink-0 shadow-sm border border-primary-100/50">
+                        <IconCmp size={18} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold truncate text-slate-900">{task.title}</p>
+                        <p className="text-[11px] font-medium mt-0.5 text-slate-500">
+                          {dayLabel} • {formatTime12Hour(task.time)}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+                {upcomingPlannedTasks.length > 4 && (
+                  <button onClick={() => navigate('/tools?tab=plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
+                    +{upcomingPlannedTasks.length - 4} more events
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 1.6 Upcoming Academic Events */}
+          {homeWidgets.calendar && upcomingAcademicEvents.length > 0 && (
+            <div className="bg-[#002F45] rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1)] p-6 border border-[#002F45]/90 flex flex-col justify-center mt-2 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mt-12 -mr-12 pointer-events-none blur-2xl" />
+              
+              <div className="flex items-center gap-2 mb-4 relative z-10">
+                <div className="w-6 h-6 rounded-lg bg-white/10 flex items-center justify-center">
+                  <Calendar size={12} className="text-[#6EABC6]" />
+                </div>
+                <span className="text-sm font-black text-white tracking-tight">Academic Calendar</span>
+              </div>
+
+              <div className="space-y-3 relative z-10">
+                {upcomingAcademicEvents.map((ev, idx) => (
+                  <div key={idx} className="flex flex-col gap-1 border-l-2 border-[#6EABC6]/30 pl-3 py-1">
+                    <p className="text-[13px] font-bold text-white leading-tight">
+                      {ev.title}
+                    </p>
+                    <p className="text-[11px] font-medium text-[#6EABC6] flex items-center gap-1.5">
+                      <span className="font-bold">{ev.timeLabel}</span>
+                      <span className="opacity-50">•</span>
+                      <span>{ev.formattedDate}</span>
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 2. Campus Tools (Horizontal Scroll) */}
           <div className="pt-2">
-            <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">Campus tools</h3>
+            <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">Tools</h3>
             <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 px-1 -mx-1">
               {quickActions.map((action, i) => {
                 const Icon = action.icon;
@@ -271,7 +649,22 @@ const Home = () => {
             </div>
           </div>
 
-          {/* 3. Announcements / Featured Content */}
+          {/* 3. Quick Note Scratchpad */}
+          {homeWidgets.quickNote && (<div className="pt-2">
+            <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">Quick Note</h3>
+            <div className="bg-[#FFF9C4] rounded-2xl shadow-sm border border-[#FFF59D] p-4 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-8 h-8 bg-black/5 rounded-bl-2xl -mt-2 -mr-2 pointer-events-none" />
+              <textarea
+                value={quickNotes}
+                onChange={(e) => setQuickNotes(e.target.value)}
+                placeholder="Jot down a locker number, assignment due date, or anything you don't want to forget..."
+                className="w-full h-24 bg-transparent resize-none border-none outline-none focus:outline-none focus:ring-0 p-0 text-sm font-medium text-amber-900 placeholder-amber-700/50"
+              />
+            </div>
+          </div>
+          )}
+
+          {/* 4. Announcements / Featured Content */}
           {featuredContent && (() => {
             const isAd = featuredContent.kind === 'ad';
             const d = featuredContent.data;
@@ -421,6 +814,19 @@ const Home = () => {
                   Campus Companion
                 </span>
               </h2>
+
+              {homeWidgets.weather && weatherData && (() => {
+                const { svgType, color, bg, advice } = getWeatherIconAndAdvice(weatherData.weathercode, weatherData.temperature);
+                return (
+                  <div className={`inline-flex items-center gap-3 ${bg} border border-white px-4 py-2 rounded-2xl shadow-sm mb-6`}>
+                    {renderWeatherSvg(svgType, 20, color)}
+                    <span className="text-gray-800 font-bold text-sm">
+                      {weatherData.temperature}°C <span className="font-medium text-gray-500 mx-1">•</span> {advice}
+                    </span>
+                  </div>
+                );
+              })()}
+
               <p className="text-lg text-gray-500 mb-6 max-w-xl font-medium">
                 Navigate campus life with clear guides, essential tools, and quick access to services all in a compact, easy-to-use hub.
               </p>

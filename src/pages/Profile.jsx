@@ -1,10 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3 } from 'lucide-react';
+ import React, { useState, useEffect } from 'react';
+import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { LS_KEYS } from '../utils/constants';
+import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
+
+// Custom SVG icons for widget toggles
+const WeatherSvgIcon = ({ size = 20, className = '' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}>
+    <path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/>
+  </svg>
+);
+
+const LibrarySvgIcon = ({ size = 20, className = '' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}>
+    <path d="M231.65,194.55,198.46,36.75a16,16,0,0,0-19-12.39L132.65,34.42a16.08,16.08,0,0,0-12.3,19l33.19,157.8A16,16,0,0,0,169.16,224a16.25,16.25,0,0,0,3.38-.36l46.81-10.06A16.09,16.09,0,0,0,231.65,194.55ZM136,50.15c0-.06,0-.09,0-.09l46.8-10,3.33,15.87L139.33,66Zm6.62,31.47,46.82-10.05,3.34,15.9L146,97.53Zm6.64,31.57,46.82-10.06,13.3,63.24-46.82,10.06ZM216,197.94l-46.8,10-3.33-15.87L212.67,182,216,197.85C216,197.91,216,197.94,216,197.94ZM104,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32ZM56,48h48V64H56Zm0,32h48v96H56Zm48,128H56V192h48v16Z"/>
+  </svg>
+);
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -20,6 +33,7 @@ const Profile = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [homeWidgets, setHomeWidgets] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
   
   // Local form state for the edit modal
   const [formData, setFormData] = useState(profile);
@@ -40,6 +54,19 @@ const Profile = () => {
       setIsEditModalOpen(false);
     }, 1000);
   };
+
+  const toggleWidget = (key) => {
+    setHomeWidgets(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const widgetToggles = [
+    { key: 'classes', label: "Today's Classes", Icon: Clock },
+    { key: 'tasks', label: "Today's Tasks", Icon: ListChecks },
+    { key: 'calendar', label: 'Academic Calendar', Icon: Calendar },
+    { key: 'weather', label: 'Weather', Icon: WeatherSvgIcon },
+    { key: 'library', label: 'Library Status', Icon: LibrarySvgIcon },
+    { key: 'quickNote', label: 'Quick Note', Icon: StickyNote },
+  ];
 
   const handleClearData = () => {
     if (window.confirm('Are you sure you want to clear all your app data? This cannot be undone.')) {
@@ -104,6 +131,36 @@ const Profile = () => {
             <img src="/Savings.png" alt="Support" className="w-full h-full object-contain drop-shadow-md" />
           </div>
         </div>
+
+        {/* Customize Home */}
+        <div className="space-y-2 pt-2">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-4">Customize Home</h2>
+          <p className="text-sm text-gray-500 font-medium -mt-2 mb-4">Choose what appears on your home screen.</p>
+          <div className="space-y-1">
+            {widgetToggles.map(({ key, label, Icon }) => (
+              <div key={key} className="flex items-center justify-between py-3.5 border-b border-gray-100 last:border-0">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
+                    <Icon size={20} className="text-gray-600" strokeWidth={1.5} />
+                  </div>
+                  <span className="text-[17px] text-gray-900 font-medium">{label}</span>
+                </div>
+                <button
+                  onClick={() => toggleWidget(key)}
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${
+                    homeWidgets[key] ? 'bg-[#002F45]' : 'bg-gray-200'
+                  }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                    homeWidgets[key] ? 'translate-x-5' : 'translate-x-0'
+                  }`} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <hr className="border-gray-100" />
 
         {/* Settings List */}
         <div className="space-y-2 pt-2">

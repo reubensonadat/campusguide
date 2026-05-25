@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ExternalLink, ChevronUp, ChevronDown, X as XIcon, Info } from 'lucide-react';
+import { ExternalLink, ChevronUp, ChevronDown, X as XIcon, Info, Search, Navigation, Loader2 } from 'lucide-react';
 import CampusMapData from './content/ucc/CampusMap';
 import { getKnowledgeForLocation } from './content/ucc/KnowledgeBase';
 import { Map, MapControls, MapMarker, MarkerPopup, MarkerContent, MapRoute } from '@/components/ui/map';

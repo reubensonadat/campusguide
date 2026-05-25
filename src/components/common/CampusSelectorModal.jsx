@@ -34,15 +34,15 @@ const CampusSelectorModal = ({ isOpen, onClose }) => { // onClose might not be n
                         <button
                             key={campus.id}
                             onClick={() => handleSelect(campus.id)}
-                            className="w-full group relative overflow-hidden bg-white hover:bg-white p-4 rounded-xl border border-gray-200 hover:border-indigo-500 hover:shadow-lg transition-all duration-200 text-left flex items-center gap-4"
+                            className="w-full group relative overflow-hidden bg-white hover:bg-white p-4 rounded-xl border border-gray-200 hover:border-primary-500 hover:shadow-lg transition-all duration-200 text-left flex items-center gap-4"
                         >
                             {/* Logo/Icon Placeholder - Keeping color for identity but subtle */}
                             <div className={`w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100 group-hover:scale-105 transition-transform`}>
-                                <span className="text-lg font-black text-gray-700 group-hover:text-indigo-600 transition-colors">{campus.shortName[0]}</span>
+                                <span className="text-lg font-black text-gray-700 group-hover:text-primary-600 transition-colors">{campus.shortName[0]}</span>
                             </div>
 
                             <div className="flex-1">
-                                <h3 className="font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">
+                                <h3 className="font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
                                     {campus.name}
                                 </h3>
                                 <p className="text-xs text-gray-500 font-medium">
@@ -51,7 +51,7 @@ const CampusSelectorModal = ({ isOpen, onClose }) => { // onClose might not be n
                             </div>
 
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center">
                                     <CheckCircle size={16} />
                                 </div>
                             </div>

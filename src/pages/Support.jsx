@@ -68,7 +68,7 @@ const Support = () => {
   };
 
   return (
-    <div className="pb-24 bg-gray-50/30 min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="pb-24 bg-gray-50/30 min-h-screen font-sans selection:bg-primary-100 selection:text-primary-900">
 
       {/* Header - Clean & Simple */}
       <div className="pt-16 pb-12 px-6 text-center max-w-2xl mx-auto">
@@ -109,7 +109,7 @@ const Support = () => {
                       onClick={() => handleAmountSelect(val)}
                       className={`py-4 rounded-xl font-bold text-base transition-all border
                                     ${amount === val && !customAmount
-                          ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200 scale-105'
+                          ? 'border-primary-600 bg-primary-600 text-white shadow-lg shadow-primary-200 scale-105'
                           : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-white'}`}
                     >
                       GH₵{val}
@@ -125,7 +125,7 @@ const Support = () => {
                     placeholder="Other Amount"
                     value={customAmount}
                     onChange={handleCustomAmountChange}
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl font-bold text-gray-900 transition-all outline-none text-sm placeholder:font-medium"
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 rounded-xl font-bold text-gray-900 transition-all outline-none text-sm placeholder:font-medium"
                   />
                 </div>
 
@@ -137,14 +137,14 @@ const Support = () => {
                       placeholder="Name (Optional)"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full p-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-sm transition-all outline-none placeholder:text-gray-400 font-medium"
+                      className="w-full p-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 rounded-xl text-sm transition-all outline-none placeholder:text-gray-400 font-medium"
                     />
                     <input
                       type="tel"
                       placeholder="Phone (Optional)"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full p-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-sm transition-all outline-none placeholder:text-gray-400 font-medium"
+                      className="w-full p-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 rounded-xl text-sm transition-all outline-none placeholder:text-gray-400 font-medium"
                     />
                   </div>
                   <input
@@ -152,13 +152,13 @@ const Support = () => {
                     placeholder="Email (Optional)"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-sm transition-all outline-none placeholder:text-gray-400 font-medium"
+                    className="w-full p-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 rounded-xl text-sm transition-all outline-none placeholder:text-gray-400 font-medium"
                   />
                   <textarea
                     placeholder="Message (Optional)"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="w-full p-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-sm transition-all outline-none h-20 resize-none placeholder:text-gray-400 font-medium"
+                    className="w-full p-3.5 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 rounded-xl text-sm transition-all outline-none h-20 resize-none placeholder:text-gray-400 font-medium"
                   />
                 </div>
 
@@ -174,7 +174,7 @@ const Support = () => {
                   }}
                   onPaymentSuccess={handlePaymentSuccess}
                   onPaymentError={handlePaymentError}
-                  className="w-full py-4 text-base bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all transform active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full py-4 text-base bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-lg shadow-primary-200 transition-all transform active:scale-95 flex items-center justify-center gap-2"
                 >
                   <span>Donate GH₵{amount}</span>
                 </PaymentButton>
@@ -198,7 +198,7 @@ const Support = () => {
                 <div className="divide-y divide-gray-50">
                   {supporters.map((supporter, idx) => (
                     <div key={idx} className="p-4 px-6 flex items-center gap-4 hover:bg-gray-50 transition-colors group">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-50 to-white border border-gray-100 text-indigo-600 flex items-center justify-center font-bold text-sm shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-50 to-white border border-gray-100 text-primary-600 flex items-center justify-center font-bold text-sm shrink-0 shadow-sm group-hover:scale-110 transition-transform">
                         {supporter.name ? supporter.name[0] : 'S'}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -228,7 +228,7 @@ const Support = () => {
           <div className="lg:col-span-5 space-y-5">
 
             {/* Why Support Us Card - Premium Gradient */}
-            <div className="bg-gradient-to-b from-indigo-50 to-white p-6 md:p-8 rounded-3xl border border-indigo-100/50 shadow-sm">
+            <div className="bg-gradient-to-b from-primary-50 to-white p-6 md:p-8 rounded-3xl border border-primary-100/50 shadow-sm">
               <div className="flex items-center gap-2.5 mb-6">
                 <Star className="text-amber-400 fill-amber-400" size={20} />
                 <h3 className="font-bold text-gray-900 text-base">Why Support Us?</h3>
@@ -240,7 +240,7 @@ const Support = () => {
                   { title: 'New Features', desc: 'Funds tools like Timetable Builder.' }
                 ].map((item, i) => (
                   <div key={i} className="flex gap-3.5">
-                    <CheckCircle className="text-indigo-600 shrink-0 mt-0.5" size={18} />
+                    <CheckCircle className="text-primary-600 shrink-0 mt-0.5" size={18} />
                     <div>
                       <p className="font-bold text-gray-900 text-sm">{item.title}</p>
                       <p className="text-xs text-gray-500 leading-relaxed mt-0.5 font-medium">{item.desc}</p>
@@ -252,16 +252,16 @@ const Support = () => {
 
             {/* Join V2 Beta Card */}
             {showFeedbackCard && (
-              <div onClick={openFeedbackModal} className="group bg-white p-5 rounded-3xl border border-gray-100 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/10 transition-all cursor-pointer relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-indigo-600 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl">V2 BETA</div>
+              <div onClick={openFeedbackModal} className="group bg-white p-5 rounded-3xl border border-gray-100 hover:border-primary-200 hover:shadow-lg hover:shadow-primary-500/10 transition-all cursor-pointer relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-primary-600 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl">V2 BETA</div>
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform shrink-0">
+                  <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600 group-hover:scale-110 transition-transform shrink-0">
                     <Sparkles size={18} />
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 mb-1 text-sm">Join V2 Beta</h3>
                     <p className="text-xs text-gray-500 mb-3 leading-relaxed">Vote on features & get early access.</p>
-                    <span className="text-indigo-600 font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform">Take Survey <ArrowRight size={14} /></span>
+                    <span className="text-primary-600 font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform">Take Survey <ArrowRight size={14} /></span>
                   </div>
                 </div>
               </div>

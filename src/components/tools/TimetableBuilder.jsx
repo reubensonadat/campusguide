@@ -67,7 +67,8 @@ const TimetableBuilder = () => {
     );
   };
 
-  const handleAddCourse = () => {
+  const handleAddCourse = (e) => {
+    e.preventDefault();
     if (!newCourse.name || !newCourse.location) {
       setConflictError('Please enter a course name and location.');
       return;
@@ -150,8 +151,8 @@ const TimetableBuilder = () => {
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <CardTitle className="text-indigo-900 text-xl flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-indigo-500" />
+              <CardTitle className="text-[#002F45] text-xl flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-[#002F45]" />
                 My Timetable
               </CardTitle>
               <p className="text-sm text-gray-500 mt-1">Simple, unified schedule view.</p>
@@ -175,7 +176,7 @@ const TimetableBuilder = () => {
                   variant="outline"
                   size="sm"
                   onClick={handleEnableNotifications}
-                  className="flex-1 sm:flex-none border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                  className="flex-1 sm:flex-none border-[#002F45]/20 text-[#002F45] hover:bg-[#002F45]/5"
                 >
                   <Bell size={16} className="mr-2" />
                   Reminders
@@ -199,7 +200,7 @@ const TimetableBuilder = () => {
                   });
                   setShowAddForm(true);
                 }}
-                className="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all"
+                className="flex-1 sm:flex-none bg-[#002F45] hover:bg-[#001a26] text-white shadow-md hover:shadow-lg transition-all"
               >
                 <Plus size={16} className="mr-2" />
                 Add
@@ -213,12 +214,12 @@ const TimetableBuilder = () => {
           <div ref={timetableRef} className="px-1 py-4 md:p-6 bg-slate-50/50 rounded-2xl">
             {courses.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-3xl border border-dashed border-gray-200">
-                <div className="w-16 h-16 bg-indigo-50 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-[#002F45]/5 text-[#002F45] rounded-full flex items-center justify-center mx-auto mb-4">
                   <Calendar size={32} />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">Your schedule is empty</h3>
                 <p className="text-gray-500 max-w-sm mx-auto mb-6">Add your classes to stay organized and get reminders before they start.</p>
-                <Button onClick={() => setShowAddForm(true)} className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-md">
+                <Button onClick={() => setShowAddForm(true)} className="bg-[#002F45] text-white hover:bg-[#001a26] shadow-md">
                   <Plus size={18} className="mr-2" /> Add First Class
                 </Button>
               </div>
@@ -382,7 +383,7 @@ const TimetableBuilder = () => {
 
             <div>
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Color Tag</label>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex items-center gap-3 flex-wrap">
                 {colors.map(color => (
                   <button
                     type="button"
@@ -395,6 +396,17 @@ const TimetableBuilder = () => {
                     }}
                   />
                 ))}
+                <label className="relative w-10 h-10 rounded-full cursor-pointer overflow-hidden border-2 border-gray-200 hover:scale-110 transition-transform flex items-center justify-center" title="Custom color">
+                  <div className="absolute inset-0 rounded-full" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}></div>
+                  <div className="absolute inset-[3px] rounded-full bg-white"></div>
+                  <Plus size={14} className="text-gray-500 relative z-10" />
+                  <input
+                    type="color"
+                    value={newCourse.color}
+                    onChange={(e) => setNewCourse({ ...newCourse, color: e.target.value })}
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  />
+                </label>
               </div>
             </div>
           </div>
