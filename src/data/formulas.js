@@ -4889,6 +4889,8 @@ export const formulasData = [
     formulas: [
       {
         id: "shannon-capacity", name: "Shannon-Hartley Capacity",
+        description: "Maximum data rate of a noisy channel given bandwidth and signal-to-noise ratio.",
+        equation: "C = B × log₂(1 + S/N)",
         variables: [
           { id: "C", label: "Channel Capacity (C)", unit: "bps" },
           { id: "B", label: "Bandwidth (B)", unit: "Hz" },
@@ -4929,6 +4931,8 @@ export const formulasData = [
       },
       {
         id: "amdahls-law", name: "Amdahl's Law (Speedup)",
+        description: "Maximum theoretical speedup of a program using parallel processors, limited by serial fraction.",
+        equation: "S = 1 / ((1-p) + p/N)",
         variables: [
           { id: "S", label: "Speedup (S)", unit: "" },
           { id: "p", label: "Parallel Proportion (p)", unit: "" },
@@ -4955,6 +4959,8 @@ export const formulasData = [
       },
       {
         id: "gustafson", name: "Gustafson's Law",
+        description: "Scaled speedup for parallel computing that accounts for scaling the problem size with processors.",
+        equation: "S = s + p × N",
         variables: [
           { id: "S", label: "Scaled Speedup (S)", unit: "" },
           { id: "s", label: "Serial Proportion (s)", unit: "" },
@@ -4981,6 +4987,8 @@ export const formulasData = [
       },
       {
         id: "littles-law", name: "Little's Law",
+        description: "Fundamental queueing theorem relating average items in a system to arrival rate and wait time.",
+        equation: "L = λ × W",
         variables: [
           { id: "L", label: "Items in System (L)", unit: "" },
           { id: "lambda", label: "Arrival Rate (λ)", unit: "1/s" },
@@ -4994,6 +5002,8 @@ export const formulasData = [
       },
       {
         id: "network-transfer", name: "Network Transfer Time",
+        description: "Calculate file transfer time based on file size and available bandwidth.",
+        equation: "T = S / B",
         variables: [
           { id: "T", label: "Time (T)", unit: "s" },
           { id: "S", label: "Size (S)", unit: "MB" },
@@ -5012,6 +5022,8 @@ export const formulasData = [
     formulas: [
       {
         id: "pv-annuity", name: "Present Value of Annuity",
+        description: "Present value of a series of equal periodic payments discounted at a fixed rate.",
+        equation: "PV = P × (1 - (1+r)^-n) / r",
         variables: [
           { id: "PV", label: "Present Value (PV)", unit: "$" },
           { id: "P", label: "Payment per Period (P)", unit: "$" },
@@ -5041,6 +5053,8 @@ export const formulasData = [
       },
       {
         id: "fv-annuity", name: "Future Value of Annuity",
+        description: "Future value of a series of equal periodic payments compounded at a fixed rate.",
+        equation: "FV = P × ((1+r)^n - 1) / r",
         variables: [
           { id: "FV", label: "Future Value (FV)", unit: "$" },
           { id: "P", label: "Payment per Period (P)", unit: "$" },
@@ -5069,6 +5083,8 @@ export const formulasData = [
       },
       {
         id: "mortgage-amort", name: "Mortgage Amortization",
+        description: "Monthly payment on a fixed-rate mortgage loan with principal, interest, and term.",
+        equation: "M = P × r(1+r)^n / ((1+r)^n - 1)",
         variables: [
           { id: "M", label: "Monthly Payment (M)", unit: "$" },
           { id: "P", label: "Principal (P)", unit: "$" },
@@ -5098,6 +5114,8 @@ export const formulasData = [
       },
       {
         id: "capm", name: "Capital Asset Pricing Model",
+        description: "Expected return on an asset based on its systematic risk relative to the market.",
+        equation: "E(R) = Rf + β(E(Rm) - Rf)",
         variables: [
           { id: "ER", label: "Expected Return", unit: "%" },
           { id: "Rf", label: "Risk-Free Rate", unit: "%" },
@@ -5123,6 +5141,8 @@ export const formulasData = [
       },
       {
         id: "elasticity", name: "Price Elasticity of Demand",
+        description: "Midpoint formula for price elasticity of demand measuring quantity sensitivity to price changes.",
+        equation: "E = (%ΔQ) / (%ΔP)",
         variables: [
           { id: "E", label: "Elasticity (E)", unit: "" },
           { id: "Q1", label: "Old Quantity", unit: "" },
@@ -5145,6 +5165,8 @@ export const formulasData = [
       },
       {
         id: "roi", name: "Return on Investment (ROI)",
+        description: "Return on investment as a percentage of the original cost.",
+        equation: "ROI = (Gain - Cost) / Cost × 100",
         variables: [
           { id: "ROI", label: "ROI", unit: "%" },
           { id: "G", label: "Gain/Return", unit: "$" },
@@ -5170,6 +5192,8 @@ export const formulasData = [
       },
       {
         id: "wacc", name: "Weighted Average Cost of Capital",
+        description: "Weighted average cost of capital combining equity and after-tax debt costs.",
+        equation: "WACC = (E/V)Re + (D/V)Rd(1-Tc)",
         variables: [
           { id: "WACC", label: "WACC", unit: "%" },
           { id: "E", label: "Market Value Equity", unit: "$" },
@@ -5189,6 +5213,8 @@ export const formulasData = [
       },
       {
         id: "bep", name: "Break-Even Point (Units)",
+        description: "Number of units needed to sell to cover fixed costs at a given price and variable cost.",
+        equation: "Q = FC / (P - VC)",
         variables: [
           { id: "Q", label: "Units to Break Even", unit: "" },
           { id: "FC", label: "Fixed Costs", unit: "$" },
@@ -5215,6 +5241,8 @@ export const formulasData = [
     formulas: [
       {
         id: "mach", name: "Mach Number",
+        description: "Ratio of an object's speed to the local speed of sound in the medium.",
+        equation: "M = v / c",
         variables: [
           { id: "M", label: "Mach Number (M)", unit: "" },
           { id: "v", label: "Velocity (v)", unit: "m/s" },
@@ -5228,6 +5256,8 @@ export const formulasData = [
       },
       {
         id: "dyn-pressure", name: "Dynamic Pressure",
+        description: "Kinetic energy per unit volume of a flowing fluid, used in aerodynamics.",
+        equation: "q = ½ρv²",
         variables: [
           { id: "q", label: "Dynamic Pressure (q)", unit: "Pa" },
           { id: "rho", label: "Density (ρ)", unit: "kg/m³" },
@@ -5246,6 +5276,8 @@ export const formulasData = [
       },
       {
         id: "lift-eq", name: "Lift Equation",
+        description: "Aerodynamic lift force on a wing from air density, velocity, wing area, and lift coefficient.",
+        equation: "L = ½ρv²SC_L",
         variables: [
           { id: "L", label: "Lift Force (L)", unit: "N" },
           { id: "rho", label: "Density (ρ)", unit: "kg/m³" },
@@ -5267,6 +5299,8 @@ export const formulasData = [
       },
       {
         id: "froude", name: "Froude Number",
+        description: "Dimensionless number comparing flow inertia to gravitational effects in fluid mechanics.",
+        equation: "Fr = v / √(gL)",
         variables: [
           { id: "Fr", label: "Froude Number (Fr)", unit: "" },
           { id: "v", label: "Velocity (v)", unit: "m/s" },
@@ -5286,6 +5320,8 @@ export const formulasData = [
       },
       {
         id: "capillary-rise", name: "Capillary Rise",
+        description: "Height liquid rises in a narrow tube due to surface tension and contact angle.",
+        equation: "h = 2γcosθ / (ρgr)",
         variables: [
           { id: "h", label: "Height (h)", unit: "m" },
           { id: "gamma", label: "Surface Tension (γ)", unit: "N/m" },
@@ -5305,6 +5341,8 @@ export const formulasData = [
       },
       {
         id: "specific-impulse", name: "Specific Impulse",
+        description: "Efficiency of a rocket engine measured as thrust per unit weight flow of propellant.",
+        equation: "Isp = ve / g₀",
         variables: [
           { id: "Isp", label: "Specific Impulse (Isp)", unit: "s" },
           { id: "ve", label: "Exhaust Velocity (ve)", unit: "m/s" },
@@ -5322,6 +5360,8 @@ export const formulasData = [
     formulas: [
       {
         id: "stress", name: "Stress (Normal)",
+        description: "Normal stress is the internal force per unit area on a cross-section of a material.",
+        equation: "σ = F / A",
         variables: [
           { id: "sigma", label: "Stress (σ)", unit: "Pa" },
           { id: "F", label: "Force (F)", unit: "N" },
@@ -5335,6 +5375,8 @@ export const formulasData = [
       },
       {
         id: "strain", name: "Strain",
+        description: "Deformation of a material expressed as change in length divided by original length.",
+        equation: "ε = ΔL / L₀",
         variables: [
           { id: "epsilon", label: "Strain (ε)", unit: "" },
           { id: "dL", label: "Change in Length (ΔL)", unit: "m" },
@@ -5348,6 +5390,8 @@ export const formulasData = [
       },
       {
         id: "euler-buckling", name: "Euler's Buckling Load",
+        description: "Critical axial load at which a slender column buckles under compression.",
+        equation: "Pcr = π²EI / (KL)²",
         variables: [
           { id: "Pcr", label: "Critical Load (Pcr)", unit: "N" },
           { id: "E", label: "Young's Modulus (E)", unit: "Pa" },
@@ -5365,6 +5409,8 @@ export const formulasData = [
       },
       {
         id: "soil-porosity", name: "Soil Porosity",
+        description: "Fraction of total soil volume occupied by voids (air and water).",
+        equation: "n = Vv / Vt",
         variables: [
           { id: "n", label: "Porosity (n)", unit: "" },
           { id: "Vv", label: "Volume of Voids (Vv)", unit: "m³" },
@@ -5377,6 +5423,8 @@ export const formulasData = [
       },
       {
         id: "soil-void-ratio", name: "Soil Void Ratio",
+        description: "Ratio of void volume to solid volume in a soil sample.",
+        equation: "e = Vv / Vs",
         variables: [
           { id: "e", label: "Void Ratio (e)", unit: "" },
           { id: "Vv", label: "Volume of Voids (Vv)", unit: "m³" },
@@ -5394,6 +5442,8 @@ export const formulasData = [
     formulas: [
       {
         id: "rayleigh", name: "Rayleigh Criterion (Angular)",
+        description: "Minimum angular separation at which a telescope can distinguish two point sources.",
+        equation: "θ = 1.22λ / D",
         variables: [
           { id: "theta", label: "Resolution Angle (θ)", unit: "rad" },
           { id: "lambda", label: "Wavelength (λ)", unit: "nm" },
@@ -5416,6 +5466,8 @@ export const formulasData = [
       },
       {
         id: "telescope-mag", name: "Telescope Magnification",
+        description: "Angular magnification of a refracting telescope from objective and eyepiece focal lengths.",
+        equation: "M = fo / fe",
         variables: [
           { id: "M", label: "Magnification (M)", unit: "" },
           { id: "fo", label: "Objective Focal Length (fo)", unit: "m" },
@@ -5429,6 +5481,8 @@ export const formulasData = [
       },
       {
         id: "distance-modulus", name: "Distance Modulus",
+        description: "Relationship between apparent magnitude, absolute magnitude, and distance in parsecs.",
+        equation: "m - M = 5 log₁₀(d) - 5",
         variables: [
           { id: "mu", label: "Modulus (m - M)", unit: "" },
           { id: "d", label: "Distance (d)", unit: "pc" }
@@ -5447,6 +5501,8 @@ export const formulasData = [
       },
       {
         id: "wiens-law", name: "Wien's Displacement Law",
+        description: "Peak wavelength of blackbody radiation is inversely proportional to temperature.",
+        equation: "λmax = b / T",
         variables: [
           { id: "lambda", label: "Peak Wavelength (λ)", unit: "nm" },
           { id: "T", label: "Temperature (T)", unit: "K" }
@@ -5467,6 +5523,8 @@ export const formulasData = [
       },
       {
         id: "lens-maker", name: "Lens Maker's Equation",
+        description: "Focal length of a thin lens from its refractive index and radii of curvature.",
+        equation: "1/f = (n-1)(1/R₁ - 1/R₂)",
         variables: [
           { id: "f", label: "Focal Length (f)", unit: "m" },
           { id: "n", label: "Refractive Index (n)", unit: "" },
@@ -5484,6 +5542,8 @@ export const formulasData = [
       },
       {
         id: "larmor", name: "Larmor Formula",
+        description: "Power radiated by an accelerating charged particle in classical electrodynamics.",
+        equation: "P = 2kq²a² / (3c³)",
         variables: [
           { id: "P", label: "Radiated Power (P)", unit: "W" },
           { id: "q", label: "Charge (q)", unit: "C" },

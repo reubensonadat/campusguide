@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { formulasData } from '../../data/formulas';
 import { Modal } from '../common/Modal';
 import { CustomGuide, CustomTools, CustomCommunity, CustomProfile, CustomSettings } from '../common/CustomIcons';
 import {
   Play, RotateCcw, Lightbulb,
   Search, X, ArrowRight, AlertTriangle, CheckCircle2,
-  Sparkles
+  Heart
 } from 'lucide-react';
 
 // Variables that accept comma-separated text input instead of numbers
@@ -80,29 +80,69 @@ const FormulaCalculator = () => {
   const [solveFor, setSolveFor] = useState(null); // which variable to solve for
   const [mode, setMode] = useState('auto'); // 'auto' = leave-blank, 'target' = solve-for
   const [selectedUnits, setSelectedUnits] = useState({});
+  const [favorites, setFavorites] = useState(() => {
+    try {
+      const saved = localStorage.getItem('formula-favorites');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
 
-  // Get all categories
-  const categories = ['All', ...formulasData.map(c => c.category)];
+  const toggleFavorite = useCallback((e, formulaId) => {
+    e.stopPropagation();
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (next.has(formulaId)) next.delete(formulaId); else next.add(formulaId);
+      localStorage.setItem('formula-favorites', JSON.stringify([...next]));
+      // If we just emptied favorites while on the Favorites tab, go back to All
+      if (next.size === 0 && activeCategory === '⭐ Favorites') setActiveCategory('All');
+      return next;
+    });
+  }, [activeCategory]);
+
+  // Get all categories — inject Favorites right after All if any exist
+  const categories = useMemo(() => {
+    const base = ['All', ...formulasData.map(c => c.category)];
+    if (favorites.size > 0) base.splice(1, 0, '⭐ Favorites');
+    return base;
+  }, [favorites]);
 
   // Filter formulas
   const filteredFormulas = useMemo(() => {
     let data = formulasData;
-    if (activeCategory !== 'All') {
+
+    // Favorites virtual category
+    if (activeCategory === '⭐ Favorites') {
+      const favFormulas = [];
+      formulasData.forEach(cat => {
+        cat.formulas.forEach(f => {
+          if (favorites.has(f.id)) favFormulas.push(f);
+        });
+      });
+      data = favFormulas.length > 0 ? [{ category: '⭐ Favorites', formulas: favFormulas }] : [];
+    } else if (activeCategory !== 'All') {
       data = data.filter(c => c.category === activeCategory);
     }
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       data = data.map(cat => ({
         ...cat,
-        formulas: cat.formulas.filter(f =>
-          f.name.toLowerCase().includes(q) ||
-          f.description.toLowerCase().includes(q) ||
-          f.equation.toLowerCase().includes(q)
-        )
+        formulas: cat.formulas.filter(f => {
+          // Search across all text surfaces
+          const haystack = [
+            f.name,
+            f.description ?? '',
+            f.equation ?? '',
+            f.id,
+            cat.category,
+            ...(f.variables ?? []).flatMap(v => [v.label, v.unit, v.id])
+          ].join(' ').toLowerCase();
+          return haystack.includes(q);
+        })
       })).filter(cat => cat.formulas.length > 0);
     }
     return data;
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, favorites]);
 
   const handleOpenFormula = (formula) => {
     setModalFormula(formula);
@@ -250,7 +290,7 @@ const FormulaCalculator = () => {
                 : 'bg-white text-gray-500 border border-gray-200 hover:border-primary-200 hover:text-primary-600'
             }`}
           >
-            {cat === 'All' ? `All (${formulasData.reduce((s, c) => s + c.formulas.length, 0)})` : cat}
+            {cat === 'All' ? `All (${formulasData.reduce((s, c) => s + c.formulas.length, 0)})` : cat === '⭐ Favorites' ? `⭐ Favorites (${favorites.size})` : cat}
           </button>
         ))}
       </div>
@@ -272,7 +312,13 @@ const FormulaCalculator = () => {
                   <IconComp size={12} />
                   {category.category}
                 </span>
-                <Sparkles className="w-4 h-4 text-gray-200 group-hover:text-[#002F45]/60 transition-colors" />
+                <button
+                  onClick={(e) => toggleFavorite(e, formula.id)}
+                  className="p-1 rounded-full hover:bg-red-50 transition-colors z-10"
+                  title={favorites.has(formula.id) ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  <Heart className={`w-4 h-4 transition-colors ${favorites.has(formula.id) ? 'fill-red-500 text-red-500' : 'text-gray-200 group-hover:text-gray-400'}`} />
+                </button>
               </div>
 
               {/* Formula name */}
