@@ -167,13 +167,15 @@ const AdminDashboard = () => {
                 }]);
                 if (dbError) throw new Error("DB Error: " + dbError.message);
             } else {
+                let actionLink = uploadFormData.contact_method === 'link' ? uploadFormData.contact_url : uploadFormData.phone_number;
+                if (!actionLink || actionLink.trim() === '') actionLink = null;
+
                 const { error: dbError } = await supabase.from('announcements').insert([{
                     title: uploadFormData.title,
-                    content: uploadFormData.description,
-                    type: uploadFormData.category.toUpperCase(), // e.g. UPDATE, EMERGENCY
-                    link: uploadFormData.contact_method === 'link' ? uploadFormData.contact_url : null,
-                    phone: uploadFormData.contact_method !== 'link' ? uploadFormData.phone_number : null,
-                    image_url: finalImageUrl
+                    description: uploadFormData.description,
+                    flyer_url: finalImageUrl,
+                    action_link: actionLink,
+                    action_text: actionLink ? (uploadFormData.contact_method === 'link' ? 'Visit Link' : (uploadFormData.contact_method === 'whatsapp' ? 'WhatsApp' : 'Call')) : null
                 }]);
                 if (dbError) throw new Error("DB Error: " + dbError.message);
             }
@@ -388,7 +390,7 @@ const AdminDashboard = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Detail</label>
-                                    <input required type="text" value={uploadFormData.contact_method === 'link' ? uploadFormData.contact_url : uploadFormData.phone_number} onChange={e => setUploadFormData(prev => uploadFormData.contact_method === 'link' ? ({...prev, contact_url: e.target.value}) : ({...prev, phone_number: e.target.value}))} placeholder={uploadFormData.contact_method === 'link' ? "https://..." : "+233..."} className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500" />
+                                    <input type="text" value={uploadFormData.contact_method === 'link' ? uploadFormData.contact_url : uploadFormData.phone_number} onChange={e => setUploadFormData(prev => uploadFormData.contact_method === 'link' ? ({...prev, contact_url: e.target.value}) : ({...prev, phone_number: e.target.value}))} placeholder={uploadFormData.contact_method === 'link' ? "https://..." : "+233..."} className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500" />
                                 </div>
                             </div>
 
