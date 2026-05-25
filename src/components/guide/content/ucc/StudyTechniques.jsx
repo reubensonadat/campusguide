@@ -76,9 +76,9 @@ const StudyTechniques = () => {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <Target size={24} /> Proven Methods
                 </h4>
                 <p className="text-slate-600 font-medium leading-relaxed mb-8">
@@ -92,11 +92,11 @@ const StudyTechniques = () => {
              </div>
           </div>
 
-          <div className="bg-indigo-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+          <div className="bg-primary-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
              <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
              <div className="relative">
-                <h4 className="text-2xl font-black mb-4 flex items-center gap-2"><Sparkles size={24} className="text-indigo-400" /> AI Study Assistants</h4>
-                <p className="text-indigo-100 text-xs font-medium leading-relaxed mb-6 max-w-md">
+                <h4 className="text-2xl font-black mb-4 flex items-center gap-2"><Sparkles size={24} className="text-primary-400" /> AI Study Assistants</h4>
+                <p className="text-primary-100 text-xs font-medium leading-relaxed mb-6 max-w-md">
                    Modern study involves using AI as a tutor, not a shortcut. Use these tools to clarify complex lectures.
                 </p>
                 <div className="flex flex-wrap gap-4">
@@ -121,7 +121,7 @@ const StudyTechniques = () => {
 
 const MethodTile = ({ step, title, text }) => (
   <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-     <div className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-2">Method {step}</div>
+     <div className="text-[10px] font-black text-primary-500 uppercase tracking-widest mb-2">Method {step}</div>
      <h5 className="font-black text-slate-900 mb-2">{title}</h5>
      <p className="text-xs text-slate-500 leading-relaxed font-medium">{text}</p>
   </div>

@@ -51,7 +51,7 @@ const FAQsTroubleshooting = () => {
             />
           </div>
 
-          <div className="bg-indigo-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+          <div className="bg-primary-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
              <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
              <div className="relative flex flex-col md:flex-row items-center gap-8">
                 <div className="bg-white/10 p-6 rounded-full border border-white/20">
@@ -59,10 +59,10 @@ const FAQsTroubleshooting = () => {
                 </div>
                 <div>
                    <h4 className="text-2xl font-black mb-2">Still Stuck?</h4>
-                   <p className="text-indigo-100 text-xs font-medium leading-relaxed mb-4 max-w-md">
+                   <p className="text-primary-100 text-xs font-medium leading-relaxed mb-4 max-w-md">
                       If these steps don't resolve your issue, visit the MIS (Management Information Systems) office located at the Main Library, Ground Floor.
                    </p>
-                   <div className="inline-flex bg-white text-indigo-900 px-6 py-2 rounded-2xl font-black text-sm uppercase shadow-sm">
+                   <div className="inline-flex bg-white text-primary-900 px-6 py-2 rounded-2xl font-black text-sm uppercase shadow-sm">
                       Visit MIS Office
                    </div>
                 </div>

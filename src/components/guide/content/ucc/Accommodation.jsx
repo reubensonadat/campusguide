@@ -61,9 +61,9 @@ const Accommodation = () => {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <Users size={24} /> Application Realities
                 </h4>
                 <p className="text-slate-600 font-medium leading-relaxed mb-8">
@@ -121,13 +121,13 @@ const Accommodation = () => {
             />
           </div>
 
-          <div className="bg-indigo-900 text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
-             <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl"></div>
+          <div className="bg-primary-900 text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
+             <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl"></div>
              <div className="relative space-y-8">
                 <div className="flex flex-col md:flex-row justify-between gap-6 border-b border-white/10 pb-8">
                    <div>
                       <h4 className="text-3xl font-black tracking-tight">The "Golden Window" Rule</h4>
-                      <p className="text-indigo-300 font-medium">To live a happy life in Level 200, you must start looking early.</p>
+                      <p className="text-primary-300 font-medium">To live a happy life in Level 200, you must start looking early.</p>
                    </div>
                    <div className="bg-emerald-500 text-white px-6 py-2 rounded-2xl flex items-center gap-2 font-black text-sm uppercase">
                       End of Sem 2 <ArrowRight size={16} />
@@ -135,7 +135,7 @@ const Accommodation = () => {
                 </div>
                 <div className="grid md:grid-cols-2 gap-10">
                    <div>
-                      <h5 className="text-indigo-400 font-black text-xs uppercase mb-4 tracking-widest">Why Start Early?</h5>
+                      <h5 className="text-primary-400 font-black text-xs uppercase mb-4 tracking-widest">Why Start Early?</h5>
                       <ul className="space-y-4">
                          <li className="flex gap-3 text-sm font-medium">
                             <CheckCircle className="text-emerald-400 shrink-0" size={18} />
@@ -172,7 +172,7 @@ const Accommodation = () => {
 
 const StepBox = ({ step, title, text }) => (
   <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-     <div className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-2">Step {step}</div>
+     <div className="text-[10px] font-black text-primary-500 uppercase tracking-widest mb-2">Step {step}</div>
      <h5 className="font-black text-slate-900 mb-2">{title}</h5>
      <p className="text-xs text-slate-500 leading-relaxed font-medium">{text}</p>
   </div>

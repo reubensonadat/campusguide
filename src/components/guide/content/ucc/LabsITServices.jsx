@@ -64,21 +64,21 @@ const LabsITServices = () => {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <Save size={24} /> Critical Data Rule
                 </h4>
                 <p className="text-slate-600 font-medium leading-relaxed mb-6">
                    All lab computers use a 'Deep Freeze' system. Anything you save to the computer's hard drive will be <strong>permanently deleted</strong> the moment the machine restarts or loses power.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-                      <h5 className="font-black text-indigo-700 mb-2 uppercase tracking-wider text-[10px]">Cloud Storage</h5>
+                   <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+                      <h5 className="font-black text-primary-700 mb-2 uppercase tracking-wider text-[10px]">Cloud Storage</h5>
                       <p className="text-sm text-slate-600 font-medium">Use your 50GB OneDrive storage via your student email to keep files synced across devices.</p>
                    </div>
-                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-                      <h5 className="font-black text-indigo-700 mb-2 uppercase tracking-wider text-[10px]">USB Backup</h5>
+                   <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+                      <h5 className="font-black text-primary-700 mb-2 uppercase tracking-wider text-[10px]">USB Backup</h5>
                       <p className="text-sm text-slate-600 font-medium">Always carry a USB flash drive for local backups during project work in the labs.</p>
                    </div>
                 </div>
@@ -87,7 +87,7 @@ const LabsITServices = () => {
 
           <div className="pt-4">
             <h3 className="font-black text-gray-900 text-2xl mb-8 flex items-center">
-              <span className="bg-indigo-50 text-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center text-sm mr-4 shadow-sm">i</span>
+              <span className="bg-primary-50 text-primary-600 w-10 h-10 rounded-xl flex items-center justify-center text-sm mr-4 shadow-sm">i</span>
               Getting Started
             </h3>
             
@@ -116,7 +116,7 @@ const LabTile = ({ step, title, text }) => (
   <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
     <div className="flex justify-between items-start mb-2">
       <h5 className="font-black text-slate-900 text-lg leading-tight">{title}</h5>
-      <span className="text-3xl font-black text-indigo-50 group-hover:text-indigo-100 transition-colors">{step}</span>
+      <span className="text-3xl font-black text-primary-50 group-hover:text-primary-100 transition-colors">{step}</span>
     </div>
     <p className="text-sm text-slate-600 leading-relaxed font-medium">{text}</p>
   </div>

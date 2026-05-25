@@ -80,9 +80,9 @@ const PresidentialReimbursement = () => {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-6 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-6 flex items-center gap-2">
                    <Banknote size={24} /> Amount Breakdown (Estimated)
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -115,7 +115,7 @@ const PresidentialReimbursement = () => {
 const AmountTile = ({ category, amount, desc }) => (
   <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{category}</div>
-     <div className="text-2xl font-black text-indigo-600">{amount}</div>
+     <div className="text-2xl font-black text-primary-600">{amount}</div>
      <div className="text-[10px] font-bold text-slate-400 mt-1 uppercase">{desc}</div>
   </div>
 );

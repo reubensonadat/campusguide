@@ -53,9 +53,9 @@ const ClubsSocieties = () => {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <Star size={24} /> Interest & Advocacy
                 </h4>
                 <p className="text-slate-600 font-medium leading-relaxed mb-8">
@@ -94,8 +94,8 @@ const ClubsSocieties = () => {
 };
 
 const InterestTile = ({ title, text }) => (
-  <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-     <h5 className="font-black text-indigo-700 mb-2">{title}</h5>
+  <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+     <h5 className="font-black text-primary-700 mb-2">{title}</h5>
      <p className="text-xs text-slate-500 font-medium leading-relaxed">{text}</p>
   </div>
 );

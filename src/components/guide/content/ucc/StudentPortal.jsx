@@ -87,7 +87,7 @@ const StudentPortal = () => {
 
           <div className="pt-4">
             <h3 className="font-black text-gray-900 text-2xl mb-8 flex items-center">
-              <span className="bg-indigo-50 text-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center text-sm mr-4 shadow-sm">i</span>
+              <span className="bg-primary-50 text-primary-600 w-10 h-10 rounded-xl flex items-center justify-center text-sm mr-4 shadow-sm">i</span>
               Portal Access Guide
             </h3>
             
@@ -142,9 +142,9 @@ const StepTile = ({ step, title, label, text }) => (
   <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
     <div className="flex justify-between items-start mb-4">
       <h5 className="font-black text-slate-900 text-lg leading-tight">{title}</h5>
-      <span className="text-3xl font-black text-indigo-50 group-hover:text-indigo-100 transition-colors">{step}</span>
+      <span className="text-3xl font-black text-primary-50 group-hover:text-primary-100 transition-colors">{step}</span>
     </div>
-    <p className="text-[10px] uppercase tracking-widest text-indigo-500 font-black mb-3">{label}</p>
+    <p className="text-[10px] uppercase tracking-widest text-primary-500 font-black mb-3">{label}</p>
     <p className="text-sm text-slate-600 leading-relaxed font-medium" dangerouslySetInnerHTML={{ __html: text }} />
   </div>
 );

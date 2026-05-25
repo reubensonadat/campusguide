@@ -65,9 +65,9 @@ const WifiEmail = () => {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <Smartphone size={24} /> GetEduroam Setup (New)
                 </h4>
                 <p className="text-slate-600 font-medium leading-relaxed mb-8">
@@ -78,8 +78,8 @@ const WifiEmail = () => {
                    <ConfigTile step="02" title="Reset Credentials" text="Reset your password at selfservice.ucc.edu.gh first." />
                    <ConfigTile step="03" title="Search UCC" text="Open the app, search for UCC, and enter your new details." />
                 </div>
-                <div className="mt-8 bg-indigo-50 p-6 rounded-3xl border border-indigo-100">
-                   <p className="text-xs text-indigo-900 font-bold leading-relaxed flex items-center gap-2">
+                <div className="mt-8 bg-primary-50 p-6 rounded-3xl border border-primary-100">
+                   <p className="text-xs text-primary-900 font-bold leading-relaxed flex items-center gap-2">
                       <ShieldCheck size={16} /> PASSWORD RULE: Must include a capital letter, a number, and a special character (e.g. #, @, !).
                    </p>
                 </div>
@@ -101,7 +101,7 @@ const WifiEmail = () => {
 
 const ConfigTile = ({ step, title, text }) => (
   <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-     <div className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-2">Step {step}</div>
+     <div className="text-[10px] font-black text-primary-500 uppercase tracking-widest mb-2">Step {step}</div>
      <h5 className="font-black text-slate-900 mb-2">{title}</h5>
      <p className="text-xs text-slate-500 leading-relaxed font-medium">{text}</p>
   </div>

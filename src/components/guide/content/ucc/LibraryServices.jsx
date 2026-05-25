@@ -55,18 +55,18 @@ const LibraryServices = () => {
       content: (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm group">
-            <div className="text-xs font-black text-indigo-500 uppercase mb-4">Regular Semester</div>
+            <div className="text-xs font-black text-primary-500 uppercase mb-4">Regular Semester</div>
             <div className="space-y-2">
               <p className="text-sm font-bold text-slate-900 flex justify-between"><span>Mon – Fri:</span> <span>9am – 10pm</span></p>
               <p className="text-sm font-bold text-slate-900 flex justify-between"><span>Saturdays:</span> <span>9am – 8pm</span></p>
             </div>
           </div>
-          <div className="bg-indigo-600 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
+          <div className="bg-primary-600 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700"></div>
-            <div className="text-xs font-black text-indigo-200 uppercase mb-4">Exam Period</div>
+            <div className="text-xs font-black text-primary-200 uppercase mb-4">Exam Period</div>
             <div className="space-y-2 relative">
               <p className="text-sm font-bold text-white flex justify-between"><span>Mon – Sat:</span> <span>9am – 5am</span></p>
-              <p className="text-[10px] text-indigo-200 font-bold italic">* Extended for intensive study.</p>
+              <p className="text-[10px] text-primary-200 font-bold italic">* Extended for intensive study.</p>
             </div>
           </div>
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm group">
@@ -165,7 +165,7 @@ const LibraryServices = () => {
 
 const CodeBadge = ({ label, title }) => (
   <div className="bg-slate-50 px-4 py-3 rounded-2xl border border-slate-100">
-    <p className="text-xs font-black text-indigo-600 mb-1">{label}</p>
+    <p className="text-xs font-black text-primary-600 mb-1">{label}</p>
     <p className="text-xs font-bold text-slate-500">{title}</p>
   </div>
 );
@@ -173,7 +173,7 @@ const CodeBadge = ({ label, title }) => (
 const FloorItem = ({ floor, title, desc }) => (
   <div className="bg-white p-6 rounded-[2rem] border border-slate-100 flex gap-6 items-center shadow-sm">
      <div className="w-24 shrink-0 text-right">
-        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{floor}</p>
+        <p className="text-[10px] font-black text-primary-500 uppercase tracking-widest">{floor}</p>
      </div>
      <div className="w-px h-10 bg-slate-100"></div>
      <div>

@@ -68,21 +68,21 @@ const PaymentsReceipts = () => {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <Landmark size={24} /> Departmental Dues
                 </h4>
                 <p className="text-slate-600 font-medium leading-relaxed mb-6">
                    Separate from school fees. Paid to your Department's Student Association (e.g., PASAG, MASA). These dues fund souvenirs, t-shirts, and social events.
                 </p>
                 <div className="grid md:grid-cols-2 gap-6">
-                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-                      <h5 className="font-black text-indigo-700 mb-2 uppercase tracking-wider text-[10px]">Freshers Policy</h5>
+                   <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+                      <h5 className="font-black text-primary-700 mb-2 uppercase tracking-wider text-[10px]">Freshers Policy</h5>
                       <p className="text-sm text-slate-600 font-medium">First-year students pay a higher one-time fee to cover departmental welfare and souvenirs.</p>
                    </div>
-                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-                      <h5 className="font-black text-indigo-700 mb-2 uppercase tracking-wider text-[10px]">Verification</h5>
+                   <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+                      <h5 className="font-black text-primary-700 mb-2 uppercase tracking-wider text-[10px]">Verification</h5>
                       <p className="text-sm text-slate-600 font-medium">Dues are manually verified at the Department table. This is often required before manual registration signing.</p>
                    </div>
                 </div>
@@ -91,7 +91,7 @@ const PaymentsReceipts = () => {
 
           <div className="pt-4">
             <h3 className="font-black text-gray-900 text-2xl mb-8 flex items-center">
-              <span className="bg-indigo-50 text-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center text-sm mr-4 shadow-sm">i</span>
+              <span className="bg-primary-50 text-primary-600 w-10 h-10 rounded-xl flex items-center justify-center text-sm mr-4 shadow-sm">i</span>
               The Payment Cycle
             </h3>
             
@@ -121,7 +121,7 @@ const CycleTile = ({ step, title, text }) => (
   <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
     <div className="flex justify-between items-start mb-2">
       <h5 className="font-black text-slate-900 text-lg leading-tight">{title}</h5>
-      <span className="text-3xl font-black text-indigo-50 group-hover:text-indigo-100 transition-colors">{step}</span>
+      <span className="text-3xl font-black text-primary-50 group-hover:text-primary-100 transition-colors">{step}</span>
     </div>
     <p className="text-sm text-slate-600 leading-relaxed font-medium">{text}</p>
   </div>

@@ -82,16 +82,16 @@ const MedicalsHealthCenter = () => {
 
           <div className="grid md:grid-cols-2 gap-8">
              <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                <h4 className="font-black text-slate-900 text-xl mb-4 flex items-center gap-2"><BriefcaseMedical size={20} className="text-indigo-600" /> Facilities</h4>
+                <h4 className="font-black text-slate-900 text-xl mb-4 flex items-center gap-2"><BriefcaseMedical size={20} className="text-primary-600" /> Facilities</h4>
                 <div className="flex flex-wrap gap-2">
                    {["Laboratory", "X-Ray Unit", "Pharmacy", "Dental Clinic"].map(tag => (
-                      <span key={tag} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase rounded-xl border border-indigo-100">{tag}</span>
+                      <span key={tag} className="px-3 py-1.5 bg-primary-50 text-primary-700 text-[10px] font-black uppercase rounded-xl border border-primary-100">{tag}</span>
                    ))}
                 </div>
              </div>
-             <div className="bg-indigo-600 p-8 rounded-[2.5rem] shadow-xl text-white">
+             <div className="bg-primary-600 p-8 rounded-[2.5rem] shadow-xl text-white">
                 <h4 className="font-black text-white text-xl mb-4 flex items-center gap-2"><Brain size={20} /> Mental Health</h4>
-                <p className="text-indigo-100 text-xs font-medium leading-relaxed mb-4">
+                <p className="text-primary-100 text-xs font-medium leading-relaxed mb-4">
                    Professional counselors are available at the <strong>Counseling Center</strong> (Ground Floor) to help with academic stress and personal challenges.
                 </p>
                 <div className="bg-white/10 p-3 rounded-2xl border border-white/10 text-[10px] font-bold">

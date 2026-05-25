@@ -38,9 +38,9 @@ const AttendanceRegulations = () => {
           />
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <ShieldAlert size={24} /> Regulation 11.0: The 3-Week Rule
                 </h4>
                 <p className="text-slate-600 font-medium leading-relaxed mb-8">
@@ -94,7 +94,7 @@ const AttendanceRegulations = () => {
 const HourTile = ({ credit, hours }) => (
   <div className="bg-white p-6 rounded-3xl border border-slate-100 text-center group-hover:shadow-md transition-all">
      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{credit} Credit Course</div>
-     <div className="text-3xl font-black text-indigo-600">Max {hours} hrs</div>
+     <div className="text-3xl font-black text-primary-600">Max {hours} hrs</div>
      <div className="text-[10px] font-bold text-slate-400 mt-1 uppercase">Cumulative Absence</div>
   </div>
 );

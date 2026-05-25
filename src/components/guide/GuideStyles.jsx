@@ -3,11 +3,11 @@ import { CheckCircle } from 'lucide-react';
 
 export const ActionCard = ({ step, title, details, desc }) => (
   <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-    <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700"></div>
+    <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700"></div>
     <div className="relative">
       <div className="flex items-center mb-4">
         {step && (
-          <span className="bg-indigo-600 text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider mr-3 shrink-0">
+          <span className="bg-primary-600 text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider mr-3 shrink-0">
             Step {step}
           </span>
         )}
@@ -17,7 +17,7 @@ export const ActionCard = ({ step, title, details, desc }) => (
       <ul className="space-y-4">
         {details.map((item, idx) => (
           <li key={idx} className="flex items-start text-sm text-slate-600 font-medium">
-            <CheckCircle size={18} className="text-indigo-500 mt-0.5 mr-3 flex-shrink-0" />
+            <CheckCircle size={18} className="text-primary-500 mt-0.5 mr-3 flex-shrink-0" />
             <span dangerouslySetInnerHTML={{ __html: item }} />
           </li>
         ))}
@@ -30,13 +30,13 @@ export const InfoBlock = ({ title, content, icon: Icon }) => (
   <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
     <div className="flex flex-col md:flex-row gap-8 items-start">
       {Icon && (
-        <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
+        <div className="w-16 h-16 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-600 shrink-0">
           <Icon size={32} />
         </div>
       )}
       <div className="space-y-4">
         {title && <h3 className="text-2xl font-black text-slate-900 tracking-tight">{title}</h3>}
-        <div className="text-slate-600 leading-relaxed font-medium prose prose-indigo max-w-none">
+        <div className="text-slate-600 leading-relaxed font-medium prose prose-primary max-w-none">
           {content}
         </div>
       </div>

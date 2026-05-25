@@ -129,10 +129,10 @@ const FoodDining = () => {
 const FoodTile = ({ name, type, onClick }) => (
   <button 
     onClick={() => onClick(name)}
-    className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all text-center group"
+    className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-primary-100 transition-all text-center group"
   >
-     <div className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">{type}</div>
-     <div className="text-sm font-black text-slate-900 group-hover:text-indigo-600">{name}</div>
+     <div className="text-[10px] font-black text-primary-500 uppercase tracking-widest mb-1">{type}</div>
+     <div className="text-sm font-black text-slate-900 group-hover:text-primary-600">{name}</div>
   </button>
 );
 

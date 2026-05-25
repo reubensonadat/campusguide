@@ -29,9 +29,9 @@ const ExamsAndResits = () => {
                     />
 
                     <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
                         <div className="relative">
-                            <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                            <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                                 <FileText size={24} /> Protocol for Valid Absence
                             </h4>
                             <p className="text-slate-600 font-medium leading-relaxed mb-8">
@@ -42,8 +42,8 @@ const ExamsAndResits = () => {
                                 <StepItem step="2" title="Attach Proof" text="Provide strict medical reports or official hospital admission letters." />
                                 <StepItem step="3" title="Dept Appeal" text="Your Department will appeal to the Examination Board for a deferred grade." />
                             </div>
-                            <div className="mt-8 bg-indigo-50 p-6 rounded-3xl border border-indigo-100">
-                                <p className="text-sm text-indigo-900 font-bold leading-relaxed">
+                            <div className="mt-8 bg-primary-50 p-6 rounded-3xl border border-primary-100">
+                                <p className="text-sm text-primary-900 font-bold leading-relaxed">
                                     <strong>Outcome:</strong> If approved, you will write the paper during the Resit period, but you will be graded as a <strong>regular candidate</strong> (no grade penalty).
                                 </p>
                             </div>
@@ -83,7 +83,7 @@ const ExamsAndResits = () => {
                                 <p className="text-sm text-slate-600 font-medium"><strong>Result:</strong> Withdrawal from the program with no progression.</p>
                             </div>
                             <div className="bg-white p-6 rounded-3xl border border-orange-100">
-                                <h5 className="font-bold text-indigo-700 mb-2">Fail Uni-Wide Course</h5>
+                                <h5 className="font-bold text-primary-700 mb-2">Fail Uni-Wide Course</h5>
                                 <p className="text-sm text-slate-600 font-medium"><strong>Result:</strong> Progression to Level 200 on <strong>Probation</strong>.</p>
                             </div>
                         </div>
@@ -119,7 +119,7 @@ const ExamsAndResits = () => {
 
 const StepItem = ({ step, title, text }) => (
     <div className="space-y-2">
-        <div className="text-3xl font-black text-indigo-100">0{step}</div>
+        <div className="text-3xl font-black text-primary-100">0{step}</div>
         <h5 className="font-black text-slate-900 leading-tight">{title}</h5>
         <p className="text-xs text-slate-500 font-medium leading-relaxed">{text}</p>
     </div>

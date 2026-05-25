@@ -50,33 +50,33 @@ const CourseRegistration = () => {
           />
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <RefreshCw size={24} /> The "Rotational" System
                 </h4>
                 <p className="text-slate-600 font-medium leading-relaxed mb-6">
                    UCC splits Freshers into two groups based on College/Faculty for Liberal and African Studies courses. You generally do <strong>not</strong> choose these; they are pre-assigned.
                 </p>
                 <div className="grid md:grid-cols-2 gap-6">
-                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-                      <h5 className="font-black text-indigo-700 mb-3 uppercase tracking-wider text-xs">Group A Pattern</h5>
+                   <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+                      <h5 className="font-black text-primary-700 mb-3 uppercase tracking-wider text-xs">Group A Pattern</h5>
                       <ul className="text-sm text-slate-600 space-y-2 font-medium">
-                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div> <strong>Sem 1:</strong> African Studies + ITS</li>
-                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div> <strong>Sem 2:</strong> Liberal + Info Literacy</li>
+                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-primary-400 rounded-full"></div> <strong>Sem 1:</strong> African Studies + ITS</li>
+                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-primary-400 rounded-full"></div> <strong>Sem 2:</strong> Liberal + Info Literacy</li>
                       </ul>
                    </div>
-                   <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-                      <h5 className="font-black text-indigo-700 mb-3 uppercase tracking-wider text-xs">Group B Pattern</h5>
+                   <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+                      <h5 className="font-black text-primary-700 mb-3 uppercase tracking-wider text-xs">Group B Pattern</h5>
                       <ul className="text-sm text-slate-600 space-y-2 font-medium">
-                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div> <strong>Sem 1:</strong> Liberal + Info Literacy</li>
-                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div> <strong>Sem 2:</strong> African Studies + ITS</li>
+                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-primary-400 rounded-full"></div> <strong>Sem 1:</strong> Liberal + Info Literacy</li>
+                         <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-primary-400 rounded-full"></div> <strong>Sem 2:</strong> African Studies + ITS</li>
                       </ul>
                    </div>
                 </div>
                 <div className="mt-6 flex flex-col gap-2">
-                   <p className="text-xs text-indigo-500 font-bold italic">* Communication Skills is mandatory for EVERYONE in both semesters.</p>
-                   <p className="text-xs text-indigo-500 font-bold italic">* ITS is group-based; check departmental notice boards for your time.</p>
+                   <p className="text-xs text-primary-500 font-bold italic">* Communication Skills is mandatory for EVERYONE in both semesters.</p>
+                   <p className="text-xs text-primary-500 font-bold italic">* ITS is group-based; check departmental notice boards for your time.</p>
                 </div>
              </div>
           </div>

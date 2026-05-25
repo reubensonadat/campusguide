@@ -50,9 +50,9 @@ const BankingMoMo = () => {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <Smartphone size={24} /> Paying School Fees
                 </h4>
                 <p className="text-slate-600 font-medium leading-relaxed mb-8">
@@ -84,9 +84,9 @@ const BankingMoMo = () => {
 };
 
 const PlatformTile = ({ bank, platform }) => (
-  <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100 text-center">
+  <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100 text-center">
      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{bank}</div>
-     <div className="text-xl font-black text-indigo-600">{platform}</div>
+     <div className="text-xl font-black text-primary-600">{platform}</div>
   </div>
 );
 

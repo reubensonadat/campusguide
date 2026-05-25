@@ -88,7 +88,7 @@ const StepsTab = React.memo(({ section }) => (
         <ol className="space-y-4">
           {section.steps.map((step, index) => (
             <li key={index} className="flex">
-              <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-medium text-sm mr-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center font-medium text-sm mr-3">
                 {index + 1}
               </div>
               <div className="flex-1">
@@ -223,7 +223,7 @@ const LocationTab = React.memo(({ section, location }) => (
 
     {section.requirements && (
       <Card>
-        <CardHeader icon={<FileText size={20} />} iconColor="text-indigo-500">
+        <CardHeader icon={<FileText size={20} />} iconColor="text-primary-500">
           <CardTitle>Requirements</CardTitle>
         </CardHeader>
         <CardContent>
@@ -336,7 +336,7 @@ const TabNavigation = React.memo(({ activeTab, setActiveTab, tabs }) => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`py-2 px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap transition-colors ${isActive
-                ? 'border-indigo-500 text-indigo-600'
+                ? 'border-primary-500 text-primary-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
             >

@@ -113,7 +113,7 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
                            </div>
                         )}
 
-                        <div className="prose prose-lg prose-indigo max-w-none text-gray-600 leading-loose">
+                        <div className="prose prose-lg prose-primary max-w-none text-gray-600 leading-loose">
                           {section.content}
                         </div>
                       </div>
@@ -192,12 +192,12 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
                             href={res.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="bg-white p-5 rounded-2xl border border-gray-200 hover:border-indigo-400 hover:shadow-md transition-all group flex flex-col justify-between"
+                            className="bg-white p-5 rounded-2xl border border-gray-200 hover:border-primary-400 hover:shadow-md transition-all group flex flex-col justify-between"
                           >
                             <div>
                               <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{res.title}</h4>
-                                <MousePointer2 className="w-5 h-5 text-gray-300 group-hover:text-indigo-500 transform group-hover:-rotate-45 transition-all" />
+                                <h4 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">{res.title}</h4>
+                                <MousePointer2 className="w-5 h-5 text-gray-300 group-hover:text-primary-500 transform group-hover:-rotate-45 transition-all" />
                               </div>
                               <p className="text-sm text-gray-500">{res.description}</p>
                             </div>
@@ -282,7 +282,7 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
 };
 
   return (
-    <div className="flex bg-gray-50/30 lg:h-screen lg:overflow-hidden min-h-screen relative font-sans selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-300">
+    <div className="flex bg-gray-50/30 lg:h-screen lg:overflow-hidden min-h-screen relative font-sans selection:bg-primary-100 selection:text-primary-900 transition-colors duration-300">
 
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-50">
@@ -297,66 +297,67 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
 
       {/* Sidebar Navigation */}
       <div className={`
-                fixed inset-y-0 left-0 z-40 w-72 bg-gray-50/80 backdrop-blur-xl border-r border-gray-200 transform transition-transform duration-300 ease-in-out
-                lg:relative lg:translate-x-0 lg:bg-gray-50 lg:backdrop-blur-none
+                fixed inset-y-0 left-0 z-40 w-72 bg-white/90 backdrop-blur-xl border-r border-slate-200/50 transform transition-transform duration-300 ease-in-out
+                lg:relative lg:translate-x-0 lg:bg-white lg:backdrop-blur-none
                 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:shadow-none'}
             `}>
         <div className="h-full flex flex-col">
-          <div className="p-6 pt-20 lg:pt-8">
-            <h2 className="text-xl font-black text-gray-900 tracking-tight mb-1">Campus Guide</h2>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">The Pastel Edition</p>
+          <div className="p-5 pt-20 lg:pt-7 mb-1">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight">Campus Guide</h2>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-4 pb-20 lg:pb-8 space-y-6 custom-scrollbar mb-20">
+          <div className="flex-1 overflow-y-auto px-4 pb-20 lg:pb-8 custom-scrollbar mb-20">
 
             {/* Search Input */}
-            <div className="sticky top-0 bg-gray-50 pt-2 pb-4 z-10 px-2">
+            <div className="sticky top-0 bg-white pt-1 pb-4 z-10 px-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Search guides..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 text-gray-900 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full pl-9 pr-4 py-2.5 bg-slate-100 border-none text-slate-900 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all font-medium placeholder:text-slate-400"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 bg-slate-200/50 p-1 rounded-full"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3 h-3" />
                   </button>
                 )}
               </div>
             </div>
 
             {Object.keys(filteredTopics).length === 0 ? (
-              <div className="text-center py-8 text-gray-500 text-sm">
+              <div className="text-center py-8 text-slate-400 text-sm font-medium">
                 <p>No guides found matching "{searchQuery}"</p>
               </div>
             ) : (
-              Object.entries(filteredTopics).map(([category, topics]) => (
-                <div key={category}>
-                  <h3 className="px-4 text-xs font-black text-indigo-900 uppercase tracking-widest mb-3 mt-2 border-b-2 border-indigo-100 pb-2">{category}</h3>
-                  <div className="space-y-1">
-                    {topics.map((topic) => (
-                      <button
-                        key={topic.id}
-                        onClick={() => {
-                          setSelectedTopicId(topic.id);
-                          if (!searchQuery) setActiveCategory(category); // Only switch category context if not searching
-                          if (window.innerWidth < 1024) setIsSidebarOpen(false);
-                        }}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${selectedTopicId === topic.id ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-gray-200' : 'text-gray-500 hover:bg-white hover:shadow-sm hover:text-gray-900'}`}
-                      >
-                        <span>{topic.title}</span>
-                        {selectedTopicId === topic.id && <div className="w-2 h-2 rounded-full bg-indigo-600 shadow-sm" />}
-                      </button>
-                    ))}
+              <div className="space-y-6">
+                {Object.entries(filteredTopics).map(([category, topics]) => (
+                  <div key={category}>
+                    <h3 className="px-3 text-[11px] font-black text-primary-400/80 uppercase tracking-widest mb-2">{category}</h3>
+                    <div className="space-y-0.5">
+                      {topics.map((topic) => (
+                        <button
+                          key={topic.id}
+                          onClick={() => {
+                            setSelectedTopicId(topic.id);
+                            if (!searchQuery) setActiveCategory(category); // Only switch category context if not searching
+                            if (window.innerWidth < 1024) setIsSidebarOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all flex items-center justify-between group ${selectedTopicId === topic.id ? 'bg-primary-50/80 text-primary-700' : 'text-slate-500 hover:bg-slate-50 hover:text-primary-600'}`}
+                        >
+                          <span>{topic.title}</span>
+                          {selectedTopicId === topic.id && <div className="w-1.5 h-1.5 rounded-full bg-primary-500 shadow-sm" />}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))
+                ))}
+              </div>
             )}
           </div>
         </div>
@@ -374,7 +375,7 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
       <div className="flex-1 flex flex-col h-full lg:overflow-hidden relative w-full bg-white transition-colors duration-300">
         {selectedTopicId && currentTopicData ? (
           currentTopicData.isInteractive ? (
-            <div className="w-full flex-1 relative mt-16 lg:mt-0 flex flex-col h-[calc(100svh-8rem)] min-h-[500px] lg:h-[calc(100vh-4rem)] z-0">
+            <div className="w-full fixed inset-0 top-16 lg:top-0 lg:relative lg:flex-1 flex flex-col z-0">
               <currentTopicData.component />
             </div>
           ) : (
@@ -393,7 +394,7 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
                       <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 capitalize ${activeTab === tab ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                        className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 capitalize ${activeTab === tab ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
                       >
                         {tab}
                       </button>
@@ -413,7 +414,7 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
                       href="https://wa.me/233201534711?text=Hello%2C%20I%20have%20feedback%20regarding%20the%20Campus%20Guide"
                       target="_blank"
                       rel="noreferrer"
-                      className="ml-1 underline cursor-pointer hover:text-indigo-600 transition-colors"
+                      className="ml-1 underline cursor-pointer hover:text-primary-600 transition-colors"
                     >
                       Send Feedback via WhatsApp
                     </a>

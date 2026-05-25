@@ -37,16 +37,16 @@ const GettingStarted = () => {
       content: (
         <div className="space-y-12">
           {/* --- CLEAN HERO --- */}
-          <div className="relative overflow-hidden rounded-[2.5rem] bg-indigo-50 border border-indigo-100 p-8 md:p-12 shadow-sm">
-            <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-indigo-200/30 rounded-full blur-3xl"></div>
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-primary-50 border border-primary-100 p-8 md:p-12 shadow-sm">
+            <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-primary-200/30 rounded-full blur-3xl"></div>
             <div className="relative flex flex-col lg:flex-row items-center justify-between gap-12">
               <div className="text-left space-y-6 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-indigo-600 border border-indigo-100 text-xs font-black uppercase tracking-widest shadow-sm">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-primary-600 border border-primary-100 text-xs font-black uppercase tracking-widest shadow-sm">
                    <Sparkles size={14} /> Class of 2029
                 </div>
                 <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.05] text-slate-900">
                   Akwaaba to the <br />
-                  <span className="text-indigo-600">University</span>
+                  <span className="text-primary-600">University</span>
                 </h2>
                 <p className="text-slate-600 text-lg md:text-xl font-medium leading-relaxed">
                   You've secured your spot in Ghana's most competitive university. 
@@ -54,11 +54,11 @@ const GettingStarted = () => {
                 </p>
               </div>
 
-              <div className="bg-white p-8 rounded-[2rem] min-w-[260px] text-center shadow-xl shadow-indigo-100/50 border border-indigo-50">
+              <div className="bg-white p-8 rounded-[2rem] min-w-[260px] text-center shadow-xl shadow-primary-100/50 border border-primary-50">
                 <p className="text-slate-400 text-xs uppercase font-black tracking-widest mb-2">Freshers Reporting</p>
-                <div className="text-5xl font-black text-indigo-600 mb-2">Jan 5</div>
+                <div className="text-5xl font-black text-primary-600 mb-2">Jan 5</div>
                 <div className="text-base font-bold text-slate-500 mb-6">Monday, 2026</div>
-                <button className="w-full py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-indigo-600 transition-colors flex items-center justify-center gap-2">
+                <button className="w-full py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-primary-600 transition-colors flex items-center justify-center gap-2">
                    View Schedule <ArrowRight size={16} />
                 </button>
               </div>
@@ -117,7 +117,7 @@ const GettingStarted = () => {
 
           <div className="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 grid md:grid-cols-2 gap-8">
             <div>
-              <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+              <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                  <Truck size={20} /> Hall Traditions
               </h4>
               <p className="text-slate-600 text-sm font-medium leading-relaxed">
@@ -126,7 +126,7 @@ const GettingStarted = () => {
               </p>
             </div>
             <div>
-              <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+              <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                  <Info size={20} /> Medical Exam Rule
               </h4>
               <p className="text-slate-600 text-sm font-medium leading-relaxed">
@@ -160,12 +160,12 @@ const GettingStarted = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-             <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-                <h5 className="font-black text-indigo-900 mb-2 flex items-center gap-2"><User size={18} /> In Diaspora</h5>
+             <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+                <h5 className="font-black text-primary-900 mb-2 flex items-center gap-2"><User size={18} /> In Diaspora</h5>
                 <p className="text-xs text-slate-600 leading-relaxed">You can attend orientation <strong>online</strong>. You do not strictly need to come to your Hall of Affiliation.</p>
              </div>
-             <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-                <h5 className="font-black text-indigo-900 mb-2 flex items-center gap-2"><MapPin size={18} /> In Hall</h5>
+             <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+                <h5 className="font-black text-primary-900 mb-2 flex items-center gap-2"><MapPin size={18} /> In Hall</h5>
                 <p className="text-xs text-slate-600 leading-relaxed">If you are physically in the Hall, it is <strong>mandatory to attend</strong> the sessions organized there.</p>
              </div>
           </div>
@@ -186,11 +186,11 @@ const GettingStarted = () => {
 
 const TimelineEvent = ({ date, title, desc }) => (
   <div className="relative flex items-center group">
-    <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all shrink-0 z-10 shadow-sm">
+    <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-primary-50 text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-all shrink-0 z-10 shadow-sm">
       <Calendar size={18} />
     </div>
     <div className="ml-8 p-6 rounded-[2rem] border border-slate-100 bg-white shadow-sm hover:shadow-md transition-all w-full">
-      <span className="font-black text-indigo-600 text-xl tracking-tighter">{date}</span>
+      <span className="font-black text-primary-600 text-xl tracking-tighter">{date}</span>
       <h5 className="font-bold text-slate-800 mb-1">{title}</h5>
       <p className="text-sm text-slate-500 leading-relaxed font-medium">{desc}</p>
     </div>

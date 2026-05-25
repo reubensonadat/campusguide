@@ -169,7 +169,7 @@ const Settings = () => {
         {/* About Section */}
         <div className="flex items-center justify-center gap-2 pt-8 text-gray-400">
           <Info size={14} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Version 2.0.0 (Luxury Edition)</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">Version 2.0.0</span>
         </div>
 
       </div>

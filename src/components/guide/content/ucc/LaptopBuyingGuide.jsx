@@ -42,15 +42,15 @@ const LaptopBuyingGuide = () => {
             content="A reliable laptop is not just a tool—it's your gateway to academic success at UCC. Make an informed choice that will serve you throughout your 4-year program without needing constant repairs."
           />
 
-          <div className="bg-indigo-900 text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden group">
+          <div className="bg-primary-900 text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden group">
              <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="max-w-md">
-                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-wider text-indigo-200 mb-4">
+                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-wider text-primary-200 mb-4">
                       <Sparkles size={12} /> Platinum Recommendation
                    </div>
                    <h4 className="text-3xl font-black mb-4">The Golden Spec</h4>
-                   <p className="text-indigo-100 text-sm font-medium leading-relaxed mb-6">
+                   <p className="text-primary-100 text-sm font-medium leading-relaxed mb-6">
                       For 90% of students, these specifications provide the best balance of longevity and performance.
                    </p>
                    <div className="flex flex-wrap gap-4">
@@ -60,9 +60,9 @@ const LaptopBuyingGuide = () => {
                    </div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-[2.5rem] text-center w-full md:w-auto">
-                   <div className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-2">Performance Score</div>
+                   <div className="text-[10px] font-black text-primary-300 uppercase tracking-widest mb-2">Performance Score</div>
                    <div className="text-5xl font-black text-white">8.5</div>
-                   <div className="text-[10px] font-bold text-indigo-200 mt-2 uppercase">UCC Ready</div>
+                   <div className="text-[10px] font-bold text-primary-200 mt-2 uppercase">UCC Ready</div>
                 </div>
              </div>
           </div>
@@ -101,9 +101,9 @@ const LaptopBuyingGuide = () => {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
-                <h4 className="font-black text-indigo-900 text-xl mb-4 flex items-center gap-2">
+                <h4 className="font-black text-primary-900 text-xl mb-4 flex items-center gap-2">
                    <CreditCard size={24} /> Student Discounts
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -135,8 +135,8 @@ const SpecBadge = ({ icon, text }) => (
 );
 
 const DiscountCard = ({ brand, offer }) => (
-  <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-     <h5 className="font-black text-indigo-700 mb-1">{brand}</h5>
+  <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-100">
+     <h5 className="font-black text-primary-700 mb-1">{brand}</h5>
      <p className="text-xs text-slate-500 font-medium">{offer}</p>
   </div>
 );

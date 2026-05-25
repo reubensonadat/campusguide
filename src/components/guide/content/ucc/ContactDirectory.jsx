@@ -18,13 +18,13 @@ const ContactDirectory = () => {
             content="In case of any emergency on campus (theft, fire, medical), call the <strong>UCC Emergency Line</strong> or <strong>Campus Security</strong> immediately. Do not rely solely on 191/192/193 as campus response is often significantly faster."
           />
 
-          <div className="bg-indigo-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
+          <div className="bg-primary-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
              <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
              <div className="relative">
                 <h4 className="text-2xl font-black mb-6 flex items-center gap-2">
-                   <Shield size={24} className="text-indigo-400" /> UCC Security Service
+                   <Shield size={24} className="text-primary-400" /> UCC Security Service
                 </h4>
-                <p className="text-indigo-100 text-sm font-medium leading-relaxed mb-8 max-w-md">
+                <p className="text-primary-100 text-sm font-medium leading-relaxed mb-8 max-w-md">
                    24/7 Campus Patrol. These numbers are monitored by the main security gate and rapid response units.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -38,7 +38,7 @@ const ContactDirectory = () => {
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-900 text-xl mb-6 flex items-center gap-2">
-               <Users size={24} className="text-indigo-600" /> SRC Support Team
+               <Users size={24} className="text-primary-600" /> SRC Support Team
             </h3>
             <p className="text-slate-500 text-xs font-medium mb-8 leading-relaxed">
                For student welfare issues, academic complaints, or on-campus disputes, reach out to your designated SRC representatives.
@@ -69,7 +69,7 @@ const EmergencyTile = ({ number, label }) => (
     href={`tel:${number.replace(/\s/g, '')}`}
     className="bg-white/10 hover:bg-white/20 px-6 py-4 rounded-2xl border border-white/10 transition-all text-center"
   >
-     <div className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-1">{label}</div>
+     <div className="text-[10px] font-black text-primary-300 uppercase tracking-widest mb-1">{label}</div>
      <div className="text-sm font-black text-white">{number}</div>
   </a>
 );
@@ -82,7 +82,7 @@ const ContactBox = ({ name, number }) => (
      </div>
      <a 
        href={`tel:${number.replace(/\s/g, '')}`}
-       className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center text-indigo-600 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-all"
+       className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center text-primary-600 shadow-sm group-hover:bg-primary-600 group-hover:text-white transition-all"
      >
         <Phone size={16} />
      </a>
