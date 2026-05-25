@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Book, ChevronRight, MapPin, Phone, Info, Layout, CheckCircle, List, ArrowRight, MousePointer2, BookOpen, Search, X } from 'lucide-react';
+import { Book, ChevronRight, MapPin, Phone, Info, Layout, CheckCircle, List, ArrowRight, MousePointer2, Search, X } from 'lucide-react';
+import { CustomGuide } from '../components/common/CustomIcons';
+
 import { GUIDE_TOPICS } from '../data/guide';
 
 
@@ -7,8 +9,9 @@ import { GUIDE_TOPICS } from '../data/guide';
 import CampusIllustration from '/Leader-rafiki.svg';
 
 const Guide = () => {
-  const [activeCategory, setActiveCategory] = useState("Essentials");
   const [selectedTopicId, setSelectedTopicId] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth < 1024 && !selectedTopicId);
+  const [activeCategory, setActiveCategory] = useState("Essentials");
   const [activeTab, setActiveTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -55,12 +58,7 @@ const Guide = () => {
     for (const cat in GUIDE_TOPICS) {
       const found = GUIDE_TOPICS[cat].find(t => t.id === selectedTopicId);
       if (found) {
-        if (found.isInteractive) {
-          // DO NOT return the component here, return a flag and reference
-          return { isInteractive: true, component: found.component };
-        }
-        // Initialize the component to get the data object
-        return { isInteractive: false, data: found.component() };
+        return found;
       }
     }
     return null;
@@ -68,16 +66,27 @@ const Guide = () => {
 
   // Reset tab when topic changes
   React.useEffect(() => {
-    if (currentTopicData && !currentTopicData.isInteractive && currentTopicData.data?.tabs?.length > 0) {
-      setActiveTab(currentTopicData.data.tabs[0].id);
+    if (currentTopicData && !currentTopicData.isInteractive) {
+      // We can't access data here easily without calling the hook, so we let TopicContent handle the active tab reset if needed
+      // Actually, we can just reset to 'overview' whenever topic changes
+      setActiveTab('overview');
     }
   }, [currentTopicData]);
 
-  const renderContent = () => {
-    if (!currentTopicData || currentTopicData.isInteractive) return null;
+  const [isSidebarOpenState, setIsSidebarOpenState] = useState(false);
+  // Keep the original state name for the rest of the component
+  const isSidebarOpenReal = selectedTopicId ? isSidebarOpen : true; // Always open if no topic
+  
+  // We will move renderContent into a component called TopicContent to safely call hooks.
 
-    const { data } = currentTopicData;
-
+// Move this above Guide or inside it but as a proper component.
+// We'll define it outside to be safe, but wait, it needs activeTab. We can pass activeTab.
+const TopicContentRenderer = ({ topic, activeTab }) => {
+    if (!topic || topic.isInteractive) return null;
+    const data = topic.component();
+    
+    // Auto-select first tab if activeTab isn't found
+    // (Optional, for now just use activeTab)
     return (
       <div className="space-y-12">
         {data.sections.map((section, sectionIdx) => (
@@ -96,22 +105,22 @@ const Guide = () => {
                       )}
 
                       {/* Content Card */}
-                      <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden relative">
+                      <div className="bg-white p-5 sm:p-8 md:p-12 rounded-3xl md:rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden relative">
                         {/* Summary for first section if not in header */}
                         {sectionIdx === 0 && section.summary && (
-                           <div className="mb-8 border-b border-gray-50 pb-6">
-                              <p className="text-lg text-gray-600 leading-relaxed font-medium">{section.summary}</p>
+                           <div className="mb-10 border-b border-gray-50 pb-8">
+                              <p className="text-xl text-gray-600 leading-relaxed font-medium">{section.summary}</p>
                            </div>
                         )}
 
-                        <div className="prose prose-indigo max-w-none text-gray-600">
+                        <div className="prose prose-lg prose-indigo max-w-none text-gray-600 leading-loose">
                           {section.content}
                         </div>
                       </div>
 
                       {/* Key Points */}
                       {section.keyPoints && (
-                        <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                        <div className="bg-blue-50 p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-blue-100">
                           <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
                             <CheckCircle className="w-5 h-5" /> Key Takeaways
                           </h4>
@@ -137,7 +146,7 @@ const Guide = () => {
                         <h3 className="text-xl font-bold text-gray-800 mb-2">{section.title}</h3>
                       )}
 
-                      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                      <div className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm">
                         <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
                           <List className="w-5 h-5 text-yellow-500" /> Action Steps
                         </h3>
@@ -155,7 +164,7 @@ const Guide = () => {
                       </div>
 
                       {section.tips && (
-                        <div className="bg-purple-50 p-6 rounded-3xl border border-purple-100">
+                        <div className="bg-purple-50 p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-purple-100">
                           <h4 className="font-bold text-purple-900 mb-3">Pro Tips</h4>
                           <ul className="grid gap-3">
                             {section.tips.map((tip, i) => (
@@ -217,7 +226,7 @@ const Guide = () => {
                 case 'checklist':
                   if (!section.checklist || section.checklist.length === 0) return null;
                   return (
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                    <div className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
                       <h3 className="text-lg font-bold text-gray-900 mb-4">{section.title} Checklist</h3>
                       <div className="space-y-3">
                         {section.checklist?.map((item, idx) => (
@@ -233,7 +242,7 @@ const Guide = () => {
                 case 'warnings':
                   if (!section.commonMistakes && !section.consequences) return null;
                   return (
-                    <div className="bg-red-50 p-6 rounded-3xl border border-red-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                    <div className="bg-red-50 p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-red-100 shadow-sm animate-in fade-in slide-in-from-bottom-2">
                       <h3 className="text-lg font-bold text-red-900 mb-4">{section.title} Warnings</h3>
                       {section.commonMistakes && (
                         <div className="mb-6">
@@ -270,9 +279,7 @@ const Guide = () => {
         ))}
       </div>
     );
-  };
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+};
 
   return (
     <div className="flex bg-gray-50/30 lg:h-screen lg:overflow-hidden min-h-screen relative font-sans selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-300">
@@ -284,7 +291,7 @@ const Guide = () => {
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="p-2 -mr-2 text-gray-600 hover:bg-gray-50 rounded-lg"
         >
-          {isSidebarOpen ? <List className="w-6 h-6" /> : <List className="w-6 h-6" />}
+          {isSidebarOpen ? <X className="w-6 h-6" /> : <List className="w-6 h-6" />}
         </button>
       </div>
 
@@ -372,23 +379,23 @@ const Guide = () => {
             </div>
           ) : (
             <div className="flex-1 lg:overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-32">
-              <div className="w-[95%] mx-auto py-8 md:px-8 md:py-12">
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 md:px-12 md:py-16">
 
                 {/* Topic Header */}
-                <div className="mb-10 border-b border-gray-100 pb-10 px-4 md:px-2">
-                  <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 leading-tight tracking-tight">
-                    {currentTopicData.data?.sections[0].title}
+                <div className="mb-8 sm:mb-12 border-b border-gray-100 pb-8 sm:pb-10">
+                  <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-8 leading-tight tracking-tight">
+                    {currentTopicData.title || 'Guide'}
                   </h1>
 
                   {/* Tabs */}
                   <div className="flex gap-8 border-b border-gray-100 -mb-8 overflow-x-auto no-scrollbar mask-linear-fade pb-1">
-                    {currentTopicData.data?.tabs?.map(tab => (
+                    {['overview', 'steps', 'resources', 'checklist', 'warnings'].map(tab => (
                       <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 ${activeTab === tab.id ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 capitalize ${activeTab === tab ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
                       >
-                        {tab.label}
+                        {tab}
                       </button>
                     ))}
                   </div>
@@ -396,7 +403,7 @@ const Guide = () => {
 
                 {/* Main Scrollable Content Body */}
                 <div className="min-h-[400px]">
-                  {renderContent()}
+                  <TopicContentRenderer key={currentTopicData.id} topic={currentTopicData} activeTab={activeTab} />
                 </div>
 
                 {/* Simple Footer */}

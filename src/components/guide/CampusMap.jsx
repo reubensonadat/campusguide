@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, MapPin, Map as MapIcon, BookOpen, Navigation, ArrowLeft, ExternalLink, X } from 'lucide-react';
+import { Search, MapPin, Map as MapIcon, Navigation, ArrowLeft, ExternalLink, X } from 'lucide-react';
+import { CustomGuide } from '../common/CustomIcons';
+
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import CampusMapData from './content/ucc/CampusMap';
@@ -196,7 +198,7 @@ const MapView = () => {
                             onClick={() => setActiveTab('guide')}
                             className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'guide' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                         >
-                            <BookOpen className="w-4 h-4" /> Guide
+                            <CustomGuide className="w-4 h-4" /> Guide
                         </button>
                     </div>
                 </div>

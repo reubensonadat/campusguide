@@ -1,5 +1,7 @@
 import React from 'react';
-import { Home, MapPin, Search, CreditCard, CheckCircle, Info, ShieldAlert, History, Users, ArrowRight } from 'lucide-react';
+import { MapPin, Search, CreditCard, CheckCircle, Info, ShieldAlert, History, Users, ArrowRight } from 'lucide-react';
+import { CustomHome } from '../../../common/CustomIcons';
+
 import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const Accommodation = () => {
@@ -31,7 +33,7 @@ const Accommodation = () => {
         <div className="space-y-12">
           <InfoBlock 
             title="Collegiate System"
-            icon={Home}
+            icon={CustomHome}
             content="UCC operates a collegiate system where every student is affiliated with a Hall of Residence. Due to the <strong>'In-Out-Out-Out'</strong> policy, freshers are prioritized for on-campus rooms while continuing students usually move to the Diaspora."
           />
 

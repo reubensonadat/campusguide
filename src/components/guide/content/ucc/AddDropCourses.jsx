@@ -1,5 +1,7 @@
 import React from 'react';
-import { Edit3, AlertCircle, Clock, CheckCircle, Info, BookOpen } from 'lucide-react';
+import { Edit3, AlertCircle, Clock, CheckCircle, Info } from 'lucide-react';
+import { CustomGuide } from '../../../common/CustomIcons';
+
 import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const AddDropCourses = () => {

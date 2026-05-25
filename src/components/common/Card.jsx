@@ -1,7 +1,9 @@
 // src/components/common/Card.jsx
 import React from 'react';
 import { cn } from '../../utils/helpers';
-import { Info, AlertCircle, CheckCircle, FileText, Lightbulb, BookOpen, List, ExternalLink } from 'lucide-react';
+import { Info, AlertCircle, CheckCircle, FileText, Lightbulb, List, ExternalLink } from 'lucide-react';
+import { CustomGuide } from './CustomIcons';
+
 
 const Card = ({
   children,
@@ -127,7 +129,7 @@ const WarningCard = ({ title, description, children, className = '', ...props })
 
 const GuideCard = ({ title, description, children, className = '', ...props }) => (
   <Card type="guide" className={className} {...props}>
-    <CardHeader icon={<BookOpen size={20} />} iconColor="text-indigo-500">
+    <CardHeader icon={<CustomGuide size={20} />} iconColor="text-indigo-500">
       <CardTitle>{title}</CardTitle>
       {description && <CardDescription>{description}</CardDescription>}
     </CardHeader>

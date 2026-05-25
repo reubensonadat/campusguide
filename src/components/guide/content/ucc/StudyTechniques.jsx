@@ -1,5 +1,7 @@
 import React from 'react';
-import { BookOpen, Brain, Pencil, Target, CheckCircle, Info, ShieldAlert, History, Users, ArrowRight, Laptop, Sparkles } from 'lucide-react';
+import { Brain, Pencil, Target, CheckCircle, Info, ShieldAlert, History, Users, ArrowRight, Laptop, Sparkles } from 'lucide-react';
+import { CustomGuide } from '../../../common/CustomIcons';
+
 import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const StudyTechniques = () => {

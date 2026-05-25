@@ -24,6 +24,15 @@ const Community = () => {
     const [feedData, setFeedData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isHomeBannerDismissed, setIsHomeBannerDismissed] = useLocalStorage('ucc_home_banner_dismissed', false);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    React.useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     React.useEffect(() => {
         window.scrollTo(0, 0);
@@ -120,25 +129,31 @@ const Community = () => {
         <div className="pb-24 bg-gray-50/50 min-h-screen">
 
             {/* Sticky Top Nav (Just the title) */}
-            <div className="bg-white px-5 py-4 sticky top-0 z-30 border-b border-gray-100 shadow-sm/50 backdrop-blur-md bg-white/90">
-                <div className="flex justify-between items-center w-[90%] md:w-[95%] max-w-[1600px] mx-auto">
-                    <div>
-                        <h1 className="text-2xl font-black text-gray-900 tracking-tight">Community</h1>
-                        <p className="text-sm font-medium text-gray-500">Events, updates & listings</p>
+            <div className={`px-5 sticky top-0 z-30 border-b border-gray-100 shadow-sm/50 backdrop-blur-md bg-white/90 transition-all duration-300 ease-in-out ${isScrolled ? 'py-2 h-[50px]' : 'py-4 h-[76px]'}`}>
+                <div className="flex justify-between items-center w-[90%] md:w-[95%] max-w-[1600px] mx-auto h-full">
+                    <div className="flex flex-col justify-center">
+                        <h1 className={`font-black text-gray-900 tracking-tight transition-all duration-300 ${isScrolled ? 'text-lg' : 'text-2xl'}`}>
+                            Community
+                        </h1>
+                        <div className={`transition-all duration-300 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'}`}>
+                            <p className="text-sm font-medium text-gray-500">Events, updates & listings</p>
+                        </div>
                     </div>
 
                     {/* Small button in upper right guiding to the newly separated premium Advertise page */}
-                    <button
-                        onClick={() => navigate('/advertise')}
-                        className="flex flex-col items-center justify-center p-2 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors border border-amber-100/50 active:scale-95 group"
-                        aria-label="Showcase to the world"
-                    >
-                        <div className="relative">
-                            <Megaphone size={20} className="group-hover:-rotate-12 transition-transform duration-300" />
-                            <div className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
-                        </div>
-                        <span className="text-[10px] font-bold tracking-tight mt-1">Showcase</span>
-                    </button>
+                    <div className={`transition-all duration-300 overflow-hidden ${isScrolled ? 'w-0 opacity-0 scale-95' : 'w-16 opacity-100 scale-100'}`}>
+                        <button
+                            onClick={() => navigate('/advertise')}
+                            className="flex w-full flex-col items-center justify-center p-2 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors border border-amber-100/50 active:scale-95 group whitespace-nowrap"
+                            aria-label="Showcase to the world"
+                        >
+                            <div className="relative">
+                                <Megaphone size={20} className="group-hover:-rotate-12 transition-transform duration-300" />
+                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                            </div>
+                            <span className="text-[10px] font-bold tracking-tight mt-1">Showcase</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -149,7 +164,7 @@ const Community = () => {
                 {!isHomeBannerDismissed && (
                     <div
                         onClick={() => navigate('/advertise')}
-                        className="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 p-6 sm:p-8 lg:p-12 lg:h-[35vh] lg:min-h-[300px] flex flex-col justify-center text-white shadow-xl shadow-indigo-200/50 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group mb-10"
+                        className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700 p-6 sm:p-8 lg:p-12 lg:h-[35vh] lg:min-h-[300px] flex flex-col justify-center text-white shadow-xl shadow-primary-200/50 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group mb-10"
                     >
                         {/* Close button */}
                         <button
@@ -175,14 +190,14 @@ const Community = () => {
                                 <h3 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight mb-3 lg:mb-4 tracking-tight">
                                     Showcase to the World
                                 </h3>
-                                <p className="text-indigo-100/90 text-sm sm:text-base lg:text-lg font-medium max-w-xl leading-relaxed">
+                                <p className="text-primary-100/90 text-sm sm:text-base lg:text-lg font-medium max-w-xl leading-relaxed">
                                     Reach thousands of students daily. Post your product or service here and gain 100% student viewership monopoly on the most visited app pages.
                                 </p>
                             </div>
 
                             <div className="mt-6 lg:mt-0 flex items-center gap-4">
                                 <span className="font-bold text-sm lg:text-base text-white/90 group-hover:text-white transition-colors">Start Advertising</span>
-                                <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-white flex items-center justify-center shrink-0 shadow-lg text-indigo-600 group-hover:scale-110 transition-transform duration-300">
+                                <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-white flex items-center justify-center shrink-0 shadow-lg text-primary-600 group-hover:scale-110 transition-transform duration-300">
                                     <ChevronRight size={24} strokeWidth={3} />
                                 </div>
                             </div>
@@ -191,22 +206,25 @@ const Community = () => {
                 )}
 
                 {/* Sticky Feed Header & Filters */}
-                <div className="sticky top-[72px] z-20 bg-gray-50/95 backdrop-blur-md pt-2 pb-4 -mx-4 px-4 md:mx-0 md:px-0">
-                    <div className="flex items-center gap-4 mb-4">
+                <div 
+                    className="sticky z-20 bg-gray-50/95 backdrop-blur-md pt-2 pb-4 -mx-4 px-4 md:mx-0 md:px-0 transition-all duration-300"
+                    style={{ top: isScrolled ? '50px' : '76px' }}
+                >
+                    <div className={`flex items-center gap-4 transition-all duration-300 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-10 opacity-100 mb-4'}`}>
                         <div className="h-px bg-gray-200 flex-1"></div>
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2">Community Feed</span>
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2 whitespace-nowrap">Community Feed</span>
                         <div className="h-px bg-gray-200 flex-1"></div>
                     </div>
 
                     {/* Filter Categories - Horizontally Scrollable */}
-                    <div className="flex overflow-x-auto hide-scrollbar gap-3 px-1 md:px-0 lg:pl-2">
+                    <div className="flex overflow-x-auto hide-scrollbar gap-3 px-4 py-3 md:px-4 lg:pl-4">
                         {CATEGORIES.map(category => (
                             <button
                                 key={category.id}
                                 onClick={() => setSelectedCategory(category.id)}
                                 className={`whitespace-nowrap px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 shadow-sm ${selectedCategory === category.id
-                                    ? 'bg-primary-600 text-white shadow-md shadow-primary-200 scale-105'
-                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    ? 'bg-white text-primary-600 shadow-md scale-105 border border-gray-100'
+                                    : 'bg-transparent text-gray-500 hover:bg-gray-100 border border-transparent'
                                     }`}
                             >
                                 {category.label}
@@ -218,7 +236,7 @@ const Community = () => {
                 {/* Render Feed using CSS Grid or Empty State */}
                 {isLoading ? (
                     <div className="py-20 flex flex-col items-center justify-center text-center">
-                        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                        <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
                         <p className="text-gray-500 font-bold animate-pulse">Loading community feed...</p>
                     </div>
                 ) : filteredFeed.length > 0 ? (

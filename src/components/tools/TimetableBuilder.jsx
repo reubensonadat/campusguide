@@ -3,6 +3,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Button } from '../common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../common/Card';
 import { Plus, Trash2, Calendar, Bell, MapPin, Download, X, AlertCircle, User, Phone, Target } from 'lucide-react';
+import { Modal } from '../common/Modal';
 import { DAYS_OF_WEEK, TIME_SLOTS, GRADE_POINTS } from '../../utils/constants';
 import { requestNotificationPermission, isNotificationSupported } from '../../services/notificationService';
 import html2canvas from 'html2canvas';
@@ -260,234 +261,220 @@ const TimetableBuilder = () => {
       </Card>
 
       {/* Add Course Modal */}
-      {showAddForm && (
-        <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
-          <div className="bg-white rounded-3xl shadow-xl w-full max-w-lg mt-4 sm:mt-auto sm:my-auto flex flex-col mb-20 sm:mb-auto overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 flex-shrink-0">
-              <h3 className="font-bold text-gray-900 text-lg">{newCourse.id ? 'Edit Class' : 'Add New Class'}</h3>
-              <button onClick={() => setShowAddForm(false)} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
-                <X size={20} />
-              </button>
+      <Modal
+        isOpen={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        title={newCourse.id ? 'Edit Class' : 'Add New Class'}
+      >
+        <form onSubmit={handleAddCourse} className="space-y-5">
+          {conflictError && (
+            <div className="p-3 bg-red-50 text-red-700 text-sm rounded-xl font-medium flex items-center gap-2">
+              <AlertCircle size={16} />
+              {conflictError}
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Course Identifier</label>
+              <input
+                type="text"
+                placeholder="e.g. INF 101"
+                value={newCourse.name}
+                onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
+                className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Venue / Location</label>
+              <input
+                type="text"
+                placeholder="e.g. ALTB 1 or CODE Building"
+                value={newCourse.location}
+                onChange={(e) => setNewCourse({ ...newCourse, location: e.target.value })}
+                className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                required
+              />
             </div>
 
-            <form onSubmit={handleAddCourse} className="p-6 space-y-5 overflow-y-auto">
-              {conflictError && (
-                <div className="p-3 bg-red-50 text-red-700 text-sm rounded-xl font-medium flex items-center gap-2">
-                  <AlertCircle size={16} />
-                  {conflictError}
-                </div>
-              )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Lecturer (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Dr. Mensah"
+                  value={newCourse.lecturer || ''}
+                  onChange={(e) => setNewCourse({ ...newCourse, lecturer: e.target.value })}
+                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Contact (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 054... or email"
+                  value={newCourse.contact || ''}
+                  onChange={(e) => setNewCourse({ ...newCourse, contact: e.target.value })}
+                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                />
+              </div>
+            </div>
 
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Credit Hours</label>
+                <select
+                  value={newCourse.creditHours}
+                  onChange={(e) => setNewCourse({ ...newCourse, creditHours: parseInt(e.target.value, 10) })}
+                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                >
+                  {[1, 2, 3, 4].map(credit => (
+                    <option key={credit} value={credit}>{credit} Credits</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Day</label>
+                <select
+                  value={newCourse.day}
+                  onChange={(e) => setNewCourse({ ...newCourse, day: e.target.value })}
+                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                >
+                  {DAYS_OF_WEEK.map(day => (
+                    <option key={day} value={day}>{day}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Course Identifier</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. INF 101"
-                    value={newCourse.name}
-                    onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
-                    className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Venue / Location</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. ALTB 1 or CODE Building"
-                    value={newCourse.location}
-                    onChange={(e) => setNewCourse({ ...newCourse, location: e.target.value })}
-                    className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Lecturer (Optional)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Dr. Mensah"
-                      value={newCourse.lecturer || ''}
-                      onChange={(e) => setNewCourse({ ...newCourse, lecturer: e.target.value })}
-                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Contact (Optional)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 054... or email"
-                      value={newCourse.contact || ''}
-                      onChange={(e) => setNewCourse({ ...newCourse, contact: e.target.value })}
-                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Credit Hours</label>
-                    <select
-                      value={newCourse.creditHours}
-                      onChange={(e) => setNewCourse({ ...newCourse, creditHours: parseInt(e.target.value, 10) })}
-                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium"
-                    >
-                      {[1, 2, 3, 4].map(credit => (
-                        <option key={credit} value={credit}>{credit} Credits</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Day</label>
-                    <select
-                      value={newCourse.day}
-                      onChange={(e) => setNewCourse({ ...newCourse, day: e.target.value })}
-                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium"
-                    >
-                      {DAYS_OF_WEEK.map(day => (
-                        <option key={day} value={day}>{day}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Start</label>
-                      <select
-                        value={newCourse.startTime}
-                        onChange={(e) => setNewCourse({ ...newCourse, startTime: e.target.value })}
-                        className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium"
-                      >
-                        {TIME_SLOTS.map(time => (
-                          <option key={time} value={time}>{time}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">End</label>
-                      <select
-                        value={newCourse.endTime}
-                        onChange={(e) => setNewCourse({ ...newCourse, endTime: e.target.value })}
-                        className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium"
-                      >
-                        {TIME_SLOTS.map(time => (
-                          <option key={time} value={time}>{time}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Color Tag</label>
-                  <div className="flex gap-2 flex-wrap">
-                    {colors.map(color => (
-                      <button
-                        type="button"
-                        key={color}
-                        onClick={() => setNewCourse({ ...newCourse, color })}
-                        className={`w-10 h-10 rounded-full transition-all flex items-center justify-center ${newCourse.color === color ? 'ring-4 ring-offset-2 scale-110 shadow-md' : 'hover:scale-110 border-2 border-transparent'}`}
-                        style={{
-                          backgroundColor: color,
-                          ringColor: `${color}40`
-                        }}
-                      />
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Start</label>
+                  <select
+                    value={newCourse.startTime}
+                    onChange={(e) => setNewCourse({ ...newCourse, startTime: e.target.value })}
+                    className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                  >
+                    {TIME_SLOTS.map(time => (
+                      <option key={time} value={time}>{time}</option>
                     ))}
-                  </div>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">End</label>
+                  <select
+                    value={newCourse.endTime}
+                    onChange={(e) => setNewCourse({ ...newCourse, endTime: e.target.value })}
+                    className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                  >
+                    {TIME_SLOTS.map(time => (
+                      <option key={time} value={time}>{time}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
-              <div className="pt-2">
-                <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-2xl font-bold text-lg shadow-md transition-all">
-                  {newCourse.id ? 'Save Changes' : 'Add to Timetable'}
-                </Button>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Color Tag</label>
+              <div className="flex gap-2 flex-wrap">
+                {colors.map(color => (
+                  <button
+                    type="button"
+                    key={color}
+                    onClick={() => setNewCourse({ ...newCourse, color })}
+                    className={`w-10 h-10 rounded-full transition-all flex items-center justify-center ${newCourse.color === color ? 'ring-4 ring-offset-2 scale-110 shadow-md' : 'hover:scale-110 border-2 border-transparent'}`}
+                    style={{
+                      backgroundColor: color,
+                      ringColor: `${color}40`
+                    }}
+                  />
+                ))}
               </div>
-            </form>
+            </div>
           </div>
-        </div>
-      )}
+          <div className="pt-2 pb-6">
+            <Button type="submit" className="w-full bg-[#002F45] hover:bg-[#001a26] text-white py-3.5 rounded-2xl font-bold text-lg shadow-md transition-all">
+              {newCourse.id ? 'Save Changes' : 'Add to Timetable'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Course Detail Modal */}
-      {selectedCourse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+      <Modal
+        isOpen={!!selectedCourse}
+        onClose={() => setSelectedCourse(null)}
+        title="Class Details"
+      >
+        {selectedCourse && (
+          <div className="space-y-4">
             <div
-              className="h-24 relative p-6 flex justify-end"
+              className="h-24 w-full rounded-2xl flex items-center justify-center shadow-inner relative overflow-hidden"
               style={{ backgroundColor: selectedCourse.color }}
             >
-              <button
-                onClick={() => setSelectedCourse(null)}
-                className="w-8 h-8 bg-black/10 hover:bg-black/20 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
-              >
-                <X size={18} />
-              </button>
+              <div className="absolute inset-0 bg-black/10"></div>
+              <Calendar size={32} className="text-white drop-shadow-md z-10" />
             </div>
-            <div className="px-6 pb-6 pt-2 relative">
-              <div
-                className="w-16 h-16 rounded-2xl bg-white shadow-lg absolute -top-8 flex items-center justify-center border-4 border-white"
-              >
-                <Calendar size={24} style={{ color: selectedCourse.color }} />
-              </div>
 
-              <div className="mt-10 mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 leading-tight mb-2">{selectedCourse.name}</h3>
+            <div className="px-2 pt-2 pb-6">
+              <h3 className="text-2xl font-bold text-gray-900 leading-tight mb-4">{selectedCourse.name}</h3>
 
-                <div className="space-y-3 mt-4">
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                      <Calendar size={16} />
-                    </div>
-                    <span className="font-medium text-gray-900">{selectedCourse.day}s</span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-gray-600">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                    <Calendar size={16} />
                   </div>
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                      <Bell size={16} />
-                    </div>
-                    <span>{selectedCourse.startTime} - {selectedCourse.endTime}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                      <MapPin size={16} />
-                    </div>
-                    <span>{selectedCourse.location}</span>
-                  </div>
-                  {selectedCourse.lecturer && (
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                        <User size={16} />
-                      </div>
-                      <span>{selectedCourse.lecturer}</span>
-                    </div>
-                  )}
-                  {selectedCourse.contact && (
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                        <Phone size={16} />
-                      </div>
-                      <span>{selectedCourse.contact}</span>
-                    </div>
-                  )}
-                  {selectedCourse.creditHours && (
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
-                        <Target size={16} />
-                      </div>
-                      <span className="font-bold text-indigo-700">{selectedCourse.creditHours} Credit Hours</span>
-                    </div>
-                  )}
+                  <span className="font-medium text-gray-900">{selectedCourse.day}s</span>
                 </div>
+                <div className="flex items-center gap-3 text-gray-600">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                    <Bell size={16} />
+                  </div>
+                  <span>{selectedCourse.startTime} - {selectedCourse.endTime}</span>
+                </div>
+                <div className="flex items-center gap-3 text-gray-600">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                    <MapPin size={16} />
+                  </div>
+                  <span>{selectedCourse.location}</span>
+                </div>
+                {selectedCourse.lecturer && (
+                  <div className="flex items-center gap-3 text-gray-600">
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                      <User size={16} />
+                    </div>
+                    <span>{selectedCourse.lecturer}</span>
+                  </div>
+                )}
+                {selectedCourse.contact && (
+                  <div className="flex items-center gap-3 text-gray-600">
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                      <Phone size={16} />
+                    </div>
+                    <span>{selectedCourse.contact}</span>
+                  </div>
+                )}
+                {selectedCourse.creditHours && (
+                  <div className="flex items-center gap-3 text-gray-600">
+                    <div className="w-8 h-8 rounded-full bg-[#002F45]/10 flex items-center justify-center text-[#002F45]">
+                      <Target size={16} />
+                    </div>
+                    <span className="font-bold text-[#002F45]">{selectedCourse.creditHours} Credit Hours</span>
+                  </div>
+                )}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 mt-8">
                 <Button
                   onClick={() => {
                     setNewCourse(selectedCourse);
                     setSelectedCourse(null);
                     setShowAddForm(true);
                   }}
-                  className="flex-1 bg-indigo-200 border-2 border-indigo-100 hover:border-indigo-600 hover:bg-indigo-600 hover:text-white text-indigo-600 py-3.5 rounded-2xl font-bold flex items-center justify-center transition-all shadow-sm"
+                  className="flex-1 bg-gray-100 border border-gray-200 hover:border-gray-300 hover:bg-gray-200 text-gray-700 py-3.5 rounded-2xl font-bold flex items-center justify-center transition-all shadow-sm"
                 >
                   <Calendar size={18} className="mr-2" />
                   <span>Edit Details</span>
@@ -502,8 +489,8 @@ const TimetableBuilder = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
 
     </div>
   );

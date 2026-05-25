@@ -1,5 +1,7 @@
 import React from 'react';
-import { BookOpen, Clock, ShieldAlert, GraduationCap, ArrowRight, Info, CheckCircle, Search, Laptop, Globe } from 'lucide-react';
+import { Clock, ShieldAlert, GraduationCap, ArrowRight, Info, CheckCircle, Search, Laptop, Globe } from 'lucide-react';
+import { CustomGuide } from '../../../common/CustomIcons';
+
 import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const LibraryServices = () => {
@@ -18,7 +20,7 @@ const LibraryServices = () => {
         <div className="space-y-12">
           <InfoBlock 
             title="The Heart of Research"
-            icon={BookOpen}
+            icon={CustomGuide}
             content="The Sam Jonah Library is the core of academic research at UCC, offering a massive collection of physical books, journals, and a growing digital archive. It features a 2,000-seat capacity and is located near the large lecture theatres."
           />
 

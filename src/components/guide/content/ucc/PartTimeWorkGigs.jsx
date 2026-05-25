@@ -1,5 +1,7 @@
 import React from 'react';
-import { Briefcase, Wallet, Users, Clock, CheckCircle, Info, ShieldAlert, History, ArrowRight, Laptop, BookOpen } from 'lucide-react';
+import { Briefcase, Wallet, Users, Clock, CheckCircle, Info, ShieldAlert, History, ArrowRight, Laptop } from 'lucide-react';
+import { CustomGuide } from '../../../common/CustomIcons';
+
 import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const PartTimeWorkGigs = () => {

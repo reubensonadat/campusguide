@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import TimetableBuilder from '../components/tools/TimetableBuilder';
 import GPACalculator from '../components/tools/GPACalculator';
+import FormulaCalculator from '../components/tools/FormulaCalculator';
 import { Sparkles } from 'lucide-react';
+
+const tabs = [
+  { id: 'timetable', label: 'Timetable Builder' },
+  { id: 'gpa', label: 'GPA Calculator' },
+  { id: 'formulas', label: 'Formula Solver' }
+];
 
 const Tools = () => {
   const [activeTool, setActiveTool] = useState('timetable');
@@ -16,38 +23,30 @@ const Tools = () => {
             <Sparkles className="w-6 h-6 text-indigo-600" />
             Student Tools
           </h1>
-          <p className="text-gray-500 mt-1">Manage your schedule and track your academic progress.</p>
+          <p className="text-gray-500 mt-1">Manage your schedule, track your academic progress, and solve complex formulas.</p>
         </div>
 
         {/* Custom Tab Switcher */}
-        <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-100 w-fit mb-8 mx-auto md:mx-0 flex gap-1">
-          <button
-            onClick={() => setActiveTool('timetable')}
-            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTool === 'timetable'
-              ? 'bg-indigo-600 text-white shadow-md'
-              : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+        <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-100 w-fit mb-8 mx-auto md:mx-0 flex gap-1 flex-wrap">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTool(tab.id)}
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTool === tab.id
+                ? 'bg-white text-primary-600 shadow-md border border-gray-100 scale-105'
+                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
               }`}
-          >
-            Timetable Builder
-          </button>
-          <button
-            onClick={() => setActiveTool('gpa')}
-            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTool === 'gpa'
-              ? 'bg-indigo-600 text-white shadow-md'
-              : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-          >
-            GPA Calculator
-          </button>
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {/* Content Area */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-          {activeTool === 'timetable' ? (
-            <TimetableBuilder />
-          ) : (
-            <GPACalculator />
-          )}
+          {activeTool === 'timetable' && <TimetableBuilder />}
+          {activeTool === 'gpa' && <GPACalculator />}
+          {activeTool === 'formulas' && <FormulaCalculator />}
         </div>
 
       </div>

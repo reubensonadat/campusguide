@@ -1,5 +1,7 @@
 import React from 'react';
-import { Users, BookOpen, Heart, Trophy, Globe, CheckCircle, Info, ShieldAlert, History, ArrowRight, Star } from 'lucide-react';
+import { Users, Heart, Trophy, Globe, CheckCircle, Info, ShieldAlert, History, ArrowRight, Star } from 'lucide-react';
+import { CustomGuide } from '../../../common/CustomIcons';
+
 import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const ClubsSocieties = () => {

@@ -1,12 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Button } from '../components/common/Button';
-import {
-  BookOpen, Wrench, ArrowRight,
-  Map,
-  CalendarDays, Phone, Settings,
-  MessageCircle, ChevronRight,
-  Clock, Megaphone, ExternalLink, Wifi
-} from 'lucide-react';
+import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User } from 'lucide-react';
+import { CustomGuide, CustomTools } from '../components/common/CustomIcons';
+
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { PaymentButton } from '../components/payment/PaymentButton';
@@ -24,10 +20,10 @@ const getGreeting = () => {
   return 'Good evening';
 };
 
-const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const now        = new Date();
-const TODAY_NAME  = DAYS[now.getDay()];
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const now = new Date();
+const TODAY_NAME = DAYS[now.getDay()];
 const TODAY_LABEL = `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}`;
 
 // ── component ─────────────────────────────────────────────────────────────────
@@ -35,13 +31,14 @@ const TODAY_LABEL = `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getD
 const Home = () => {
   React.useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  const navigate     = useNavigate();
+  const navigate = useNavigate();
   const { state, actions } = useAppContext();
-  const [timetable]  = useLocalStorage('ucc_timetable', []);
+  const [timetable] = useLocalStorage('ucc_timetable', []);
+  const [profile]    = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' });
 
   const supportEmail = state?.supportEmail || 'anonymous@uccguide.com';
   const handlePaymentSuccess = () => alert('Thank you for your support!');
-  const handlePaymentError   = (e) => alert(`Payment failed: ${e.message}`);
+  const handlePaymentError = (e) => alert(`Payment failed: ${e.message}`);
 
   // Today's classes
   const todaysClasses = useMemo(() => {
@@ -106,14 +103,15 @@ const Home = () => {
     checkAnnouncement();
   }, []);
 
-  // Quick actions — reordered with Buy Data
+  // Quick actions — reordered
   const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
   
   const quickActions = [
     { title: 'Campus Map',  icon: Map,           action: () => navigate('/guide?topic=campus-map')          },
     { title: 'Timetable',   icon: CalendarDays,  action: () => navigate('/tools')                           },
     { title: 'Buy Data',    icon: Wifi,          action: () => window.open(AFFILIATE_URL, '_blank', 'noopener,noreferrer'), isAffiliate: true },
-    { title: 'Contacts',    icon: Phone,         action: () => navigate('/guide?topic=contact-directory')   },
+    { title: 'Contact Us',  icon: MessageCircle, action: () => navigate('/contact')                         },
+    { title: 'Settings',    icon: Settings,      action: () => navigate('/settings')                        },
   ];
 
   // ── render ────────────────────────────────────────────────────────────────
@@ -123,58 +121,84 @@ const Home = () => {
       {/* ════════════════════════════════════════════
           MOBILE LAYOUT
       ════════════════════════════════════════════ */}
-      <div className="lg:hidden">
+            <div className="lg:hidden">
 
-        {/* Hero */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#1a237e] via-[#283593] to-[#3949ab] px-5 pt-10 pb-16">
-          <div className="absolute -top-10 -right-10 w-52 h-52 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full bg-indigo-900/40 blur-2xl pointer-events-none" />
+        {/* ── Chime-Style Hero ────────────────────────────────────────── */}
+        <div className="relative overflow-hidden bg-gradient-to-b from-[#001a26] to-[#002F45] px-6 pt-10 pb-16">
+          
+          {/* Visual Illusion (Lighting/Depth in the middle) */}
+          <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[150%] h-[100px] bg-[#001a26] rounded-[100%] blur-xl opacity-40 pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#6EABC6] rounded-full mix-blend-screen filter blur-[80px] opacity-10 pointer-events-none"></div>
+          
+          {/* Top Bar */}
+          <div className="flex items-center justify-between mb-6 relative z-10">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center p-1">
+                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+              </div>
+              <span className="text-white font-bold tracking-widest text-xs uppercase opacity-90">Campus Guide</span>
+            </div>
+            
+            {profile.avatarUrl ? (
+              <button 
+                onClick={() => navigate('/profile')}
+                className="w-10 h-10 rounded-full border-2 border-white/20 shadow-lg overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white/10 p-0.5"
+              >
+                <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-full bg-white" />
+              </button>
+            ) : (
+              <button onClick={() => navigate('/profile')} className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform">
+                <User size={18} />
+              </button>
+            )}
+          </div>
+
+          {/* Hero Greeting Text (Like "Available Balance") */}
           <div className="relative z-10">
-            <p className="text-indigo-300 text-xs font-semibold tracking-widest uppercase mb-3">{TODAY_LABEL}</p>
-            <h1 className="text-white text-2xl font-extrabold leading-tight mb-1">{getGreeting()} 👋</h1>
-            <p className="text-indigo-200 text-sm font-medium">Welcome to your campus companion.</p>
+            <h2 className="text-white text-[1.8rem] font-black leading-tight tracking-tight mb-1">
+              {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'} 👋
+            </h2>
+            <p className="text-[#6EABC6] text-sm font-semibold flex items-center gap-1 cursor-pointer active:opacity-70 transition-opacity">
+              {TODAY_LABEL}
+            </p>
           </div>
         </div>
 
-        {/* Floating cards */}
-        <div className="px-4 -mt-8 relative z-10 space-y-3">
+        {/* ── Overlapping Content & Body ──────────────────────────────── */}
+        <div className="px-5 -mt-8 relative z-20 space-y-6 pb-6">
 
-          {/* ── Today's Classes ─────────────────────── */}
-          <div className="bg-white rounded-md shadow-[0_8px_32px_rgba(0,0,0,0.10)] p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-indigo-600 flex items-center justify-center">
-                  <Clock size={14} className="text-white" />
-                </div>
-                <span className="text-sm font-bold text-gray-900">Today's Classes</span>
-              </div>
-              <button onClick={() => navigate('/tools')} className="text-xs text-indigo-600 font-semibold flex items-center gap-0.5">
+          {/* 1. Overlapping Floating Card (Today's Classes / Primary Info) */}
+          <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 min-h-[140px] border border-gray-100 flex flex-col justify-center">
+            <div className="flex justify-between items-start mb-4">
+              <span className="text-sm font-black text-gray-900 tracking-tight">Today's Classes</span>
+              <button onClick={() => navigate('/tools')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
                 View all <ChevronRight size={13} />
               </button>
             </div>
 
             {todaysClasses.length === 0 ? (
               <div className="flex items-center gap-4 py-2">
-                <span className="text-3xl">🎉</span>
+                <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center flex-shrink-0">
+                  <span className="text-2xl">🎉</span>
+                </div>
                 <div>
-                  <p className="text-sm font-bold text-gray-800">No classes today!</p>
-                  <button onClick={() => navigate('/tools')} className="text-xs text-indigo-500 font-semibold mt-0.5">
-                    Set up your timetable →
-                  </button>
+                  <p className="text-[15px] font-bold text-gray-900">No classes today!</p>
+                  <p className="text-xs text-gray-500 mt-0.5 font-medium">Enjoy your free time.</p>
                 </div>
               </div>
             ) : (
-              <div className="space-y-2">
-                {todaysClasses.map((cls, i) => (
-                  <div key={i} className="bg-indigo-50 rounded-xl px-4 py-3 flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0" />
+              <div className="space-y-3">
+                {todaysClasses.slice(0, 2).map((cls, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-[#002F45]/5 flex items-center justify-center flex-shrink-0">
+                      <Clock size={16} className="text-[#002F45]" />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-indigo-700 truncate">
+                      <p className="text-sm font-bold text-gray-900 truncate">
                         {cls.courseName || cls.name || 'Class'}
                       </p>
                       <p className="text-xs text-gray-500 font-medium mt-0.5">
                         {cls.startTime && cls.endTime ? `${cls.startTime} – ${cls.endTime}` : cls.startTime || ''}
-                        {(cls.venue || cls.location) ? ` · ${cls.venue || cls.location}` : ''}
                       </p>
                     </div>
                   </div>
@@ -183,115 +207,83 @@ const Home = () => {
             )}
           </div>
 
-          {/* ── Quick Actions — horizontal strip ─────── */}
-          <div className="flex gap-3 overflow-x-auto hide-scrollbar py-1">
-            {quickActions.map((action, i) => {
-              const Icon = action.icon;
-              const isAffiliate = action.isAffiliate;
-              return (
-                <button
-                  key={i}
-                  onClick={action.action}
-                  className={`relative flex-none flex flex-col items-center gap-1.5 bg-white rounded-xl px-4 py-3 shadow-sm ring-1 active:scale-95 transition-transform ${
-                    isAffiliate
-                      ? 'ring-blue-200 hover:ring-blue-300'
-                      : 'ring-black/5'
-                  }`}
-                >
-                  <Icon size={18} className={`${isAffiliate ? 'text-orange-500' : 'text-indigo-600'}`} />
-                  <span className="text-[10px] font-semibold text-gray-600 whitespace-nowrap">{action.title}</span>
-                </button>
-              );
-            })}
+          {/* 2. Campus Tools (Horizontal Scroll) */}
+          <div className="pt-2">
+            <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">Campus tools</h3>
+            <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 px-1 -mx-1">
+              {quickActions.map((action, i) => {
+                const Icon = action.icon;
+                const isAffiliate = action.isAffiliate;
+                return (
+                  <button
+                    key={i}
+                    onClick={action.action}
+                    className="bg-white border border-gray-200 rounded-2xl p-3 flex-none flex items-center gap-3 active:scale-95 transition-transform"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
+                      <Icon size={18} className={isAffiliate ? 'text-orange-500' : 'text-[#002F45]'} />
+                    </div>
+                    <span className="text-[13px] font-bold text-gray-900 leading-tight pr-2 whitespace-nowrap">
+                      {action.title}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* ── Featured card (announcement OR ad, decided by rotation logic) */}
+          {/* 3. Announcements / Featured Content */}
           {featuredContent && (() => {
             const isAd = featuredContent.kind === 'ad';
-            const d    = featuredContent.data;
+            const d = featuredContent.data;
             const imgSrc = isAd ? d.image_url : d.flyer_url;
 
-            // Build contact link for ads
-            let adHref = null, adLabel = 'Learn More';
-            if (isAd) {
-              const clean = d.phone_number ? d.phone_number.replace(/\D/g, '') : '';
-              if (d.contact_method === 'link' && d.contact_url)      { adHref = d.contact_url; adLabel = 'Visit Link'; }
-              else if (d.contact_method === 'phone' && clean)         { adHref = `tel:+${clean}`; adLabel = 'Call Now'; }
-              else if (clean)                                          { adHref = `https://wa.me/${clean}?text=${encodeURIComponent(`Hi! I saw your ad for "${d.title}" on UCC Campus Guide.`)}`; adLabel = 'Message via WhatsApp'; }
-            }
-
             return (
-              <div className="bg-white rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden">
-                {/* header */}
-                <div className="flex items-center justify-between px-5 pt-5 pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-xl bg-indigo-600 flex items-center justify-center">
-                      <Megaphone size={14} className="text-white" />
-                    </div>
-                    <span className="text-sm font-bold text-gray-900">{isAd ? 'Featured' : 'Announcement'}</span>
-                  </div>
-                  <button onClick={() => navigate('/community')} className="text-xs text-indigo-600 font-semibold flex items-center gap-0.5">
-                    See community <ChevronRight size={13} />
-                  </button>
-                </div>
-
-                {/* flyer / image — flexible height, not cropped */}
-                {imgSrc && (
-                  <img src={imgSrc} alt={d.title} className="w-full h-auto max-h-[420px] object-contain block" />
-                )}
-
-                {/* content */}
-                <div className="px-5 py-4">
-                  <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-indigo-600 bg-indigo-50">
-                    {isAd ? 'SPONSORED' : 'OFFICIAL'}
-                  </span>
-                  <h3 className="text-sm font-bold text-gray-900 leading-snug mb-1">{d.title}</h3>
-                  {(d.description || d.content) && (
-                    <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-3">
+              <div className="pt-2">
+                <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">
+                  {isAd ? 'Advertisement' : 'Announcement'}
+                </h3>
+                <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+                  {imgSrc && (
+                    <img src={imgSrc} alt={d.title} className="w-full h-auto max-h-[300px] object-cover" />
+                  )}
+                  <div className="p-5">
+                    <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-[#002F45] bg-[#002F45]/10">
+                      {isAd ? 'SPONSORED' : 'OFFICIAL'}
+                    </span>
+                    <h4 className="text-base font-bold text-gray-900 mb-1">{d.title}</h4>
+                    <p className="text-sm text-gray-500 font-medium line-clamp-2 mb-3">
                       {d.description || d.content}
                     </p>
-                  )}
-                  {/* Ad action link */}
-                  {isAd && adHref && (
-                    <a href={adHref} target="_blank" rel="noopener noreferrer"
-                      className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-indigo-600">
-                      {adLabel} <ExternalLink size={12} />
-                    </a>
-                  )}
-                  {/* Announcement action link */}
-                  {!isAd && d.action_link && (
-                    <a href={d.action_link} target="_blank" rel="noopener noreferrer"
-                      className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-indigo-600">
-                      {d.action_text || 'View Details'} <ExternalLink size={12} />
-                    </a>
-                  )}
+                    <button className="text-[13px] font-bold text-[#002F45] flex items-center gap-1">
+                      Read more <ChevronRight size={14} />
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })()}
 
-          {/* ── Support ──────────────────────────────── */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-xl border border-indigo-100 shadow-sm p-5">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-100/30 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-            <div className="relative z-10 flex items-center gap-4">
-              <img src="/Savings.png" alt="Support" className="w-24 h-24 object-contain flex-shrink-0 drop-shadow-md" />
-              <div className="flex-1 min-w-0">
-                <h3 className="text-gray-900 text-sm font-extrabold mb-1">Support This Project</h3>
-                <p className="text-gray-500 text-xs font-medium mb-3 leading-relaxed">
-                  Your support keeps this project alive and growing for every student.
-                </p>
-                <Button
-                  onClick={() => actions?.setShowSupportModal(true)}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-md shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-2"
-                >
-                  Support Now
-                </Button>
-              </div>
+          {/* 4. Promotional Banner (Support Card - Moved to Bottom) */}
+          <div 
+            onClick={() => actions?.setShowSupportModal(true)}
+            className="bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-gray-100 p-6 flex items-center justify-between overflow-hidden relative group cursor-pointer active:scale-[0.98] transition-transform"
+          >
+            <div className="relative z-10">
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Support the Guide</h3>
+              <p className="text-sm text-gray-500 max-w-[200px] leading-relaxed mb-3">
+                Help us keep this app free and growing for all students.
+              </p>
+              <span className="inline-block bg-[#002F45] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm">
+                Support Now
+              </span>
+            </div>
+            <div className="relative z-10 w-24 h-24 -mr-4 flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
+              <img src="/Savings.png" alt="Support" className="w-full h-full object-contain drop-shadow-md" />
             </div>
           </div>
 
         </div>
-        {/* end mobile floating cards */}
       </div>
       {/* end MOBILE */}
 
@@ -303,29 +295,46 @@ const Home = () => {
         {/* Hero */}
         <div className="relative overflow-hidden bg-white border-b border-gray-100/80 py-12 px-6">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-40">
-            <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob" />
-            <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000" />
+            <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob" />
+            <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000" />
             <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000" />
           </div>
           <div className="relative max-w-6xl mx-auto z-10 grid grid-cols-12 items-center gap-6">
             <div className="col-span-7 text-left mt-8">
-              <h1 className="text-5xl font-black text-gray-900 mb-4 tracking-tight leading-tight">
+              <div className="flex items-center gap-4 mb-4">
+                {profile.avatarUrl && (
+                  <div 
+                    onClick={() => navigate('/profile')}
+                    className="w-16 h-16 rounded-2xl border border-gray-200 shadow-sm overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white p-0.5"
+                  >
+                    <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-xl bg-gray-50" />
+                  </div>
+                )}
+                <div>
+                  <p className="text-primary-600 text-sm font-semibold tracking-widest uppercase mb-1">{TODAY_LABEL}</p>
+                  <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight">
+                    {getGreeting()}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''} 👋
+                  </h1>
+                </div>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-700 mb-4 tracking-tight leading-tight">
                 Your Essential{' '}
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 via-primary-600 to-primary-600">
                   Campus Companion
                 </span>
-              </h1>
+              </h2>
               <p className="text-lg text-gray-500 mb-6 max-w-xl font-medium">
                 Navigate campus life with clear guides, essential tools, and quick access to services all in a compact, easy-to-use hub.
               </p>
               <div className="flex items-center gap-4">
                 <Button variant="primary" onClick={() => navigate('/guide')}
-                  className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold shadow-soft btn-hover flex items-center gap-3">
-                  <BookOpen size={18} /> Open Guide
+                  className="bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold shadow-soft btn-hover flex items-center gap-3">
+                  <CustomGuide size={18} /> Open Guide
                 </Button>
                 <Button variant="outline" onClick={() => navigate('/tools')}
                   className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-xl font-semibold shadow-sm flex items-center gap-3">
-                  <Wrench size={18} className="text-gray-400" /> Open Tools
+                  <CustomTools size={18} className="text-gray-400" /> Open Tools
                 </Button>
               </div>
             </div>
@@ -355,24 +364,22 @@ const Home = () => {
                   const isAffiliate = action.isAffiliate;
                   return (
                     <button key={index} onClick={action.action}
-                      className={`group relative overflow-hidden text-left p-5 bg-white border rounded-xl transition-all duration-300 flex items-center justify-between flex-none ${
-                        isAffiliate
-                          ? 'border-blue-200 hover:border-blue-300 hover:shadow-[0_8px_30px_rgba(59,130,246,0.1)]'
-                          : 'border-gray-100 hover:border-indigo-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]'
-                      }`}
+                      className={`group relative overflow-hidden text-left p-5 bg-white border rounded-xl transition-all duration-300 flex items-center justify-between flex-none ${isAffiliate
+                          ? 'border-primary-200 hover:border-primary-300 hover:shadow-[0_8px_30px_rgba(59,130,246,0.1)]'
+                          : 'border-gray-100 hover:border-primary-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]'
+                        }`}
                       style={{ minWidth: 'min(24rem, calc((100vw - 96px) / 4))' }}>
                       <div className="flex items-center gap-4 relative z-10">
-                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
-                          isAffiliate
+                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${isAffiliate
                             ? 'bg-orange-50'
-                            : 'bg-indigo-50'
-                        }`}>
-                          <Icon size={24} className={isAffiliate ? 'text-orange-500' : 'text-indigo-600'} />
+                            : 'bg-primary-50'
+                          }`}>
+                          <Icon size={24} className={isAffiliate ? 'text-orange-500' : 'text-primary-600'} />
                         </div>
                         <h4 className="font-bold text-gray-900 text-base">{action.title}</h4>
                       </div>
                       <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 relative z-10">
-                        <ArrowRight size={16} className={isAffiliate ? 'text-orange-600' : 'text-indigo-600'} />
+                        <ArrowRight size={16} className={isAffiliate ? 'text-orange-600' : 'text-primary-600'} />
                       </div>
                     </button>
                   );
@@ -383,8 +390,8 @@ const Home = () => {
 
           {/* Support */}
           <section>
-            <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white rounded-xl p-10 sm:p-14 border border-indigo-100 shadow-sm">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-100/30 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+            <div className="relative overflow-hidden bg-gradient-to-br from-primary-50 to-white rounded-xl p-10 sm:p-14 border border-primary-100 shadow-sm">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary-100/30 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
               <div className="relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 text-center lg:text-left">
                 <div className="flex-1">
                   <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">Support This Project</h2>
@@ -394,12 +401,12 @@ const Home = () => {
                   <div className="max-w-sm mx-auto lg:mx-0 space-y-5">
                     <PaymentButton amount={5} email={supportEmail}
                       onPaymentSuccess={handlePaymentSuccess} onPaymentError={handlePaymentError}
-                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-indigo-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2">
+                      className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-primary-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2">
                       Support Now (GH₵5)
                     </PaymentButton>
                     <p className="text-sm font-medium text-gray-500">
                       Issues or suggestions?{' '}
-                      <a href="mailto:uccguide25@gmail.com" className="text-indigo-600 hover:underline">Contact us</a>
+                      <a href="mailto:uccguide25@gmail.com" className="text-primary-600 hover:underline">Contact us</a>
                     </p>
                   </div>
                 </div>

@@ -91,12 +91,12 @@ const Modal = ({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center modal-backdrop p-4"
+      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center modal-backdrop p-0 sm:p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={handleBackdropClick}
     >
       <div
         ref={modalRef}
-        className={`modal-content bg-white rounded-lg shadow-xl w-[90vw] max-h-[90vh] flex flex-col ${className}`}
+        className={`modal-content bg-white w-full sm:w-[90vw] sm:max-w-md max-h-[90vh] flex flex-col rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 ${className}`}
         style={{
           position: 'relative',
           transform: `translate(${position.x}px, ${position.y}px)`,
@@ -110,15 +110,15 @@ const Modal = ({
         {title && (
           <div 
             ref={headerRef}
-            className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 cursor-move select-none"
+            className="flex items-center justify-between p-5 border-b border-gray-100 flex-shrink-0 cursor-move select-none"
           >
-            <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
+            <h2 id="modal-title" className="text-lg font-black text-gray-900 px-2">
               {title}
             </h2>
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-1 rounded-md hover:bg-gray-100 focus:outline-none"
+                className="p-2 text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
                 aria-label="Close"
               >
                 <X size={20} />

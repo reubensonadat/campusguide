@@ -1,5 +1,7 @@
 import React from 'react';
-import { BookOpen, RefreshCw, Lock, Terminal, CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import { RefreshCw, Lock, Terminal, CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import { CustomGuide } from '../../../common/CustomIcons';
+
 import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const CourseRegistration = () => {
@@ -43,7 +45,7 @@ const CourseRegistration = () => {
         <div className="space-y-12">
           <InfoBlock 
             title="Registration Protocol"
-            icon={BookOpen}
+            icon={CustomGuide}
             content="Registration is the official process of enrolling in specific courses. <strong>No Registration = No Student Status.</strong> Even if you pay fees, you are not a student until you register courses on the portal and click 'Submit'."
           />
 

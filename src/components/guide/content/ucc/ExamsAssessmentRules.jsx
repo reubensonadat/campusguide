@@ -1,5 +1,7 @@
 import React from 'react';
-import { BookOpen, AlertTriangle, Calculator, FileText, CheckCircle, Info, ShieldAlert, GraduationCap } from 'lucide-react';
+import { AlertTriangle, Calculator, FileText, CheckCircle, Info, ShieldAlert, GraduationCap } from 'lucide-react';
+import { CustomGuide } from '../../../common/CustomIcons';
+
 import { ActionCard, InfoBlock } from '../../GuideStyles';
 
 const ExamsAssessmentRules = () => {

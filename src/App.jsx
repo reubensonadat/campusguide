@@ -1,6 +1,6 @@
 // src/App.jsx
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { CampusProvider, useCampus } from './context/CampusContext';
 
@@ -11,6 +11,7 @@ import { useFeedbackTimer } from './hooks/useFeedbackTimer';
 import { useFeedbackModal } from './hooks/useFeedbackModal';
 import { Toast } from './components/common/Toast';
 import { TabBar } from './components/common/TabBar';
+import Sidebar from './components/common/Sidebar';
 
 import { SupportModal } from './components/payment/SupportModal';
 import FeedbackModal from './components/common/FeedbackSurveyModal';
@@ -19,6 +20,17 @@ import PWAInstallButton from './components/common/PWAInstallButton';
 import { preloadPaystack } from './services/paymentService';
 import { useOnboarding } from './hooks/useOnboarding';
 import { Onboarding } from './components/onboarding/Onboarding';
+import { triggerHaptic } from './utils/haptics';
+
+function NavigationObserver() {
+  const location = useLocation();
+
+  useEffect(() => {
+    triggerHaptic(30); // Gentle 30ms buzz on navigation
+  }, [location.pathname]);
+
+  return null;
+}
 
 // Page imports
 import Home from './pages/Home';
@@ -29,11 +41,13 @@ import Community from './pages/Community';
 import Advertise from './pages/Advertise';
 import Contact from './pages/Contact';
 import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 
 function AppContent() {
   const { selectedCampusId } = useCampus();
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
   const { resetTimer } = useSupportTimer();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   // Feedback Modal Logic
   useFeedbackTimer();
@@ -65,17 +79,22 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/guide" element={<Guide />} />
-        <Route path="/guide/:topic" element={<Guide />} />
-        <Route path="/tools" element={<Tools />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/advertise" element={<Advertise />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
+    <div className="min-h-screen flex bg-gray-50/50">
+      <Sidebar onExpandedChange={setIsSidebarExpanded} />
+      
+      <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/guide" element={<Guide />} />
+          <Route path="/guide/:topic" element={<Guide />} />
+          <Route path="/tools" element={<Tools />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/advertise" element={<Advertise />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
 
       <TabBar />
 
@@ -93,13 +112,14 @@ function AppContent() {
         onClose={closeFeedback}
       />
 
-      <Onboarding
-        isOpen={showOnboarding}
-        currentStep={currentStep}
-        onNext={nextStep}
-        onPrev={prevStep}
-        onClose={closeOnboarding}
-      />
+        <Onboarding
+          isOpen={showOnboarding}
+          currentStep={currentStep}
+          onNext={nextStep}
+          onPrev={prevStep}
+          onClose={closeOnboarding}
+        />
+      </div>
     </div>
   );
 }
@@ -109,6 +129,7 @@ function App() {
     <AppProvider>
       <CampusProvider>
         <Router>
+          <NavigationObserver />
           <AppContent />
         </Router>
       </CampusProvider>

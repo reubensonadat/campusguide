@@ -13,9 +13,7 @@ import {
   Users,
   Send,
   CheckCircle,
-  Sparkles,
-  Star,
-  ArrowRight
+  ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import headerImage from '/call-center-cuate.png';
@@ -30,7 +28,7 @@ const Contact = () => {
 
   const [formData, setFormData] = React.useState({
     name: '',
-    email: '',
+    phone: '',
     message: ''
   });
 
@@ -132,218 +130,144 @@ const Contact = () => {
     e.preventDefault();
     // Handle form submission here
     alert('Message sent! We will get back to you soon.');
-    setFormData({ name: '', email: '', message: '' });
+    setFormData({ name: '', phone: '', message: '' });
   };
 
   const newLocal = "text-white bg-blue hover:bg-blue-700 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none";
   return (
-    <div className="p-4 pb-24 bg-gray-50/30 min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-300">
-      {/* Hero Section */}
-      <div className="mb-12 relative overflow-hidden bg-transparent cursor-default select-none">
-        {/* Mobile: compact blue card (centered, consistent with Home page mobile style) */}
-        <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden md:hidden">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full -ml-10 -mb-10 blur-2xl"></div>
+    <div className="p-4 md:p-8 pb-24 bg-gray-50/50 min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45] transition-colors duration-300">
+      <div className="max-w-4xl mx-auto space-y-6">
 
-          <div className="relative z-10 text-center">
-            <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
-              <MessageCircle size={40} className="text-white drop-shadow-md" />
-            </div>
-
-            <h1 className="text-3xl font-extrabold mb-4 tracking-tight leading-tight">
-              Contact <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
-                Our Team
-              </span>
-            </h1>
-
-            <p className="text-blue-100/90 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
-              We're here to help you succeed at UCC. Reach out with any questions or feedback.
-            </p>
-
-            <div className="flex flex-col gap-4 justify-center">
-              <Button
-                variant=""
-                onClick={() => navigate('/')}
-                className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none"
-              >
-                <ArrowRight size={20} /> Back to Home
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => navigate('/guide')}
-                className="bg-white/10 text-white border border-white/20 hover:bg-white/20 px-8 py-3.5 rounded-xl font-bold backdrop-blur-sm transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-              >
-                <Star size={20} /> View Guide
-              </Button>
-            </div>
+        {/* Header Section */}
+        <div className="mb-8 md:flex md:items-center md:justify-between gap-6">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight text-gray-900 mb-2">Contact Support</h1>
+            <p className="text-gray-500 font-medium max-w-lg">We're here to help you succeed at UCC. Reach out with any questions or feedback.</p>
+          </div>
+          <div className="flex justify-center mt-6 md:mt-0">
+            <img src={headerImage} alt="Contact Support" className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-xl pointer-events-none" />
           </div>
         </div>
 
-        {/* Desktop: two-column layout (text left, image right) */}
-        <div className="relative z-10 hidden md:flex md:flex-row gap-12 items-center">
-
-          {/* Text Content (Left on Desktop) */}
-          <div className="flex-1 text-left text-gray-800 ml-12">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-blue-600 mb-6 ">
-              <Sparkles size={12} /> Get In Touch
-            </div>
-
-            <h1 className="text-5xl font-extrabold mb-4 tracking-tight leading-tight">
-              Contact <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
-                Our Team
-              </span>
-            </h1>
-
-            <p className="text-gray-600 text-lg mb-8 max-w-xl leading-relaxed">
-              We're here to help you succeed at UCC. Reach out with any questions or feedback.
-            </p>
-
-            <div className="flex flex-row gap-4 justify-start">
-              <Button
-                variant=""
-                onClick={() => navigate('/')}
-                className="bg-blue-600 text-white border hover:bg-blue-800 px-8 py-3.5 rounded-xl font-bold shadow-sm transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-              >
-                <ArrowRight size={20} /> Back to Home
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => navigate('/guide')}
-                className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 px-8 py-3.5 rounded-xl font-bold shadow-sm transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-              >
-                <Star size={20} /> View Guide
-              </Button>
-            </div>
-          </div>
-
-          {/* Image (Right on Desktop) */}
-          <div className="flex-1 flex justify-center py-4">
-            <img src={headerImage} alt="Customer Support" className="w-full max-w-md object-contain drop-shadow-xl pointer-events-none" />
-          </div>
-
-        </div>
-      </div>
-
-      {/* Unified Contact Section (Light Theme) */}
-      <div className="mb-8 flex flex-col lg:flex-row bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-
-        {/* Left Side: Contact Information */}
-        <div className="p-8 lg:p-12 lg:w-2/5 bg-gray-50/50 flex flex-col justify-center border-r border-gray-100">
-          <h2 className="text-3xl font-bold mb-10 text-gray-800">Contact Information</h2>
-          <div className="space-y-8">
-            <div className="flex items-start gap-5">
-              <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0">
-                <MapPin className="text-blue-600" size={22} />
-              </div>
-              <div>
-                <h3 className="font-bold text-lg mb-2 text-gray-800">Visit Us</h3>
-                <p className="text-gray-600 text-base leading-relaxed">University of Cape Coast</p>
-                <p className="text-gray-600 text-base leading-relaxed">Cape Coast, Ghana</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-5">
-              <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0">
-                <Mail className="text-blue-600" size={22} />
-              </div>
-              <div>
-                <h3 className="font-bold text-lg mb-2 text-gray-800">Email Us</h3>
-                <p className="text-gray-600 text-base leading-relaxed">[EMAIL_ADDRESS]</p>
-
-              </div>
-            </div>
-
-            <div className="flex items-start gap-5">
-              <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0">
-                <Phone className="text-blue-600" size={22} />
-              </div>
-              <div>
-                <h3 className="font-bold text-lg mb-2 text-gray-800">Call Us</h3>
-                <p className="text-gray-600 text-base leading-relaxed">+233 (0) 244 987 654</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side: Send a Message Form */}
-        <div className="p-8 lg:p-12 lg:w-3/5 bg-white">
-          <h2 className="text-3xl font-bold mb-8 text-gray-800">Send a Message</h2>
-          <form onSubmit={handleSubmit} className="space-y-6 flex flex-col h-[calc(100%-4rem)]">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Full Name</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full p-4 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 shadow-sm"
-                placeholder="Enter your name"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full p-4 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 shadow-sm"
-                placeholder="your.name@stu.ucc.edu.gh"
-                required
-              />
-            </div>
-            <div className="flex-1 flex flex-col">
-              <label className="block text-sm font-bold text-gray-700 mb-2">Message</label>
-              <textarea
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full p-4 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 flex-1 min-h-[120px] resize-none shadow-sm"
-                placeholder="How can we help you?"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full py-4 mt-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-xl transition-colors shadow-md flex justify-center items-center gap-2"
-            >
-              <Send size={20} />
-              Send Message
-            </button>
-          </form>
-        </div>
-      </div>
-
-      
-
-      {/* FAQs */}
-      <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden">
-        <CardHeader className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
-          <CardTitle className="text-gray-800 flex items-center gap-2 text-lg">
-            <MessageCircle className="text-blue-500" size={20} />
-            Frequently Asked Questions
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="space-y-5">
-            {faqs.map((faq, index) => (
-              <div key={index} className={`p-5 rounded-2xl border ${faq.border} ${faq.bg} hover:shadow-md transition-all`}>
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-white rounded-xl shadow-sm">
-                    <CheckCircle size={24} className={faq.color} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* Contact Information (Left Side) */}
+          <div className="space-y-4">
+            <h2 className="text-[11px] font-black uppercase tracking-widest text-gray-400 pl-2">Get in Touch</h2>
+            
+            <a href="mailto:uccguide25@gmail.com" className="block group">
+              <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden hover:border-[#6EABC6]/30 hover:shadow-md transition-all">
+                <CardContent className="p-6 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Mail className="text-emerald-600" size={20} />
                   </div>
                   <div>
-                    <h3 className={`font-bold text-lg mb-2 ${faq.color}`}>{faq.question}</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed font-medium">{faq.answer}</p>
+                    <h3 className="font-bold text-gray-900 text-sm">Email Support</h3>
+                    <p className="text-gray-500 text-xs mt-0.5">uccguide25@gmail.com</p>
                   </div>
+                  <ChevronRight size={16} className="text-gray-300 group-hover:text-gray-600 ml-auto" />
+                </CardContent>
+              </Card>
+            </a>
+
+            <a href="tel:+233201534711" className="block group">
+              <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden hover:border-[#6EABC6]/30 hover:shadow-md transition-all">
+                <CardContent className="p-6 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Phone className="text-blue-600" size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-sm">Call Center</h3>
+                    <p className="text-gray-500 text-xs mt-0.5">+233 20 153 4711</p>
+                  </div>
+                  <ChevronRight size={16} className="text-gray-300 group-hover:text-gray-600 ml-auto" />
+                </CardContent>
+              </Card>
+            </a>
+
+            <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden">
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="text-purple-600" size={20} />
                 </div>
-              </div>
-            ))}
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm">Location</h3>
+                  <p className="text-gray-500 text-xs mt-0.5">University of Cape Coast, Ghana</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Contact Form (Right Side) */}
+          <div className="space-y-4">
+            <h2 className="text-[11px] font-black uppercase tracking-widest text-gray-400 pl-2">Send a Message</h2>
+            
+            <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden">
+              <CardContent className="p-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-1 block mb-1">Full Name</label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-semibold text-sm transition-all"
+                      placeholder="Enter your name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-1 block mb-1">Phone Number</label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-semibold text-sm transition-all"
+                      placeholder="e.g. 054 123 4567"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-1 block mb-1">Message</label>
+                    <textarea
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-semibold text-sm min-h-[120px] resize-none transition-all"
+                      placeholder="How can we help you?"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full py-4 mt-2 bg-[#002F45] hover:bg-[#001f2e] text-white font-black uppercase tracking-[0.15em] text-[12px] rounded-xl transition-all shadow-md active:scale-[0.98] flex justify-center items-center gap-2"
+                  >
+                    <Send size={16} />
+                    Send Message
+                  </button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* FAQs */}
+        <div className="pt-4">
+          <h2 className="text-[11px] font-black uppercase tracking-widest text-gray-400 pl-2 mb-4">Frequently Asked Questions</h2>
+          <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden">
+            <CardContent className="p-0">
+              <div className="divide-y divide-gray-100">
+                {faqs.map((faq, index) => (
+                  <div key={index} className="p-6 hover:bg-gray-50/50 transition-colors">
+                    <h3 className={`font-bold text-sm text-gray-900 mb-1.5`}>{faq.question}</h3>
+                    <p className="text-gray-500 text-xs leading-relaxed font-medium">{faq.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+      </div>
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Calendar, CheckCircle, AlertTriangle, Sparkles, Truck, Plug, ArrowRight, MapPin, BookOpen, User, Info } from 'lucide-react';
+import { Calendar, CheckCircle, AlertTriangle, Sparkles, Truck, Plug, ArrowRight, MapPin, User, Info } from 'lucide-react';
+import { CustomGuide } from '../../../common/CustomIcons';
+
 import { ActionCard, InfoBlock, PackingList } from '../../GuideStyles';
 
 const GettingStarted = () => {
