@@ -148,39 +148,7 @@ const Settings = () => {
                 </div>
               </button>
 
-              <button
-                onClick={() => {
-                  if (window.confirm('Clear guide completion data only?')) {
-                    localStorage.removeItem('ucc_guide_completion');
-                    actions.showToast('Guide data cleared', 'success');
-                  }
-                }}
-                className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors group text-left focus:outline-none"
-              >
-                <div>
-                  <h3 className="font-bold text-gray-900 text-sm">Clear Guide Progress</h3>
-                  <p className="text-xs font-medium text-gray-500 mt-0.5">Reset your reading history</p>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-white border border-gray-100 group-hover:border-gray-200 transition-all">
-                  <Trash2 size={14} className="text-gray-400 group-hover:text-gray-700" />
-                </div>
-              </button>
-              
-              <button
-                onClick={() => {
-                  localStorage.removeItem('ucc_feedback_submitted_v2');
-                  actions.showToast('Feedback status reset.', 'success');
-                }}
-                className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors group text-left focus:outline-none"
-              >
-                <div>
-                  <h3 className="font-bold text-gray-900 text-sm">Reset Feedback Status</h3>
-                  <p className="text-xs font-medium text-gray-500 mt-0.5">Test mode</p>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-white border border-gray-100 group-hover:border-gray-200 transition-all">
-                  <RefreshCcw size={14} className="text-gray-400 group-hover:text-gray-700" />
-                </div>
-              </button>
+
 
               <button
                 onClick={handleClearAllData}

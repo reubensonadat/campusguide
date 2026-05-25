@@ -54,6 +54,7 @@ const Home = () => {
   // per session (sessionStorage keeps it stable during a session; rotates on
   // next app open).
   const [featuredContent, setFeaturedContent] = useState(null); // { kind: 'announcement'|'ad', data }
+  const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(false);
 
   useEffect(() => {
     const seenIds = JSON.parse(localStorage.getItem('ucc_seen_announcements') || '[]');
@@ -238,6 +239,23 @@ const Home = () => {
             const d = featuredContent.data;
             const imgSrc = isAd ? d.image_url : d.flyer_url;
 
+            let actionText = '';
+            let link = '';
+            
+            if (isAd) {
+                const cleanPhone = d.phone_number ? d.phone_number.replace(/\\D/g, '') : '';
+                if (d.contact_method === 'link' && d.contact_url) {
+                    actionText = 'Visit Link';
+                    link = d.contact_url;
+                } else if (d.contact_method === 'phone' && cleanPhone) {
+                    actionText = 'Call Now';
+                    link = `tel:+${cleanPhone}`;
+                } else if (cleanPhone) {
+                    actionText = 'Message via WhatsApp';
+                    link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
+                }
+            }
+
             return (
               <div className="pt-2">
                 <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">
@@ -245,19 +263,33 @@ const Home = () => {
                 </h3>
                 <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden">
                   {imgSrc && (
-                    <img src={imgSrc} alt={d.title} className="w-full h-auto max-h-[300px] object-cover" />
+                    <img src={imgSrc} alt={d.title} className="w-full h-auto object-contain max-h-[600px] bg-gray-50/50" />
                   )}
                   <div className="p-5">
                     <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-[#002F45] bg-[#002F45]/10">
                       {isAd ? 'SPONSORED' : 'OFFICIAL'}
                     </span>
                     <h4 className="text-base font-bold text-gray-900 mb-1">{d.title}</h4>
-                    <p className="text-sm text-gray-500 font-medium line-clamp-2 mb-3">
+                    <p className={`text-sm text-gray-500 font-medium mb-4 ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
                       {d.description || d.content}
                     </p>
-                    <button className="text-[13px] font-bold text-[#002F45] flex items-center gap-1">
-                      Read more <ChevronRight size={14} />
-                    </button>
+                    <div className="flex items-center justify-between">
+                      <button 
+                        onClick={() => setIsFeaturedExpanded(!isFeaturedExpanded)}
+                        className="text-[13px] font-bold text-[#002F45] flex items-center gap-1 active:opacity-70"
+                      >
+                        {isFeaturedExpanded ? 'Show less' : 'Read more'} <ChevronRight size={14} className={isFeaturedExpanded ? 'rotate-90 transition-transform' : 'transition-transform'} />
+                      </button>
+                      
+                      {isFeaturedExpanded && link && (
+                        <button 
+                          onClick={() => window.open(link, '_blank')}
+                          className="bg-[#FFF4E5] text-[#B26B00] border border-[#FFE0B2] text-xs font-bold px-4 py-2 rounded-lg active:scale-95 transition-transform shadow-sm"
+                        >
+                          {actionText}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

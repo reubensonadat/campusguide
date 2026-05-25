@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity } from './CustomIcons';
+import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomContact, CustomSettings } from './CustomIcons';
 
 const TabBar = () => {
   const location = useLocation();
@@ -16,10 +16,17 @@ const TabBar = () => {
     { id: 'profile', label: 'Profile', icon: CustomProfile, path: '/profile' }
   ];
 
+  const displayTabs = [...tabs];
+  if (location.pathname === '/settings') {
+    displayTabs[4] = { id: 'settings', label: 'Settings', icon: CustomSettings, path: '/settings' };
+  } else if (location.pathname === '/contact') {
+    displayTabs[4] = { id: 'contact', label: 'Contact', icon: CustomContact, path: '/contact' };
+  }
+
   useEffect(() => {
     // Small timeout to ensure DOM layout is complete before measuring
     const timeoutId = setTimeout(() => {
-      const activeIndex = tabs.findIndex(tab => tab.path === location.pathname);
+      const activeIndex = displayTabs.findIndex(tab => tab.path === location.pathname);
       if (activeIndex !== -1 && tabsRef.current[activeIndex]) {
         const el = tabsRef.current[activeIndex];
         setPillStyle({
@@ -50,7 +57,7 @@ const TabBar = () => {
           }}
         />
 
-        {tabs.map((tab, index) => {
+        {displayTabs.map((tab, index) => {
           const isActive = location.pathname === tab.path;
           const Icon = tab.icon;
 

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import TimetableBuilder from '../components/tools/TimetableBuilder';
 import GPACalculator from '../components/tools/GPACalculator';
 import FormulaCalculator from '../components/tools/FormulaCalculator';
-import { Sparkles } from 'lucide-react';
+import CoolFinds from '../components/tools/CoolFinds';
+import { Sparkles, Library } from 'lucide-react';
 
 const tabs = [
   { id: 'timetable', label: 'Timetable Builder' },
   { id: 'gpa', label: 'GPA Calculator' },
-  { id: 'formulas', label: 'Formula Solver' }
+  { id: 'formulas', label: 'Formula Solver' },
+  { id: 'resources', label: 'Cool Finds' }
 ];
 
 const Tools = () => {
@@ -27,14 +29,14 @@ const Tools = () => {
         </div>
 
         {/* Custom Tab Switcher */}
-        <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-100 w-fit mb-8 mx-auto md:mx-0 flex gap-1 flex-wrap">
+        <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 w-full md:w-fit mb-8 flex gap-2 overflow-x-auto hide-scrollbar">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTool(tab.id)}
-              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTool === tab.id
-                ? 'bg-white text-primary-600 shadow-md border border-gray-100 scale-105'
-                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${activeTool === tab.id
+                ? 'bg-[#002F45] text-white shadow-md'
+                : 'bg-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
               {tab.label}
@@ -47,6 +49,7 @@ const Tools = () => {
           {activeTool === 'timetable' && <TimetableBuilder />}
           {activeTool === 'gpa' && <GPACalculator />}
           {activeTool === 'formulas' && <FormulaCalculator />}
+          {activeTool === 'resources' && <CoolFinds />}
         </div>
 
       </div>

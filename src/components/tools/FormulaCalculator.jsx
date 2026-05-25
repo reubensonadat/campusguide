@@ -1,14 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { formulasData } from '../../data/formulas';
 import { Modal } from '../common/Modal';
+import { CustomGuide, CustomTools, CustomCommunity, CustomProfile, CustomSettings } from '../common/CustomIcons';
 import {
-  Play, RotateCcw, Lightbulb, BookOpen,
-  Cog, Zap, Thermometer, Waves, Atom, Calculator,
+  Play, RotateCcw, Lightbulb,
   Search, X, ArrowRight, AlertTriangle, CheckCircle2,
-  ChevronDown, Sparkles
+  Sparkles
 } from 'lucide-react';
-
-const iconMap = { Cog, Zap, Thermometer, Waves, Atom, Calculator };
 
 // Variables that accept comma-separated text input instead of numbers
 const isTextVariable = (variable) => ['data', 'xdata', 'ydata'].includes(variable?.id);
@@ -137,17 +135,17 @@ const FormulaCalculator = () => {
 
   const isResultError = result && result.result && result.result.startsWith('Error');
 
-  // Get icon/color for category
+  // Get icon/color for category (No color party)
   const getCategoryStyle = (cat) => {
     const styles = {
-      'Mechanics': { color: 'from-blue-500 to-blue-600', bg: 'bg-blue-50', text: 'text-blue-700', icon: 'Cog' },
-      'Electricity & Magnetism': { color: 'from-amber-500 to-yellow-500', bg: 'bg-amber-50', text: 'text-amber-700', icon: 'Zap' },
-      'Thermodynamics': { color: 'from-red-500 to-orange-500', bg: 'bg-red-50', text: 'text-red-700', icon: 'Thermometer' },
-      'Waves & Optics': { color: 'from-purple-500 to-indigo-500', bg: 'bg-purple-50', text: 'text-purple-700', icon: 'Waves' },
-      'Modern Physics': { color: 'from-emerald-500 to-teal-500', bg: 'bg-emerald-50', text: 'text-emerald-700', icon: 'Atom' },
-      'Mathematics': { color: 'from-pink-500 to-rose-500', bg: 'bg-pink-50', text: 'text-pink-700', icon: 'Calculator' }
+      'Mechanics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomTools },
+      'Electricity & Magnetism': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomSettings },
+      'Thermodynamics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomCommunity },
+      'Waves & Optics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomProfile },
+      'Modern Physics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomGuide },
+      'Mathematics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomTools }
     };
-    return styles[cat] || { color: 'from-gray-500 to-gray-600', bg: 'bg-gray-50', text: 'text-gray-700', icon: 'BookOpen' };
+    return styles[cat] || { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomGuide };
   };
 
   return (
@@ -192,20 +190,20 @@ const FormulaCalculator = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredFormulas.map(category => {
           const style = getCategoryStyle(category.category);
-          const IconComp = iconMap[style.icon] || BookOpen;
+          const IconComp = style.icon;
           return category.formulas.map(formula => (
             <button
               key={formula.id}
               onClick={() => handleOpenFormula(formula)}
-              className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary-200/50 p-5 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+              className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-[#002F45]/20 p-5 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
             >
               {/* Category badge */}
               <div className="flex items-center justify-between mb-3">
-                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold ${style.bg} ${style.text}`}>
-                  <IconComp className="w-3 h-3" />
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold ${style.bg} ${style.text}`}>
+                  <IconComp size={12} />
                   {category.category}
                 </span>
-                <Sparkles className="w-4 h-4 text-gray-200 group-hover:text-primary-400 transition-colors" />
+                <Sparkles className="w-4 h-4 text-gray-200 group-hover:text-[#002F45]/60 transition-colors" />
               </div>
 
               {/* Formula name */}

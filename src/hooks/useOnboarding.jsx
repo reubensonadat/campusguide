@@ -6,9 +6,10 @@ export const useOnboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
+    // Frictionless approach: we no longer force the onboarding screen to appear.
+    // We just silently create the profile in App.jsx.
     const firstVisit = localStorage.getItem(LS_KEYS.FIRST_VISIT);
     if (!firstVisit) {
-      setShowOnboarding(true);
       localStorage.setItem(LS_KEYS.FIRST_VISIT, 'true');
     }
   }, []);

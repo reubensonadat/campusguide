@@ -4,6 +4,7 @@ import { Button } from './Button';
 import { CheckCircle, Star } from 'lucide-react';
 import { submitToGoogleSheet } from '../../utils/googleSheets';
 import { LS_KEYS } from '../../utils/constants';
+import { supabase } from '../../lib/supabase';
 
 // Replace with your actual Google Apps Script Web App URL
 const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || '';
@@ -19,15 +20,15 @@ const Question = ({ label, children }) => (
 const RadioGroup = ({ options, value, onChange }) => (
     <div className="grid gap-2">
         {options.map(opt => (
-            <label key={opt} className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${value === opt ? 'border-indigo-600 bg-indigo-50 shadow-sm' : 'border-white bg-white hover:border-indigo-100'}`}>
+            <label key={opt} className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${value === opt ? 'border-[#002F45] bg-[#002F45]/5 shadow-sm' : 'border-white bg-white hover:border-[#002F45]/20'}`}>
                 <input
                     type="radio"
                     value={opt}
                     checked={value === opt}
                     onChange={(e) => onChange(e.target.value)}
-                    className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 accent-indigo-600"
+                    className="w-4 h-4 text-[#002F45] focus:ring-[#002F45] accent-[#002F45]"
                 />
-                <span className={`ml-3 text-sm font-medium ${value === opt ? 'text-indigo-900' : 'text-gray-600'}`}>{opt}</span>
+                <span className={`ml-3 text-sm font-medium ${value === opt ? 'text-[#002F45]' : 'text-gray-600'}`}>{opt}</span>
             </label>
         ))}
     </div>
@@ -38,7 +39,7 @@ const TextInput = ({ value, onChange, placeholder }) => (
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-3 border-2 border-white focus:border-indigo-500 bg-white rounded-lg text-sm outline-none transition-all placeholder:text-gray-400"
+        className="w-full p-3 border-2 border-white focus:border-[#002F45] bg-white rounded-lg text-sm outline-none transition-all placeholder:text-gray-400"
         placeholder={placeholder}
     />
 );
@@ -81,21 +82,35 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     };
 
     const handleSubmit = async () => {
-        if (!GOOGLE_SCRIPT_URL) {
-            alert("No Script URL found in .env!");
-            return;
-        }
         setIsSubmitting(true);
         try {
-            await submitToGoogleSheet(GOOGLE_SCRIPT_URL, {
-                timestamp: new Date().toISOString(),
-                ...answers,
-                source: 'web_v1_revised_survey'
+            const userId = localStorage.getItem('supabase_user_id');
+            const { error } = await supabase.from('feedback_surveys').insert({
+                user_id: userId || null,
+                email: answers.email,
+                finance_pain: answers.finance_pain,
+                academic_pain: `GPA: ${answers.academic_gpa_calc} | Reminders: ${answers.academic_reminders}`,
+                campus_life_pain: `Map: ${answers.life_map_freq} | Amenities: ${answers.life_amenities}`,
+                value_rating: parseInt(answers.value_price) || 0
             });
+            
+            if (error) throw error;
+            
+            // Still submit to google sheets as a fallback/secondary store if URL exists
+            if (GOOGLE_SCRIPT_URL) {
+                submitToGoogleSheet(GOOGLE_SCRIPT_URL, {
+                    timestamp: new Date().toISOString(),
+                    ...answers,
+                    source: 'web_v1_revised_survey'
+                }).catch(e => console.warn('Google Sheet fallback failed', e));
+            }
+
             localStorage.setItem(LS_KEYS.FEEDBACK_SUBMITTED, 'true');
+            // Force re-render of Profile by dispatching a storage event
+            window.dispatchEvent(new Event('storage'));
             setPage(5); // Success page
         } catch (error) {
-            console.error("Error", error);
+            console.error("Error submitting survey", error);
             alert("Submission failed. Please check your connection and try again.");
         } finally {
             setIsSubmitting(false);
@@ -112,8 +127,8 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     const renderIntro = () => (
         <div className="text-center space-y-8 py-8 px-4">
             <div className="relative mx-auto w-20 h-20">
-                <div className="absolute inset-0 bg-indigo-600 opacity-20 blur-xl rounded-full"></div>
-                <div className="relative w-full h-full bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl rotate-3">
+                <div className="absolute inset-0 bg-[#002F45] opacity-20 blur-xl rounded-full"></div>
+                <div className="relative w-full h-full bg-gradient-to-br from-[#002F45] to-[#004a6b] rounded-2xl flex items-center justify-center shadow-xl rotate-3">
                     <Star className="w-10 h-10 text-white" fill="white" />
                 </div>
             </div>
@@ -121,10 +136,10 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                 <h3 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Help Shape Version 2.0</h3>
                 <p className="text-gray-600 text-lg leading-relaxed max-w-sm mx-auto">
                     We're building the ultimate student super-app. <br />
-                    Answer <span className="font-bold text-indigo-600 bg-indigo-50 px-2 rounded">20 questions</span> to help us prioritize features.
+                    Answer <span className="font-bold text-[#002F45] bg-[#002F45]/10 px-2 rounded">20 questions</span> to help us prioritize features.
                 </p>
             </div>
-            <Button onClick={() => setPage(1)} className="w-3/4 py-4 text-lg font-bold bg-gray-900 hover:bg-black text-white shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-2xl">
+            <Button onClick={() => setPage(1)} className="w-3/4 py-4 text-lg font-bold bg-[#002F45] hover:bg-[#001a26] text-white shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-2xl">
                 Start Survey →
             </Button>
             <p className="text-xs font-medium text-gray-400 tracking-wide uppercase">Time to complete: ~2 mins</p>
@@ -163,7 +178,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                 <TextInput value={answers.finance_pain} onChange={(val) => updateAnswer('finance_pain', val)} placeholder="e.g. Overspending on food..." />
             </Question>
 
-            <Button onClick={() => setPage(2)} className="w-full py-4 rounded-xl font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg mt-4">Next Step: Academics →</Button>
+            <Button onClick={() => setPage(2)} className="w-full py-4 rounded-xl font-bold bg-[#002F45] text-white hover:bg-[#001a26] shadow-lg mt-4">Next Step: Academics →</Button>
         </div>
     );
 
@@ -200,8 +215,8 @@ const FeedbackModal = ({ isOpen, onClose }) => {
             </Question>
 
             <div className="flex gap-4 mt-6">
-                <Button variant="outline" onClick={() => setPage(1)} className="flex-1 py-3 rounded-xl font-bold">Back</Button>
-                <Button onClick={() => setPage(3)} className="flex-[2] py-3 rounded-xl font-bold bg-indigo-600 text-white shadow-lg">Next: Campus Life →</Button>
+                <Button variant="outline" onClick={() => setPage(1)} className="flex-1 py-3 rounded-xl font-bold border-[#002F45]/20 text-gray-700">Back</Button>
+                <Button onClick={() => setPage(3)} className="flex-[2] py-3 rounded-xl font-bold bg-[#002F45] hover:bg-[#001a26] text-white shadow-lg">Next: Campus Life →</Button>
             </div>
         </div>
     );
@@ -239,8 +254,8 @@ const FeedbackModal = ({ isOpen, onClose }) => {
             </Question>
 
             <div className="flex gap-4 mt-6">
-                <Button variant="outline" onClick={() => setPage(2)} className="flex-1 py-3 rounded-xl font-bold">Back</Button>
-                <Button onClick={() => setPage(4)} className="flex-[2] py-3 rounded-xl font-bold bg-indigo-600 text-white shadow-lg">Next: The App →</Button>
+                <Button variant="outline" onClick={() => setPage(2)} className="flex-1 py-3 rounded-xl font-bold border-[#002F45]/20 text-gray-700">Back</Button>
+                <Button onClick={() => setPage(4)} className="flex-[2] py-3 rounded-xl font-bold bg-[#002F45] hover:bg-[#001a26] text-white shadow-lg">Next: The App →</Button>
             </div>
         </div>
     );
@@ -285,14 +300,14 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                     type="email"
                     value={answers.email}
                     onChange={(e) => updateAnswer('email', e.target.value)}
-                    className="w-full p-3 border-2 border-gray-200 focus:border-indigo-500 rounded-xl text-sm outline-none transition-all"
+                    className="w-full p-3 border-2 border-gray-200 focus:border-[#002F45] rounded-xl text-sm outline-none transition-all"
                     placeholder="you@student.ucc.edu.gh"
                 />
             </div>
 
             <div className="flex gap-4 mt-6">
-                <Button variant="outline" onClick={() => setPage(3)} className="flex-1 py-3 rounded-xl font-bold">Back</Button>
-                <Button onClick={handleSubmit} className="flex-[2] py-3 rounded-xl font-bold bg-green-600 hover:bg-green-700 text-white shadow-xl shadow-green-200">
+                <Button variant="outline" onClick={() => setPage(3)} className="flex-1 py-3 rounded-xl font-bold border-[#002F45]/20 text-gray-700">Back</Button>
+                <Button onClick={handleSubmit} className="flex-[2] py-3 rounded-xl font-bold bg-[#002F45] hover:bg-[#001a26] text-white shadow-xl shadow-gray-200">
                     {isSubmitting ? 'Submitting...' : 'Submit Survey'}
                 </Button>
             </div>

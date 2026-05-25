@@ -21,6 +21,7 @@ import { preloadPaystack } from './services/paymentService';
 import { useOnboarding } from './hooks/useOnboarding';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { triggerHaptic } from './utils/haptics';
+import { supabase } from './lib/supabase';
 
 function NavigationObserver() {
   const location = useLocation();
@@ -61,6 +62,31 @@ function AppContent() {
     preloadPaystack().catch(error => {
       console.error('Failed to preload Paystack:', error);
     });
+  }, []);
+
+  // Initialize Silent Frictionless User Profile
+  useEffect(() => {
+    const initializeSilentUser = async () => {
+      let deviceId = localStorage.getItem('device_id');
+      if (!deviceId) {
+        deviceId = crypto.randomUUID();
+        localStorage.setItem('device_id', deviceId);
+      }
+      
+      const { data, error } = await supabase
+        .from('users')
+        .upsert({ device_id: deviceId }, { onConflict: 'device_id' })
+        .select()
+        .single();
+        
+      if (data) {
+        localStorage.setItem('supabase_user_id', data.id);
+      } else if (error) {
+        console.error('Error creating silent profile:', error);
+      }
+    };
+    
+    initializeSilentUser();
   }, []);
 
   // Onboarding

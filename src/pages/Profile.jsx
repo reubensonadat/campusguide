@@ -4,6 +4,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { LS_KEYS } from '../utils/constants';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -130,6 +131,19 @@ const Profile = () => {
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>
+
+            {!localStorage.getItem(LS_KEYS.FEEDBACK_SUBMITTED) && (
+              <button 
+                onClick={() => actions?.setShowFeedbackModal(true)}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
+              >
+                <div className="flex items-center gap-4">
+                  <CheckCircle size={24} className="text-[#002F45]" strokeWidth={1.5} />
+                  <span className="text-[17px] text-gray-900 font-medium">Take Survey Test</span>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+              </button>
+            )}
 
             <button 
               onClick={handleClearData}
