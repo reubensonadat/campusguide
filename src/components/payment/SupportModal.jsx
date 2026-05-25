@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { PaymentButton } from './PaymentButton';
-import { Heart, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
   const [selectedAmount, setSelectedAmount] = useState(10);
@@ -210,7 +210,6 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
               className="w-full bg-[#002F45] hover:bg-[#001a26] text-white font-bold py-4 rounded-xl shadow-lg shadow-[#002F45]/20 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <span className="flex items-center justify-center gap-2">
-                <Heart className="w-5 h-5 fill-current" />
                 Support with GH₵{getCurrentAmount()}
               </span>
             </PaymentButton>

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '../common/Button';
 import { handlePayment, generatePaymentReference, verifyPayment } from '../../services/paymentService';
-import { CreditCard, Loader2, CheckCircle } from 'lucide-react';
+import { CreditCard, Loader2 } from 'lucide-react';
 
 const PaymentButton = ({
   amount,

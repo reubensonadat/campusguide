@@ -72,7 +72,7 @@ const TimetableBuilder = () => {
       setConflictError('Please enter a course name and location.');
       return;
     }
-    if (newCourse.startTime >= newCourse.endTime) {
+   if (newCourse.startTime >= newCourse.endTime) {
       setConflictError('End time must be after start time.');
       return;
     }
@@ -89,7 +89,6 @@ const TimetableBuilder = () => {
         (newCourse.startTime <= c.startTime && newCourse.endTime >= c.endTime)
       )
     );
-
     if (conflict) {
       setConflictError(`Time conflict with ${conflict.name}`);
       return;

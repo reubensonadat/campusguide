@@ -26,6 +26,14 @@ const now = new Date();
 const TODAY_NAME = DAYS[now.getDay()];
 const TODAY_LABEL = `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}`;
 
+const formatTime12Hour = (time24) => {
+  if (!time24) return '';
+  const [hours, minutes] = time24.split(':').map(Number);
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const hours12 = hours % 12 || 12;
+  return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+};
+
 // ── component ─────────────────────────────────────────────────────────────────
 
 const Home = () => {
@@ -49,18 +57,13 @@ const Home = () => {
   }, [timetable]);
 
   // ── Announcement → Ad rotation logic ─────────────────────────────────────
-  // Rule: show the latest announcement if the user hasn't seen it yet (tracked
-  // by announcement ID in localStorage). Once seen, show one random active ad
-  // per session (sessionStorage keeps it stable during a session; rotates on
-  // next app open).
-  const [featuredContent, setFeaturedContent] = useState(null); // { kind: 'announcement'|'ad', data }
+  const [featuredContent, setFeaturedContent] = useState(null); 
   const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(false);
 
   useEffect(() => {
     const seenIds = JSON.parse(localStorage.getItem('ucc_seen_announcements') || '[]');
 
     const checkAnnouncement = async () => {
-      // 1. Fetch latest announcement
       const { data: annData } = await supabase
         .from('announcements')
         .select('*')
@@ -70,22 +73,19 @@ const Home = () => {
       const latest = annData && annData[0];
 
       if (latest && !seenIds.includes(latest.id)) {
-        // User hasn't seen this announcement — show it and mark as seen
         localStorage.setItem('ucc_seen_announcements', JSON.stringify([...seenIds, latest.id]));
         setFeaturedContent({ kind: 'announcement', data: latest });
         return;
       }
 
-      // 2. All announcements seen — show a random ad (pick a new one on each mount)
       const { data: adsData } = await supabase
         .from('advertisements')
         .select('*')
         .ilike('status', 'active')
-        .eq('package_id', 'home_banner') // only premium home-placement ads
+        .eq('package_id', 'home_banner') 
         .gte('expires_at', new Date().toISOString());
 
       if (!adsData || adsData.length === 0) {
-        // No premium ads available — fall back to latest announcement
         const { data: annFallback } = await supabase
           .from('announcements')
           .select('*')
@@ -97,7 +97,6 @@ const Home = () => {
         return;
       }
 
-      // Pick a random ad from the list
       const ad = adsData[Math.floor(Math.random() * adsData.length)];
       setFeaturedContent({ kind: 'ad', data: ad });
     };
@@ -105,7 +104,6 @@ const Home = () => {
     checkAnnouncement();
   }, []);
 
-  // Quick actions — reordered
   const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
   
   const quickActions = [
@@ -123,12 +121,11 @@ const Home = () => {
       {/* ════════════════════════════════════════════
           MOBILE LAYOUT
       ════════════════════════════════════════════ */}
-            <div className="lg:hidden">
+      <div className="lg:hidden">
 
         {/* ── Chime-Style Hero ────────────────────────────────────────── */}
         <div className="relative overflow-hidden bg-gradient-to-b from-[#001a26] to-[#002F45] px-6 pt-10 pb-16">
           
-          {/* Visual Illusion (Lighting/Depth in the middle) */}
           <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[150%] h-[100px] bg-[#001a26] rounded-[100%] blur-xl opacity-40 pointer-events-none"></div>
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#6EABC6] rounded-full mix-blend-screen filter blur-[80px] opacity-10 pointer-events-none"></div>
           
@@ -155,7 +152,7 @@ const Home = () => {
             )}
           </div>
 
-          {/* Hero Greeting Text (Like "Available Balance") */}
+          {/* Hero Greeting Text */}
           <div className="relative z-10">
             <h2 className="text-white text-[1.8rem] font-black leading-tight tracking-tight mb-1">
               {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'} 👋
@@ -169,7 +166,7 @@ const Home = () => {
         {/* ── Overlapping Content & Body ──────────────────────────────── */}
         <div className="px-5 -mt-8 relative z-20 space-y-6 pb-6">
 
-          {/* 1. Overlapping Floating Card (Today's Classes / Primary Info) */}
+          {/* 1. Overlapping Floating Card (Today's Classes) */}
           <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 min-h-[140px] border border-gray-100 flex flex-col justify-center">
             <div className="flex justify-between items-start mb-4">
               <span className="text-sm font-black text-gray-900 tracking-tight">Today's Classes</span>
@@ -200,7 +197,7 @@ const Home = () => {
                         {cls.courseName || cls.name || 'Class'}
                       </p>
                       <p className="text-xs text-gray-500 font-medium mt-0.5">
-                        {cls.startTime && cls.endTime ? `${cls.startTime} – ${cls.endTime}` : cls.startTime || ''}
+                        {cls.startTime && cls.endTime ? `${formatTime12Hour(cls.startTime)} – ${formatTime12Hour(cls.endTime)}` : formatTime12Hour(cls.startTime) || ''}
                       </p>
                     </div>
                   </div>
@@ -244,7 +241,7 @@ const Home = () => {
             let link = '';
             
             if (isAd) {
-                const cleanPhone = d.phone_number ? d.phone_number.replace(/\\D/g, '') : '';
+                const cleanPhone = d.phone_number ? d.phone_number.replace(/\D/g, '') : '';
                 if (d.contact_method === 'link' && d.contact_url) {
                     actionText = 'Visit Link';
                     link = d.contact_url;
@@ -297,7 +294,7 @@ const Home = () => {
             );
           })()}
 
-          {/* 4. Promotional Banner (Support Card - Moved to Bottom) */}
+          {/* 4. Promotional Banner (Support Card - Mobile) */}
           <div 
             onClick={() => actions?.setShowSupportModal(true)}
             className="bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-gray-100 p-6 flex items-center justify-between overflow-hidden relative group cursor-pointer active:scale-[0.98] transition-transform"
@@ -322,7 +319,7 @@ const Home = () => {
 
 
       {/* ════════════════════════════════════════════
-          DESKTOP LAYOUT (unchanged)
+          DESKTOP LAYOUT
       ════════════════════════════════════════════ */}
       <div className="hidden lg:block">
         {/* Hero */}
@@ -390,7 +387,6 @@ const Home = () => {
               <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quick Actions</h2>
             </div>
             <div className="space-y-6">
-              {/* Quick Links Grid */}
               <div className="flex gap-6 py-2 overflow-x-auto hide-scrollbar">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon;
@@ -421,7 +417,7 @@ const Home = () => {
             </div>
           </section>
 
-          {/* Support */}
+          {/* Support (Desktop Fixed Button) */}
           <section>
             <div className="relative overflow-hidden bg-gradient-to-br from-primary-50 to-white rounded-xl p-10 sm:p-14 border border-primary-100 shadow-sm">
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary-100/30 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
@@ -432,11 +428,12 @@ const Home = () => {
                     Your support keeps this project alive and growing for every UCC student.
                   </p>
                   <div className="max-w-sm mx-auto lg:mx-0 space-y-5">
-                    <PaymentButton amount={5} email={supportEmail}
-                      onPaymentSuccess={handlePaymentSuccess} onPaymentError={handlePaymentError}
-                      className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-primary-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2">
+                    <button 
+                      onClick={() => actions?.setShowSupportModal(true)}
+                      className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-primary-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer"
+                    >
                       Support Now (GH₵5)
-                    </PaymentButton>
+                    </button>
                     <p className="text-sm font-medium text-gray-500">
                       Issues or suggestions?{' '}
                       <a href="mailto:uccguide25@gmail.com" className="text-primary-600 hover:underline">Contact us</a>
