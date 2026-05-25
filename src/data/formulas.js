@@ -1181,12 +1181,13 @@ export const formulasData = [
           const R=8.314,F=96485;const {E,E0,n,Q,T}=vals;
           const kn=[E,E0,n,Q,T].filter(x=>x!==undefined).length;
           if(kn<4) return {result:"Need ≥4 of 5.",steps:"Provide at least 4."};
-          const cT=T||298;
+          const cT=T!==undefined?T:298;
+          if(Q!==undefined&&Q<=0)return{result:"Error: Q must be positive.",steps:"Reaction quotient Q > 0."};
           if(E===undefined){const e=E0-(R*cT/(n*F))*Math.log(Q);return{result:`E = ${e.toFixed(4)} V`,steps:`E = ${E0}−(${R}×${cT}/(${n}×${F}))×ln(${Q}) = ${e.toFixed(4)} V`};}
           if(E0===undefined){const e0=E+(R*cT/(n*F))*Math.log(Q);return{result:`E° = ${e0.toFixed(4)} V`,steps:`E° = E+(RT/nF)ln(Q) = ${e0.toFixed(4)} V`};}
           if(Q===undefined){const ratio=(E0-E)*n*F/(R*cT);if(ratio<-700)return{result:"Error: Q too small",steps:"ln(Q) overflow."};return{result:`Q = ${Math.exp(ratio).toExponential(4)}`,steps:`ln(Q) = ${(E0-E)*n*F/(R*cT)} → Q = ${Math.exp(ratio).toExponential(4)}`};}
-          if(n===undefined){const denom=(E0-E)*F/(R*cT*Math.log(Q));if(denom===0)return{result:"Error: Cannot find n",steps:"Check inputs."};return{result:`n = ${Math.abs(Math.round(denom))}`,steps:`n = ${(Math.abs(Math.round(denom)))}`};}
-          if(T===undefined){const t=(E0-E)*n*F/(R*Math.log(Q));return{result:`T = ${t.toFixed(4)} K`,steps:`T = ${t.toFixed(4)} K`};}
+          if(n===undefined){const logQ=Math.log(Q);if(logQ===0)return{result:"Error: Cannot find n (ln(Q)=0, Q=1).",steps:"Check inputs."};const denom=(E0-E)*F/(R*cT*logQ);if(denom===0)return{result:"Error: Cannot find n",steps:"Check inputs."};return{result:`n = ${Math.abs(Math.round(denom))}`,steps:`n = ${(Math.abs(Math.round(denom)))}`};}
+          if(T===undefined){const logQ=Math.log(Q);if(logQ===0)return{result:"Error: Cannot find T (ln(Q)=0, Q=1).",steps:"Check inputs."};const t=(E0-E)*n*F/(R*logQ);return{result:`T = ${t.toFixed(4)} K`,steps:`T = ${t.toFixed(4)} K`};}
           return null;
         }
       },
@@ -1604,8 +1605,10 @@ export const formulasData = [
           const known=Object.keys(vals).length;
           if(known<3) return{result:"Need at least 3 of 4 variables.",steps:"Provide 3 values."};
           let oDv=dv,oVe=ve,oM0=m0,oMf=mf,steps="";
+          if(m0!==undefined&&mf!==undefined&&m0<=0||mf<=0)return{result:"Error: Masses must be positive.",steps:"m₀ > 0, mf > 0."};
+          if(m0!==undefined&&mf!==undefined){const mr=m0/mf;if(mr<=0)return{result:"Error: m₀/mf must be positive.",steps:"Check mass values."};}
           if(dv===undefined){oDv=ve*Math.log(m0/mf);steps=`Δv = ve×ln(m₀/mf) = ${ve}×ln(${m0}/${mf}) = ${oDv.toFixed(4)} m/s`;}
-          else if(ve===undefined){oVe=dv/Math.log(m0/mf);steps=`ve = Δv/ln(m₀/mf) = ${dv}/ln(${m0}/${mf}) = ${oVe.toFixed(4)} m/s`;}
+          else if(ve===undefined){const logVal=Math.log(m0/mf);if(logVal===0)return{result:"Error: m₀=mf, cannot solve for ve.",steps:"m₀ must differ from mf."};oVe=dv/logVal;steps=`ve = Δv/ln(m₀/mf) = ${dv}/ln(${m0}/${mf}) = ${oVe.toFixed(4)} m/s`;}
           else if(m0===undefined){oMf=mf;oM0=mf*Math.exp(dv/ve);steps=`m₀ = mf×e^(Δv/ve) = ${mf}×e^(${dv}/${ve}) = ${oM0.toFixed(4)} kg`;}
           else if(mf===undefined){oMf=m0*Math.exp(-dv/ve);steps=`mf = m₀×e^(-Δv/ve) = ${m0}×e^(-${dv}/${ve}) = ${oMf.toFixed(4)} kg`;}
           if(oM0<=oMf) return{result:"Error: Initial mass must exceed final mass.",steps:"m₀ > mf required."};
@@ -2358,7 +2361,7 @@ export const formulasData = [
           if(an===undefined){oAn=a1*Math.pow(r,n-1);s=`aₙ = ${a1}×${r}^(${n}−1) = ${oAn.toFixed(4)}`;}
           else if(a1===undefined){oA1=an/Math.pow(r,n-1);s=`a₁ = aₙ/r^(n−1) = ${oA1.toFixed(4)}`;}
           else if(r===undefined){oR=Math.pow(an/a1,1/(n-1));s=`r = (aₙ/a₁)^(1/(n−1)) = ${oR.toFixed(4)}`;}
-          else if(n===undefined){const val=an/a1;if(val<=0)return{result:"Error: Can't solve for n.",steps:"aₙ/a₁ must be positive."};oN=Math.log(val)/Math.log(r)+1;s=`n = log(aₙ/a₁)/log(r)+1 = ${oN.toFixed(4)}`;}
+          else if(n===undefined){const val=an/a1;if(val<=0)return{result:"Error: Can't solve for n.",steps:"aₙ/a₁ must be positive."};if(r<=0||r===1)return{result:"Error: Invalid base r for log.",steps:"r must be > 0 and r ≠ 1."};oN=Math.log(val)/Math.log(r)+1;s=`n = log(aₙ/a₁)/log(r)+1 = ${oN.toFixed(4)}`;}
           let sum;
           if(Math.abs(oR-1)<1e-10){sum=oN*oA1;}else{sum=oA1*(1-Math.pow(oR,oN))/(1-oR);}
           const infSum=Math.abs(oR)<1?oA1/(1-oR):null;
@@ -2405,8 +2408,8 @@ export const formulasData = [
           let oA=A,oP=P,oR=r,oT=t,s="";
           if(A===undefined){oA=P*Math.exp(r*t);s=`A = Pe^(rt) = ${P}×e^(${r}×${t}) = ${oA.toFixed(2)}`;}
           else if(P===undefined){oP=A/Math.exp(r*t);s=`P = A/e^(rt) = ${oP.toFixed(2)}`;}
-          else if(r===undefined){oR=Math.log(A/P)/t;s=`r = ln(A/P)/t = ${(oR*100).toFixed(4)}%`;}
-          else if(t===undefined){oT=Math.log(A/P)/r;s=`t = ln(A/P)/r = ${oT.toFixed(4)} years`;}
+          else if(r===undefined){const ratio=A/P;if(ratio<=0)return{result:"Error: A/P must be positive for ln().",steps:"A and P must have the same sign and A≠0."};oR=Math.log(ratio)/t;s=`r = ln(A/P)/t = ${(oR*100).toFixed(4)}%`;}
+          else if(t===undefined){const ratio=A/P;if(ratio<=0)return{result:"Error: A/P must be positive for ln().",steps:"A and P must have the same sign and A≠0."};oT=Math.log(ratio)/r;s=`t = ln(A/P)/r = ${oT.toFixed(4)} years`;}
           const interest=oA-oP;
           const doubleTime=oR?Math.log(2)/oR:Infinity;
           return{result:`A = $${oA.toFixed(2)} | P = $${oP.toFixed(2)}\nr = ${(oR*100).toFixed(4)}% | t = ${oT.toFixed(4)} years\nInterest = $${interest.toFixed(2)} | Doubling time = ${doubleTime.toFixed(2)} yr`,steps:s};
@@ -2414,7 +2417,7 @@ export const formulasData = [
       },
       {
         id: "matrix-2x2", name: "Matrix 2×2 (Det & Inverse)",
-        description: "Computes determinant and inverse of a 2×2 matrix. Solves for any element given det.",
+        description: "Computes determinant, trace, and inverse of a 2×2 matrix from all four elements.",
         equation: "det(A) = ad − bc",
         variables: [
           { id: "a", label: "Element a (top-left)", unit: "" },
@@ -2475,8 +2478,8 @@ export const formulasData = [
           let oN=N,oN0=N0,oK=k,oT=t,s="";
           if(N===undefined){oN=N0*Math.exp(k*t);s=`N = N₀e^(kt) = ${N0}×e^(${k}×${t}) = ${oN.toFixed(4)}`;}
           else if(N0===undefined){oN0=N/Math.exp(k*t);s=`N₀ = N/e^(kt) = ${oN0.toFixed(4)}`;}
-          else if(k===undefined){oK=Math.log(N/N0)/t;s=`k = ln(N/N₀)/t = ${oK.toFixed(6)}`;}
-          else if(t===undefined){oT=Math.log(N/N0)/k;s=`t = ln(N/N₀)/k = ${oT.toFixed(4)}`;}
+          else if(k===undefined){const ratio=N/N0;if(ratio<=0)return{result:"Error: N/N₀ must be positive for ln().",steps:"N and N₀ must have the same sign and N≠0."};oK=Math.log(ratio)/t;s=`k = ln(N/N₀)/t = ${oK.toFixed(6)}`;}
+          else if(t===undefined){const ratio=N/N0;if(ratio<=0)return{result:"Error: N/N₀ must be positive for ln().",steps:"N and N₀ must have the same sign and N≠0."};oT=Math.log(ratio)/k;s=`t = ln(N/N₀)/k = ${oT.toFixed(4)}`;}
           const halfLife=oK?Math.log(2)/Math.abs(oK):Infinity;
           const doubling=oK>0?Math.log(2)/oK:Infinity;
           return{result:`N = ${oN.toFixed(4)} | N₀ = ${oN0.toFixed(4)}\nk = ${oK.toFixed(6)} ${oK>0?"(growth)":"(decay)"} | t = ${oT.toFixed(4)}\nHalf-life = ${halfLife.toFixed(4)} | Doubling time = ${doubling.toFixed(4)}`,steps:s};
@@ -3567,8 +3570,8 @@ export const formulasData = [
           let oK=k,oA=A,oEa=Ea,oT=T,s="";
           if(k===undefined){oK=A*Math.exp(-Ea/(R*T));s:`k = A×e^(−Ea/RT) = ${oK.toExponential(4)}`;}
           else if(A===undefined){oA=k*Math.exp(Ea/(R*T));s:`A = ${oA.toExponential(4)}`;}
-          else if(Ea===undefined){oEa=-R*T*Math.log(k/A);s:`Ea = −RT×ln(k/A) = ${oEa.toFixed(2)} J/mol (${(oEa/1000).toFixed(4)} kJ/mol)`;}
-          else if(T===undefined){oT=-Ea/(R*Math.log(k/A));s:`T = −Ea/(R×ln(k/A)) = ${oT.toFixed(2)} K`;}
+          else if(Ea===undefined){const ratio=k/A;if(ratio<=0)return{result:"Error: k/A must be positive for ln().",steps:"k and A must be positive."};oEa=-R*T*Math.log(ratio);s:`Ea = −RT×ln(k/A) = ${oEa.toFixed(2)} J/mol (${(oEa/1000).toFixed(4)} kJ/mol)`;}
+          else if(T===undefined){const ratio=k/A;if(ratio<=0)return{result:"Error: k/A must be positive for ln().",steps:"k and A must be positive."};const logVal=Math.log(ratio);if(logVal===0)return{result:"Error: k=A, cannot solve for T.",steps:"k must differ from A."};oT=-Ea/(R*logVal);s:`T = −Ea/(R×ln(k/A)) = ${oT.toFixed(2)} K`;}
           return{result:`k = ${oK.toExponential(4)} | A = ${oA.toExponential(4)}\nEa = ${oEa.toFixed(2)} J/mol (${(oEa/1000).toFixed(2)} kJ/mol)\nT = ${oT.toFixed(2)} K`,steps:s};
         }
       },
@@ -3683,8 +3686,8 @@ export const formulasData = [
           let oN=N,oN0=N0,oR=r,oT=t,s="";
           if(N===undefined){oN=N0*Math.exp(r*t);s:`N = N₀e^(rt) = ${N0}×e^(${r}×${t}) = ${oN.toFixed(2)}`;}
           else if(N0===undefined){oN0=N/Math.exp(r*t);s:`N₀ = ${oN0.toFixed(2)}`;}
-          else if(r===undefined){oR=Math.log(N/N0)/t;s:`r = ln(N/N₀)/t = ${oR.toFixed(6)}`;}
-          else if(t===undefined){oT=Math.log(N/N0)/r;s:`t = ${oT.toFixed(4)}`;}
+          else if(r===undefined){const ratio=N/N0;if(ratio<=0)return{result:"Error: N/N₀ must be positive for ln().",steps:"N and N₀ must have the same sign and N≠0."};oR=Math.log(ratio)/t;s:`r = ln(N/N₀)/t = ${oR.toFixed(6)}`;}
+          else if(t===undefined){const ratio=N/N0;if(ratio<=0)return{result:"Error: N/N₀ must be positive for ln().",steps:"N and N₀ must have the same sign and N≠0."};oT=Math.log(ratio)/r;s:`t = ${oT.toFixed(4)}`;}
           const doubling=oR>0?Math.log(2)/oR:Infinity;
           return{result:`N = ${oN.toFixed(2)} | N₀ = ${oN0.toFixed(2)}\nr = ${oR.toFixed(6)} | t = ${oT.toFixed(4)}\nDoubling time = ${doubling.toFixed(4)}`,steps:s};
         }
@@ -3811,8 +3814,8 @@ export const formulasData = [
           let oN=N,oN0=N0,oT=t,oTd=td,s="";
           if(N===undefined){oN=N0*Math.pow(2,t/td);s:`N = ${oN.toExponential(4)}`;}
           else if(N0===undefined){oN0=N/Math.pow(2,t/td);s:`N₀ = ${oN0.toExponential(4)}`;}
-          else if(td===undefined){oTd=t*Math.LN2/Math.log(N/N0);s:`td = ${oTd.toFixed(4)} min`;}
-          else if(t===undefined){oT=td*Math.log2(N/N0);s:`t = ${oT.toFixed(4)} min`;}
+          else if(td===undefined){const ratio=N/N0;if(ratio<=0)return{result:"Error: N/N₀ must be positive.",steps:"N and N₀ must be positive."};oTd=t*Math.LN2/Math.log(ratio);s:`td = ${oTd.toFixed(4)} min`;}
+          else if(t===undefined){const ratio=N/N0;if(ratio<=0)return{result:"Error: N/N₀ must be positive.",steps:"N and N₀ must be positive."};oT=td*Math.log2(ratio);s:`t = ${oT.toFixed(4)} min`;}
           const gens=oT/oTd;
           return{result:`N = ${oN.toExponential(4)} | N₀ = ${oN0.toExponential(4)}\nt = ${oT.toFixed(2)} min | td = ${oTd.toFixed(2)} min\nGenerations = ${gens.toFixed(2)}`,steps:s};
         }
@@ -3832,10 +3835,11 @@ export const formulasData = [
           const R=8.314,F=96485;
           const {E,z,out,inn,T}=vals;
           if(z===0)return{result:"Error: z cannot be 0.",steps:"Enter ion charge."};
-          const Tk=(T||37)+273.15;
+          const Tk=(T!==undefined?T:37)+273.15;
           const k=Object.keys(vals).length;
           if(out!==undefined&&inn!==undefined&&z!==undefined){
             const ratio=out/inn;
+            if(ratio<=0)return{result:"Error: [out]/[in] must be positive for ln().",steps:"Concentrations must be positive."};
             const Ecalc=(R*Tk/(z*F))*Math.log(ratio)*1000;
             return{result:`E = ${Ecalc.toFixed(2)} mV\nz = ${z} | [out] = ${out} mM | [in] = ${inn} mM\nT = ${T||37}°C (${Tk.toFixed(1)} K)\nratio = ${ratio.toFixed(4)}`,steps:`E = (RT/zF)×ln([out]/[in]) × 1000\n= (${R}×${Tk.toFixed(1)}/(${z}×${F}))×ln(${ratio.toFixed(4)})×1000\n= ${Ecalc.toFixed(2)} mV`};
           }
@@ -4286,9 +4290,9 @@ export const formulasData = [
           const k=Object.keys(vals).length;
           if(k<2)return{result:"Need at least 2 of 3.",steps:"Provide 2 values."};
           let oR=result,oX=x,oB=b,s="";
-          if(result===undefined){oR=Math.log(x)/Math.log(b);s:`log_${b}(${x}) = ln(${x})/ln(${b}) = ${oR.toFixed(6)}`;}
-          else if(x===undefined){oX=b*Math.exp(result*Math.log(b));oX=Math.pow(b,result);s:`x = b^result = ${oB}^${oR} = ${oX.toFixed(6)}`;}
-          else if(b===undefined){oB=Math.pow(x,1/result);s:`b = x^(1/result) = ${oB.toFixed(6)}`;}
+          if(result===undefined){if(x<=0||b<=0||b===1)return{result:"Error: x>0, b>0, b≠1 required.",steps:"Logarithm domain error."};oR=Math.log(x)/Math.log(b);s:`log_${b}(${x}) = ln(${x})/ln(${b}) = ${oR.toFixed(6)}`;}
+          else if(x===undefined){if(b<=0)return{result:"Error: b must be positive.",steps:"Base must be > 0."};oX=Math.pow(b,result);s:`x = b^result = ${b}^${result} = ${oX.toFixed(6)}`;}
+          else if(b===undefined){if(x<=0||result===0)return{result:"Error: x>0 and result≠0 required.",steps:"Cannot solve for base."};oB=Math.pow(x,1/result);s:`b = x^(1/result) = ${oB.toFixed(6)}`;}
           const log10=oX?Math.log10(oX):0;
           const ln=oX?Math.log(oX):0;
           return{result:`log_${oB}(${oX}) = ${oR.toFixed(6)}\nlog₁₀(${oX}) = ${log10.toFixed(6)}\nln(${oX}) = ${ln.toFixed(6)}`,steps:s};
@@ -4674,21 +4678,38 @@ export const formulasData = [
       },
       {
         id: "alveolar-gas", name: "Alveolar Gas Equation",
-        description: "PAO₂=FiO₂(Patm−PH₂O)−PaCO₂/RQ. Estimates alveolar O₂.",
-        equation: "PAO₂ = FiO₂(Patm−47) − PaCO₂/0.8",
+        description: "PAO₂=FiO₂(Patm−PH₂O)−PaCO₂/RQ. Solves for PAO₂, FiO₂, PaCO₂, or RQ.",
+        equation: "PAO₂ = FiO₂(Patm−47) − PaCO₂/RQ",
         variables: [
+          { id: "PAO2", label: "PAO₂ (mmHg)", unit: "mmHg" },
           { id: "FiO2", label: "FiO₂ (fraction, e.g. 0.21)", unit: "" },
           { id: "PaCO2", label: "PaCO₂ (mmHg)", unit: "mmHg" },
-          { id: "RQ", label: "Respiratory Quotient (default 0.8)", unit: "" }
+          { id: "RQ", label: "Respiratory Quotient", unit: "" }
         ],
         calculate: (vals) => {
-          const FiO2=vals.FiO2||0.21;
-          const PaCO2=vals.PaCO2||40;
-          const RQ=vals.RQ||0.8;
-          const Patm=760;
-          const PH2O=47;
-          const PAO2=FiO2*(Patm-PH2O)-PaCO2/RQ;
-          return{result:`PAO₂ = ${PAO2.toFixed(2)} mmHg\n\nFiO₂ = ${FiO2} (${(FiO2*100).toFixed(0)}%)\nPaCO₂ = ${PaCO2} mmHg\nRQ = ${RQ}\nPatm = ${Patm} mmHg | PH₂O = ${PH2O} mmHg`,steps:`PAO₂ = ${FiO2}×(${Patm}−${PH2O}) − ${PaCO2}/${RQ}\n= ${PAO2.toFixed(2)} mmHg`};
+          const {PAO2,FiO2,PaCO2,RQ}=vals;
+          const k=Object.keys(vals).length;
+          if(k<3)return{result:"Need at least 3 of 4.",steps:"Provide 3 values (Patm=760, PH₂O=47 assumed)."};
+          const Patm=760,PH2O=47;
+          let oP=PAO2,oF=FiO2,oC=PaCO2,oR=RQ,s="";
+          if(PAO2===undefined){
+            if(RQ===0)return{result:"Error: RQ cannot be 0 (division by zero).",steps:"RQ must be non-zero."};
+            oP=FiO2*(Patm-PH2O)-PaCO2/RQ;
+            s=`PAO₂ = ${FiO2}×(${Patm}−${PH2O}) − ${PaCO2}/${RQ} = ${oP.toFixed(2)} mmHg`;
+          } else if(FiO2===undefined){
+            if(RQ===0)return{result:"Error: RQ cannot be 0.",steps:"RQ must be non-zero."};
+            oF=(PAO2+PaCO2/RQ)/(Patm-PH2O);
+            s=`FiO₂ = (PAO₂+PaCO₂/RQ)/(Patm−PH₂O) = ${oF.toFixed(4)} (${(oF*100).toFixed(1)}%)`;
+          } else if(PaCO2===undefined){
+            oC=(FiO2*(Patm-PH2O)-PAO2)*RQ;
+            s=`PaCO₂ = (FiO₂×(Patm−PH₂O)−PAO₂)×RQ = ${oC.toFixed(2)} mmHg`;
+          } else if(RQ===undefined){
+            const denom=FiO2*(Patm-PH2O)-PAO2;
+            if(denom===0)return{result:"Error: FiO₂×(Patm−PH₂O)=PAO₂, RQ undefined.",steps:"Check inputs."};
+            oR=PaCO2/denom;
+            s=`RQ = PaCO₂/(FiO₂×(Patm−PH₂O)−PAO₂) = ${oR.toFixed(4)}`;
+          }
+          return{result:`PAO₂ = ${oP.toFixed(2)} mmHg\nFiO₂ = ${oF.toFixed(4)} (${(oF*100).toFixed(1)}%)\nPaCO₂ = ${oC.toFixed(2)} mmHg | RQ = ${oR.toFixed(4)}\nPatm = ${Patm} mmHg | PH₂O = ${PH2O} mmHg`,steps:s};
         }
       },
       {
@@ -4858,6 +4879,623 @@ export const formulasData = [
           const A=Z+N;
           const BEperN=BE/A;
           return{result:`Mass defect Δm = ${dm.toFixed(6)} u\nBinding energy = ${BE.toFixed(4)} MeV\nBE per nucleon = ${BEperN.toFixed(4)} MeV\n\nExpected mass = ${expected.toFixed(6)} u\nActual mass = ${M.toFixed(6)} u`,steps:`Δm = ${Z}×${mp} + ${N}×${mn} − ${M} = ${dm.toFixed(6)} u\nBE = Δm×c² = ${dm.toFixed(6)}×931.5 = ${BE.toFixed(4)} MeV`};
+        }
+      }
+    ]
+  }
+
+  ,{
+    category: "Computer Science & Information Theory",
+    formulas: [
+      {
+        id: "shannon-capacity", name: "Shannon-Hartley Capacity",
+        variables: [
+          { id: "C", label: "Channel Capacity (C)", unit: "bps" },
+          { id: "B", label: "Bandwidth (B)", unit: "Hz" },
+          { id: "S", label: "Signal Power (S)", unit: "W" },
+          { id: "N", label: "Noise Power (N)", unit: "W" }
+        ],
+        calculate: ({ C, B, S, N }) => {
+          if (S !== undefined && N !== undefined && N !== 0) {
+            const snr = S / N;
+            if (snr <= -1) return { result: "Error: S/N cannot be ≤ -1", steps: "" };
+          }
+          if (C === undefined && B !== undefined && S !== undefined && N !== undefined) {
+            if (N === 0) return { result: "Error: Noise cannot be 0", steps: "" };
+            const c = B * Math.log2(1 + S / N);
+            return { result: `C = ${c.toFixed(2)} bps`, steps: `C = ${B} × log₂(1 + ${S}/${N}) = ${c.toFixed(2)}` };
+          }
+          if (B === undefined && C !== undefined && S !== undefined && N !== undefined) {
+            if (N === 0) return { result: "Error: Noise cannot be 0", steps: "" };
+            const snr = S / N;
+            if (snr === 0) return { result: "Error: SNR is 0, cannot divide by 0", steps: "" };
+            const b = C / Math.log2(1 + snr);
+            return { result: `B = ${b.toFixed(2)} Hz`, steps: `B = ${C} / log₂(1 + ${S}/${N}) = ${b.toFixed(2)}` };
+          }
+          if (S === undefined && C !== undefined && B !== undefined && N !== undefined) {
+            if (B === 0) return { result: "Error: Bandwidth cannot be 0", steps: "" };
+            const snr = Math.pow(2, C / B) - 1;
+            const s = snr * N;
+            return { result: `S = ${s.toFixed(4)} W`, steps: `S/N = 2^(${C}/${B}) - 1 \nS = ${snr.toFixed(4)} × ${N} = ${s.toFixed(4)}` };
+          }
+          if (N === undefined && C !== undefined && B !== undefined && S !== undefined) {
+            if (B === 0) return { result: "Error: Bandwidth cannot be 0", steps: "" };
+            const snr = Math.pow(2, C / B) - 1;
+            if (snr === 0) return { result: "Error: Required SNR is 0", steps: "" };
+            const n = S / snr;
+            return { result: `N = ${n.toFixed(4)} W`, steps: `S/N = 2^(${C}/${B}) - 1 \nN = ${S} / ${snr.toFixed(4)} = ${n.toFixed(4)}` };
+          }
+        }
+      },
+      {
+        id: "amdahls-law", name: "Amdahl's Law (Speedup)",
+        variables: [
+          { id: "S", label: "Speedup (S)", unit: "" },
+          { id: "p", label: "Parallel Proportion (p)", unit: "" },
+          { id: "N", label: "Number of Processors (N)", unit: "" }
+        ],
+        calculate: ({ S, p, N }) => {
+          if (S === undefined && p !== undefined && N !== undefined) {
+            if (p === 1 && N === 0) return { result: "Error: Infinite speedup", steps: "" };
+            const s = 1 / ((1 - p) + p / N);
+            return { result: `S = ${s.toFixed(4)}`, steps: `S = 1 / ((1 - ${p}) + ${p}/${N}) = ${s.toFixed(4)}` };
+          }
+          if (p === undefined && S !== undefined && N !== undefined) {
+            const pVal = (1 - 1 / S) / (1 - 1 / N);
+            return { result: `p = ${pVal.toFixed(4)}`, steps: `p = (1 - 1/${S}) / (1 - 1/${N}) = ${pVal.toFixed(4)}` };
+          }
+          if (N === undefined && S !== undefined && p !== undefined) {
+            if (p === 0) return { result: "Error: p=0 means no parallel part", steps: "" };
+            const denom = (1 / S) - (1 - p);
+            if (denom <= 0) return { result: "Error: Speedup too high for given p", steps: "" };
+            const n = p / denom;
+            return { result: `N = ${Math.ceil(n)} (approx ${n.toFixed(2)})`, steps: `N = ${p} / ((1/${S}) - (1-${p}))` };
+          }
+        }
+      },
+      {
+        id: "gustafson", name: "Gustafson's Law",
+        variables: [
+          { id: "S", label: "Scaled Speedup (S)", unit: "" },
+          { id: "s", label: "Serial Proportion (s)", unit: "" },
+          { id: "N", label: "Processors (N)", unit: "" }
+        ],
+        calculate: ({ S, s, N }) => {
+          if (S === undefined && s !== undefined && N !== undefined) {
+            const p = 1 - s;
+            const res = s + p * N;
+            return { result: `S = ${res.toFixed(4)}`, steps: `S = ${s} + (1 - ${s})×${N} = ${res.toFixed(4)}` };
+          }
+          if (s === undefined && S !== undefined && N !== undefined) {
+            if (N === 1) return { result: "Error: N=1 provides no scaling", steps: "" };
+            const ser = (N - S) / (N - 1);
+            return { result: `s = ${ser.toFixed(4)}`, steps: `s = (${N} - ${S}) / (${N} - 1) = ${ser.toFixed(4)}` };
+          }
+          if (N === undefined && S !== undefined && s !== undefined) {
+            const p = 1 - s;
+            if (p === 0) return { result: "Error: p=0", steps: "" };
+            const n = (S - s) / p;
+            return { result: `N = ${Math.ceil(n)} (approx ${n.toFixed(2)})`, steps: `N = (${S} - ${s}) / ${p}` };
+          }
+        }
+      },
+      {
+        id: "littles-law", name: "Little's Law",
+        variables: [
+          { id: "L", label: "Items in System (L)", unit: "" },
+          { id: "lambda", label: "Arrival Rate (λ)", unit: "1/s" },
+          { id: "W", label: "Wait Time (W)", unit: "s" }
+        ],
+        calculate: ({ L, lambda, W }) => {
+          if (L === undefined && lambda !== undefined && W !== undefined) return { result: `L = ${(lambda*W).toFixed(2)}`, steps: `L = ${lambda} × ${W}` };
+          if (lambda === undefined && L !== undefined && W !== undefined) return W===0 ? {result:"Error: W=0", steps:""} : { result: `λ = ${(L/W).toFixed(4)} items/s`, steps: `λ = ${L} / ${W}` };
+          if (W === undefined && L !== undefined && lambda !== undefined) return lambda===0 ? {result:"Error: λ=0", steps:""} : { result: `W = ${(L/lambda).toFixed(4)} s`, steps: `W = ${L} / ${lambda}` };
+        }
+      },
+      {
+        id: "network-transfer", name: "Network Transfer Time",
+        variables: [
+          { id: "T", label: "Time (T)", unit: "s" },
+          { id: "S", label: "Size (S)", unit: "MB" },
+          { id: "B", label: "Bandwidth (B)", unit: "MB/s" }
+        ],
+        calculate: ({ T, S, B }) => {
+          if (T === undefined && S !== undefined && B !== undefined) return B===0 ? {result:"Error: B=0", steps:""} : { result: `T = ${(S/B).toFixed(2)} s`, steps: `T = ${S} / ${B}` };
+          if (S === undefined && T !== undefined && B !== undefined) return { result: `S = ${(T*B).toFixed(2)} MB`, steps: `S = ${T} × ${B}` };
+          if (B === undefined && T !== undefined && S !== undefined) return T===0 ? {result:"Error: T=0", steps:""} : { result: `B = ${(S/T).toFixed(2)} MB/s`, steps: `B = ${S} / ${T}` };
+        }
+      }
+    ]
+  },
+  {
+    category: "Advanced Finance & Economics",
+    formulas: [
+      {
+        id: "pv-annuity", name: "Present Value of Annuity",
+        variables: [
+          { id: "PV", label: "Present Value (PV)", unit: "$" },
+          { id: "P", label: "Payment per Period (P)", unit: "$" },
+          { id: "r", label: "Rate per Period (r)", unit: "%" },
+          { id: "n", label: "Number of Periods (n)", unit: "" }
+        ],
+        calculate: ({ PV, P, r, n }) => {
+          const R = r !== undefined ? r / 100 : undefined;
+          if (PV === undefined && P !== undefined && R !== undefined && n !== undefined) {
+            if (R === 0) return { result: `PV = $${(P * n).toFixed(2)}`, steps: `r = 0, PV = ${P} × ${n}` };
+            const pv = P * (1 - Math.pow(1 + R, -n)) / R;
+            return { result: `PV = $${pv.toFixed(2)}`, steps: `PV = ${P} × (1 - (1+${R})^-${n}) / ${R}` };
+          }
+          if (P === undefined && PV !== undefined && R !== undefined && n !== undefined) {
+            if (R === 0) return n === 0 ? { result:"Error: n=0", steps:"" } : { result: `P = $${(PV / n).toFixed(2)}`, steps: `P = ${PV} / ${n}` };
+            const p = PV * R / (1 - Math.pow(1 + R, -n));
+            return { result: `P = $${p.toFixed(2)}`, steps: `P = ${PV} × ${R} / (1 - (1+${R})^-${n})` };
+          }
+          if (n === undefined && PV !== undefined && P !== undefined && R !== undefined) {
+            if (R === 0) return P === 0 ? { result:"Error: P=0", steps:"" } : { result: `n = ${(PV / P).toFixed(2)}`, steps: `n = ${PV} / ${P}` };
+            const arg = 1 - (PV * R / P);
+            if (arg <= 0) return { result: "Error: Payment too small to pay off PV", steps: "" };
+            const num = -Math.log(arg) / Math.log(1 + R);
+            return { result: `n = ${num.toFixed(2)} periods`, steps: `n = -ln(1 - ${PV}×${R}/${P}) / ln(1+${R})` };
+          }
+        }
+      },
+      {
+        id: "fv-annuity", name: "Future Value of Annuity",
+        variables: [
+          { id: "FV", label: "Future Value (FV)", unit: "$" },
+          { id: "P", label: "Payment per Period (P)", unit: "$" },
+          { id: "r", label: "Rate per Period (r)", unit: "%" },
+          { id: "n", label: "Number of Periods (n)", unit: "" }
+        ],
+        calculate: ({ FV, P, r, n }) => {
+          const R = r !== undefined ? r / 100 : undefined;
+          if (FV === undefined && P !== undefined && R !== undefined && n !== undefined) {
+            if (R === 0) return { result: `FV = $${(P * n).toFixed(2)}`, steps: `r = 0, FV = ${P} × ${n}` };
+            const fv = P * (Math.pow(1 + R, n) - 1) / R;
+            return { result: `FV = $${fv.toFixed(2)}`, steps: `FV = ${P} × ((1+${R})^${n} - 1) / ${R}` };
+          }
+          if (P === undefined && FV !== undefined && R !== undefined && n !== undefined) {
+            if (R === 0) return n === 0 ? { result:"Error: n=0", steps:"" } : { result: `P = $${(FV / n).toFixed(2)}`, steps: `P = ${FV} / ${n}` };
+            const p = FV * R / (Math.pow(1 + R, n) - 1);
+            return { result: `P = $${p.toFixed(2)}`, steps: `P = ${FV} × ${R} / ((1+${R})^${n} - 1)` };
+          }
+          if (n === undefined && FV !== undefined && P !== undefined && R !== undefined) {
+            if (R === 0) return P === 0 ? { result:"Error: P=0", steps:"" } : { result: `n = ${(FV / P).toFixed(2)}`, steps: `n = ${FV} / ${P}` };
+            const arg = 1 + (FV * R / P);
+            const num = Math.log(arg) / Math.log(1 + R);
+            return { result: `n = ${num.toFixed(2)} periods`, steps: `n = ln(1 + ${FV}×${R}/${P}) / ln(1+${R})` };
+          }
+        }
+      },
+      {
+        id: "mortgage-amort", name: "Mortgage Amortization",
+        variables: [
+          { id: "M", label: "Monthly Payment (M)", unit: "$" },
+          { id: "P", label: "Principal (P)", unit: "$" },
+          { id: "r", label: "Annual Rate (r)", unit: "%" },
+          { id: "n", label: "Total Months (n)", unit: "" }
+        ],
+        calculate: ({ M, P, r, n }) => {
+          const R = r !== undefined ? (r / 100) / 12 : undefined; // monthly rate
+          if (M === undefined && P !== undefined && R !== undefined && n !== undefined) {
+            if (R === 0) return { result: `M = $${(P / n).toFixed(2)}`, steps: `r = 0, M = ${P} / ${n}` };
+            const m = P * (R * Math.pow(1 + R, n)) / (Math.pow(1 + R, n) - 1);
+            return { result: `M = $${m.toFixed(2)}`, steps: `M = ${P} × (${R}(1+${R})^${n}) / ((1+${R})^${n} - 1)` };
+          }
+          if (P === undefined && M !== undefined && R !== undefined && n !== undefined) {
+            if (R === 0) return { result: `P = $${(M * n).toFixed(2)}`, steps: `r = 0, P = ${M} × ${n}` };
+            const p = M * (Math.pow(1 + R, n) - 1) / (R * Math.pow(1 + R, n));
+            return { result: `P = $${p.toFixed(2)}`, steps: `P = ${M} × ((1+${R})^${n} - 1) / (${R}(1+${R})^${n})` };
+          }
+          if (n === undefined && M !== undefined && P !== undefined && R !== undefined) {
+            if (R === 0) return M === 0 ? { result:"Error: M=0", steps:"" } : { result: `n = ${(P / M).toFixed(2)}`, steps: `n = ${P} / ${M}` };
+            const arg = M / (M - P * R);
+            if (arg <= 0) return { result: "Error: Payment too small for interest", steps: "" };
+            const num = Math.log(arg) / Math.log(1 + R);
+            return { result: `n = ${num.toFixed(2)} months`, steps: `n = ln(${M} / (${M} - ${P}×${R})) / ln(1+${R})` };
+          }
+        }
+      },
+      {
+        id: "capm", name: "Capital Asset Pricing Model",
+        variables: [
+          { id: "ER", label: "Expected Return", unit: "%" },
+          { id: "Rf", label: "Risk-Free Rate", unit: "%" },
+          { id: "Beta", label: "Beta (β)", unit: "" },
+          { id: "ERm", label: "Market Return", unit: "%" }
+        ],
+        calculate: ({ ER, Rf, Beta, ERm }) => {
+          if (ER === undefined && Rf !== undefined && Beta !== undefined && ERm !== undefined) {
+            const er = Rf + Beta * (ERm - Rf);
+            return { result: `ER = ${er.toFixed(2)}%`, steps: `ER = ${Rf} + ${Beta}(${ERm} - ${Rf})` };
+          }
+          if (Beta === undefined && ER !== undefined && Rf !== undefined && ERm !== undefined) {
+            if (ERm === Rf) return { result: "Error: Market return = Risk-free rate (div by 0)", steps: "" };
+            const b = (ER - Rf) / (ERm - Rf);
+            return { result: `β = ${b.toFixed(4)}`, steps: `β = (${ER} - ${Rf}) / (${ERm} - ${Rf})` };
+          }
+          if (ERm === undefined && ER !== undefined && Rf !== undefined && Beta !== undefined) {
+            if (Beta === 0) return { result: "Error: Beta is 0", steps: "" };
+            const erm = (ER - Rf) / Beta + Rf;
+            return { result: `ERm = ${erm.toFixed(2)}%`, steps: `ERm = (${ER} - ${Rf}) / ${Beta} + ${Rf}` };
+          }
+        }
+      },
+      {
+        id: "elasticity", name: "Price Elasticity of Demand",
+        variables: [
+          { id: "E", label: "Elasticity (E)", unit: "" },
+          { id: "Q1", label: "Old Quantity", unit: "" },
+          { id: "Q2", label: "New Quantity", unit: "" },
+          { id: "P1", label: "Old Price", unit: "$" },
+          { id: "P2", label: "New Price", unit: "$" }
+        ],
+        calculate: ({ E, Q1, Q2, P1, P2 }) => {
+          if (E === undefined && Q1 !== undefined && Q2 !== undefined && P1 !== undefined && P2 !== undefined) {
+            const midQ = (Q1 + Q2) / 2;
+            const midP = (P1 + P2) / 2;
+            if (midQ === 0 || midP === 0) return { result: "Error: Midpoints cannot be 0", steps: "" };
+            const dQ = (Q2 - Q1) / midQ;
+            const dP = (P2 - P1) / midP;
+            if (dP === 0) return { result: "Error: No price change", steps: "" };
+            const e = dQ / dP;
+            return { result: `E = ${e.toFixed(4)}`, steps: `%ΔQ = ${dQ.toFixed(4)}, %ΔP = ${dP.toFixed(4)}` };
+          }
+        }
+      },
+      {
+        id: "roi", name: "Return on Investment (ROI)",
+        variables: [
+          { id: "ROI", label: "ROI", unit: "%" },
+          { id: "G", label: "Gain/Return", unit: "$" },
+          { id: "C", label: "Cost", unit: "$" }
+        ],
+        calculate: ({ ROI, G, C }) => {
+          if (ROI === undefined && G !== undefined && C !== undefined) {
+            if (C === 0) return { result: "Error: Cost is 0", steps: "" };
+            const r = ((G - C) / C) * 100;
+            return { result: `ROI = ${r.toFixed(2)}%`, steps: `ROI = (${G} - ${C}) / ${C} × 100` };
+          }
+          if (G === undefined && ROI !== undefined && C !== undefined) {
+            const g = C * (ROI / 100) + C;
+            return { result: `Gain = $${g.toFixed(2)}`, steps: `Gain = ${C} × (${ROI}/100) + ${C}` };
+          }
+          if (C === undefined && ROI !== undefined && G !== undefined) {
+            const denom = (ROI / 100) + 1;
+            if (denom === 0) return { result: "Error: ROI is -100%", steps: "" };
+            const c = G / denom;
+            return { result: `Cost = $${c.toFixed(2)}`, steps: `Cost = ${G} / (${ROI}/100 + 1)` };
+          }
+        }
+      },
+      {
+        id: "wacc", name: "Weighted Average Cost of Capital",
+        variables: [
+          { id: "WACC", label: "WACC", unit: "%" },
+          { id: "E", label: "Market Value Equity", unit: "$" },
+          { id: "D", label: "Market Value Debt", unit: "$" },
+          { id: "Re", label: "Cost of Equity", unit: "%" },
+          { id: "Rd", label: "Cost of Debt", unit: "%" },
+          { id: "Tc", label: "Corp Tax Rate", unit: "%" }
+        ],
+        calculate: ({ WACC, E, D, Re, Rd, Tc }) => {
+          if (WACC === undefined && E !== undefined && D !== undefined && Re !== undefined && Rd !== undefined && Tc !== undefined) {
+            const V = E + D;
+            if (V === 0) return { result: "Error: Total value V=0", steps: "" };
+            const wacc = (E / V) * Re + (D / V) * Rd * (1 - Tc / 100);
+            return { result: `WACC = ${wacc.toFixed(4)}%`, steps: `(${E}/${V})×${Re} + (${D}/${V})×${Rd}×(1-${Tc}/100)` };
+          }
+        }
+      },
+      {
+        id: "bep", name: "Break-Even Point (Units)",
+        variables: [
+          { id: "Q", label: "Units to Break Even", unit: "" },
+          { id: "FC", label: "Fixed Costs", unit: "$" },
+          { id: "P", label: "Price per Unit", unit: "$" },
+          { id: "VC", label: "Variable Cost per Unit", unit: "$" }
+        ],
+        calculate: ({ Q, FC, P, VC }) => {
+          if (Q === undefined && FC !== undefined && P !== undefined && VC !== undefined) {
+            if (P === VC) return { result: "Error: Price = Variable Cost (0 denom)", steps: "" };
+            const q = FC / (P - VC);
+            return { result: `Q = ${q.toFixed(2)} units`, steps: `Q = ${FC} / (${P} - ${VC})` };
+          }
+          if (P === undefined && Q !== undefined && FC !== undefined && VC !== undefined) {
+            if (Q === 0) return { result: "Error: Q=0", steps: "" };
+            const p = FC / Q + VC;
+            return { result: `P = $${p.toFixed(2)}`, steps: `P = ${FC} / ${Q} + ${VC}` };
+          }
+        }
+      }
+    ]
+  },
+  {
+    category: "Aerospace & Advanced Fluid Dynamics",
+    formulas: [
+      {
+        id: "mach", name: "Mach Number",
+        variables: [
+          { id: "M", label: "Mach Number (M)", unit: "" },
+          { id: "v", label: "Velocity (v)", unit: "m/s" },
+          { id: "c", label: "Speed of Sound (c)", unit: "m/s" }
+        ],
+        calculate: ({ M, v, c }) => {
+          if (M === undefined && v !== undefined && c !== undefined) return c===0 ? {result:"Error: c=0", steps:""} : { result: `M = ${(v/c).toFixed(3)}`, steps: `${v} / ${c}` };
+          if (v === undefined && M !== undefined && c !== undefined) return { result: `v = ${(M*c).toFixed(2)} m/s`, steps: `${M} × ${c}` };
+          if (c === undefined && M !== undefined && v !== undefined) return M===0 ? {result:"Error: M=0", steps:""} : { result: `c = ${(v/M).toFixed(2)} m/s`, steps: `${v} / ${M}` };
+        }
+      },
+      {
+        id: "dyn-pressure", name: "Dynamic Pressure",
+        variables: [
+          { id: "q", label: "Dynamic Pressure (q)", unit: "Pa" },
+          { id: "rho", label: "Density (ρ)", unit: "kg/m³" },
+          { id: "v", label: "Velocity (v)", unit: "m/s" }
+        ],
+        calculate: ({ q, rho, v }) => {
+          if (q === undefined && rho !== undefined && v !== undefined) {
+            return { result: `q = ${(0.5 * rho * v * v).toFixed(2)} Pa`, steps: `0.5 × ${rho} × ${v}²` };
+          }
+          if (v === undefined && q !== undefined && rho !== undefined) {
+            if (rho === 0) return { result: "Error: ρ=0", steps: "" };
+            if (q / rho < 0) return { result: "Error: Negative root", steps: "" };
+            return { result: `v = ${Math.sqrt(2 * q / rho).toFixed(2)} m/s`, steps: `√(2 × ${q} / ${rho})` };
+          }
+        }
+      },
+      {
+        id: "lift-eq", name: "Lift Equation",
+        variables: [
+          { id: "L", label: "Lift Force (L)", unit: "N" },
+          { id: "rho", label: "Density (ρ)", unit: "kg/m³" },
+          { id: "v", label: "Velocity (v)", unit: "m/s" },
+          { id: "S", label: "Wing Area (S)", unit: "m²" },
+          { id: "CL", label: "Lift Coefficient (C_L)", unit: "" }
+        ],
+        calculate: ({ L, rho, v, S, CL }) => {
+          if (L === undefined && rho !== undefined && v !== undefined && S !== undefined && CL !== undefined) {
+            const l = 0.5 * rho * v * v * S * CL;
+            return { result: `L = ${l.toFixed(2)} N`, steps: `0.5 × ${rho} × ${v}² × ${S} × ${CL}` };
+          }
+          if (CL === undefined && L !== undefined && rho !== undefined && v !== undefined && S !== undefined) {
+            const denom = 0.5 * rho * v * v * S;
+            if (denom === 0) return { result: "Error: 0 denominator", steps: "" };
+            return { result: `C_L = ${(L / denom).toFixed(4)}`, steps: `${L} / (0.5 × ${rho} × ${v}² × ${S})` };
+          }
+        }
+      },
+      {
+        id: "froude", name: "Froude Number",
+        variables: [
+          { id: "Fr", label: "Froude Number (Fr)", unit: "" },
+          { id: "v", label: "Velocity (v)", unit: "m/s" },
+          { id: "g", label: "Gravity (g)", unit: "m/s²" },
+          { id: "L", label: "Characteristic Length (L)", unit: "m" }
+        ],
+        calculate: ({ Fr, v, g, L }) => {
+          if (Fr === undefined && v !== undefined && g !== undefined && L !== undefined) {
+            if (g * L <= 0) return { result: "Error: g*L <= 0", steps: "" };
+            return { result: `Fr = ${(v / Math.sqrt(g * L)).toFixed(4)}`, steps: `${v} / √(${g} × ${L})` };
+          }
+          if (v === undefined && Fr !== undefined && g !== undefined && L !== undefined) {
+            if (g * L < 0) return { result: "Error: g*L < 0", steps: "" };
+            return { result: `v = ${(Fr * Math.sqrt(g * L)).toFixed(4)} m/s`, steps: `${Fr} × √(${g} × ${L})` };
+          }
+        }
+      },
+      {
+        id: "capillary-rise", name: "Capillary Rise",
+        variables: [
+          { id: "h", label: "Height (h)", unit: "m" },
+          { id: "gamma", label: "Surface Tension (γ)", unit: "N/m" },
+          { id: "theta", label: "Contact Angle (θ)", unit: "°" },
+          { id: "rho", label: "Density (ρ)", unit: "kg/m³" },
+          { id: "r", label: "Radius (r)", unit: "m" }
+        ],
+        calculate: ({ h, gamma, theta, rho, r }) => {
+          const g = 9.80665;
+          if (h === undefined && gamma !== undefined && theta !== undefined && rho !== undefined && r !== undefined) {
+            if (rho * r === 0) return { result: "Error: 0 denominator", steps: "" };
+            const rad = theta * Math.PI / 180;
+            const res = (2 * gamma * Math.cos(rad)) / (rho * g * r);
+            return { result: `h = ${res.toExponential(4)} m`, steps: `(2 × ${gamma} × cos(${theta}°)) / (${rho} × 9.81 × ${r})` };
+          }
+        }
+      },
+      {
+        id: "specific-impulse", name: "Specific Impulse",
+        variables: [
+          { id: "Isp", label: "Specific Impulse (Isp)", unit: "s" },
+          { id: "ve", label: "Exhaust Velocity (ve)", unit: "m/s" },
+          { id: "g", label: "Gravity (g₀)", unit: "m/s²" }
+        ],
+        calculate: ({ Isp, ve, g }) => {
+          if (Isp === undefined && ve !== undefined && g !== undefined) return g===0 ? {result:"Error: g=0", steps:""} : { result: `Isp = ${(ve/g).toFixed(2)} s`, steps: `${ve} / ${g}` };
+          if (ve === undefined && Isp !== undefined && g !== undefined) return { result: `ve = ${(Isp*g).toFixed(2)} m/s`, steps: `${Isp} × ${g}` };
+        }
+      }
+    ]
+  },
+  {
+    category: "Civil & Structural Engineering",
+    formulas: [
+      {
+        id: "stress", name: "Stress (Normal)",
+        variables: [
+          { id: "sigma", label: "Stress (σ)", unit: "Pa" },
+          { id: "F", label: "Force (F)", unit: "N" },
+          { id: "A", label: "Area (A)", unit: "m²" }
+        ],
+        calculate: ({ sigma, F, A }) => {
+          if (sigma === undefined && F !== undefined && A !== undefined) return A===0 ? {result:"Error: A=0", steps:""} : { result: `σ = ${(F/A).toExponential(4)} Pa`, steps: `${F} / ${A}` };
+          if (F === undefined && sigma !== undefined && A !== undefined) return { result: `F = ${(sigma*A).toFixed(2)} N`, steps: `${sigma} × ${A}` };
+          if (A === undefined && sigma !== undefined && F !== undefined) return sigma===0 ? {result:"Error: σ=0", steps:""} : { result: `A = ${(F/sigma).toExponential(4)} m²`, steps: `${F} / ${sigma}` };
+        }
+      },
+      {
+        id: "strain", name: "Strain",
+        variables: [
+          { id: "epsilon", label: "Strain (ε)", unit: "" },
+          { id: "dL", label: "Change in Length (ΔL)", unit: "m" },
+          { id: "L0", label: "Original Length (L₀)", unit: "m" }
+        ],
+        calculate: ({ epsilon, dL, L0 }) => {
+          if (epsilon === undefined && dL !== undefined && L0 !== undefined) return L0===0 ? {result:"Error: L₀=0", steps:""} : { result: `ε = ${(dL/L0).toExponential(4)}`, steps: `${dL} / ${L0}` };
+          if (dL === undefined && epsilon !== undefined && L0 !== undefined) return { result: `ΔL = ${(epsilon*L0).toExponential(4)} m`, steps: `${epsilon} × ${L0}` };
+          if (L0 === undefined && epsilon !== undefined && dL !== undefined) return epsilon===0 ? {result:"Error: ε=0", steps:""} : { result: `L₀ = ${(dL/epsilon).toExponential(4)} m`, steps: `${dL} / ${epsilon}` };
+        }
+      },
+      {
+        id: "euler-buckling", name: "Euler's Buckling Load",
+        variables: [
+          { id: "Pcr", label: "Critical Load (Pcr)", unit: "N" },
+          { id: "E", label: "Young's Modulus (E)", unit: "Pa" },
+          { id: "I", label: "Area Moment (I)", unit: "m⁴" },
+          { id: "K", label: "Column Eff Length Factor (K)", unit: "" },
+          { id: "L", label: "Column Length (L)", unit: "m" }
+        ],
+        calculate: ({ Pcr, E, I, K, L }) => {
+          if (Pcr === undefined && E !== undefined && I !== undefined && K !== undefined && L !== undefined) {
+            if (K * L === 0) return { result: "Error: K×L = 0", steps: "" };
+            const p = (Math.PI * Math.PI * E * I) / Math.pow(K * L, 2);
+            return { result: `Pcr = ${p.toExponential(4)} N`, steps: `π² × ${E} × ${I} / (${K} × ${L})²` };
+          }
+        }
+      },
+      {
+        id: "soil-porosity", name: "Soil Porosity",
+        variables: [
+          { id: "n", label: "Porosity (n)", unit: "" },
+          { id: "Vv", label: "Volume of Voids (Vv)", unit: "m³" },
+          { id: "Vt", label: "Total Volume (Vt)", unit: "m³" }
+        ],
+        calculate: ({ n, Vv, Vt }) => {
+          if (n === undefined && Vv !== undefined && Vt !== undefined) return Vt===0 ? {result:"Error: Vt=0", steps:""} : { result: `n = ${(Vv/Vt).toFixed(4)}`, steps: `${Vv} / ${Vt}` };
+          if (Vv === undefined && n !== undefined && Vt !== undefined) return { result: `Vv = ${(n*Vt).toFixed(4)} m³`, steps: `${n} × ${Vt}` };
+        }
+      },
+      {
+        id: "soil-void-ratio", name: "Soil Void Ratio",
+        variables: [
+          { id: "e", label: "Void Ratio (e)", unit: "" },
+          { id: "Vv", label: "Volume of Voids (Vv)", unit: "m³" },
+          { id: "Vs", label: "Volume of Solids (Vs)", unit: "m³" }
+        ],
+        calculate: ({ e, Vv, Vs }) => {
+          if (e === undefined && Vv !== undefined && Vs !== undefined) return Vs===0 ? {result:"Error: Vs=0", steps:""} : { result: `e = ${(Vv/Vs).toFixed(4)}`, steps: `${Vv} / ${Vs}` };
+          if (Vv === undefined && e !== undefined && Vs !== undefined) return { result: `Vv = ${(e*Vs).toFixed(4)} m³`, steps: `${e} × ${Vs}` };
+        }
+      }
+    ]
+  },
+  {
+    category: "Advanced Optics & Astrophysics",
+    formulas: [
+      {
+        id: "rayleigh", name: "Rayleigh Criterion (Angular)",
+        variables: [
+          { id: "theta", label: "Resolution Angle (θ)", unit: "rad" },
+          { id: "lambda", label: "Wavelength (λ)", unit: "nm" },
+          { id: "D", label: "Aperture (D)", unit: "m" }
+        ],
+        calculate: ({ theta, lambda, D }) => {
+          if (theta === undefined && lambda !== undefined && D !== undefined) {
+            if (D === 0) return { result: "Error: D=0", steps: "" };
+            const l_m = lambda * 1e-9;
+            const res = 1.22 * l_m / D;
+            return { result: `θ = ${res.toExponential(4)} rad`, steps: `1.22 × (${lambda}×10⁻⁹) / ${D}` };
+          }
+          if (D === undefined && theta !== undefined && lambda !== undefined) {
+            if (theta === 0) return { result: "Error: θ=0", steps: "" };
+            const l_m = lambda * 1e-9;
+            const res = 1.22 * l_m / theta;
+            return { result: `D = ${res.toExponential(4)} m`, steps: `1.22 × (${lambda}×10⁻⁹) / ${theta}` };
+          }
+        }
+      },
+      {
+        id: "telescope-mag", name: "Telescope Magnification",
+        variables: [
+          { id: "M", label: "Magnification (M)", unit: "" },
+          { id: "fo", label: "Objective Focal Length (fo)", unit: "m" },
+          { id: "fe", label: "Eyepiece Focal Length (fe)", unit: "m" }
+        ],
+        calculate: ({ M, fo, fe }) => {
+          if (M === undefined && fo !== undefined && fe !== undefined) return fe===0 ? {result:"Error: fe=0", steps:""} : { result: `M = ${(fo/fe).toFixed(2)}x`, steps: `${fo} / ${fe}` };
+          if (fo === undefined && M !== undefined && fe !== undefined) return { result: `fo = ${(M*fe).toFixed(4)} m`, steps: `${M} × ${fe}` };
+          if (fe === undefined && M !== undefined && fo !== undefined) return M===0 ? {result:"Error: M=0", steps:""} : { result: `fe = ${(fo/M).toFixed(4)} m`, steps: `${fo} / ${M}` };
+        }
+      },
+      {
+        id: "distance-modulus", name: "Distance Modulus",
+        variables: [
+          { id: "mu", label: "Modulus (m - M)", unit: "" },
+          { id: "d", label: "Distance (d)", unit: "pc" }
+        ],
+        calculate: ({ mu, d }) => {
+          if (mu === undefined && d !== undefined) {
+            if (d <= 0) return { result: "Error: Distance must be > 0", steps: "" };
+            const res = 5 * Math.log10(d) - 5;
+            return { result: `m - M = ${res.toFixed(2)}`, steps: `5 × log₁₀(${d}) - 5` };
+          }
+          if (d === undefined && mu !== undefined) {
+            const res = Math.pow(10, (mu + 5) / 5);
+            return { result: `d = ${res.toExponential(4)} pc`, steps: `10^((${mu} + 5) / 5)` };
+          }
+        }
+      },
+      {
+        id: "wiens-law", name: "Wien's Displacement Law",
+        variables: [
+          { id: "lambda", label: "Peak Wavelength (λ)", unit: "nm" },
+          { id: "T", label: "Temperature (T)", unit: "K" }
+        ],
+        calculate: ({ lambda, T }) => {
+          const b = 2.897771955e-3; // m.K
+          if (lambda === undefined && T !== undefined) {
+            if (T === 0) return { result: "Error: T=0", steps: "" };
+            const res = (b / T) * 1e9; // to nm
+            return { result: `λ = ${res.toFixed(2)} nm`, steps: `(2.897×10⁻³ / ${T}) × 10⁹` };
+          }
+          if (T === undefined && lambda !== undefined) {
+            if (lambda === 0) return { result: "Error: λ=0", steps: "" };
+            const res = b / (lambda * 1e-9);
+            return { result: `T = ${res.toFixed(2)} K`, steps: `2.897×10⁻³ / (${lambda}×10⁻⁹)` };
+          }
+        }
+      },
+      {
+        id: "lens-maker", name: "Lens Maker's Equation",
+        variables: [
+          { id: "f", label: "Focal Length (f)", unit: "m" },
+          { id: "n", label: "Refractive Index (n)", unit: "" },
+          { id: "R1", label: "Radius 1 (R₁)", unit: "m" },
+          { id: "R2", label: "Radius 2 (R₂)", unit: "m" }
+        ],
+        calculate: ({ f, n, R1, R2 }) => {
+          if (f === undefined && n !== undefined && R1 !== undefined && R2 !== undefined) {
+            if (R1 === 0 || R2 === 0) return { result: "Error: R1 or R2 is 0", steps: "" };
+            const invF = (n - 1) * (1 / R1 - 1 / R2);
+            if (invF === 0) return { result: "Error: 1/f = 0 (infinite f)", steps: "" };
+            return { result: `f = ${(1/invF).toFixed(4)} m`, steps: `1/f = (${n}-1)×(1/${R1} - 1/${R2})` };
+          }
+        }
+      },
+      {
+        id: "larmor", name: "Larmor Formula",
+        variables: [
+          { id: "P", label: "Radiated Power (P)", unit: "W" },
+          { id: "q", label: "Charge (q)", unit: "C" },
+          { id: "a", label: "Acceleration (a)", unit: "m/s²" }
+        ],
+        calculate: ({ P, q, a }) => {
+          const c = 299792458;
+          const k = 8.9875517923e9; // Coulomb constant 1/(4πε0)
+          if (P === undefined && q !== undefined && a !== undefined) {
+            const res = (2 * k * Math.pow(q, 2) * Math.pow(a, 2)) / (3 * Math.pow(c, 3));
+            return { result: `P = ${res.toExponential(4)} W`, steps: `(2k × ${q}² × ${a}²) / (3c³)` };
+          }
         }
       }
     ]

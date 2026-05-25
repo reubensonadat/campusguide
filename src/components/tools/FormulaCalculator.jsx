@@ -11,6 +11,66 @@ import {
 // Variables that accept comma-separated text input instead of numbers
 const isTextVariable = (variable) => ['data', 'xdata', 'ydata'].includes(variable?.id);
 
+const unitConversions = {
+  // Length & Area & Volume
+  'm': { 'km': { mult: 1000 }, 'cm': { mult: 0.01 }, 'mm': { mult: 0.001 }, 'nm': { mult: 1e-9 }, 'mi': { mult: 1609.344 }, 'ft': { mult: 0.3048 }, 'in': { mult: 0.0254 } },
+  'nm': { 'm': { mult: 1e9 }, 'µm': { mult: 1000 }, 'mm': { mult: 1e6 }, 'Å': { mult: 10 } },
+  'm²': { 'cm²': { mult: 0.0001 }, 'km²': { mult: 1e6 }, 'ha': { mult: 10000 }, 'sq ft': { mult: 0.092903 } },
+  'm³': { 'L': { mult: 0.001 }, 'mL': { mult: 1e-6 }, 'cm³': { mult: 1e-6 }, 'gal': { mult: 0.00378541 } },
+
+  // Mass & Density
+  'kg': { 'g': { mult: 0.001 }, 'mg': { mult: 1e-6 }, 'lb': { mult: 0.453592 }, 'oz': { mult: 0.0283495 }, 'ton': { mult: 1000 } },
+  'kg/m³': { 'g/cm³': { mult: 1000 }, 'kg/L': { mult: 1000 } },
+
+  // Time
+  's': { 'min': { mult: 60 }, 'hr': { mult: 3600 }, 'days': { mult: 86400 }, 'ms': { mult: 0.001 }, 'years': { mult: 31536000 } },
+  'years': { 'months': { mult: 1/12 }, 'days': { mult: 1/365.25 }, 's': { mult: 1/31536000 } },
+
+  // Velocity & Acceleration
+  'm/s': { 'km/h': { mult: 1/3.6 }, 'km/s': { mult: 1000 }, 'mph': { mult: 0.44704 }, 'ft/s': { mult: 0.3048 } },
+  'm/s²': { 'km/s²': { mult: 1000 }, 'g': { mult: 9.80665 }, 'ft/s²': { mult: 0.3048 } },
+
+  // Force, Pressure, Energy, Power
+  'N': { 'kN': { mult: 1000 }, 'lbf': { mult: 4.44822 } },
+  'Pa': { 'atm': { mult: 101325 }, 'kPa': { mult: 1000 }, 'MPa': { mult: 1e6 }, 'bar': { mult: 100000 }, 'mmHg': { mult: 133.322 }, 'psi': { mult: 6894.76 } },
+  'J': { 'kJ': { mult: 1000 }, 'MJ': { mult: 1e6 }, 'eV': { mult: 1.60218e-19 }, 'kcal': { mult: 4184 }, 'Wh': { mult: 3600 }, 'kWh': { mult: 3.6e6 } },
+  'eV': { 'J': { mult: 6.242e18 }, 'keV': { mult: 1000 }, 'MeV': { mult: 1e6 } },
+  'W': { 'kW': { mult: 1000 }, 'MW': { mult: 1e6 }, 'mW': { mult: 0.001 }, 'hp': { mult: 745.7 } },
+
+  // Temperature (Affine transformations)
+  'K': { 
+    '°C': { toBase: c => c + 273.15, fromBase: k => k - 273.15 },
+    '°F': { toBase: f => (f - 32) * 5/9 + 273.15, fromBase: k => (k - 273.15) * 9/5 + 32 }
+  },
+
+  // Electricity & Magnetism
+  'A': { 'mA': { mult: 0.001 }, 'µA': { mult: 1e-6 }, 'kA': { mult: 1000 } },
+  'V': { 'mV': { mult: 0.001 }, 'kV': { mult: 1000 }, 'MV': { mult: 1e6 } },
+  'Ω': { 'kΩ': { mult: 1000 }, 'MΩ': { mult: 1e6 }, 'mΩ': { mult: 0.001 } },
+  'F': { 'mF': { mult: 1e-3 }, 'µF': { mult: 1e-6 }, 'nF': { mult: 1e-9 }, 'pF': { mult: 1e-12 } },
+  'H': { 'mH': { mult: 0.001 }, 'µH': { mult: 1e-6 } },
+  'C': { 'mC': { mult: 0.001 }, 'µC': { mult: 1e-6 }, 'nC': { mult: 1e-9 }, 'pC': { mult: 1e-12 }, 'e': { mult: 1.602176634e-19 } },
+  'T': { 'mT': { mult: 0.001 }, 'µT': { mult: 1e-6 }, 'G': { mult: 1e-4 } },
+
+  // Angles & Frequency
+  '°': { 'rad': { mult: 180 / Math.PI } },
+  'rad/s': { 'rpm': { mult: Math.PI / 30 }, 'Hz': { mult: 2 * Math.PI }, 'deg/s': { mult: Math.PI / 180 } },
+  'Hz': { 'kHz': { mult: 1000 }, 'MHz': { mult: 1e6 }, 'GHz': { mult: 1e9 }, 'rpm': { mult: 1/60 } },
+  
+  // Chemistry
+  'mol': { 'mmol': { mult: 0.001 }, 'kmol': { mult: 1000 } },
+  
+  // Specific Heat & Derived 
+  'J/(kg·K)': { 'kJ/(kg·K)': { mult: 1000 }, 'J/(g·°C)': { mult: 1000 }, 'cal/(g·°C)': { mult: 4184 } }
+};
+
+const normalizeValue = (value, unit, selectedAltUnit) => {
+  if (!selectedAltUnit || selectedAltUnit === unit || !unitConversions[unit]) return value;
+  const conv = unitConversions[unit][selectedAltUnit];
+  if (!conv) return value;
+  return conv.toBase ? conv.toBase(value) : value * conv.mult;
+};
+
 const FormulaCalculator = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,6 +79,7 @@ const FormulaCalculator = () => {
   const [result, setResult] = useState(null);
   const [solveFor, setSolveFor] = useState(null); // which variable to solve for
   const [mode, setMode] = useState('auto'); // 'auto' = leave-blank, 'target' = solve-for
+  const [selectedUnits, setSelectedUnits] = useState({});
 
   // Get all categories
   const categories = ['All', ...formulasData.map(c => c.category)];
@@ -46,6 +107,7 @@ const FormulaCalculator = () => {
   const handleOpenFormula = (formula) => {
     setModalFormula(formula);
     setInputValues({});
+    setSelectedUnits({});
     setResult(null);
     setSolveFor(null);
     setMode('auto');
@@ -54,6 +116,7 @@ const FormulaCalculator = () => {
   const handleCloseModal = () => {
     setModalFormula(null);
     setInputValues({});
+    setSelectedUnits({});
     setResult(null);
     setSolveFor(null);
   };
@@ -85,6 +148,10 @@ const FormulaCalculator = () => {
     setResult(null);
   };
 
+  const handleUnitChange = (id, newUnit) => {
+    setSelectedUnits(prev => ({ ...prev, [id]: newUnit }));
+  };
+
   const handleCalculate = () => {
     if (!modalFormula) return;
     const cleanVals = {};
@@ -93,7 +160,9 @@ const FormulaCalculator = () => {
       if (isTextVariable(variable)) {
         if (typeof v === 'string' && v.trim()) cleanVals[k] = v;
       } else {
-        if (!isNaN(v)) cleanVals[k] = v;
+        if (!isNaN(v)) {
+          cleanVals[k] = normalizeValue(v, variable.unit, selectedUnits[k]);
+        }
       }
     }
     const res = modalFormula.calculate(cleanVals);
@@ -119,7 +188,7 @@ const FormulaCalculator = () => {
     modalFormula.variables.forEach((v) => {
       if (mode === 'target' && solveFor === v.id) return;
       if (mode === 'auto' && Object.keys(exampleVals).length >= modalFormula.variables.length - 1) return;
-      exampleVals[v.id] = textExamples[v.id] || examples[v.unit] || 10;
+      exampleVals[v.id] = textExamples[v.id] ?? examples[v.unit] ?? 10;
     });
     setInputValues(exampleVals);
     setResult(null);
@@ -363,14 +432,27 @@ const FormulaCalculator = () => {
 
                   return (
                     <div key={variable.id} className={isText ? 'col-span-2' : ''}>
-                      <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                      <label className="flex items-center text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">
                         {variable.label}
-                        {variable.unit && <span className="text-primary-300 ml-1 normal-case font-semibold">[{variable.unit}]</span>}
+                        {variable.unit && unitConversions[variable.unit] ? (
+                          <select 
+                            className="ml-2 bg-primary-50/50 hover:bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full border border-primary-200 cursor-pointer outline-none font-bold transition-colors"
+                            value={selectedUnits[variable.id] || variable.unit}
+                            onChange={(e) => handleUnitChange(variable.id, e.target.value)}
+                          >
+                            <option value={variable.unit}>{variable.unit}</option>
+                            {Object.keys(unitConversions[variable.unit]).map(alt => (
+                              <option key={alt} value={alt}>{alt}</option>
+                            ))}
+                          </select>
+                        ) : variable.unit ? (
+                          <span className="text-primary-300 ml-1 normal-case font-semibold">[{variable.unit}]</span>
+                        ) : null}
                       </label>
                       <input
                         type={isText ? 'text' : 'number'}
                         {...(!isText && { step: 'any' })}
-                        placeholder={isFilled ? '' : getHint(variable.unit, variable.id)}
+                        placeholder={isFilled ? '' : getHint(selectedUnits[variable.id] || variable.unit, variable.id)}
                         value={isFilled ? inputValues[variable.id] : ''}
                         onChange={(e) => handleInputChange(variable.id, e.target.value)}
                         className={`w-full px-3 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
