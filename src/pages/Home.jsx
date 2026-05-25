@@ -81,7 +81,8 @@ const Home = () => {
         .from('advertisements')
         .select('*')
         .ilike('status', 'active')
-        .eq('package_id', 'home_banner'); // only premium home-placement ads
+        .eq('package_id', 'home_banner') // only premium home-placement ads
+        .gte('expires_at', new Date().toISOString());
 
       if (!adsData || adsData.length === 0) {
         // No premium ads available — fall back to latest announcement

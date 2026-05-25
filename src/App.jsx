@@ -43,6 +43,7 @@ import Advertise from './pages/Advertise';
 import Contact from './pages/Contact';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
 
 function AppContent() {
   const { selectedCampusId } = useCampus();
@@ -82,7 +83,7 @@ function AppContent() {
       if (data) {
         localStorage.setItem('supabase_user_id', data.id);
       } else if (error) {
-        console.error('Error creating silent profile:', error);
+        console.error('Error creating silent profile:', JSON.stringify(error, null, 2));
       }
     };
     
@@ -119,6 +120,7 @@ function AppContent() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin/*" element={<AdminDashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 

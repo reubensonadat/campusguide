@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomContact, CustomSettings } from './CustomIcons';
+import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomContact, CustomSettings, CustomMegaphone } from './CustomIcons';
 
 const TabBar = () => {
   const location = useLocation();
@@ -21,6 +21,8 @@ const TabBar = () => {
     displayTabs[4] = { id: 'settings', label: 'Settings', icon: CustomSettings, path: '/settings' };
   } else if (location.pathname === '/contact') {
     displayTabs[4] = { id: 'contact', label: 'Contact', icon: CustomContact, path: '/contact' };
+  } else if (location.pathname === '/advertise') {
+    displayTabs[4] = { id: 'advertise', label: 'Advertise', icon: CustomMegaphone, path: '/advertise' };
   }
 
   useEffect(() => {
@@ -42,6 +44,31 @@ const TabBar = () => {
   const handleTabClick = (path) => {
     navigate(path);
   };
+
+  if (location.pathname.startsWith('/admin')) {
+    return (
+      <div className="fixed bottom-0 left-0 w-full px-3 pb-4 z-50 md:hidden">
+        <div className="bg-gray-900 rounded-2xl shadow-strong flex items-center justify-around px-2 h-[62px]">
+          <button onClick={() => navigate('/admin/moderation')} className={`flex flex-col items-center justify-center w-16 h-full ${location.pathname.includes('moderation') ? 'text-primary-400' : 'text-gray-400'}`}>
+            <CustomCommunity size={24} color="currentColor" />
+            <span className="text-[10px] font-bold mt-1">Ads</span>
+          </button>
+          <button onClick={() => navigate('/admin/lostfound')} className={`flex flex-col items-center justify-center w-16 h-full ${location.pathname.includes('lostfound') ? 'text-primary-400' : 'text-gray-400'}`}>
+            <CustomTools size={24} color="currentColor" />
+            <span className="text-[10px] font-bold mt-1">Lost/Found</span>
+          </button>
+          <button onClick={() => navigate('/admin/upload')} className={`flex flex-col items-center justify-center w-16 h-full ${location.pathname.includes('upload') ? 'text-primary-400' : 'text-gray-400'}`}>
+            <CustomMegaphone size={24} color="currentColor" />
+            <span className="text-[10px] font-bold mt-1">Upload</span>
+          </button>
+          <button onClick={() => navigate('/')} className="flex flex-col items-center justify-center w-16 h-full text-red-400">
+            <CustomHome size={24} color="currentColor" />
+            <span className="text-[10px] font-bold mt-1">Exit</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed bottom-0 left-0 w-full px-3 pb-4 z-50 md:hidden">

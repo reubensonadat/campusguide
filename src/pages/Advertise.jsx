@@ -26,7 +26,7 @@ const AD_PACKAGES = [
         description: 'Maximum visibility on the Home page. Reach students the moment they open the app.',
         icon: Sparkles,
         popular: true,
-        color: 'indigo',
+        color: 'primary',
         prices: [
             { days: 3, price: 70 },
             { days: 7, price: 100, tag: 'Most Popular' },
@@ -181,28 +181,49 @@ const Advertise = () => {
             if (submitButtonText) submitButtonText.innerText = "Uploading Ad...";
 
             let finalImageUrl = null;
+            let adminWarning = '';
 
-            // 1. Upload Flyer to Supabase Storage if an image file exists
+            // 1. Upload Flyer to Cloudflare R2 if an image file exists
             if (formData.imageFile) {
-                // Create a unique filename using timestamp and a random string
-                const fileExt = formData.imageFile.name.split('.').pop();
-                const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-                const filePath = `flyers/${fileName}`;
+                try {
+                    // Call edge function to get presigned URL
+                    const { data: uploadInfo, error: fnError } = await supabase.functions.invoke('generate-upload-url', {
+                        body: {
+                            fileName: formData.imageFile.name,
+                            fileType: formData.imageFile.type,
+                            fileSize: formData.imageFile.size,
+                            userId: localStorage.getItem('supabase_user_id') || 'anonymous'
+                        }
+                    });
 
-                const { data: uploadData, error: uploadError } = await supabase.storage
-                    .from('ad-images')
-                    .upload(filePath, formData.imageFile);
+                    if (fnError) {
+                        throw new Error("Failed to get upload URL: " + fnError.message);
+                    }
 
-                if (uploadError) {
-                    throw new Error("Failed to upload image: " + uploadError.message);
+                    if (uploadInfo?.error) {
+                        throw new Error("Upload configuration error: " + uploadInfo.error);
+                    }
+
+                    const { presignedUrl, publicUrl } = uploadInfo;
+
+                    // Upload directly to Cloudflare R2
+                    const uploadRes = await fetch(presignedUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': formData.imageFile.type
+                        },
+                        body: formData.imageFile
+                    });
+
+                    if (!uploadRes.ok) {
+                        throw new Error("Failed to upload image to Cloudflare R2");
+                    }
+
+                    finalImageUrl = publicUrl;
+                } catch (imgError) {
+                    console.error("Image upload failed after payment:", imgError);
+                    adminWarning = "\n\n[ADMIN NOTE: The user successfully paid, but their image failed to upload due to a network/server error. Please contact them to get their flyer.]";
                 }
-
-                // Get the public URL for the uploaded image
-                const { data: publicUrlData } = supabase.storage
-                    .from('ad-images')
-                    .getPublicUrl(filePath);
-
-                finalImageUrl = publicUrlData.publicUrl;
             }
 
             // Calculate Expiry Date based on selected duration
@@ -214,7 +235,7 @@ const Advertise = () => {
                 .from('advertisements')
                 .insert([{
                     title: formData.businessName,
-                    description: formData.description,
+                    description: formData.description + adminWarning,
                     phone_number: formatPhoneNumber(formData.whatsapp), // Cleaned number
                     contact_method: formData.contactMethod,
                     contact_url: formData.contactMethod === 'link' ? formData.contactUrl : null,
@@ -267,7 +288,7 @@ const Advertise = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900 mb-24 sm:pb-0">
+        <div className="min-h-screen bg-gray-50 flex flex-col font-sans selection:bg-primary-100 selection:text-primary-900 mb-24 sm:pb-0">
 
             {/* Header */}
             <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-30">
@@ -292,7 +313,7 @@ const Advertise = () => {
             {/* Progress Bar */}
             <div className="h-1.5 w-full bg-gray-100">
                 <div
-                    className="h-full bg-indigo-600 transition-all duration-500 ease-out"
+                    className="h-full bg-primary-600 transition-all duration-500 ease-out"
                     style={{ width: `${(step / 4) * 100}%` }}
                 ></div>
             </div>
@@ -302,7 +323,7 @@ const Advertise = () => {
                 {/* STEP 1: GUIDELINES */}
                 {step === 1 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="w-16 h-16 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-6">
+                        <div className="w-16 h-16 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center mb-6">
                             <CheckCircle2 size={32} />
                         </div>
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-4">Quality & Trust Framework</h2>
@@ -330,7 +351,7 @@ const Advertise = () => {
                                 </div>
                             </div>
                             <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex gap-4">
-                                <div className="mt-1 text-indigo-500"><Check size={20} /></div>
+                                <div className="mt-1 text-primary-500"><Check size={20} /></div>
                                 <div>
                                     <h4 className="font-bold text-gray-900">Manual Verification</h4>
                                     <p className="text-sm text-gray-500 mt-1">Ads are reviewed within 2 hours. If rejected for violating terms, you receive a 90% refund as a result of paystack charges.</p>
@@ -347,7 +368,7 @@ const Advertise = () => {
 
                         <button
                             onClick={nextStep}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5"
+                            className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-primary-200 transition-all hover:-translate-y-0.5"
                         >
                             I Agree, Start Setup
                         </button>
@@ -373,7 +394,7 @@ const Advertise = () => {
                                         value={formData.businessName}
                                         onChange={handleInputChange}
                                         placeholder="e.g. The boys kitchen, Chedar chops..."
-                                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900"
+                                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors font-medium text-gray-900"
                                     />
                                 </div>
                             </div>
@@ -384,7 +405,7 @@ const Advertise = () => {
                                     name="category"
                                     value={formData.category}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium text-gray-900 appearance-none"
+                                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-medium text-gray-900 appearance-none"
                                 >
                                     <option value="" disabled>Select a category</option>
                                     <option value="food">Food & Delivery</option>
@@ -398,17 +419,17 @@ const Advertise = () => {
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-4">Preferred Contact Method</label>
                                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                                    <label className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all ${formData.contactMethod === 'whatsapp' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600'}`}>
+                                    <label className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all ${formData.contactMethod === 'whatsapp' ? 'border-primary-600 bg-primary-50/50 text-primary-700' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600'}`}>
                                         <input type="radio" name="contactMethod" value="whatsapp" checked={formData.contactMethod === 'whatsapp'} onChange={handleInputChange} className="hidden" />
                                         <MessageCircle size={20} className="mb-1.5 sm:mb-2 sm:w-6 sm:h-6" />
                                         <span className="font-bold text-[10px] sm:text-sm">WhatsApp</span>
                                     </label>
-                                    <label className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all ${formData.contactMethod === 'phone' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600'}`}>
+                                    <label className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all ${formData.contactMethod === 'phone' ? 'border-primary-600 bg-primary-50/50 text-primary-700' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600'}`}>
                                         <input type="radio" name="contactMethod" value="phone" checked={formData.contactMethod === 'phone'} onChange={handleInputChange} className="hidden" />
                                         <Phone size={20} className="mb-1.5 sm:mb-2 sm:w-6 sm:h-6" />
                                         <span className="font-bold text-[10px] sm:text-sm">Phone Call</span>
                                     </label>
-                                    <label className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all ${formData.contactMethod === 'link' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600'}`}>
+                                    <label className={`cursor-pointer rounded-xl border-2 p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all ${formData.contactMethod === 'link' ? 'border-primary-600 bg-primary-50/50 text-primary-700' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-600'}`}>
                                         <input type="radio" name="contactMethod" value="link" checked={formData.contactMethod === 'link'} onChange={handleInputChange} className="hidden" />
                                         <ExternalLink size={20} className="mb-1.5 sm:mb-2 sm:w-6 sm:h-6" />
                                         <span className="font-bold text-[10px] sm:text-sm">Ext. Link</span>
@@ -434,7 +455,7 @@ const Advertise = () => {
                                             value={formData.whatsapp}
                                             onChange={handleInputChange}
                                             placeholder="e.g. +233 24 123 4567 or 024 123 4567"
-                                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900"
+                                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors font-medium text-gray-900"
                                         />
                                     </div>
                                     <p className="text-xs text-gray-400 mt-2 font-medium flex items-center gap-1">
@@ -459,7 +480,7 @@ const Advertise = () => {
                                             value={formData.contactUrl}
                                             onChange={handleInputChange}
                                             placeholder="https://yourwebsite.com/product"
-                                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900"
+                                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors font-medium text-gray-900"
                                         />
                                     </div>
                                     <p className="text-xs text-gray-400 mt-2 font-medium flex items-center gap-1">
@@ -473,7 +494,7 @@ const Advertise = () => {
                             <button
                                 onClick={nextStep}
                                 disabled={!isStep2Valid}
-                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all"
+                                className="flex-1 bg-primary-600 disabled:bg-primary-300 disabled:cursor-not-allowed hover:bg-primary-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-primary-200 transition-all"
                             >
                                 Continue to Media
                             </button>
@@ -492,7 +513,7 @@ const Advertise = () => {
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Campaign Flyer (16:9 or Square)</label>
 
-                                <div className={`relative border-2 rounded-xl flex flex-col items-center justify-center text-center transition-colors cursor-pointer group overflow-hidden ${formData.imagePreview ? 'border-solid border-indigo-100 bg-black/5' : 'border-dashed border-gray-300 p-8 hover:bg-gray-50 hover:border-indigo-400 bg-gray-50'}`}>
+                                <div className={`relative border-2 rounded-xl flex flex-col items-center justify-center text-center transition-colors cursor-pointer group overflow-hidden ${formData.imagePreview ? 'border-solid border-primary-100 bg-black/5' : 'border-dashed border-gray-300 p-8 hover:bg-gray-50 hover:border-primary-400 bg-gray-50'}`}>
 
                                     <input
                                         type="file"
@@ -514,7 +535,7 @@ const Advertise = () => {
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="w-16 h-16 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm">
+                                            <div className="w-16 h-16 rounded-full bg-primary-50 text-primary-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm">
                                                 <UploadCloud size={32} />
                                             </div>
                                             <span className="font-bold text-gray-700">Tap to upload flyer</span>
@@ -538,7 +559,7 @@ const Advertise = () => {
                                     maxLength={300}
                                     rows={4}
                                     placeholder="Keep it extremely punchy. e.g. 'Get 20% off your first meal when you show this ad...'"
-                                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-medium text-gray-900 resize-none"
+                                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors font-medium text-gray-900 resize-none"
                                 />
                                 <p className="text-xs text-gray-400 mt-2 font-medium">Note: Only the first 3 lines show automatically on the feed to keep the UI clean.</p>
                             </div>
@@ -548,7 +569,7 @@ const Advertise = () => {
                             <button
                                 onClick={nextStep}
                                 disabled={!formData.description.trim() || formData.description.length > 300 || !formData.imagePreview}
-                                className="flex-1 bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all"
+                                className="flex-1 bg-primary-600 disabled:bg-primary-300 disabled:cursor-not-allowed hover:bg-primary-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-primary-200 transition-all"
                             >
                                 Continue to Packages
                             </button>
@@ -563,10 +584,10 @@ const Advertise = () => {
                         <p className="text-gray-500 mb-6 font-medium">Preview your ad, select your placement tier, and duration.</p>
 
                         {/* Social Proof Badge for Checkout */}
-                        <div className="flex items-center gap-3 mb-8 bg-indigo-50/50 border border-indigo-100 px-5 py-3 rounded-xl shadow-sm w-fit transition-all duration-300 pointer-events-none">
+                        <div className="flex items-center gap-3 mb-8 bg-primary-50/50 border border-primary-100 px-5 py-3 rounded-xl shadow-sm w-fit transition-all duration-300 pointer-events-none">
                             <div className="relative flex h-3 w-3 shrink-0">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
                             </div>
                             <span className="font-extrabold text-[13px] sm:text-sm text-gray-900 tracking-tight">
                                 Monopolize student attention on the most visited app pages
@@ -579,8 +600,8 @@ const Advertise = () => {
                                 {AD_PACKAGES.map((pkg) => {
                                     const isSelected = selectedPackage === pkg.id;
                                     const Icon = pkg.icon;
-                                    const C = pkg.color === 'indigo'
-                                        ? { border: 'border-indigo-600', text: 'text-indigo-600', lightBorder: 'border-indigo-100', iconBg: 'bg-indigo-100', badge: 'bg-indigo-600 text-white', highlightBg: 'bg-indigo-50/50' }
+                                    const C = pkg.color === 'primary'
+                                        ? { border: 'border-primary-600', text: 'text-primary-600', lightBorder: 'border-primary-100', iconBg: 'bg-primary-100', badge: 'bg-primary-600 text-white', highlightBg: 'bg-primary-50/50' }
                                         : { border: 'border-blue-600', text: 'text-blue-600', lightBorder: 'border-blue-100', iconBg: 'bg-blue-100', badge: 'bg-blue-600 text-white', highlightBg: 'bg-blue-50/50' };
 
                                     return (
@@ -676,7 +697,7 @@ const Advertise = () => {
                             <div className="w-full sm:w-auto text-center sm:text-left">
                                 <span className="font-bold text-gray-500 block mb-1">Total to Pay</span>
                                 <div className="font-black text-3xl sm:text-4xl text-gray-900 tracking-tight">GH₵{calculatedPrice}.00</div>
-                                <div className="text-sm text-indigo-600 font-bold mt-1">
+                                <div className="text-sm text-primary-600 font-bold mt-1">
                                     {activePackage?.name} • {selectedDuration} Days
                                 </div>
                             </div>
@@ -686,7 +707,7 @@ const Advertise = () => {
                                     amount={calculatedPrice}
                                     email={"vendor@uccguide.com"}
                                     onPaymentSuccess={handleSuccess}
-                                    className="w-full py-5 rounded-xl font-bold text-white text-lg shadow-xl shadow-indigo-200 transition-all hover:-translate-y-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700"
+                                    className="w-full py-5 rounded-xl font-bold text-white text-lg shadow-xl shadow-primary-200 transition-all hover:-translate-y-1 flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700"
                                 >
                                     <span id="submit-ad-text">Pay & Submit Ad</span> <ExternalLink size={20} />
                                 </PaymentButton>

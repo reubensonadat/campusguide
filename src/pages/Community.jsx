@@ -3,6 +3,7 @@ import { Megaphone, ChevronRight, Sparkles, Star, X } from 'lucide-react';
 import CommunityCard from '../components/community/CommunityCard';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import LostFoundModal from '../components/community/LostFoundModal';
 
 import { supabase } from '../lib/supabase';
 
@@ -15,8 +16,7 @@ const CATEGORIES = [
     { id: 'event', label: 'School event' },
     { id: 'tech', label: 'Tech & Electronics' },
     { id: 'clothing', label: 'Clothing & Fashion' },
-
-
+    { id: 'lost-and-found', label: 'Lost & Found' },
 ];
 
 const Community = () => {
@@ -25,6 +25,8 @@ const Community = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isHomeBannerDismissed, setIsHomeBannerDismissed] = useLocalStorage('ucc_home_banner_dismissed', false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isLostFoundModalOpen, setIsLostFoundModalOpen] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -36,93 +38,127 @@ const Community = () => {
 
     React.useEffect(() => {
         window.scrollTo(0, 0);
-
-        const fetchCommunityData = async () => {
-            setIsLoading(true);
-            try {
-                // 1. Fetch Active Advertisements
-                const { data: adsData, error: adsError } = await supabase
-                    .from('advertisements')
-                    .select('*')
-                    .ilike('status', 'active'); // Handle 'Active', 'ACTIVE', 'active'
-
-                if (adsError) throw adsError;
-
-                // 2. Fetch University Announcements
-                const { data: announcementsData, error: annError } = await supabase
-                    .from('announcements')
-                    .select('*');
-
-                if (annError) throw annError;
-
-                // 3. Format Ads for CommunityCard
-                const formattedAds = (adsData || []).map(ad => {
-                    let actionText = 'Message via WhatsApp';
-                    let link = '#';
-
-                    const cleanPhone = ad.phone_number ? ad.phone_number.replace(/\D/g, '') : '';
-
-                    if (ad.contact_method === 'link' && ad.contact_url) {
-                        actionText = 'Visit Link';
-                        link = ad.contact_url;
-                    } else if (ad.contact_method === 'phone') {
-                        actionText = 'Call Now';
-                        link = cleanPhone ? `tel:+${cleanPhone}` : '#';
-                    } else {
-                        // Default to WhatsApp
-                        actionText = 'Message via WhatsApp';
-                        link = cleanPhone
-                            ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${ad.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`
-                            : '#';
-                    }
-
-                    return {
-                        id: `ad-${ad.id}`,
-                        type: 'ad',
-                        category: ad.category,
-                        title: ad.title,
-                        description: ad.description,
-                        image: ad.image_url,
-                        actionText: actionText,
-                        link: link,
-                        createdAt: new Date(ad.created_at).getTime(),
-                    };
-                });
-
-                // 4. Format Announcements for CommunityCard
-                const formattedAnnouncements = (announcementsData || []).map(ann => ({
-                    id: `ann-${ann.id}`,
-                    type: 'announcement',
-                    category: 'update', // Map Announcements to School Updates
-                    tag: 'OFFICIAL',
-                    title: ann.title,
-                    description: ann.description || ann.content, // Handling both naming conventions
-                    image: ann.flyer_url,
-                    actionText: ann.action_text || null,
-                    link: ann.action_link || null,
-                    createdAt: new Date(ann.created_at).getTime(),
-                }));
-
-                // 5. Combine and Sort (Newest First)
-                const combinedFeed = [...formattedAnnouncements, ...formattedAds]
-                    .sort((a, b) => b.createdAt - a.createdAt);
-
-                setFeedData(combinedFeed);
-            } catch (error) {
-                console.error("Error fetching community feed:", error);
-                // Optionally handle error UI here, but falling back to empty feed is okay for MVP
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchCommunityData();
-    }, []);
+    }, [refreshTrigger]);
+
+    const fetchCommunityData = async () => {
+        setIsLoading(true);
+        try {
+            // 1. Fetch Active Advertisements that have not expired
+            const { data: adsData, error: adsError } = await supabase
+                .from('advertisements')
+                .select('*')
+                .ilike('status', 'active') // Handle 'Active', 'ACTIVE', 'active'
+                .gte('expires_at', new Date().toISOString());
+
+            if (adsError) throw adsError;
+
+            // 2. Fetch University Announcements
+            const { data: announcementsData, error: annError } = await supabase
+                .from('announcements')
+                .select('*');
+
+            if (annError) throw annError;
+
+            // 3. Fetch Lost and Found (Only items from the last 3 days)
+            const threeDaysAgo = new Date();
+            threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+            const { data: lostFoundData, error: lfError } = await supabase
+                .from('lost_and_found')
+                .select('*')
+                .gte('created_at', threeDaysAgo.toISOString())
+                .order('created_at', { ascending: false });
+
+            if (lfError) throw lfError;
+
+            // 4. Format Ads for CommunityCard
+            const formattedAds = (adsData || []).map(ad => {
+                let actionText = 'Message via WhatsApp';
+                let link = '#';
+
+                const cleanPhone = ad.phone_number ? ad.phone_number.replace(/\D/g, '') : '';
+
+                if (ad.contact_method === 'link' && ad.contact_url) {
+                    actionText = 'Visit Link';
+                    link = ad.contact_url;
+                } else if (ad.contact_method === 'phone') {
+                    actionText = 'Call Now';
+                    link = cleanPhone ? `tel:+${cleanPhone}` : '#';
+                } else {
+                    // Default to WhatsApp
+                    actionText = 'Message via WhatsApp';
+                    link = cleanPhone
+                        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${ad.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`
+                        : '#';
+                }
+
+                return {
+                    id: `ad-${ad.id}`,
+                    type: 'ad',
+                    category: ad.category,
+                    title: ad.title,
+                    description: ad.description,
+                    image: ad.image_url,
+                    actionText: actionText,
+                    link: link,
+                    createdAt: new Date(ad.created_at).getTime(),
+                };
+            });
+
+            // 5. Format Announcements for CommunityCard
+            const formattedAnnouncements = (announcementsData || []).map(ann => ({
+                id: `ann-${ann.id}`,
+                type: 'announcement',
+                category: 'update', // Map Announcements to School Updates
+                tag: 'OFFICIAL',
+                title: ann.title,
+                description: ann.description || ann.content, // Handling both naming conventions
+                image: ann.flyer_url,
+                actionText: ann.action_text || null,
+                link: ann.action_link || null,
+                createdAt: new Date(ann.created_at).getTime(),
+            }));
+
+            // 6. Format Lost and Found
+            const formattedLostFound = (lostFoundData || []).map(lf => {
+                // Prepend location to description visually
+                const desc = lf.location ? `📍 Location: ${lf.location}\n\n${lf.description}` : lf.description;
+                const contact = lf.contact_info.replace(/\D/g, '');
+                return {
+                    id: `lf-${lf.id}`,
+                    type: 'lost_and_found', // Distinct from 'ad' so it doesn't say SPONSORED
+                    category: 'lost-and-found',
+                    tag: lf.type === 'lost' ? 'LOST ITEM' : 'FOUND ITEM',
+                    title: lf.item_name,
+                    description: desc,
+                    image: lf.image_url,
+                    actionText: 'Contact Person',
+                    link: contact ? `tel:+233${contact.startsWith('0') ? contact.substring(1) : contact}` : '#',
+                    createdAt: new Date(lf.created_at).getTime(),
+                }
+            });
+
+            // 7. Combine and Sort (Newest First)
+            const combinedFeed = [...formattedAnnouncements, ...formattedAds, ...formattedLostFound]
+                .sort((a, b) => b.createdAt - a.createdAt);
+
+            setFeedData(combinedFeed);
+        } catch (error) {
+            console.error("Error fetching community feed:", JSON.stringify(error, null, 2));
+            // Optionally handle error UI here, but falling back to empty feed is okay for MVP
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
 
     const navigate = useNavigate();
 
     const filteredFeed = feedData.filter(post =>
-        selectedCategory === 'all' || post.category === selectedCategory
+        selectedCategory === 'all'
+            ? post.category !== 'lost-and-found'
+            : post.category === selectedCategory
     );
 
     return (
@@ -140,11 +176,22 @@ const Community = () => {
                         </div>
                     </div>
 
-                    {/* Small button in upper right guiding to the newly separated premium Advertise page */}
-                    <div className={`transition-all duration-300 overflow-hidden ${isScrolled ? 'w-0 opacity-0 scale-95' : 'w-16 opacity-100 scale-100'}`}>
+                    {/* Buttons in upper right */}
+                    <div className={`flex items-center gap-2 transition-all duration-300 overflow-hidden ${isScrolled ? 'w-0 opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+                        <button
+                            onClick={() => setIsLostFoundModalOpen(true)}
+                            className="flex flex-col items-center justify-center px-3 py-2 rounded-xl bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors border border-primary-100/50 active:scale-95 group whitespace-nowrap"
+                            aria-label="Report Lost/Found"
+                        >
+                            <div className="relative">
+                                <Star size={20} className="group-hover:rotate-12 transition-transform duration-300" />
+                            </div>
+                            <span className="text-[10px] font-bold tracking-tight mt-1">Lost/Found</span>
+                        </button>
+
                         <button
                             onClick={() => navigate('/advertise')}
-                            className="flex w-full flex-col items-center justify-center p-2 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors border border-amber-100/50 active:scale-95 group whitespace-nowrap"
+                            className="flex flex-col items-center justify-center px-3 py-2 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors border border-amber-100/50 active:scale-95 group whitespace-nowrap"
                             aria-label="Showcase to the world"
                         >
                             <div className="relative">
@@ -206,7 +253,7 @@ const Community = () => {
                 )}
 
                 {/* Sticky Feed Header & Filters */}
-                <div 
+                <div
                     className="sticky z-20 bg-gray-50/95 backdrop-blur-md pt-2 pb-4 -mx-4 px-4 md:mx-0 md:px-0 transition-all duration-300"
                     style={{ top: isScrolled ? '50px' : '76px' }}
                 >
@@ -269,6 +316,12 @@ const Community = () => {
                     </div>
                 )}
             </div>
+
+            <LostFoundModal
+                isOpen={isLostFoundModalOpen}
+                onClose={() => setIsLostFoundModalOpen(false)}
+                onSuccess={() => setRefreshTrigger(prev => prev + 1)}
+            />
         </div>
     );
 };

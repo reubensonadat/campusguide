@@ -14,21 +14,21 @@ const CommunityCard = ({ post }) => {
     const defaultActionText = isAd ? "Message via WhatsApp" : "View Details";
     const buttonText = actionText || defaultActionText;
 
-    const buttonStyle = isAd
-        ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
-        : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200";
+    const buttonStyle = "bg-primary-600 text-white hover:bg-primary-700 hover:shadow-primary-200";
 
     return (
         <div className="bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-gray-100 mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 h-full">
 
             {/* Full Image Container (Flyer) */}
-            <div className="relative w-full bg-gray-100 flex items-center justify-center shrink-0 lg:h-64">
-                <img
-                    src={image || "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=600&auto=format&fit=crop"}
-                    alt={title}
-                    className="w-full h-auto max-h-[500px] object-contain lg:h-full lg:object-cover transition-transform duration-500 group-hover:scale-105 block"
-                />
-            </div>
+            {image && (
+                <div className="relative w-full bg-gray-100 flex items-center justify-center shrink-0 lg:h-64">
+                    <img
+                        src={image}
+                        alt={title}
+                        className="w-full h-auto max-h-[500px] object-contain lg:h-full lg:object-cover transition-transform duration-500 group-hover:scale-105 block"
+                    />
+                </div>
+            )}
 
             {/* Post Content */}
             <div className="p-6 flex-1 flex flex-col min-h-0">
