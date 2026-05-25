@@ -8,6 +8,14 @@ import { DAYS_OF_WEEK, TIME_SLOTS, GRADE_POINTS } from '../../utils/constants';
 import { requestNotificationPermission, isNotificationSupported } from '../../services/notificationService';
 import html2canvas from 'html2canvas';
 
+const formatTime12Hour = (time24) => {
+  if (!time24) return '';
+  const [hours, minutes] = time24.split(':').map(Number);
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const hours12 = hours % 12 || 12;
+  return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+};
+
 const TimetableBuilder = () => {
   const [courses, setCourses] = useLocalStorage('ucc_timetable', []);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -234,9 +242,9 @@ const TimetableBuilder = () => {
                             onClick={() => setSelectedCourse(course)}
                             className="flex gap-4 group cursor-pointer hover:-translate-y-1 transition-transform duration-200"
                           >
-                            <div className="w-[4.5rem] flex flex-col justify-center items-end opacity-80 group-hover:opacity-100 transition-opacity">
-                              <div className="text-sm font-bold text-gray-900">{course.startTime}</div>
-                              <div className="text-xs text-gray-400 font-medium">{course.endTime}</div>
+                            <div className="w-[5.5rem] flex flex-col justify-center items-end opacity-80 group-hover:opacity-100 transition-opacity">
+                              <div className="text-sm font-bold text-gray-900">{formatTime12Hour(course.startTime)}</div>
+                              <div className="text-xs text-gray-400 font-medium">{formatTime12Hour(course.endTime)}</div>
                             </div>
                             <div
                               className="flex-1 p-4 rounded-2xl relative overflow-hidden text-white"
@@ -352,27 +360,23 @@ const TimetableBuilder = () => {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Start</label>
-                  <select
+                  <input
+                    type="time"
                     value={newCourse.startTime}
                     onChange={(e) => setNewCourse({ ...newCourse, startTime: e.target.value })}
                     className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
-                  >
-                    {TIME_SLOTS.map(time => (
-                      <option key={time} value={time}>{time}</option>
-                    ))}
-                  </select>
+                    required
+                  />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">End</label>
-                  <select
+                  <input
+                    type="time"
                     value={newCourse.endTime}
                     onChange={(e) => setNewCourse({ ...newCourse, endTime: e.target.value })}
                     className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
-                  >
-                    {TIME_SLOTS.map(time => (
-                      <option key={time} value={time}>{time}</option>
-                    ))}
-                  </select>
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -433,7 +437,7 @@ const TimetableBuilder = () => {
                   <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
                     <Bell size={16} />
                   </div>
-                  <span>{selectedCourse.startTime} - {selectedCourse.endTime}</span>
+                  <span>{formatTime12Hour(selectedCourse.startTime)} - {formatTime12Hour(selectedCourse.endTime)}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-600">
                   <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
