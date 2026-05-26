@@ -6,6 +6,7 @@ const PWAInstallButton = () => {
     const [showButton, setShowButton] = useState(false);
     const [installing, setInstalling] = useState(false);
     const [installed, setInstalled] = useState(false);
+    const [isIosPrompt, setIsIosPrompt] = useState(false);
 
     useEffect(() => {
         // Check if app is already installed
@@ -18,6 +19,14 @@ const PWAInstallButton = () => {
         const dismissed = localStorage.getItem('pwa_install_dismissed');
         if (dismissed) {
             setShowButton(false);
+            return;
+        }
+
+        // Check if device is iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            setIsIosPrompt(true);
+            setShowButton(true);
             return;
         }
 
@@ -93,6 +102,25 @@ const PWAInstallButton = () => {
                             <h4 className="font-bold text-sm">Installed!</h4>
                             <p className="text-xs text-primary-100">Thank you for installing</p>
                         </div>
+                    </>
+                ) : isIosPrompt ? (
+                    <>
+                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+                            <Download size={24} className="text-white" />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-bold text-sm">Install App</h4>
+                            <p className="text-xs text-primary-100">
+                                Tap <strong>Share</strong> icon then <strong>Add to Home Screen</strong>
+                            </p>
+                        </div>
+                        <button
+                            onClick={handleDismiss}
+                            className="text-white/70 hover:text-white transition-colors p-1 shrink-0"
+                            aria-label="Dismiss"
+                        >
+                            <X size={18} />
+                        </button>
                     </>
                 ) : (
                     <>

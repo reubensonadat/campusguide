@@ -4,6 +4,8 @@ import { Lock, LogOut, CheckCircle, XCircle, Trash2, UploadCloud, Eye, EyeOff, L
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { CustomGuide } from '../components/common/CustomIcons';
+
 const AdminDashboard = () => {
     const [isAuthenticated, setIsAuthenticated] = useLocalStorage('ucc_admin_auth', false);
     const [passwordInput, setPasswordInput] = useState('');
@@ -21,6 +23,7 @@ const AdminDashboard = () => {
         if (location.pathname.includes('lostfound')) setActiveTab('lostfound');
         else if (location.pathname.includes('upload')) setActiveTab('upload');
         else if (location.pathname.includes('thrift')) setActiveTab('thrift');
+        else if (location.pathname.includes('cms')) setActiveTab('cms');
         else setActiveTab('moderation');
     }, [location.pathname]);
 
@@ -56,21 +59,21 @@ const AdminDashboard = () => {
 
     const fetchAds = async () => {
         setIsLoading(true);
-        const { data, error } = await supabase.from('advertisements').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('advertisements').select('*').order('id', { ascending: false });
         if (data) setAds(data);
         setIsLoading(false);
     };
 
     const fetchLostFound = async () => {
         setIsLoading(true);
-        const { data, error } = await supabase.from('lost_and_found').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('lost_and_found').select('*').order('id', { ascending: false });
         if (data) setLostFoundItems(data);
         setIsLoading(false);
     };
 
     const fetchThrift = async () => {
         setIsLoading(true);
-        const { data, error } = await supabase.from('thrift_listings').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('thrift_listings').select('*').order('id', { ascending: false });
         if (data) setThriftItems(data);
         setIsLoading(false);
     };
@@ -155,17 +158,28 @@ const AdminDashboard = () => {
 
                 const { presignedUrl, publicUrl } = uploadInfo;
 
-                // Upload directly to Cloudflare R2
-                const uploadRes = await fetch(presignedUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': uploadFormData.imageFile.type
-                    },
-                    body: uploadFormData.imageFile
-                });
+                console.log("SUCCESSFULLY GOT UPLOAD INFO FROM EDGE FUNCTION:");
+                console.log("Presigned URL:", presignedUrl);
+                console.log("Public URL:", publicUrl);
 
-                if (!uploadRes.ok) {
-                    throw new Error("Failed to upload image to Cloudflare R2");
+                // Upload directly to Cloudflare R2
+                try {
+                    const uploadRes = await fetch(presignedUrl, {
+                        method: 'PUT',
+                        body: uploadFormData.imageFile,
+                        headers: {
+                            'Content-Type': uploadFormData.imageFile.type
+                        }
+                    });
+
+                    if (!uploadRes.ok) {
+                        const errorText = await uploadRes.text();
+                        console.error("R2 Upload Failed:", uploadRes.status, errorText);
+                        throw new Error(`Cloudflare R2 rejected the upload (Status ${uploadRes.status}): ${errorText}`);
+                    }
+                } catch (fetchErr) {
+                    console.error("BROWSER FAILED TO FETCH THE PRESIGNED URL:", fetchErr);
+                    throw new Error(`Network/CORS error when hitting R2. URL was: ${presignedUrl.substring(0, 50)}...`);
                 }
 
                 finalImageUrl = publicUrl;
@@ -263,6 +277,12 @@ const AdminDashboard = () => {
                     </button>
                     <button onClick={() => navigate('/admin/upload')} className={`flex items-center gap-3 p-3 rounded-xl font-bold whitespace-nowrap transition-colors ${activeTab === 'upload' ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-100'}`}>
                         <Megaphone size={20}/> Post Update / Ad
+                    </button>
+                    <button onClick={() => { setActiveTab('cms'); navigate('/admin/cms'); }} className={`flex items-center gap-3 p-3 rounded-xl font-bold whitespace-nowrap transition-colors ${activeTab === 'cms' ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-100'}`}>
+                        <div className={`w-5 h-5 ${activeTab === 'cms' ? 'text-primary-600' : 'text-gray-600'}`}>
+                            <CustomGuide />
+                        </div>
+                        Guide CMS
                     </button>
                 </div>
                 <div className="p-4 mt-auto border-t border-gray-200 hidden md:block">
@@ -481,6 +501,11 @@ const AdminDashboard = () => {
                             </button>
                         </form>
                     </div>
+                )}
+
+                {/* GUIDE CMS TAB */}
+                {activeTab === 'cms' && (
+                    <GuideCMSManager />
                 )}
             </div>
             

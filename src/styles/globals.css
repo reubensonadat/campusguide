@@ -27,6 +27,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .safe-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-pl {
+    padding-left: env(safe-area-inset-left);
+  }
+  .safe-pr {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
 :root {
   --primary-50: #f0f7fa;
   --primary-100: #daebf3;
@@ -83,10 +98,12 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
   scroll-behavior: smooth;
+  overscroll-behavior: none;
 }
 
 body {
@@ -100,6 +117,15 @@ body {
   text-rendering: optimizeLegibility;
   transition: background-color 0.3s ease, color 0.3s ease;
   overscroll-behavior-y: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Re-enable text selection only for actual content elements */
+p, h1, h2, h3, h4, h5, h6, article, input, textarea {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 #root {
@@ -241,6 +267,7 @@ body {
 .tab-bar {
   background-color: var(--white);
   border-top: 1px solid var(--gray-200);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Onboarding modal */
