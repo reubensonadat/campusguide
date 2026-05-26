@@ -435,10 +435,10 @@ const Home = () => {
                   </div>
                 </div>
                 <button 
-                  onClick={() => navigate('/tools?tab=plan-day')}
+                  onClick={() => navigate('/tools?tab=timetable')}
                   className="flex bg-primary-50 text-primary-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-100 transition-colors"
                 >
-                  Plan Day
+                  Add Class
                 </button>
               </div>
             ) : allCompleted ? (

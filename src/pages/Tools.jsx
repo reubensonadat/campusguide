@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import TimetableBuilder from '../components/tools/TimetableBuilder';
 import GPACalculator from '../components/tools/GPACalculator';
 import FormulaCalculator from '../components/tools/FormulaCalculator';
 import CoolFinds from '../components/tools/CoolFinds';
 import PlanYourDay from '../components/tools/PlanYourDay';
 import { Library } from 'lucide-react';
+import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 
 const tabs = [
   { id: 'timetable', label: 'Timetable Builder' },
@@ -17,19 +18,27 @@ const tabs = [
 
 const Tools = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialTab = searchParams.get('tab') || 'timetable';
   const [activeTool, setActiveTool] = useState(initialTab);
+  const [isAuthVerified, setIsAuthVerified] = useState(false);
 
   useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab) {
-      setActiveTool(tab);
-    }
+    // Trigger auth immediately when entering the tools section
+    triggerAuthSheet(() => {
+      setIsAuthVerified(true);
+      const tab = searchParams.get('tab');
+      if (tab) {
+        setActiveTool(tab);
+      }
+    });
   }, [searchParams]);
 
   const handleTabChange = (tabId) => {
-    setActiveTool(tabId);
-    setSearchParams({ tab: tabId }, { replace: true });
+    triggerAuthSheet(() => {
+      setActiveTool(tabId);
+      setSearchParams({ tab: tabId }, { replace: true });
+    });
   };
 
   return (

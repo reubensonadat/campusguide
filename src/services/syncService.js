@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { getCurrentUser } from './authService';
 
 const LAST_SYNC_KEY = 'ucc_last_sync';
 const SYNC_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -8,8 +9,11 @@ const SYNC_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
  * localStorage is ALWAYS primary — this is a soft backup.
  * Never wipes local data. Always merge, never replace.
  */
-export const syncToCloud = async (deviceId) => {
-  if (!deviceId) return { success: false, error: 'No device ID' };
+export const syncToCloud = async () => {
+  const user = await getCurrentUser();
+  if (!user) return { success: false, error: 'User not authenticated with PIN.' };
+
+  const userId = user.id;
 
   try {
     // 1. Sync Profile
@@ -18,22 +22,33 @@ export const syncToCloud = async (deviceId) => {
       await supabase
         .from('user_settings')
         .upsert({
-          device_id: deviceId,
+          user_id: userId,
           profile: profile,
           home_widgets: JSON.parse(localStorage.getItem('ucc_home_widgets') || '{}'),
           settings: JSON.parse(localStorage.getItem('ucc_settings') || '{}'),
           updated_at: new Date().toISOString(),
-        }, { onConflict: 'device_id' });
+        }, { onConflict: 'user_id' });
+      
+      // Also update the public users table with profile fields
+      await supabase
+        .from('users')
+        .update({
+          name: profile.name || null,
+          phone_number: profile.phone || null,
+          course: profile.course || null,
+          level: profile.level || null
+        })
+        .eq('id', userId);
     }
 
     // 2. Sync Tasks
     const tasks = JSON.parse(localStorage.getItem('ucc_daily_tasks') || '[]');
     if (tasks.length > 0) {
-      // Delete old tasks for this device, then insert current ones
-      await supabase.from('user_tasks').delete().eq('device_id', deviceId);
+      // Delete old tasks for this user, then insert current ones
+      await supabase.from('user_tasks').delete().eq('user_id', userId);
       const taskRows = tasks.map(t => ({
         id: t.id,
-        device_id: deviceId,
+        user_id: userId,
         title: t.title,
         date: t.date,
         time: t.time,
@@ -48,10 +63,10 @@ export const syncToCloud = async (deviceId) => {
     // 3. Sync Timetable
     const timetable = JSON.parse(localStorage.getItem('ucc_timetable') || '[]');
     if (timetable.length > 0) {
-      await supabase.from('user_timetable').delete().eq('device_id', deviceId);
+      await supabase.from('user_timetable').delete().eq('user_id', userId);
       const timetableRows = timetable.map(c => ({
         id: String(c.id),
-        device_id: deviceId,
+        user_id: userId,
         name: c.name,
         day: c.day,
         start_time: c.startTime,
@@ -70,10 +85,10 @@ export const syncToCloud = async (deviceId) => {
     // 4. Sync GPA Courses
     const gpaCourses = JSON.parse(localStorage.getItem('ucc_gpa') || '[]');
     if (gpaCourses.length > 0) {
-      await supabase.from('user_gpa_courses').delete().eq('device_id', deviceId);
+      await supabase.from('user_gpa_courses').delete().eq('user_id', userId);
       const gpaRows = gpaCourses.map(c => ({
         id: String(c.id),
-        device_id: deviceId,
+        user_id: userId,
         name: c.name,
         credit_hours: c.creditHours || 3,
         score: c.score || 0,
@@ -94,7 +109,7 @@ export const syncToCloud = async (deviceId) => {
       .from('user_notes')
       .upsert({
         id: 'quick_note',
-        device_id: deviceId,
+        user_id: userId,
         content: notes,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'id' });
@@ -111,18 +126,20 @@ export const syncToCloud = async (deviceId) => {
 
 /**
  * Restores all data from Supabase to localStorage.
- * Used when a user enters their unique ID on a new device.
+ * Used when a user successfully enters their old Device ID + PIN.
  * MERGES — does not wipe existing local data.
  */
-export const restoreFromCloud = async (deviceId) => {
-  if (!deviceId) return { success: false, error: 'No device ID' };
+export const restoreFromCloud = async () => {
+  const user = await getCurrentUser();
+  if (!user) return { success: false, error: 'User not authenticated. Please restore lifecycle first.' };
 
   try {
+    // Note: RLS automatically restricts all these selects to ONLY this user's data!
+
     // 1. Restore Settings (profile, widgets)
     const { data: settings } = await supabase
       .from('user_settings')
       .select('*')
-      .eq('device_id', deviceId)
       .single();
 
     if (settings) {
@@ -135,11 +152,23 @@ export const restoreFromCloud = async (deviceId) => {
       }
     }
 
+    // Restore top-level profile details from users table
+    const { data: userProfile } = await supabase.from('users').select('*').single();
+    if (userProfile) {
+        const existingProfile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
+        const mergedProfile = { ...existingProfile };
+        if (userProfile.name) mergedProfile.name = userProfile.name;
+        if (userProfile.phone_number) mergedProfile.phone = userProfile.phone_number;
+        if (userProfile.course) mergedProfile.course = userProfile.course;
+        if (userProfile.level) mergedProfile.level = userProfile.level;
+        localStorage.setItem('ucc_profile', JSON.stringify(mergedProfile));
+    }
+
+
     // 2. Restore Tasks
     const { data: tasks } = await supabase
       .from('user_tasks')
-      .select('*')
-      .eq('device_id', deviceId);
+      .select('*');
 
     if (tasks && tasks.length > 0) {
       const existingTasks = JSON.parse(localStorage.getItem('ucc_daily_tasks') || '[]');
@@ -164,8 +193,7 @@ export const restoreFromCloud = async (deviceId) => {
     // 3. Restore Timetable
     const { data: timetable } = await supabase
       .from('user_timetable')
-      .select('*')
-      .eq('device_id', deviceId);
+      .select('*');
 
     if (timetable && timetable.length > 0) {
       localStorage.setItem('ucc_timetable', JSON.stringify(timetable.map(c => ({
@@ -186,8 +214,7 @@ export const restoreFromCloud = async (deviceId) => {
     // 4. Restore GPA
     const { data: gpa } = await supabase
       .from('user_gpa_courses')
-      .select('*')
-      .eq('device_id', deviceId);
+      .select('*');
 
     if (gpa && gpa.length > 0) {
       localStorage.setItem('ucc_gpa', JSON.stringify(gpa.map(c => ({
@@ -208,15 +235,12 @@ export const restoreFromCloud = async (deviceId) => {
     const { data: notes } = await supabase
       .from('user_notes')
       .select('content')
-      .eq('device_id', deviceId)
+      .eq('id', 'quick_note')
       .single();
 
     if (notes && notes.content) {
       localStorage.setItem('ucc_quick_notes', notes.content);
     }
-
-    // Update device ID in localStorage to the restored one
-    localStorage.setItem('ucc_device_id', deviceId);
 
     return { success: true };
   } catch (error) {
@@ -234,4 +258,16 @@ export const shouldSyncNow = () => {
   if (!lastSync) return true;
   const diff = Date.now() - new Date(lastSync).getTime();
   return diff >= SYNC_INTERVAL_MS;
+};
+
+let syncTimeout = null;
+/**
+ * Triggers a non-blocking background sync with a 5-second debounce.
+ * This ensures every change is saved to Supabase without overwhelming the database.
+ */
+export const triggerBackgroundSync = () => {
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(() => {
+    syncToCloud().catch(err => console.error("Background sync failed:", err));
+  }, 5000);
 };

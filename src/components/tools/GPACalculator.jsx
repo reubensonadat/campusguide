@@ -6,6 +6,7 @@ import { Modal } from '../common/Modal';
 import { Plus, Trash2, Calculator, Save, Info } from 'lucide-react';
 import { GRADE_POINTS, GRADE_RANGES } from '../../utils/constants';
 import { calculateGPA, getGradeFromScore } from '../../utils/helpers';
+import { triggerAuthSheet } from '../onboarding/AuthModal';
 
 const GPACalculator = () => {
   const [courses, setCourses] = useLocalStorage('ucc_gpa', []);
@@ -79,67 +80,69 @@ const GPACalculator = () => {
   }, [courses, setCourses]);
 
   const handleAddCourse = () => {
-    let finalScore = 0;
-    
-    if (newCourse.isDetailed) {
-      const examW = parseFloat(newCourse.examWeight) || 60;
-      const caW = 100 - examW;
-
-      let totalCAScore = 0;
-      let totalCAMax = 0;
-
-      newCourse.assessments.forEach(a => {
-        totalCAScore += (parseFloat(a.score) || 0);
-        totalCAMax += (parseFloat(a.max) || 0);
-      });
-
-      let caAchieved = 0;
-      if (totalCAMax > 0) {
-        caAchieved = (totalCAScore / totalCAMax) * caW;
-      } else {
-        caAchieved = totalCAScore;
-      }
-
-      let examAchieved = parseFloat(newCourse.examScore) || 0;
-
-      finalScore = caAchieved + examAchieved;
-    } else {
-      finalScore = parseFloat(newCourse.score) || 0;
-    }
-
-    if (newCourse.name && finalScore >= 0) {
-      const score = Math.min(100, Math.max(0, finalScore)); // clamp between 0 and 100
-      const grade = getGradeFromScore(score);
-      const gradePoint = GRADE_POINTS[grade];
-
-      const courseObject = {
-        ...newCourse,
-        id: newCourse.id || Date.now(),
-        score: score,
-        grade: grade,
-        gradePoint: gradePoint
-      };
-
-      if (courses.some(c => c.id === courseObject.id)) {
-        setCourses(courses.map(c => c.id === courseObject.id ? courseObject : c));
-      } else {
-        setCourses([...courses, courseObject]);
-      }
+    triggerAuthSheet(() => {
+      let finalScore = 0;
       
-      setNewCourse({
-        name: '',
-        creditHours: 3,
-        score: '',
-        isDetailed: false,
-        examWeight: 60,
-        examScore: '',
-        assessments: [
-          { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
-          { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-        ]
-      });
-      setShowAddForm(false);
-    }
+      if (newCourse.isDetailed) {
+        const examW = parseFloat(newCourse.examWeight) || 60;
+        const caW = 100 - examW;
+
+        let totalCAScore = 0;
+        let totalCAMax = 0;
+
+        newCourse.assessments.forEach(a => {
+          totalCAScore += (parseFloat(a.score) || 0);
+          totalCAMax += (parseFloat(a.max) || 0);
+        });
+
+        let caAchieved = 0;
+        if (totalCAMax > 0) {
+          caAchieved = (totalCAScore / totalCAMax) * caW;
+        } else {
+          caAchieved = totalCAScore;
+        }
+
+        let examAchieved = parseFloat(newCourse.examScore) || 0;
+
+        finalScore = caAchieved + examAchieved;
+      } else {
+        finalScore = parseFloat(newCourse.score) || 0;
+      }
+
+      if (newCourse.name && finalScore >= 0) {
+        const score = Math.min(100, Math.max(0, finalScore)); // clamp between 0 and 100
+        const grade = getGradeFromScore(score);
+        const gradePoint = GRADE_POINTS[grade];
+
+        const courseObject = {
+          ...newCourse,
+          id: newCourse.id || Date.now(),
+          score: score,
+          grade: grade,
+          gradePoint: gradePoint
+        };
+
+        if (courses.some(c => c.id === courseObject.id)) {
+          setCourses(courses.map(c => c.id === courseObject.id ? courseObject : c));
+        } else {
+          setCourses([...courses, courseObject]);
+        }
+        
+        setNewCourse({
+          name: '',
+          creditHours: 3,
+          score: '',
+          isDetailed: false,
+          examWeight: 60,
+          examScore: '',
+          assessments: [
+            { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+            { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+          ]
+        });
+        setShowAddForm(false);
+      }
+    });
   };
 
   const handleDeleteCourse = (id) => {

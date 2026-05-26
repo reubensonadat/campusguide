@@ -7,6 +7,7 @@ import { Modal } from '../common/Modal';
 import { DAYS_OF_WEEK, TIME_SLOTS, GRADE_POINTS } from '../../utils/constants';
 import { requestNotificationPermission, isNotificationSupported } from '../../services/notificationService';
 import html2canvas from 'html2canvas';
+import { triggerAuthSheet } from '../onboarding/AuthModal';
 
 const formatTime12Hour = (time24) => {
   if (!time24) return '';
@@ -69,74 +70,58 @@ const TimetableBuilder = () => {
 
   const handleAddCourse = (e) => {
     e.preventDefault();
-    if (!newCourse.name || !newCourse.location) {
-      setConflictError('Please enter a course name and location.');
-      return;
-    }
-   if (newCourse.startTime >= newCourse.endTime) {
-      setConflictError('End time must be after start time.');
-      return;
-    }
+    triggerAuthSheet(() => {
+      if (!newCourse.name || !newCourse.location) {
+        setConflictError('Please enter a course name and location.');
+        return;
+      }
+      if (newCourse.startTime >= newCourse.endTime) {
+        setConflictError('End time must be after start time.');
+        return;
+      }
 
-    // Remove old course if editing to avoid self-conflict
-    const tempCourses = newCourse.id ? courses.filter(c => c.id !== newCourse.id) : courses;
+      // Remove old course if editing to avoid self-conflict
+      const tempCourses = newCourse.id ? courses.filter(c => c.id !== newCourse.id) : courses;
 
-    // Check conflicts
-    const conflict = tempCourses.find(c =>
-      c.day === newCourse.day &&
-      (
-        (newCourse.startTime >= c.startTime && newCourse.startTime < c.endTime) ||
-        (newCourse.endTime > c.startTime && newCourse.endTime <= c.endTime) ||
-        (newCourse.startTime <= c.startTime && newCourse.endTime >= c.endTime)
-      )
-    );
-    if (conflict) {
-      setConflictError(`Time conflict with ${conflict.name}`);
-      return;
-    }
+      // Check conflicts
+      const conflict = tempCourses.find(c =>
+        c.day === newCourse.day &&
+        (
+          (newCourse.startTime >= c.startTime && newCourse.startTime < c.endTime) ||
+          (newCourse.endTime > c.startTime && newCourse.endTime <= c.endTime) ||
+          (newCourse.startTime <= c.startTime && newCourse.endTime >= c.endTime)
+        )
+      );
+      if (conflict) {
+        setConflictError(`Time conflict with ${conflict.name}`);
+        return;
+      }
 
-    if (newCourse.id) {
-      setCourses(courses.map(c => c.id === newCourse.id ? newCourse : c));
-    } else {
-      setCourses([...courses, { ...newCourse, id: Date.now() }]);
-    }
+      if (newCourse.id) {
+        setCourses(courses.map(c => c.id === newCourse.id ? newCourse : c));
+      } else {
+        setCourses([...courses, { ...newCourse, id: Date.now() }]);
+      }
 
-    setNewCourse({
-      name: '',
-      day: 'Monday',
-      startTime: '08:30',
-      endTime: '09:30',
-      location: '',
-      color: colors[tempCourses.length % colors.length],
-      lecturer: '',
-      contact: '',
-      creditHours: 3
+      setNewCourse({
+        name: '',
+        day: 'Monday',
+        startTime: '08:30',
+        endTime: '09:30',
+        location: '',
+        color: colors[tempCourses.length % colors.length],
+        lecturer: '',
+        contact: '',
+        creditHours: 3
+      });
+      setConflictError('');
+      setShowAddForm(false);
     });
-    setConflictError('');
-    setShowAddForm(false);
   };
 
   const handleDeleteCourse = (id) => {
     setCourses(courses.filter(course => course.id !== id));
     setSelectedCourse(null);
-  };
-
-  const exportAsImage = async () => {
-    if (!timetableRef.current) return;
-    setIsExporting(true);
-    try {
-      const canvas = await html2canvas(timetableRef.current, { scale: 2, useCORS: true, backgroundColor: '#f8fafc' });
-      const image = canvas.toDataURL("image/png", 1.0);
-      const link = document.createElement('a');
-      link.download = 'My_Timetable.png';
-      link.href = image;
-      link.click();
-    } catch (error) {
-      console.error("Error exporting timetable:", error);
-      alert('Failed to export timetable.');
-    } finally {
-      setIsExporting(false);
-    }
   };
 
   // Group courses by day and sort by time
@@ -159,18 +144,6 @@ const TimetableBuilder = () => {
             </div>
 
             <div className="flex w-full sm:w-auto gap-2 flex-wrap">
-              {courses.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={exportAsImage}
-                  disabled={isExporting}
-                  className="flex-1 sm:flex-none transition-all"
-                >
-                  <Download size={16} className={`mr-2 ${isExporting ? 'animate-bounce' : ''}`} />
-                  {isExporting ? 'Saving Image...' : 'Save Image'}
-                </Button>
-              )}
               {!notificationsEnabled && isNotificationSupported() && (
                 <Button
                   variant="outline"

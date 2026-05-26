@@ -22,6 +22,14 @@ export const useLocalStorage = (key, initialValue) => {
       setStoredValue(prev => {
         const valueToStore = value instanceof Function ? value(prev) : value;
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        
+        // Trigger non-blocking cloud sync on every local storage update
+        if (key.startsWith('ucc_')) {
+          import('../services/syncService').then(({ triggerBackgroundSync }) => {
+            triggerBackgroundSync();
+          }).catch(console.error);
+        }
+        
         return valueToStore;
       });
     } catch (error) {

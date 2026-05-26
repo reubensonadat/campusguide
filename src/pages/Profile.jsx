@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { restoreFromCloud } from '../services/syncService';
+import { triggerAuthSheet } from '../components/onboarding/AuthModal';
+import { CourseCombobox } from '../components/common/CourseCombobox';
 
 // Custom SVG icons for widget toggles
 const WeatherSvgIcon = ({ size = 20, className = '' }) => (
@@ -39,6 +41,7 @@ const Profile = () => {
   const { deviceId, getTimeSinceLastSync, shouldSync } = useDeviceId();
   const [copiedId, setCopiedId] = useState(false);
   const [restoreId, setRestoreId] = useState('');
+  const [restorePin, setRestorePin] = useState('');
   const [isRestoring, setIsRestoring] = useState(false);
   
   // Local form state for the edit modal
@@ -53,12 +56,15 @@ const Profile = () => {
   }, []);
 
   const handleSave = () => {
-    setProfile(formData);
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      setIsEditModalOpen(false);
-    }, 1000);
+    // Intercept with Lazy Auth
+    triggerAuthSheet(() => {
+      setProfile(formData);
+      setIsSaving(true);
+      setTimeout(() => {
+        setIsSaving(false);
+        setIsEditModalOpen(false);
+      }, 1000);
+    });
   };
 
   const toggleWidget = (key) => {
@@ -82,12 +88,23 @@ const Profile = () => {
   };
 
   const handleRestore = async () => {
-    if (!restoreId.trim()) return;
+    if (!restoreId.trim() || !restorePin) return;
     setIsRestoring(true);
     try {
-      const result = await restoreFromCloud(restoreId.trim().toUpperCase());
+      // 1. Authenticate with Supabase using old ID and PIN
+      const { restoreLifecycle } = await import('../services/authService');
+      const authResult = await restoreLifecycle(restoreId.trim().toUpperCase(), restorePin);
+      if (!authResult.success) {
+        alert(`❌ Restore failed: ${authResult.error}`);
+        setIsRestoring(false);
+        return;
+      }
+
+      // 2. Pull the data securely
+      const result = await restoreFromCloud();
       if (result.success) {
         setRestoreId('');
+        setRestorePin('');
         alert('✅ Data restored successfully! The page will reload to apply changes.');
         setTimeout(() => window.location.reload(), 500);
       } else {
@@ -232,27 +249,39 @@ const Profile = () => {
           {/* Restore Data */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100">
             <p className="text-sm font-bold text-gray-900 mb-3">Restore from another device</p>
-            <p className="text-xs text-gray-500 font-medium mb-3">Enter your unique ID to pull your saved data.</p>
-            <div className="flex gap-2">
+            <p className="text-xs text-gray-500 font-medium mb-3">Enter your old ID and 6-digit PIN to pull your saved data.</p>
+            <div className="flex flex-col gap-2">
               <input
                 type="text"
                 value={restoreId}
                 onChange={(e) => setRestoreId(e.target.value.toUpperCase())}
                 placeholder="UCC-XXXXXXXX"
-                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
                 maxLength={12}
               />
-              <button
-                onClick={handleRestore}
-                disabled={isRestoring || restoreId.length < 12}
-                className={`px-5 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 ${
-                  isRestoring
-                    ? 'bg-gray-100 text-gray-400'
-                    : 'bg-[#002F45] text-white hover:bg-[#001a26]'
-                }`}
-              >
-                {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore'}
-              </button>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={restorePin}
+                  onChange={(e) => setRestorePin(e.target.value.replace(/[^0-9]/g, ''))}
+                  placeholder="6-Digit PIN"
+                  className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:tracking-normal"
+                  maxLength={6}
+                />
+                <button
+                  onClick={handleRestore}
+                  disabled={isRestoring || restoreId.length < 12 || restorePin.length < 6}
+                  className={`px-5 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 ${
+                    isRestoring
+                      ? 'bg-gray-100 text-gray-400'
+                      : 'bg-[#002F45] text-white hover:bg-[#001a26]'
+                  }`}
+                >
+                  {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -374,14 +403,11 @@ const Profile = () => {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 relative z-50">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Course of Study</label>
-                <input
-                  type="text"
-                  value={formData.course || ''}
-                  onChange={(e) => setFormData({ ...formData, course: e.target.value })}
-                  placeholder="e.g. BSc. Computer Science"
-                  className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all placeholder:text-gray-300"
+                <CourseCombobox
+                  value={formData.course}
+                  onChange={(val) => setFormData({ ...formData, course: val })}
                 />
               </div>
 

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { Button } from '../components/common/Button';
+import { Modal } from '../components/common/Modal';
 import {
   Trash2,
   Download,
@@ -14,11 +15,14 @@ import {
   RefreshCcw,
   ArrowRight,
   Calendar,
-  BarChart3
+  BarChart3,
+  Lock
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { updatePin } from '../services/authService';
+import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 
 const Settings = () => {
   React.useEffect(() => {
@@ -29,6 +33,36 @@ const Settings = () => {
   const { state, actions } = useAppContext();
   const [timetable] = useLocalStorage('ucc_timetable', []);
   const [gpa] = useLocalStorage('ucc_gpa', []);
+  
+  const [isChangePinOpen, setIsChangePinOpen] = useState(false);
+  const [newPin, setNewPin] = useState('');
+  const [isPinUpdating, setIsPinUpdating] = useState(false);
+
+  const handleChangePinClick = () => {
+    // Only allow changing PIN if they can authenticate their current session
+    triggerAuthSheet(() => {
+      setIsChangePinOpen(true);
+    });
+  };
+
+  const handleUpdatePin = async (e) => {
+    e.preventDefault();
+    if (newPin.length < 6) {
+      actions.showToast('PIN must be at least 6 digits', 'error');
+      return;
+    }
+    setIsPinUpdating(true);
+    const res = await updatePin(newPin);
+    setIsPinUpdating(false);
+    
+    if (res.success) {
+      actions.showToast('Security PIN updated successfully!', 'success');
+      setIsChangePinOpen(false);
+      setNewPin('');
+    } else {
+      actions.showToast(res.error || 'Failed to update PIN', 'error');
+    }
+  };
 
   const handleClearAllData = () => {
     if (window.confirm('Are you sure you want to clear all app data? This action cannot be undone.')) {
@@ -125,16 +159,31 @@ const Settings = () => {
           })}
         </div>
 
-        {/* Data Management */}
+        {/* Security & Data Management */}
         <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden">
           <CardHeader className="border-b border-gray-100 px-6 py-5 bg-gray-50/50">
             <CardTitle className="text-gray-900 flex items-center gap-2 text-base font-bold">
-              <Download className="text-[#6EABC6]" size={18} />
-              Data Management
+              <Shield className="text-[#6EABC6]" size={18} />
+              Security & Data
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-gray-100">
+              
+              {/* Security: Change PIN */}
+              <button
+                onClick={handleChangePinClick}
+                className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors group text-left focus:outline-none"
+              >
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm">Change Security PIN</h3>
+                  <p className="text-xs font-medium text-gray-500 mt-0.5">Update your 6-digit recovery PIN</p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-white border border-gray-100 group-hover:border-gray-200 transition-all">
+                  <Lock size={14} className="text-gray-400 group-hover:text-gray-700" />
+                </div>
+              </button>
+
               <button
                 onClick={handleExportData}
                 className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors group text-left focus:outline-none"
@@ -147,8 +196,6 @@ const Settings = () => {
                   <Download size={14} className="text-gray-400 group-hover:text-gray-700" />
                 </div>
               </button>
-
-
 
               <button
                 onClick={handleClearAllData}
@@ -173,6 +220,44 @@ const Settings = () => {
         </div>
 
       </div>
+
+      <Modal 
+        isOpen={isChangePinOpen} 
+        onClose={() => {
+          setIsChangePinOpen(false);
+          setNewPin('');
+        }}
+        title="Change Security PIN"
+      >
+        <form onSubmit={handleUpdatePin} className="space-y-4">
+          <p className="text-sm text-gray-500 mb-4">
+            Enter a new 6-digit PIN to secure your data across devices.
+          </p>
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">New 6-Digit PIN</label>
+            <input
+              type="password"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={6}
+              value={newPin}
+              onChange={(e) => setNewPin(e.target.value.replace(/[^0-9]/g, ''))}
+              placeholder="••••••"
+              className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl text-2xl tracking-[0.5em] text-center font-bold focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
+            />
+          </div>
+          <div className="pt-4">
+            <Button 
+              type="submit" 
+              className="w-full py-4 text-base bg-[#002F45] hover:bg-[#001a26]" 
+              disabled={isPinUpdating || newPin.length < 6}
+            >
+              {isPinUpdating ? 'Updating...' : 'Update PIN'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
     </div>
   );
 };
