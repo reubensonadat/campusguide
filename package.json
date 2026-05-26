@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@multiavatar/multiavatar": "^1.0.7",
     "@supabase/supabase-js": "^2.98.0",
+    "boring-avatars": "^2.0.4",
     "clsx": "^2.1.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.0",

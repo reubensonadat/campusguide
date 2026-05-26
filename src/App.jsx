@@ -4,10 +4,12 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import { Toaster } from 'react-hot-toast';
 import { AppProvider } from './context/AppContext';
 import { CampusProvider, useCampus } from './context/CampusContext';
+import { NotificationProvider } from './context/NotificationContext';
 
 import { useSupportModal } from './hooks/useSupportModal';
 import { useSupportTimer } from './hooks/useSupportTimer';
 import { useClassReminders } from './hooks/useClassReminders';
+import { useAppNotifications } from './hooks/useAppNotifications';
 import { useFeedbackTimer } from './hooks/useFeedbackTimer';
 import { useFeedbackModal } from './hooks/useFeedbackModal';
 import { Toast } from './components/common/Toast';
@@ -57,8 +59,11 @@ function AppContent() {
   useFeedbackTimer();
   const { showModal: showFeedback, closeModal: closeFeedback } = useFeedbackModal();
 
-  // Class Reminders Logic
+  // Class Reminders Logic (Old browser notifications, kept for compatibility if needed, but in-app is handled by useAppNotifications)
   useClassReminders();
+  
+  // New In-App Notifications Background Worker
+  useAppNotifications();
 
   // Preload Paystack script when app loads
   useEffect(() => {
@@ -135,12 +140,14 @@ function AppContent() {
 function App() {
   return (
     <AppProvider>
-      <CampusProvider>
-        <Router>
-          <NavigationObserver />
-          <AppContent />
-        </Router>
-      </CampusProvider>
+      <NotificationProvider>
+        <CampusProvider>
+          <Router>
+            <NavigationObserver />
+            <AppContent />
+          </Router>
+        </CampusProvider>
+      </NotificationProvider>
     </AppProvider>
   );
 }

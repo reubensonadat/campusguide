@@ -1,31 +1,19 @@
 import { useState, useCallback, useMemo } from 'react';
 
-// List of boutique-friendly DiceBear styles
 export const DICEBEAR_STYLES = [
-  { id: 'avataaars', label: 'Classic' },
-  { id: 'lorelei', label: 'Modern' },
-  { id: 'bottts', label: 'Robot' },
-  { id: 'pixel-art', label: 'Pixel' },
-  { id: 'adventurer', label: 'Adventurer' },
-  { id: 'miniavs', label: 'Minimalist' },
-  { id: 'toon-head', label: 'Toon Head' },
-  { id: 'personas', label: 'Personas' },
-  { id: 'open-peeps', label: 'Open Peeps' },
-  { id: 'notionists', label: 'Notionists' },
-  { id: 'notionists-neutral', label: 'Notionists Neutral' },
-  { id: 'micah', label: 'Micah' },
+  { id: 'notionists', label: 'Notionists (Pro)' },
+  { id: 'notionists-neutral', label: 'Notionists Neutral' }
 ];
 
-export function useDiceBearAvatar(initialSeed, initialStyle = 'avataaars') {
+export function useDiceBearAvatar(initialSeed, initialStyle = 'notionists') {
   const [seed, setSeed] = useState(initialSeed || Math.random().toString(36).substring(7));
   const [style, setStyle] = useState(initialStyle);
   const [flip, setFlip] = useState(false);
   const [hasBackground, setHasBackground] = useState(true);
 
   const avatarUrl = useMemo(() => {
-    // We use the DiceBear HTTP API for zero-dependency generation
-    // Updated background to fit the new luxury light aesthetic instead of roommate link colors
-    const bgParam = hasBackground ? '&backgroundColor=cce1eb,99c3d6' : ''; // Using primary-100 and primary-200 from the new color palette
+    // DiceBear API for Notionists
+    const bgParam = hasBackground ? '&backgroundColor=cce1eb,99c3d6,b6e3f4,f1f4dc,ffd5dc,ffdfbf,d1d4f9,e2e6ea' : '&backgroundColor=transparent'; 
     const flipParam = flip ? '&flip=true' : '';
     return `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}${bgParam}${flipParam}`;
   }, [seed, style, flip, hasBackground]);
@@ -33,6 +21,7 @@ export function useDiceBearAvatar(initialSeed, initialStyle = 'avataaars') {
   const shuffle = useCallback(() => {
     const newSeed = Math.random().toString(36).substring(7);
     setSeed(newSeed);
+    return newSeed;
   }, []);
 
   const slotMachine = useCallback(() => {

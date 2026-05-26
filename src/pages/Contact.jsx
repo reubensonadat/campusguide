@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { Button } from '../components/common/Button';
+import { toast } from 'react-hot-toast';
 import {
   Phone,
   Mail,
@@ -129,7 +130,7 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here
-    alert('Message sent! We will get back to you soon.');
+    toast.success('Message sent! We will get back to you soon.');
     setFormData({ name: '', phone: '', message: '' });
   };
 

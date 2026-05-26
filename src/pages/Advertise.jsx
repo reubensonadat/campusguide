@@ -5,6 +5,7 @@ import { PaymentButton } from '../components/payment/PaymentButton'; // Simulate
 import CommunityCard from '../components/community/CommunityCard';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { supabase } from '../lib/supabase';
+import { toast } from 'react-hot-toast';
 
 const AD_PACKAGES = [
     {
@@ -143,13 +144,13 @@ const Advertise = () => {
         if (file) {
             const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
             if (!validTypes.includes(file.type)) {
-                alert("Invalid file format. Please upload a JPEG, PNG, or WebP image.");
+                toast.error("Invalid file format. Please upload a JPEG, PNG, or WebP image.");
                 e.target.value = null;
                 return;
             }
 
             if (file.size > 2 * 1024 * 1024) {
-                alert("File size exceeds 2MB limit. Please upload a smaller image.");
+                toast.error("File size exceeds 2MB limit. Please upload a smaller image.");
                 e.target.value = null; // reset the input
                 return;
             }
@@ -292,7 +293,7 @@ const Advertise = () => {
 
         } catch (error) {
             console.error("Submission Error:", error);
-            alert("Ad submission encountered an issue: " + error.message + "\n\nPlease reach out to support with your Payment Reference: " + res.reference);
+            toast.error("Ad submission encountered an issue: " + error.message + "\n\nPlease reach out to support with your Payment Reference: " + res.reference);
         }
     };
 

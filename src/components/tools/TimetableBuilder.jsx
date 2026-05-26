@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Button } from '../common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../common/Card';
-import { Plus, Trash2, Calendar, Bell, MapPin, Download, X, AlertCircle, User, Phone, Target } from 'lucide-react';
+import { Plus, Trash2, Calendar, Bell, Download, X, AlertCircle, User, Phone, Target } from 'lucide-react';
+import { CustomMapPin } from '../common/CustomMapPin';
 import { Modal } from '../common/Modal';
 import { DAYS_OF_WEEK, TIME_SLOTS, GRADE_POINTS } from '../../utils/constants';
 import { requestNotificationPermission, isNotificationSupported } from '../../services/notificationService';
-import html2canvas from 'html2canvas';
 import { triggerAuthSheet } from '../onboarding/AuthModal';
 
 const formatTime12Hour = (time24) => {
@@ -23,7 +23,6 @@ const TimetableBuilder = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [conflictError, setConflictError] = useState('');
-  const [isExporting, setIsExporting] = useState(false);
 
   const timetableRef = useRef(null);
 
@@ -206,7 +205,9 @@ const TimetableBuilder = () => {
                     <div key={day} className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
                       <h3 className="font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center justify-between">
                         {day}
-                        <span className="text-xs font-medium bg-gray-100 text-gray-500 py-1 px-3 rounded-full">{dayCourses.length} classes</span>
+                        <span className="text-xs font-medium bg-gray-100 text-gray-500 py-1 px-3 rounded-full">
+                          {dayCourses.length} class{dayCourses.length !== 1 ? 'es' : ''}
+                        </span>
                       </h3>
                       <div className="space-y-4">
                         {dayCourses.map(course => (
@@ -220,12 +221,15 @@ const TimetableBuilder = () => {
                               <div className="text-xs text-gray-400 font-medium">{formatTime12Hour(course.endTime)}</div>
                             </div>
                             <div
-                              className="flex-1 p-4 rounded-2xl relative overflow-hidden text-white"
-                              style={{ backgroundColor: course.color }}
+                              className="flex-1 p-4 rounded-2xl relative overflow-hidden text-white border border-white/40 shadow-sm backdrop-blur-sm"
+                              style={{ 
+                                background: `linear-gradient(135deg, ${course.color}f2 0%, ${course.color}b3 100%)` 
+                              }}
                             >
-                              <div className="font-bold text-base">{course.name}</div>
-                              <div className="text-sm mt-1.5 flex items-center gap-1.5 font-medium opacity-90">
-                                <MapPin size={14} className="opacity-70" />
+                              <div className="absolute -top-10 -right-10 w-24 h-24 bg-white/20 rounded-full blur-xl pointer-events-none"></div>
+                              <div className="relative z-10 font-bold text-base drop-shadow-sm">{course.name}</div>
+                              <div className="relative z-10 text-sm mt-1.5 flex items-center gap-1.5 font-medium opacity-90 drop-shadow-sm">
+                                <CustomMapPin className="w-4 h-4 opacity-70" />
                                 {course.location}
                               </div>
                             </div>
@@ -398,82 +402,115 @@ const TimetableBuilder = () => {
         title="Class Details"
       >
         {selectedCourse && (
-          <div className="space-y-4">
+          <div className="relative pb-4">
             <div
-              className="h-24 w-full rounded-2xl flex items-center justify-center shadow-inner relative overflow-hidden"
-              style={{ backgroundColor: selectedCourse.color }}
+              className="h-36 w-full rounded-[2rem] flex flex-col items-center justify-center relative overflow-hidden mb-6 shadow-xl"
+              style={{ 
+                background: `linear-gradient(135deg, ${selectedCourse.color || '#002F45'} 0%, ${selectedCourse.color || '#002F45'}dd 100%)`,
+              }}
             >
-              <div className="absolute inset-0 bg-black/10"></div>
-              <Calendar size={32} className="text-white drop-shadow-md z-10" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-6 -mb-6 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
+              
+              <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 z-10 shadow-sm mb-3">
+                <Calendar size={28} className="text-white drop-shadow-md" />
+              </div>
+              <h3 className="text-2xl font-black text-white text-center px-6 leading-tight z-10 drop-shadow-sm truncate w-full">
+                {selectedCourse.name}
+              </h3>
             </div>
 
-            <div className="px-2 pt-2 pb-6">
-              <h3 className="text-2xl font-bold text-gray-900 leading-tight mb-4">{selectedCourse.name}</h3>
-
+            <div className="px-2">
               <div className="space-y-3">
-                <div className="flex items-center gap-3 text-gray-600">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                    <Calendar size={16} />
+                <div className="flex items-center gap-4 bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 hover:bg-gray-100 transition-colors group">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm border border-gray-100 group-hover:scale-105 transition-transform">
+                    <Calendar size={18} className="text-[#002F45]" />
                   </div>
-                  <span className="font-medium text-gray-900">{selectedCourse.day}s</span>
-                </div>
-                <div className="flex items-center gap-3 text-gray-600">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                    <Bell size={16} />
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Day of week</span>
+                    <span className="font-bold text-gray-900">{selectedCourse.day}s</span>
                   </div>
-                  <span>{formatTime12Hour(selectedCourse.startTime)} - {formatTime12Hour(selectedCourse.endTime)}</span>
                 </div>
-                <div className="flex items-center gap-3 text-gray-600">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                    <MapPin size={16} />
+
+                <div className="flex items-center gap-4 bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 hover:bg-gray-100 transition-colors group">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm border border-gray-100 group-hover:scale-105 transition-transform">
+                    <Bell size={18} className="text-orange-500" />
                   </div>
-                  <span>{selectedCourse.location}</span>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Time</span>
+                    <span className="font-bold text-gray-900">{formatTime12Hour(selectedCourse.startTime)} - {formatTime12Hour(selectedCourse.endTime)}</span>
+                  </div>
                 </div>
+
+                <div className="flex items-center gap-4 bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 hover:bg-gray-100 transition-colors group">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm border border-gray-100 group-hover:scale-105 transition-transform">
+                    <CustomMapPin className="w-4 h-4 text-green-500" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Location</span>
+                    <span className="font-bold text-gray-900">{selectedCourse.location}</span>
+                  </div>
+                </div>
+
                 {selectedCourse.lecturer && (
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                      <User size={16} />
+                  <div className="flex items-center gap-4 bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 hover:bg-gray-100 transition-colors group">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm border border-gray-100 group-hover:scale-105 transition-transform">
+                      <User size={18} className="text-blue-500" />
                     </div>
-                    <span>{selectedCourse.lecturer}</span>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Lecturer</span>
+                      <span className="font-bold text-gray-900">{selectedCourse.lecturer}</span>
+                    </div>
                   </div>
                 )}
+
                 {selectedCourse.contact && (
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                      <Phone size={16} />
+                  <div className="flex items-center gap-4 bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 hover:bg-gray-100 transition-colors group">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm border border-gray-100 group-hover:scale-105 transition-transform">
+                      <Phone size={18} className="text-purple-500" />
                     </div>
-                    <span>{selectedCourse.contact}</span>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contact Info</span>
+                      <span className="font-bold text-gray-900">{selectedCourse.contact}</span>
+                    </div>
                   </div>
                 )}
+
                 {selectedCourse.creditHours && (
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <div className="w-8 h-8 rounded-full bg-[#002F45]/10 flex items-center justify-center text-[#002F45]">
-                      <Target size={16} />
+                  <div className="flex items-center gap-4 bg-[#002F45]/5 p-3.5 rounded-2xl border border-[#002F45]/10 hover:bg-[#002F45]/10 transition-colors group">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm border border-[#002F45]/10 group-hover:scale-105 transition-transform">
+                      <Target size={18} className="text-[#002F45]" />
                     </div>
-                    <span className="font-bold text-[#002F45]">{selectedCourse.creditHours} Credit Hours</span>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Weight</span>
+                      <span className="font-black text-[#002F45]">{selectedCourse.creditHours} Credit Hours</span>
+                    </div>
                   </div>
                 )}
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 mt-8">
-                <Button
+                <button
+                  type="button"
                   onClick={() => {
                     setNewCourse(selectedCourse);
                     setSelectedCourse(null);
                     setShowAddForm(true);
                   }}
-                  className="flex-1 bg-gray-100 border border-gray-200 hover:border-gray-300 hover:bg-gray-200 text-gray-700 py-3.5 rounded-2xl font-bold flex items-center justify-center transition-all shadow-sm"
+                  className="flex-1 bg-gray-900 hover:bg-black text-white py-4 rounded-2xl font-bold flex items-center justify-center transition-all shadow-md active:scale-95"
                 >
                   <Calendar size={18} className="mr-2" />
                   <span>Edit Details</span>
-                </Button>
-                <Button
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleDeleteCourse(selectedCourse.id)}
-                  className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center transition-colors shadow-sm"
+                  className="flex-1 bg-red-50 hover:bg-red-100 border border-red-100 text-red-600 py-4 rounded-2xl font-bold flex items-center justify-center transition-colors shadow-sm active:scale-95"
                 >
                   <Trash2 size={18} className="mr-2" />
                   <span>Remove Class</span>
-                </Button>
+                </button>
               </div>
             </div>
           </div>

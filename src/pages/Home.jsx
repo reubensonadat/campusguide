@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Button } from '../components/common/Button';
-import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, MapPin, Circle, Calendar } from 'lucide-react';
+import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, Circle, Calendar } from 'lucide-react';
+import { CustomMapPin } from '../components/common/CustomMapPin';
 import { CustomGuide, CustomTools } from '../components/common/CustomIcons';
 import NotificationDropdown from '../components/common/NotificationDropdown'; // 🛎️ NEW: Import
 import { getIconComponent } from '../components/tools/PlanYourDay';
@@ -16,6 +17,7 @@ import { useAppContext } from '../context/AppContext';
 import { PaymentButton } from '../components/payment/PaymentButton';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { supabase } from '../lib/supabase';
+import { useNotifications } from '../context/NotificationContext';
 
 import CampusIllustration from '/college-campus-rafiki.svg';
 
@@ -106,8 +108,8 @@ const Home = () => {
   const [hasClearedNotifDot, setHasClearedNotifDot] = useState(false);
 
   const supportEmail = state?.supportEmail || 'anonymous@uccguide.com';
-  const handlePaymentSuccess = () => alert('Thank you for your support!');
-  const handlePaymentError = (e) => alert(`Payment failed: ${e.message}`);
+  const handlePaymentSuccess = () => toast.success('Thank you for your support!');
+  const handlePaymentError = (e) => toast.error(`Payment failed: ${e.message}`);
 
   // Live time tracker for classes
   const [currentTimeMinutes, setCurrentTimeMinutes] = useState(() => {
@@ -248,51 +250,89 @@ const Home = () => {
   const [featuredContent, setFeaturedContent] = useState(null); 
   const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(false);
 
-  // 🛎️ NEW: Derive the boolean for the red dot
-  const hasUnseen = featuredContent?.kind === 'announcement' && !hasClearedNotifDot;
+  const [latestUpdate, setLatestUpdate] = useState(null);
+
+  const dismissUpdate = () => {
+    setLatestUpdate(prev => {
+      if (prev) {
+        const dismissedIds = JSON.parse(localStorage.getItem('ucc_dismissed_updates') || '[]');
+        const idStr = String(prev.id);
+        if (!dismissedIds.includes(idStr)) {
+          localStorage.setItem('ucc_dismissed_updates', JSON.stringify([...dismissedIds, idStr]));
+        }
+      }
+      return null;
+    });
+  };
+
+  const { unreadCount } = useNotifications();
+
+  // 🛎️ NEW: Derive the boolean for the red dot based on global updates
+  const hasUnseen = (latestUpdate && !hasClearedNotifDot) || unreadCount > 0;
 
   useEffect(() => {
-    const seenIds = JSON.parse(localStorage.getItem('ucc_seen_announcements') || '[]');
+    const seenIds = JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]');
 
-    const checkAnnouncement = async () => {
-      const { data: annData } = await supabase
-        .from('announcements')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1);
+    const fetchLatestUpdates = async () => {
+      try {
+        const [annRes, whisperRes, thriftRes] = await Promise.all([
+          supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(1),
+          supabase.from('campus_whispers').select('*').order('created_at', { ascending: false }).limit(1),
+          supabase.from('thrift_listings').select('*').order('created_at', { ascending: false }).limit(1)
+        ]);
 
-      const latest = annData && annData[0];
+        const items = [];
+        if (annRes.data && annRes.data[0]) items.push({ ...annRes.data[0], updateType: 'announcement' });
+        if (whisperRes.data && whisperRes.data[0]) items.push({ ...whisperRes.data[0], updateType: 'whisper' });
+        if (thriftRes.data && thriftRes.data[0]) items.push({ ...thriftRes.data[0], updateType: 'thrift' });
 
-      if (latest && !seenIds.includes(latest.id)) {
-        localStorage.setItem('ucc_seen_announcements', JSON.stringify([...seenIds, latest.id]));
-        setFeaturedContent({ kind: 'announcement', data: latest });
-        return;
-      }
+        items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        const dismissedIds = JSON.parse(localStorage.getItem('ucc_dismissed_updates') || '[]');
+        const newest = items.find(item => !dismissedIds.includes(String(item.id)));
 
-      const { data: adsData } = await supabase
-        .from('advertisements')
-        .select('*')
-        .ilike('status', 'active')
-        .eq('package_id', 'home_banner') 
-        .gte('expires_at', new Date().toISOString());
-
-      if (!adsData || adsData.length === 0) {
-        const { data: annFallback } = await supabase
-          .from('announcements')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(1);
-        if (annFallback && annFallback[0]) {
-          setFeaturedContent({ kind: 'announcement', data: annFallback[0] });
+        if (newest) {
+          setLatestUpdate(newest);
+          if (seenIds.includes(String(newest.id))) {
+            setHasClearedNotifDot(true);
+          } else {
+            localStorage.setItem('ucc_seen_updates', JSON.stringify([...seenIds, String(newest.id)]))
+          }
         }
-        return;
+      } catch (err) {
+        console.error("Error fetching latest updates", err);
       }
-
-      const ad = adsData[Math.floor(Math.random() * adsData.length)];
-      setFeaturedContent({ kind: 'ad', data: ad });
     };
 
-    checkAnnouncement();
+    const fetchAdOrFallback = async () => {
+      try {
+        const { data: adsData } = await supabase
+          .from('advertisements')
+          .select('*')
+          .ilike('status', 'active')
+          .eq('package_id', 'home_banner') 
+          .gte('expires_at', new Date().toISOString());
+
+        if (!adsData || adsData.length === 0) {
+          const { data: annFallback } = await supabase
+            .from('announcements')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(1);
+          if (annFallback && annFallback[0]) {
+            setFeaturedContent({ kind: 'announcement', data: annFallback[0] });
+          }
+          return;
+        }
+
+        const ad = adsData[Math.floor(Math.random() * adsData.length)];
+        setFeaturedContent({ kind: 'ad', data: ad });
+      } catch (err) {
+        console.error("Error fetching ad", err);
+      }
+    };
+
+    fetchLatestUpdates();
+    fetchAdOrFallback();
   }, []);
 
   // ── Weather Fetching Logic ───────────────────────────────────────────────
@@ -368,10 +408,13 @@ const Home = () => {
                 <NotificationDropdown 
                   isOpen={isNotifOpen} 
                   onClose={() => setIsNotifOpen(false)} 
-                  announcement={featuredContent?.kind === 'announcement' ? featuredContent.data : null}
+                  update={latestUpdate}
+                  onDismissUpdate={dismissUpdate}
                   onSeeMore={() => {
-                    // NOTE: Change '/community?tab=announcements' to match your exact app route and tab ID
-                    navigate('/community?tab=announcements'); 
+                    let tab = 'announcements';
+                    if (latestUpdate?.updateType === 'whisper') tab = 'whispers';
+                    if (latestUpdate?.updateType === 'thrift') tab = 'thrift';
+                    navigate(`/community?tab=${tab}`); 
                     setIsNotifOpen(false);
                   }}
                 />
@@ -490,7 +533,7 @@ const Home = () => {
                         </span>
                         {cls.location && (
                             <span className="flex items-center gap-0.5 font-bold opacity-90">
-                                • <MapPin size={10} /> {cls.location}
+                                • <CustomMapPin className="w-2.5 h-2.5" /> {cls.location}
                             </span>
                         )}
                       </p>
@@ -840,9 +883,12 @@ const Home = () => {
                     <NotificationDropdown 
                       isOpen={isNotifOpen} 
                       onClose={() => setIsNotifOpen(false)} 
-                      announcement={featuredContent?.kind === 'announcement' ? featuredContent.data : null}
+                      update={latestUpdate}
                       onSeeMore={() => {
-                        navigate('/community?tab=announcements'); 
+                        let tab = 'announcements';
+                        if (latestUpdate?.updateType === 'whisper') tab = 'whispers';
+                        if (latestUpdate?.updateType === 'thrift') tab = 'thrift';
+                        navigate(`/community?tab=${tab}`); 
                         setIsNotifOpen(false);
                       }}
                     />

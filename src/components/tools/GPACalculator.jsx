@@ -3,7 +3,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Button } from '../common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../common/Card';
 import { Modal } from '../common/Modal';
-import { Plus, Trash2, Calculator, Save, Info } from 'lucide-react';
+import { Plus, Trash2, Calculator, Save, Info, Target, ArrowRight } from 'lucide-react';
 import { GRADE_POINTS, GRADE_RANGES } from '../../utils/constants';
 import { calculateGPA, getGradeFromScore } from '../../utils/helpers';
 import { triggerAuthSheet } from '../onboarding/AuthModal';
@@ -27,6 +27,34 @@ const GPACalculator = () => {
   const [currentGPA, setCurrentGPA] = useState(0);
   const [totalCredits, setTotalCredits] = useState(0);
   const [totalGradePoints, setTotalGradePoints] = useState(0);
+
+  // Target GPA Solver State
+  const [targetGPA, setTargetGPA] = useState('');
+  const [remainingCredits, setRemainingCredits] = useState('');
+  const [targetResult, setTargetResult] = useState(null);
+
+  const calculateTarget = () => {
+    const target = parseFloat(targetGPA);
+    const remaining = parseInt(remainingCredits, 10);
+    
+    if (isNaN(target) || isNaN(remaining) || remaining <= 0) {
+      setTargetResult({ error: 'Please enter valid target GPA and remaining credits (>0).' });
+      return;
+    }
+    
+    const futureTotalCredits = totalCredits + remaining;
+    const futureTotalPoints = target * futureTotalCredits;
+    const neededPoints = futureTotalPoints - totalGradePoints;
+    const neededAvgGpa = neededPoints / remaining;
+    
+    if (neededAvgGpa > 4.0) {
+      setTargetResult({ error: `Impossible! You'd need an average GPA of ${neededAvgGpa.toFixed(2)} which exceeds 4.0.` });
+    } else if (neededAvgGpa < 0) {
+      setTargetResult({ success: `You are already safe! You can average 0.0 and still hit your target.` });
+    } else {
+      setTargetResult({ success: `You need to average a ${neededAvgGpa.toFixed(2)} GPA in your next ${remaining} credits.` });
+    }
+  };
 
   useEffect(() => {
     // 1. Auto-merge timetable courses that have target grades
@@ -191,6 +219,53 @@ const GPACalculator = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Target GPA Solver Card */}
+      <Card className="mb-6 bg-white border-gray-100 shadow-sm">
+        <CardHeader className="pb-3 border-b border-gray-100">
+          <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
+            <Target className="w-5 h-5 text-indigo-500" />
+            Target GPA Solver
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+            <div className="flex-1 w-full space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Target GPA</label>
+              <input 
+                type="number" 
+                step="0.01"
+                placeholder="e.g. 3.6" 
+                value={targetGPA}
+                onChange={(e) => setTargetGPA(e.target.value)}
+                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              />
+            </div>
+            <div className="flex-1 w-full space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Remaining Credits</label>
+              <input 
+                type="number" 
+                placeholder="e.g. 15" 
+                value={remainingCredits}
+                onChange={(e) => setRemainingCredits(e.target.value)}
+                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              />
+            </div>
+            <div className="w-full md:w-auto self-end">
+              <Button onClick={calculateTarget} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl shadow-sm">
+                Calculate <ArrowRight size={16} className="ml-1" />
+              </Button>
+            </div>
+          </div>
+          
+          {targetResult && (
+            <div className={`mt-4 p-4 rounded-xl border ${targetResult.error ? 'bg-red-50 border-red-100 text-red-700' : 'bg-green-50 border-green-100 text-green-700'} font-medium flex items-center gap-2`}>
+              <Info size={18} className="flex-shrink-0" />
+              <span>{targetResult.error || targetResult.success}</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Course List */}

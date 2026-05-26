@@ -4,6 +4,7 @@ import { useCampus } from '../context/CampusContext';
 import { fetchSupporters } from '../utils/googleSheets';
 import { useFeedbackModal } from '../hooks/useFeedbackModal';
 import { LS_KEYS } from '../utils/constants';
+import { toast } from 'react-hot-toast';
 import {
   Heart,
   Trophy,
@@ -59,12 +60,11 @@ const Support = () => {
   };
 
   const handlePaymentSuccess = (result) => {
-    console.log('Payment successful:', result);
-    alert('Thank you for your support! You will appear on the leaderboard shortly.');
+    toast.success('Thank you for your support! You will appear on the leaderboard shortly.');
   };
 
   const handlePaymentError = (error) => {
-    alert(`Payment failed: ${error.message}`);
+    toast.error(`Payment failed: ${error.message}`);
   };
 
   return (

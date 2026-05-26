@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { Lock, LogOut, CheckCircle, XCircle, Trash2, UploadCloud, Eye, EyeOff, LayoutDashboard, Megaphone, HelpCircle } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 import { CustomGuide } from '../components/common/CustomIcons';
 
@@ -48,7 +49,7 @@ const AdminDashboard = () => {
         if (passwordInput === correctPassword) {
             setIsAuthenticated(true);
         } else {
-            alert("Incorrect password");
+            toast.error("Incorrect password");
         }
     };
 
@@ -89,27 +90,27 @@ const AdminDashboard = () => {
     // Actions
     const updateAdStatus = async (id, newStatus) => {
         const { error } = await supabase.from('advertisements').update({ status: newStatus }).eq('id', id);
-        if (error) alert(error.message);
+        if (error) toast.error(error.message);
         else fetchAds();
     };
 
     const deleteAd = async (id) => {
         if (!window.confirm("Delete this ad completely?")) return;
         const { error } = await supabase.from('advertisements').delete().eq('id', id);
-        if (error) alert(error.message);
+        if (error) toast.error(error.message);
         else fetchAds();
     };
 
     const deleteLostFound = async (id) => {
         if (!window.confirm("Delete this lost/found item?")) return;
         const { error } = await supabase.from('lost_and_found').delete().eq('id', id);
-        if (error) alert(error.message);
+        if (error) toast.error(error.message);
         else fetchLostFound();
     };
 
     const updateThriftStatus = async (id, newStatus) => {
         const { error } = await supabase.from('thrift_listings').update({ status: newStatus }).eq('id', id);
-        if (error) alert(error.message);
+        if (error) toast.error(error.message);
         else fetchThrift();
     };
 
@@ -217,10 +218,10 @@ const AdminDashboard = () => {
                 if (dbError) throw new Error("DB Error: " + dbError.message);
             }
 
-            alert("Published successfully!");
+            toast.success("Published successfully!");
             setUploadFormData({ post_type: 'announcement', title: '', description: '', phone_number: '', contact_method: 'whatsapp', contact_url: '', category: 'update', package_id: 'community_dir', imageFile: null, imagePreview: null });
         } catch (err) {
-            alert(err.message);
+            toast.error(err.message);
         } finally {
             setIsUploading(false);
         }

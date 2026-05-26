@@ -116,6 +116,21 @@ export const syncToCloud = async () => {
         updated_at: new Date().toISOString(),
       }, { onConflict: 'id' });
 
+    // 6. Sync Budget
+    const budget = JSON.parse(localStorage.getItem('ucc_budget') || '[]');
+    if (budget.length > 0) {
+      await supabase.from('budget_transactions').delete().eq('user_id', userId);
+      const budgetRows = budget.map(t => ({
+        user_id: userId,
+        amount: t.amount,
+        type: t.type,
+        category: t.category,
+        description: t.description,
+        created_at: new Date(t.date).toISOString(),
+      }));
+      await supabase.from('budget_transactions').insert(budgetRows);
+    }
+
     // Mark sync time
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
 
@@ -254,6 +269,22 @@ export const restoreFromCloud = async () => {
 
     if (notes && notes.content) {
       localStorage.setItem('ucc_quick_notes', notes.content);
+    }
+
+    // 6. Restore Budget
+    const { data: budget } = await supabase
+      .from('budget_transactions')
+      .select('*');
+
+    if (budget && budget.length > 0) {
+      localStorage.setItem('ucc_budget', JSON.stringify(budget.map(t => ({
+        id: t.id,
+        amount: parseFloat(t.amount),
+        type: t.type,
+        category: t.category,
+        description: t.description,
+        date: t.created_at.split('T')[0],
+      }))));
     }
 
     return { success: true };

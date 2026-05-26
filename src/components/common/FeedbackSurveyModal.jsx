@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { CheckCircle, Star } from 'lucide-react';
+import { CheckCircle, Star, X, MessageSquare, Heart, ThumbsUp, ChevronRight, Loader2 } from 'lucide-react';
 import { submitToGoogleSheet } from '../../utils/googleSheets';
 import { LS_KEYS } from '../../utils/constants';
 import { supabase } from '../../lib/supabase';
+import { toast } from 'react-hot-toast';
 
 // Replace with your actual Google Apps Script Web App URL
 const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || '';
@@ -110,8 +111,8 @@ const FeedbackModal = ({ isOpen, onClose }) => {
             window.dispatchEvent(new Event('storage'));
             setPage(5); // Success page
         } catch (error) {
-            console.error("Error submitting survey", error);
-            alert("Submission failed. Please check your connection and try again.");
+            console.error("Feedback error:", error);
+            toast.error("Submission failed. Please check your connection and try again.");
         } finally {
             setIsSubmitting(false);
         }

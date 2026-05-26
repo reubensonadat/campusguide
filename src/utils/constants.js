@@ -74,27 +74,69 @@ export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frid
 // Budget categories
 export const BUDGET_CATEGORIES = {
   INCOME: [
-    'Scholarship',
-    'Student Loan',
-    'Part-time Job',
-    'Parental Support',
-    'Allowance',
-    'Gift',
-    'Other Income'
+    // Allowances & Support
+    'Parental Allowance', 'Guardian Support', 'Pocket Money',
+    'Sibling Contribution', 'Relative Gift', 'Friend Gift',
+    
+    // Academic & Awards
+    'Scholarship', 'Bursary', 'Student Loan (SLTF)', 
+    'SRC Grant', 'Departmental Award', 'Research Grant',
+    'Academic Prize', 'Dean\'s List Award',
+    
+    // Work & Business
+    'Part-time Job (Campus)', 'Part-time Job (Off-campus)',
+    'Freelance Work', 'Business Sales', 'Tutoring Income',
+    'Internship Stipend', 'National Service Allowance',
+    'Baking/Cooking Sales', 'Graphic Design Gigs',
+    
+    // Miscellaneous
+    'Refund', 'Sale of Used Items', 'Savings Interest', 
+    'Betting/Lottery Win', 'Other Income'
   ],
   EXPENSE: [
-    'Tuition Fees',
-    'Accommodation',
-    'Food & Dining',
-    'Transportation',
-    'Books & Supplies',
-    'Entertainment',
-    'Clothing',
-    'Personal Care',
-    'Healthcare',
-    'Phone & Internet',
-    'Utilities',
-    'Other Expenses'
+    // Academics & School
+    'Tuition Fees', 'Hostel/Hall Fees', 'Departmental Dues',
+    'SRC Dues', 'JCR Dues', 'Course Registration',
+    'Handouts / Course Materials', 'Textbooks', 'Printing / Photocopy',
+    'Stationery (Pens, Books)', 'Library Fines', 'Field Trip Fees',
+    'Lab Equipment/Coat', 'Project Work Expenses',
+    
+    // Food & Dining
+    'Breakfast', 'Lunch', 'Dinner', 
+    'Snacks & Pastries', 'Groceries (Market)', 'Groceries (Supermarket)',
+    'Drinking Water (Sachet/Dispenser)', 'Beverages', 'Campus Night Market',
+    'Restaurant Dining', 'Fast Food',
+    
+    // Transportation
+    'Campus Shuttle', 'Taxi / Uber / Bolt', 'Trotro / Public Bus',
+    'Transport Home (Vacation)', 'Fuel (Personal Car)', 'Car Maintenance',
+    
+    // Housing & Utilities
+    'Electricity Prepaid', 'Gas (Cooking)', 'Water Bill',
+    'Hostel Maintenance', 'Cleaning Supplies', 'Room Decor/Furniture',
+    
+    // Technology & Communication
+    'MTN Data Bundle', 'Vodafone/Telecel Data', 'Airtime/Credit',
+    'Wi-Fi Subscription', 'Laptop Repair/Maintenance', 'Phone Accessories',
+    'Software/App Subscription',
+    
+    // Personal Care & Health
+    'Haircut / Salon', 'Cosmetics / Skincare', 'Toiletries (Soap, Paste)',
+    'Laundry Service / Soap', 'Medication (Pharmacy)', 'Hospital Bills',
+    'Gym Membership', 'Sanitary Pads',
+    
+    // Clothing & Accessories
+    'New Clothes', 'Shoes / Footwear', 'Bags / Backpack',
+    'Jewelry / Accessories', 'Tailor / Seamstress',
+    
+    // Social & Entertainment
+    'Movie Tickets', 'Party / Event Tickets', 'Club Dues/Subscriptions',
+    'Netflix/Spotify Subscription', 'Video Games', 'Outing with Friends',
+    'Dates / Relationships', 'Birthdays / Gifts for others',
+    
+    // Miscellaneous
+    'Church Offering / Tithe', 'Charity / Donation', 'Bank Charges',
+    'MoMo Fees', 'Repayment of Loan', 'Emergency', 'Other Expenses'
   ]
 };
 

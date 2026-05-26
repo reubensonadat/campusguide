@@ -302,14 +302,17 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
                 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:shadow-none'}
             `}>
         <div className="h-full flex flex-col">
-          <div className="p-5 pt-20 lg:pt-7 mb-1">
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">Campus Guide</h2>
-          </div>
 
-          <div className="flex-1 overflow-y-auto px-4 pb-20 lg:pb-8 custom-scrollbar mb-20">
+          {/* Scrollable area — title scrolls away, search bar sticks */}
+          <div className="flex-1 overflow-y-auto px-4 pb-24 lg:pb-8 custom-scrollbar">
 
-            {/* Search Input */}
-            <div className="sticky top-0 pt-1 pb-8 z-10 px-1">
+            {/* Title — scrolls away when user scrolls down */}
+            <div className="pt-20 lg:pt-6 pb-2">
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">Campus Guide</h2>
+            </div>
+
+            {/* Sticky Search Bar — locks to top once title scrolls past */}
+            <div className="sticky top-0 bg-white/95 backdrop-blur-sm py-2 z-10 -mx-4 px-4 border-b border-slate-100/80">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <input
@@ -330,35 +333,38 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
               </div>
             </div>
 
-            {Object.keys(filteredTopics).length === 0 ? (
-              <div className="text-center py-8 text-slate-400 text-sm font-medium">
-                <p>No guides found matching "{searchQuery}"</p>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {Object.entries(filteredTopics).map(([category, topics]) => (
-                  <div key={category}>
-                    <h3 className="px-3 text-[11px] font-black text-primary-400/80 uppercase tracking-widest mb-2">{category}</h3>
-                    <div className="space-y-0.5">
-                      {topics.map((topic) => (
-                        <button
-                          key={topic.id}
-                          onClick={() => {
-                            setSelectedTopicId(topic.id);
-                            if (!searchQuery) setActiveCategory(category); // Only switch category context if not searching
-                            if (window.innerWidth < 1024) setIsSidebarOpen(false);
-                          }}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all flex items-center justify-between group ${selectedTopicId === topic.id ? 'bg-primary-50/80 text-primary-700' : 'text-slate-500 hover:bg-slate-50 hover:text-primary-600'}`}
-                        >
-                          <span>{topic.title}</span>
-                          {selectedTopicId === topic.id && <div className="w-1.5 h-1.5 rounded-full bg-primary-500 shadow-sm" />}
-                        </button>
-                      ))}
+            {/* Topic List */}
+            <div className="pt-4">
+              {Object.keys(filteredTopics).length === 0 ? (
+                <div className="text-center py-8 text-slate-400 text-sm font-medium">
+                  <p>No guides found matching "{searchQuery}"</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {Object.entries(filteredTopics).map(([category, topics]) => (
+                    <div key={category}>
+                      <h3 className="px-3 text-[11px] font-black text-primary-400/80 uppercase tracking-widest mb-2">{category}</h3>
+                      <div className="space-y-0.5">
+                        {topics.map((topic) => (
+                          <button
+                            key={topic.id}
+                            onClick={() => {
+                              setSelectedTopicId(topic.id);
+                              if (!searchQuery) setActiveCategory(category);
+                              if (window.innerWidth < 1024) setIsSidebarOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all flex items-center justify-between group ${selectedTopicId === topic.id ? 'bg-primary-50/80 text-primary-700' : 'text-slate-500 hover:bg-slate-50 hover:text-primary-600'}`}
+                          >
+                            <span>{topic.title}</span>
+                            {selectedTopicId === topic.id && <div className="w-1.5 h-1.5 rounded-full bg-primary-500 shadow-sm" />}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

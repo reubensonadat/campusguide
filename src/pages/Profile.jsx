@@ -1,5 +1,5 @@
  import React, { useState, useEffect } from 'react';
-import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks, Copy, Fingerprint, Cloud, CloudOff, RefreshCw, Check, Share2 } from 'lucide-react';
+import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks, Copy, Fingerprint, Cloud, CloudOff, RefreshCw, Check, Share2, Hash, CreditCard, Camera } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
@@ -32,6 +32,7 @@ const Profile = () => {
     phone: '',
     course: '',
     level: '',
+    student_id: '',
     avatarUrl: `https://api.dicebear.com/9.x/avataaars/svg?seed=UCCStudent&backgroundColor=cce1eb,99c3d6`
   });
 
@@ -60,11 +61,7 @@ const Profile = () => {
     // Intercept with Lazy Auth
     triggerAuthSheet(() => {
       setProfile(formData);
-      setIsSaving(true);
-      setTimeout(() => {
-        setIsSaving(false);
-        setIsEditModalOpen(false);
-      }, 1000);
+      setIsEditModalOpen(false); // Optimistically close immediately (lazy save)
     });
   };
 
@@ -139,8 +136,9 @@ const Profile = () => {
         console.log('Error sharing:', err);
       }
     } else {
-      navigator.clipboard.writeText(shareData.url);
-      alert('App link copied to clipboard!');
+      navigator.clipboard.writeText('https://uccguide.com').then(() => {
+        toast.success('App link copied to clipboard!');
+      });
     }
   };
 
@@ -155,30 +153,73 @@ const Profile = () => {
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">Profile</h1>
         </div>
 
-        {/* User Info Row */}
-        <button 
-          onClick={() => setIsEditModalOpen(true)}
-          className="w-full flex items-center justify-between py-2 group text-left active:scale-[0.98] transition-transform"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
-              <img src={profile.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 leading-tight">
-                {profile.name || 'Set up profile'}
-              </h2>
-              {profile.course || profile.level ? (
-                <p className="text-[#002F45] text-sm font-bold mt-0.5">
-                  {profile.course} {profile.level && `• L${profile.level}`}
-                </p>
-              ) : (
-                <p className="text-gray-500 text-sm font-medium mt-0.5">Show profile</p>
-              )}
+        {/* Vertical Wallet Pass Student ID Card */}
+        <div className="relative group mb-8 mt-4 cursor-pointer" onClick={() => setIsEditModalOpen(true)}>
+          <div className="relative w-full rounded-[2rem] overflow-hidden shadow-2xl transition-transform duration-500 transform-gpu group-hover:-translate-y-1 bg-gradient-to-br from-[#3fa2c6] to-[#1e7898] border border-white/20">
+            
+            {/* Top Section */}
+            <div className="p-6 pb-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
+              
+              <div className="flex justify-between items-start relative z-10">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1.5 shadow-md">
+                      <img src="/logo.png" alt="UCC" className="w-full h-full object-contain" />
+                    </div>
+                    <div>
+                      <h3 className="text-white font-black tracking-widest text-sm uppercase leading-tight drop-shadow-sm">Campus Guide</h3>
+                      <p className="text-white/80 text-[10px] font-bold uppercase tracking-[0.2em]">Student ID</p>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-2">
+                    <p className="text-white font-mono font-bold text-sm tracking-wider drop-shadow-sm">
+                      {profile.student_id || 'PS/ITC/20/0000'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* QR Code */}
+                <div className="w-[68px] h-[68px] bg-white p-1.5 rounded-xl shadow-md border border-white/20 opacity-95">
+                  <img 
+                    src={`https://quickchart.io/qr?text=${encodeURIComponent(
+                      `UCC ID: ${profile.student_id || 'N/A'}\nName: ${profile.name || 'N/A'}\nCourse: ${profile.course || 'N/A'}`
+                    )}&margin=1&size=150`}
+                    alt="QR Code"
+                    className="w-full h-full object-contain mix-blend-multiply" 
+                    crossOrigin="anonymous"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-8 flex items-end gap-5 relative z-10">
+                <div className="w-[4.5rem] h-[4.5rem] rounded-xl overflow-hidden bg-white shadow-xl shrink-0 border-2 border-white/40">
+                  <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 pb-1">
+                  <h2 className="text-xl sm:text-[1.35rem] font-black text-white leading-tight mb-0.5 drop-shadow-md break-words line-clamp-2">
+                    {profile.name || 'Setup your profile'}
+                  </h2>
+                  <p className="text-white/90 text-[10px] sm:text-xs font-bold uppercase tracking-wider drop-shadow-sm break-words line-clamp-2 leading-snug">
+                    {profile.course || 'Course'} {profile.level && `• L${profile.level}`}
+                  </p>
+                  {/* App Unique ID shown below the details */}
+                  <div className="mt-1.5 flex items-center gap-1.5 opacity-80">
+                    <Fingerprint size={12} className="text-white/70" />
+                    <span className="text-white font-mono font-bold text-[9px] uppercase tracking-[0.2em] drop-shadow-sm">
+                      App ID: {deviceId?.split('-')[0] || 'UNKNOWN'}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <ChevronRight size={24} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
-        </button>
+          <div className="mt-3 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-xs font-bold text-gray-400">Tap card to edit details</span>
+          </div>
+        </div>
 
         <hr className="border-gray-100" />
 
@@ -380,37 +421,36 @@ const Profile = () => {
 
       {/* ── Edit Profile Modal ─────────────────────────────────────────── */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in slide-in-from-bottom-4 duration-300">
-          <div className="flex items-center justify-between p-4 border-b border-gray-100">
-            <button 
-              onClick={() => setIsEditModalOpen(false)}
-              className="p-2 -ml-2 text-gray-900 hover:bg-gray-50 rounded-full transition-colors"
-            >
-              <X size={24} />
-            </button>
-            <h2 className="text-base font-bold text-gray-900">Edit Profile</h2>
-            <div className="w-10"></div> {/* spacer for centering */}
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-6 max-w-2xl mx-auto w-full space-y-8">
-            
-            {/* Avatar Edit Section */}
-            <div className="flex flex-col items-center justify-center space-y-4 pt-4">
-              <div className="relative">
-                <div className="w-28 h-28 rounded-full bg-gray-100 border-4 border-white shadow-lg overflow-hidden">
-                  <img src={formData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-                <button
-                  onClick={() => setIsAvatarModalOpen(true)}
-                  className="absolute bottom-0 right-0 bg-gray-900 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform border-2 border-white"
-                >
-                  <Edit3 size={16} />
-                </button>
-              </div>
-              <p className="text-sm font-semibold text-gray-500">Tap to change avatar</p>
+        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end justify-center sm:items-center sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-2xl rounded-t-[2rem] sm:rounded-2xl flex flex-col max-h-[90vh] shadow-2xl animate-in slide-in-from-bottom-8 duration-300">
+            <div className="flex items-center justify-between p-4 bg-white border-b border-gray-100 shadow-sm sticky top-0 z-20 rounded-t-[2rem] sm:rounded-2xl shrink-0">
+              <h2 className="text-lg font-black text-gray-900 tracking-tight pl-2">Edit Profile</h2>
+              <button 
+                onClick={handleSave}
+                className="text-white bg-[#002F45] font-bold px-4 py-1.5 hover:bg-[#001a26] rounded-lg transition-colors active:scale-95"
+              >
+                Save
+              </button>
             </div>
 
-            {/* Form Fields */}
+          <div className="flex-1 overflow-y-auto p-6 max-w-2xl mx-auto w-full">
+            
+            {/* Avatar Edit Section */}
+            <div className="flex flex-col items-center justify-center space-y-4 pt-2 pb-8">
+              <div className="relative group cursor-pointer" onClick={() => setIsAvatarModalOpen(true)}>
+                <div className="w-28 h-28 rounded-xl bg-white border-4 border-white shadow-xl overflow-hidden transition-transform group-hover:scale-105">
+                  <img src={formData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Edit3 size={24} className="text-white drop-shadow-md" />
+                  </div>
+                </div>
+                <div className="absolute -bottom-3 -right-3 bg-white text-[#002F45] w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-gray-100">
+                  <Edit3 size={18} />
+                </div>
+              </div>
+              <p className="text-sm font-bold text-gray-500">Tap to change avatar</p>
+            </div>
+
             <div className="space-y-6">
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Full Name</label>
@@ -423,15 +463,27 @@ const Profile = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Phone Number</label>
-                <input
-                  type="tel"
-                  value={formData.phone || ''}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="e.g. 054 123 4567"
-                  className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all placeholder:text-gray-300"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Phone Number</label>
+                  <input
+                    type="tel"
+                    value={formData.phone || ''}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="e.g. 054 123 4567"
+                    className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all placeholder:text-gray-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Student ID (Index No.)</label>
+                  <input
+                    type="text"
+                    value={formData.student_id || ''}
+                    onChange={(e) => setFormData({ ...formData, student_id: e.target.value.toUpperCase() })}
+                    placeholder="e.g. PS/ITC/20/0000"
+                    className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all placeholder:text-gray-300 uppercase"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2 relative z-50">
@@ -480,6 +532,7 @@ const Profile = () => {
                   'Save Changes'
                 )}
               </button>
+            </div>
             </div>
           </div>
         </div>
