@@ -309,7 +309,7 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
           <div className="flex-1 overflow-y-auto px-4 pb-20 lg:pb-8 custom-scrollbar mb-20">
 
             {/* Search Input */}
-            <div className="sticky top-0 bg-white pt-1 pb-4 z-10 px-1">
+            <div className="sticky top-0 pt-1 pb-8 z-10 px-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <input

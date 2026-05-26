@@ -4,6 +4,8 @@ import CommunityCard from '../components/community/CommunityCard';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import LostFoundModal from '../components/community/LostFoundModal';
+import ThriftFeed from '../components/community/ThriftFeed';
+import WhispersFeed from '../components/community/WhispersFeed';
 
 import { supabase } from '../lib/supabase';
 
@@ -27,6 +29,7 @@ const Community = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isLostFoundModalOpen, setIsLostFoundModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [activeMainTab, setActiveMainTab] = useLocalStorage('ucc_community_tab', 'general'); // 'general', 'thrift', 'whispers', 'qa'
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -249,11 +252,27 @@ const Community = () => {
                     </div>
                 )}
 
-                {/* Sticky Feed Header & Filters */}
-                <div
-                    className="sticky z-20 bg-gray-50/95 backdrop-blur-md pt-2 pb-4 -mx-4 px-4 md:mx-0 md:px-0 transition-all duration-300"
-                    style={{ top: isScrolled ? '50px' : '76px' }}
-                >
+                {/* Main Tabs for the 4 sections */}
+                <div className="flex gap-2 mb-6 overflow-x-auto hide-scrollbar pb-2 px-4 md:px-0">
+                    <button onClick={() => setActiveMainTab('general')} className={`whitespace-nowrap px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 ${activeMainTab === 'general' ? 'bg-gray-900 text-white shadow-lg' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
+                        General Feed
+                    </button>
+                    <button onClick={() => setActiveMainTab('thrift')} className={`whitespace-nowrap px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 ${activeMainTab === 'thrift' ? 'bg-primary-600 text-white shadow-lg shadow-primary-200' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
+                        Student Thrift
+                    </button>
+                    <button onClick={() => setActiveMainTab('whispers')} className={`whitespace-nowrap px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 ${activeMainTab === 'whispers' ? 'bg-primary-600 text-white shadow-lg shadow-primary-200' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
+                        Campus Whispers
+                    </button>
+                </div>
+
+                {/* Conditional Rendering based on Main Tab */}
+                {activeMainTab === 'general' && (
+                    <>
+                        {/* Sticky Feed Header & Filters */}
+                        <div
+                            className="sticky z-20 bg-gray-50/95 backdrop-blur-md pt-2 pb-4 -mx-4 px-4 md:mx-0 md:px-0 transition-all duration-300"
+                            style={{ top: isScrolled ? '50px' : '76px' }}
+                        >
                     <div className={`flex items-center gap-4 transition-all duration-300 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-10 opacity-100 mb-4'}`}>
                         <div className="h-px bg-gray-200 flex-1"></div>
                         <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2 whitespace-nowrap">Community Feed</span>
@@ -308,10 +327,15 @@ const Community = () => {
                 )}
 
                 {filteredFeed.length > 0 && (
-                    <div className="text-center mt-12 pb-12">
-                        <p className="text-gray-400 font-medium text-sm">You've caught up with the latest listings</p>
-                    </div>
+                            <div className="text-center mt-12 pb-12">
+                                <p className="text-gray-400 font-medium text-sm">You've caught up with the latest listings</p>
+                            </div>
+                        )}
+                    </>
                 )}
+
+                {activeMainTab === 'thrift' && <ThriftFeed />}
+                {activeMainTab === 'whispers' && <WhispersFeed />}
             </div>
 
             <LostFoundModal

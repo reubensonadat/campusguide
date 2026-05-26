@@ -1,5 +1,5 @@
  import React, { useState, useEffect } from 'react';
-import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks, Copy, Fingerprint, Cloud, CloudOff, RefreshCw, Check } from 'lucide-react';
+import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks, Copy, Fingerprint, Cloud, CloudOff, RefreshCw, Check, Share2 } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
@@ -121,6 +121,25 @@ const Profile = () => {
     if (window.confirm('Are you sure you want to clear all your app data? This cannot be undone.')) {
       localStorage.clear();
       window.location.reload();
+    }
+  };
+
+  const handleShareApp = async () => {
+    const shareData = {
+      title: 'UCC Campus Guide',
+      text: "Hey! I'm using the UCC Campus Guide app for my timetable, GPA, and campus updates. Check it out here:",
+      url: window.location.origin, // You can replace this with actual App Store link later
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      navigator.clipboard.writeText(shareData.url);
+      alert('App link copied to clipboard!');
     }
   };
 
@@ -300,6 +319,17 @@ const Profile = () => {
               <div className="flex items-center gap-4">
                 <User size={24} className="text-gray-700" strokeWidth={1.5} />
                 <span className="text-[17px] text-gray-900 font-medium">Personal information</span>
+              </div>
+              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+            </button>
+
+            <button 
+              onClick={handleShareApp}
+              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
+            >
+              <div className="flex items-center gap-4">
+                <Share2 size={24} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[17px] text-gray-900 font-medium">Invite Friends (Share App)</span>
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>
