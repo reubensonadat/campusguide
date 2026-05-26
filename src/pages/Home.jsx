@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Button } from '../components/common/Button';
 import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, MapPin, Circle, Calendar } from 'lucide-react';
 import { CustomGuide, CustomTools } from '../components/common/CustomIcons';
@@ -6,6 +6,9 @@ import NotificationDropdown from '../components/common/NotificationDropdown'; //
 import { getIconComponent } from '../components/tools/PlanYourDay';
 import { getUpcomingAcademicEvents } from '../data/academicCalendar';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
+import { getTodayHoliday } from '../services/holidayService';
+import { syncToCloud, shouldSyncNow } from '../services/syncService';
+import { useDeviceId } from '../hooks/useDeviceId';
 
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -120,6 +123,22 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // ── Holiday awareness ──────────────────────────────────────────────────────
+  const [todayHoliday, setTodayHoliday] = useState(null);
+
+  // ── Device ID + Cloud Sync ─────────────────────────────────────────────────
+  const { deviceId } = useDeviceId();
+
+  useEffect(() => {
+    // Fire-and-forget: fetch today's holiday
+    getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => {});
+
+    // Fire-and-forget: cloud sync if 24h has passed
+    if (shouldSyncNow()) {
+      syncToCloud(deviceId).catch(() => {});
+    }
+  }, [deviceId]);
+
   // Today's classes
   const todaysClassesWithStatus = useMemo(() => {
     if (!Array.isArray(timetable)) return [];
@@ -170,8 +189,13 @@ const Home = () => {
   // Upcoming Academic Events
   const upcomingAcademicEvents = useMemo(() => getUpcomingAcademicEvents(2), []);
 
-  // Sam Jonah Library status
+  // Sam Jonah Library status (holiday-aware)
   const libraryStatus = useMemo(() => {
+    // Public holiday override
+    if (todayHoliday) {
+      return { isOpen: false, label: 'Closed', detail: `Closed for ${todayHoliday.name}. Opens next working day at 9:00 AM.` };
+    }
+
     const now = new Date();
     const day = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -204,7 +228,7 @@ const Home = () => {
       }
       return { isOpen: false, label: 'Closed', detail: 'Closed for today. Opens tomorrow at 9:00 AM.' };
     }
-  }, [currentTimeMinutes]);
+  }, [currentTimeMinutes, todayHoliday]);
 
   // ── Announcement → Ad rotation logic ─────────────────────────────────────
   const [featuredContent, setFeaturedContent] = useState(null); 
@@ -402,8 +426,12 @@ const Home = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#002F45" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"></path></svg>
                   </div>
                   <div>
-                    <p className="text-[15px] font-bold text-gray-900">No classes today!</p>
-                    <p className="text-xs text-gray-500 mt-0.5 font-medium">Enjoy your free time.</p>
+                    <p className="text-[15px] font-bold text-gray-900">
+                      {todayHoliday ? `🎉 ${todayHoliday.name}` : 'No classes today!'}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5 font-medium">
+                      {todayHoliday ? 'Enjoy the public holiday!' : 'Enjoy your free time.'}
+                    </p>
                   </div>
                 </div>
                 <button 

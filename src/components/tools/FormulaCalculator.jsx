@@ -5,7 +5,7 @@ import { CustomGuide, CustomTools, CustomCommunity, CustomProfile, CustomSetting
 import {
   Play, RotateCcw, Lightbulb,
   Search, X, ArrowRight, AlertTriangle, CheckCircle2,
-  Heart
+  Heart, Loader2, Database
 } from 'lucide-react';
 
 // Variables that accept comma-separated text input instead of numbers
@@ -77,6 +77,7 @@ const FormulaCalculator = () => {
   const [modalFormula, setModalFormula] = useState(null);
   const [inputValues, setInputValues] = useState({});
   const [result, setResult] = useState(null);
+  const [isCalculating, setIsCalculating] = useState(false);
   const [solveFor, setSolveFor] = useState(null); // which variable to solve for
   const [mode, setMode] = useState('auto'); // 'auto' = leave-blank, 'target' = solve-for
   const [selectedUnits, setSelectedUnits] = useState({});
@@ -193,20 +194,27 @@ const FormulaCalculator = () => {
   };
 
   const handleCalculate = () => {
-    if (!modalFormula) return;
-    const cleanVals = {};
-    for (const [k, v] of Object.entries(inputValues)) {
-      const variable = modalFormula.variables.find(vr => vr.id === k);
-      if (isTextVariable(variable)) {
-        if (typeof v === 'string' && v.trim()) cleanVals[k] = v;
-      } else {
-        if (!isNaN(v)) {
-          cleanVals[k] = normalizeValue(v, variable.unit, selectedUnits[k]);
+    if (!modalFormula || isCalculating) return;
+    setIsCalculating(true);
+    setResult(null);
+
+    // Fake 2-second loader for database illusion
+    setTimeout(() => {
+      const cleanVals = {};
+      for (const [k, v] of Object.entries(inputValues)) {
+        const variable = modalFormula.variables.find(vr => vr.id === k);
+        if (isTextVariable(variable)) {
+          if (typeof v === 'string' && v.trim()) cleanVals[k] = v;
+        } else {
+          if (!isNaN(v)) {
+            cleanVals[k] = normalizeValue(v, variable.unit, selectedUnits[k]);
+          }
         }
       }
-    }
-    const res = modalFormula.calculate(cleanVals);
-    setResult(res);
+      const res = modalFormula.calculate(cleanVals);
+      setResult(res);
+      setIsCalculating(false);
+    }, 2000);
   };
 
   const handleFillExample = () => {
@@ -516,19 +524,48 @@ const FormulaCalculator = () => {
             {/* Calculate Button */}
             <button
               onClick={handleCalculate}
-              disabled={filledCount < Math.min(2, modalFormula.variables.length)}
+              disabled={filledCount < Math.min(2, modalFormula.variables.length) || isCalculating}
               className={`w-full py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                filledCount >= Math.min(2, modalFormula.variables.length)
+                isCalculating
+                  ? 'bg-primary-400 text-white cursor-wait'
+                  : filledCount >= Math.min(2, modalFormula.variables.length)
                   ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-500/20 active:scale-[0.98]'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               }`}
             >
-              <Play className="w-4 h-4" />
-              {filledCount < Math.min(2, modalFormula.variables.length)
-                ? `Fill in the variables to solve`
-                : `Solve — ${modalFormula.variables.length - filledCount} unknown${modalFormula.variables.length - filledCount !== 1 ? 's' : ''}`
-              }
+              {isCalculating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Querying database...
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  {filledCount < Math.min(2, modalFormula.variables.length)
+                    ? `Fill in the variables to solve`
+                    : `Solve — ${modalFormula.variables.length - filledCount} unknown${modalFormula.variables.length - filledCount !== 1 ? 's' : ''}`
+                  }
+                </>
+              )}
             </button>
+
+            {/* Fake Loader Display */}
+            {isCalculating && (
+              <div className="rounded-xl border border-primary-200/50 bg-gradient-to-br from-primary-50/80 to-blue-50/50 p-6 text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
+                    <Database className="w-5 h-5 text-primary-600 animate-pulse" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-primary-800">Processing calculation...</p>
+                    <p className="text-xs text-primary-600/70 mt-1">Querying formula database</p>
+                  </div>
+                  <div className="w-full bg-primary-100 rounded-full h-1.5 overflow-hidden">
+                    <div className="bg-primary-500 h-1.5 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Result Display */}
             {result && (

@@ -39,6 +39,22 @@ const Advertise = () => {
     const navigate = useNavigate();
     const [step, setStep] = useLocalStorage('ucc_ad_step', 1);
 
+    // Dynamic user count from database
+    const [userCount, setUserCount] = useState(null);
+
+    useEffect(() => {
+        // Fetch real user count from user_settings table
+        supabase
+            .from('user_settings')
+            .select('device_id', { count: 'exact', head: true })
+            .then(({ count }) => {
+                if (count && count > 0) {
+                    setUserCount(count.toLocaleString());
+                }
+            })
+            .catch(() => {});
+    }, []);
+
     // Form State (Persisted)
     const [savedFormData, setSavedFormData] = useLocalStorage('ucc_ad_form_data', {
         businessName: '',
@@ -338,7 +354,7 @@ const Advertise = () => {
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
                             </div>
                             <span className="font-extrabold text-sm text-gray-900 tracking-tight">
-                                Reach <span className="text-rose-600">5,000+ Students</span> across campus
+                                Reach <span className="text-rose-600">{userCount ? `${userCount}+` : '5,000+'} Students</span> across campus
                             </span>
                         </div>
 

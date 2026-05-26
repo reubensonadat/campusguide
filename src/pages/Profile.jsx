@@ -1,10 +1,12 @@
  import React, { useState, useEffect } from 'react';
-import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks } from 'lucide-react';
+import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks, Copy, Fingerprint, Cloud, CloudOff, RefreshCw, Check } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useDeviceId } from '../hooks/useDeviceId';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
+import { restoreFromCloud } from '../services/syncService';
 
 // Custom SVG icons for widget toggles
 const WeatherSvgIcon = ({ size = 20, className = '' }) => (
@@ -34,6 +36,10 @@ const Profile = () => {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [homeWidgets, setHomeWidgets] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
+  const { deviceId, getTimeSinceLastSync, shouldSync } = useDeviceId();
+  const [copiedId, setCopiedId] = useState(false);
+  const [restoreId, setRestoreId] = useState('');
+  const [isRestoring, setIsRestoring] = useState(false);
   
   // Local form state for the edit modal
   const [formData, setFormData] = useState(profile);
@@ -67,6 +73,32 @@ const Profile = () => {
     { key: 'library', label: 'Library Status', Icon: LibrarySvgIcon },
     { key: 'quickNote', label: 'Quick Note', Icon: StickyNote },
   ];
+
+  const copyDeviceId = () => {
+    navigator.clipboard.writeText(deviceId).then(() => {
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    });
+  };
+
+  const handleRestore = async () => {
+    if (!restoreId.trim()) return;
+    setIsRestoring(true);
+    try {
+      const result = await restoreFromCloud(restoreId.trim().toUpperCase());
+      if (result.success) {
+        setRestoreId('');
+        alert('✅ Data restored successfully! The page will reload to apply changes.');
+        setTimeout(() => window.location.reload(), 500);
+      } else {
+        alert(`❌ Restore failed: ${result.error || 'No data found for this ID.'}`);
+      }
+    } catch (err) {
+      alert(`❌ Restore failed: ${err.message}`);
+    } finally {
+      setIsRestoring(false);
+    }
+  };
 
   const handleClearData = () => {
     if (window.confirm('Are you sure you want to clear all your app data? This cannot be undone.')) {
@@ -157,6 +189,71 @@ const Profile = () => {
                 </button>
               </div>
             ))}
+          </div>
+        </div>
+
+        <hr className="border-gray-100" />
+
+        {/* Smart Section — Device Identity & Cloud Sync */}
+        <div className="space-y-2 pt-2">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-4">Cloud Sync</h2>
+          
+          {/* Device ID Card */}
+          <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-[#002F45]/10 flex items-center justify-center flex-shrink-0">
+                <Fingerprint size={20} className="text-[#002F45]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Your Unique ID</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <code className="text-sm font-black text-[#002F45] tracking-wider">{deviceId}</code>
+                  <button
+                    onClick={copyDeviceId}
+                    className="p-1.5 rounded-lg hover:bg-white text-gray-400 hover:text-[#002F45] transition-colors active:scale-95"
+                    title="Copy ID"
+                  >
+                    {copiedId ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+              <Cloud size={14} className={getTimeSinceLastSync() ? 'text-green-500' : 'text-gray-300'} />
+              <span>
+                {getTimeSinceLastSync()
+                  ? `Last synced ${getTimeSinceLastSync()}`
+                  : 'Not synced yet — will sync automatically'}
+              </span>
+            </div>
+          </div>
+
+          {/* Restore Data */}
+          <div className="bg-white rounded-2xl p-5 border border-gray-100">
+            <p className="text-sm font-bold text-gray-900 mb-3">Restore from another device</p>
+            <p className="text-xs text-gray-500 font-medium mb-3">Enter your unique ID to pull your saved data.</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={restoreId}
+                onChange={(e) => setRestoreId(e.target.value.toUpperCase())}
+                placeholder="UCC-XXXXXXXX"
+                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
+                maxLength={12}
+              />
+              <button
+                onClick={handleRestore}
+                disabled={isRestoring || restoreId.length < 12}
+                className={`px-5 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 ${
+                  isRestoring
+                    ? 'bg-gray-100 text-gray-400'
+                    : 'bg-[#002F45] text-white hover:bg-[#001a26]'
+                }`}
+              >
+                {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore'}
+              </button>
+            </div>
           </div>
         </div>
 
