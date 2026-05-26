@@ -2,7 +2,9 @@ import { supabase } from '../lib/supabase';
 import { getCurrentUser } from './authService';
 
 const LAST_SYNC_KEY = 'ucc_last_sync';
+const LAST_PULL_KEY = 'ucc_last_pull'; // Tracks last time we pulled from cloud
 const SYNC_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const LINKED_DEVICE_KEY = 'ucc_is_linked_device'; // Set to true after a successful restore
 
 /**
  * Reads all localStorage data and syncs to Supabase.
@@ -122,6 +124,18 @@ export const syncToCloud = async () => {
     console.error('Sync failed:', error);
     return { success: false, error: error.message };
   }
+};
+
+/**
+ * Marks this device as "linked" to another device via restore.
+ * Once linked, the 24h cycle will also PULL from cloud.
+ */
+export const markDeviceAsLinked = () => {
+  localStorage.setItem(LINKED_DEVICE_KEY, 'true');
+};
+
+export const isLinkedDevice = () => {
+  return localStorage.getItem(LINKED_DEVICE_KEY) === 'true';
 };
 
 /**
@@ -258,6 +272,36 @@ export const shouldSyncNow = () => {
   if (!lastSync) return true;
   const diff = Date.now() - new Date(lastSync).getTime();
   return diff >= SYNC_INTERVAL_MS;
+};
+
+/**
+ * Checks if this linked device should pull fresh cloud data.
+ * Only runs on devices that have been restored/linked.
+ */
+export const shouldPullNow = () => {
+  if (!isLinkedDevice()) return false; // Only pull on linked devices
+  const lastPull = localStorage.getItem(LAST_PULL_KEY);
+  if (!lastPull) return true;
+  const diff = Date.now() - new Date(lastPull).getTime();
+  return diff >= SYNC_INTERVAL_MS;
+};
+
+/**
+ * Bidirectional sync — push local changes up, then pull cloud changes down.
+ * Used for linked/restored devices to stay in sync.
+ * Returns a summary of what changed.
+ */
+export const bidirectionalSync = async () => {
+  // 1. Push local changes up
+  await syncToCloud();
+
+  // 2. Pull cloud changes down (restoreFromCloud is defined above in this same file)
+  const result = await restoreFromCloud();
+
+  // 3. Mark pull time
+  localStorage.setItem(LAST_PULL_KEY, new Date().toISOString());
+
+  return result;
 };
 
 let syncTimeout = null;

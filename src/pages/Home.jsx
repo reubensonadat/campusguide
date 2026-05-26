@@ -7,7 +7,8 @@ import { getIconComponent } from '../components/tools/PlanYourDay';
 import { getUpcomingAcademicEvents } from '../data/academicCalendar';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { getTodayHoliday } from '../services/holidayService';
-import { syncToCloud, shouldSyncNow } from '../services/syncService';
+import { syncToCloud, shouldSyncNow, shouldPullNow, bidirectionalSync } from '../services/syncService';
+import { toast } from 'react-hot-toast';
 import { useDeviceId } from '../hooks/useDeviceId';
 
 import { useNavigate } from 'react-router-dom';
@@ -134,9 +135,22 @@ const Home = () => {
     getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => {});
 
     // Fire-and-forget: cloud sync if 24h has passed
-    if (shouldSyncNow()) {
-      syncToCloud(deviceId).catch(() => {});
-    }
+    const runSync = async () => {
+      if (shouldPullNow()) {
+        // Linked device: push + pull for bidirectional sync
+        const syncToast = toast.loading('Syncing with your other device...');
+        const result = await bidirectionalSync().catch(() => ({ success: false }));
+        if (result.success) {
+          toast.success('Data synced from your other device!', { id: syncToast });
+        } else {
+          toast.dismiss(syncToast); // Silent fail — don't alarm user
+        }
+      } else if (shouldSyncNow()) {
+        // Normal device: just push local data up
+        syncToCloud(deviceId).catch(() => {});
+      }
+    };
+    runSync();
   }, [deviceId]);
 
   // Today's classes

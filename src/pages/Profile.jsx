@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { restoreFromCloud } from '../services/syncService';
+import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import { CourseCombobox } from '../components/common/CourseCombobox';
 
@@ -90,28 +91,27 @@ const Profile = () => {
   const handleRestore = async () => {
     if (!restoreId.trim() || !restorePin) return;
     setIsRestoring(true);
+    const restoreToast = toast.loading('Restoring your data...');
     try {
-      // 1. Authenticate with Supabase using old ID and PIN
       const { restoreLifecycle } = await import('../services/authService');
       const authResult = await restoreLifecycle(restoreId.trim().toUpperCase(), restorePin);
       if (!authResult.success) {
-        alert(`❌ Restore failed: ${authResult.error}`);
+        toast.error(`Restore failed: ${authResult.error}`, { id: restoreToast });
         setIsRestoring(false);
         return;
       }
 
-      // 2. Pull the data securely
       const result = await restoreFromCloud();
       if (result.success) {
         setRestoreId('');
         setRestorePin('');
-        alert('✅ Data restored successfully! The page will reload to apply changes.');
-        setTimeout(() => window.location.reload(), 500);
+        toast.success('Data restored! Reloading...', { id: restoreToast, duration: 2000 });
+        setTimeout(() => window.location.reload(), 1500);
       } else {
-        alert(`❌ Restore failed: ${result.error || 'No data found for this ID.'}`);
+        toast.error(`Restore failed: ${result.error || 'No data found for this ID.'}`, { id: restoreToast });
       }
     } catch (err) {
-      alert(`❌ Restore failed: ${err.message}`);
+      toast.error(`Restore failed: ${err.message}`, { id: restoreToast });
     } finally {
       setIsRestoring(false);
     }
@@ -119,8 +119,9 @@ const Profile = () => {
 
   const handleClearData = () => {
     if (window.confirm('Are you sure you want to clear all your app data? This cannot be undone.')) {
+      toast.loading('Clearing data...');
       localStorage.clear();
-      window.location.reload();
+      setTimeout(() => window.location.reload(), 800);
     }
   };
 

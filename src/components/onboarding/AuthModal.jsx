@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { secureDevice, restoreLifecycle, getCurrentUser } from '../../services/authService';
 import { supabase } from '../../lib/supabase';
 import { Lock, RefreshCw, AlertCircle, X } from 'lucide-react';
-import { restoreFromCloud } from '../../services/syncService';
+import { restoreFromCloud, markDeviceAsLinked } from '../../services/syncService';
+import { toast } from 'react-hot-toast';
 
 // Global event to trigger the auth sheet from anywhere
 export const triggerAuthSheet = (onSuccessCallback) => {
@@ -68,6 +69,7 @@ export const AuthBottomSheet = () => {
         setLoading(false);
         return;
       }
+      toast.success('Device secured! Your data is now protected.');
     } else {
       if (!deviceId) {
         setError('Device ID is required to restore.');
@@ -80,8 +82,15 @@ export const AuthBottomSheet = () => {
         setLoading(false);
         return;
       }
-      // Pull cloud data into local storage silently
-      await restoreFromCloud();
+      // Pull cloud data into local storage
+      const restoreToast = toast.loading('Syncing your data from cloud...');
+      const result = await restoreFromCloud();
+      if (result.success) {
+        markDeviceAsLinked(); // This device is now in sync with the original
+        toast.success('Data synced successfully! Welcome back.', { id: restoreToast });
+      } else {
+        toast.error('Signed in, but no cloud data was found.', { id: restoreToast });
+      }
     }
     
     setLoading(false);
