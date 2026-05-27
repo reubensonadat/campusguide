@@ -62,9 +62,9 @@ const LostFoundModal = ({ isOpen, onClose, onSuccess }) => {
 
             if (formData.imageFile) {
                 const file = formData.imageFile;
-                
+
                 // 1. Get Presigned URL from Cloudflare R2 Edge Function
-                const { data: edgeData, error: edgeError } = await supabase.functions.invoke('generate-upload-url', {
+                const { data: uploadInfo, error: fnError } = await supabase.functions.invoke('generate-upload-url', {
                     body: {
                         fileName: file.name,
                         fileType: file.type,
@@ -73,22 +73,41 @@ const LostFoundModal = ({ isOpen, onClose, onSuccess }) => {
                     }
                 });
 
-                if (edgeError || !edgeData?.presignedUrl) {
-                    throw new Error("Failed to get upload URL: " + (edgeError?.message || edgeData?.error));
+                if (fnError) {
+                    throw new Error("Failed to get upload URL: " + fnError.message);
                 }
+
+                if (uploadInfo?.error) {
+                    throw new Error("Upload configuration error: " + uploadInfo.error);
+                }
+
+                const { presignedUrl, publicUrl } = uploadInfo;
+
+                console.log("SUCCESSFULLY GOT UPLOAD INFO FROM EDGE FUNCTION:");
+                console.log("Presigned URL:", presignedUrl);
+                console.log("Public URL:", publicUrl);
 
                 // 2. Upload directly to Cloudflare R2 using the presigned URL
-                const uploadResponse = await fetch(edgeData.presignedUrl, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': file.type },
-                    body: file
-                });
+                try {
+                    const uploadRes = await fetch(presignedUrl, {
+                        method: 'PUT',
+                        body: file,
+                        headers: {
+                            'Content-Type': file.type
+                        }
+                    });
 
-                if (!uploadResponse.ok) {
-                    throw new Error("Failed to upload image to Cloudflare R2");
+                    if (!uploadRes.ok) {
+                        const errorText = await uploadRes.text();
+                        console.error("R2 Upload Failed:", uploadRes.status, errorText);
+                        throw new Error(`Cloudflare R2 rejected the upload (Status ${uploadRes.status}): ${errorText}`);
+                    }
+                } catch (fetchErr) {
+                    console.error("BROWSER FAILED TO FETCH THE PRESIGNED URL:", fetchErr);
+                    throw new Error(`Network/CORS error when hitting R2. URL was: ${presignedUrl.substring(0, 50)}...`);
                 }
 
-                finalImageUrl = edgeData.publicUrl;
+                finalImageUrl = publicUrl;
             }
 
             // 3. Insert into Supabase database
@@ -105,7 +124,7 @@ const LostFoundModal = ({ isOpen, onClose, onSuccess }) => {
                     image_url: finalImageUrl
                 }]);
 
-            if (dbError) throw dbError;
+            if (dbError) throw new Error("DB Error: " + dbError.message);
 
             localStorage.setItem('ucc_has_posted_lost_found', 'true');
             onSuccess(); // Refresh feed
