@@ -8,6 +8,7 @@ import ThriftFeed from '../components/community/ThriftFeed';
 import WhispersFeed from '../components/community/WhispersFeed';
 
 import { supabase } from '../lib/supabase';
+import { DataLoader } from '../components/common/CustomLoaders';
 
 // Categories matching Advertise.jsx options
 const CATEGORIES = [
@@ -300,9 +301,9 @@ const Community = () => {
 
                 {/* Render Feed using CSS Grid or Empty State */}
                 {isLoading ? (
-                    <div className="py-20 flex flex-col items-center justify-center text-center">
-                        <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
-                        <p className="text-gray-500 font-bold animate-pulse">Loading community feed...</p>
+                    <div className="py-20 flex flex-col items-center justify-center text-center gap-4">
+                        <DataLoader />
+                        <p className="text-gray-400 font-semibold text-sm">Loading community feed...</p>
                     </div>
                 ) : filteredFeed.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">

@@ -158,6 +158,24 @@ export const deleteWhisper = async (whisperId) => {
     }
 };
 
+export const getUserInteractions = async () => {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: true, data: [] };
+
+        const { data, error } = await supabase
+            .from('whisper_interactions')
+            .select('whisper_id, interaction_type')
+            .eq('user_id', user.id);
+            
+        if (error) throw error;
+        return { success: true, data };
+    } catch (error) {
+        console.error('Error fetching user interactions:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 export const interactWithWhisper = async (whisperId, type) => {
     try {
         const user = await getCurrentUser();

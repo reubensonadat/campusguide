@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getWhisperComments, addWhisperComment } from '../../services/communityService';
+import { DataLoader } from '../common/CustomLoaders';
 
 const WhisperCommentsModal = ({ isOpen, onClose, whisper, onCommentAdded }) => {
     const [comments, setComments] = useState([]);
@@ -9,6 +10,25 @@ const WhisperCommentsModal = ({ isOpen, onClose, whisper, onCommentAdded }) => {
     const [text, setText] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const endOfMessagesRef = useRef(null);
+    const textareaRef = useRef(null);
+    const MAX_CHARS = 150;
+
+    const handleInput = (e) => {
+        const val = e.target.value;
+        if (val.length <= MAX_CHARS) {
+            setText(val);
+        }
+        
+        e.target.style.height = 'auto';
+        e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit(e);
+        }
+    };
 
     const loadComments = async () => {
         if (!whisper) return;
@@ -27,6 +47,9 @@ const WhisperCommentsModal = ({ isOpen, onClose, whisper, onCommentAdded }) => {
         } else {
             setComments([]);
             setText('');
+            if (textareaRef.current) {
+                textareaRef.current.style.height = 'auto';
+            }
         }
     }, [isOpen, whisper]);
 
@@ -39,6 +62,9 @@ const WhisperCommentsModal = ({ isOpen, onClose, whisper, onCommentAdded }) => {
         const optimisticComment = { id: `temp-${Date.now()}`, text: trimmedText, created_at: new Date().toISOString() };
         setComments(prev => [...prev, optimisticComment]);
         setText('');
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+        }
         setTimeout(() => endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
         
         if (onCommentAdded) {
@@ -84,7 +110,7 @@ const WhisperCommentsModal = ({ isOpen, onClose, whisper, onCommentAdded }) => {
                 <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-white">
                     {loading ? (
                         <div className="flex justify-center py-8">
-                            <Loader2 className="animate-spin text-gray-300" size={24} />
+                            <DataLoader className="w-6 h-6 text-gray-400" />
                         </div>
                     ) : comments.length === 0 ? (
                         <div className="text-center py-8 text-gray-400 font-medium">
@@ -103,22 +129,30 @@ const WhisperCommentsModal = ({ isOpen, onClose, whisper, onCommentAdded }) => {
 
                 {/* Input Area */}
                 <div className="p-4 border-t border-gray-100 bg-white shrink-0">
-                    <form onSubmit={handleSubmit} className="flex gap-2">
-                        <input
-                            type="text"
-                            value={text}
-                            onChange={(e) => setText(e.target.value)}
-                            placeholder="Add an anonymous reply..."
-                            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-primary-500 text-sm font-medium outline-none"
-                            maxLength={150}
-                        />
-                        <button 
-                            type="submit"
-                            disabled={!text.trim() || submitting}
-                            className="bg-primary-600 hover:bg-primary-700 disabled:bg-gray-200 disabled:text-gray-400 text-white p-3 rounded-xl transition-colors flex items-center justify-center"
-                        >
-                            {submitting ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
-                        </button>
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+                        <div className="flex gap-2 items-end">
+                            <textarea
+                                ref={textareaRef}
+                                value={text}
+                                onChange={handleInput}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Add an anonymous reply..."
+                                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-primary-500 text-sm font-medium outline-none resize-none max-h-[120px] min-h-[46px] custom-scrollbar"
+                                rows={1}
+                            />
+                            <button 
+                                type="submit"
+                                disabled={!text.trim() || submitting}
+                                className="bg-primary-600 hover:bg-primary-700 disabled:bg-gray-200 disabled:text-gray-400 text-white p-3 rounded-xl transition-colors flex items-center justify-center shrink-0 h-[46px] w-[46px]"
+                            >
+                                {submitting ? <DataLoader className="w-5 h-5 text-current" /> : <Send size={20} />}
+                            </button>
+                        </div>
+                        <div className="flex justify-end px-2">
+                            <span className={`text-[10px] font-bold ${text.length > 130 ? 'text-red-500' : 'text-gray-400'}`}>
+                                {text.length}/{MAX_CHARS}
+                            </span>
+                        </div>
                     </form>
                 </div>
 

@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { Lock, RefreshCw, AlertCircle, X } from 'lucide-react';
 import { restoreFromCloud, markDeviceAsLinked } from '../../services/syncService';
 import { toast } from 'react-hot-toast';
+import { DataLoader } from '../common/CustomLoaders';
 
 // Global event to trigger the auth sheet from anywhere
 export const triggerAuthSheet = (onSuccessCallback) => {
@@ -173,7 +174,7 @@ export const AuthBottomSheet = () => {
             className="w-full py-4 mt-4 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:hover:bg-primary-600 text-white rounded-2xl font-bold text-lg shadow-[0_8px_20px_rgba(37,99,235,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
           >
             {loading ? (
-              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <DataLoader className="w-6 h-6 text-white" />
             ) : (
               mode === 'register' ? 'Secure & Continue' : 'Restore & Continue'
             )}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, ShieldAlert } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { addWhisper } from '../../services/communityService';
+import { DataLoader } from '../common/CustomLoaders';
 
 const NewWhisperModal = ({ isOpen, onClose }) => {
     const [text, setText] = useState('');
@@ -81,7 +82,11 @@ const NewWhisperModal = ({ isOpen, onClose }) => {
                         disabled={!text.trim() || submitting} 
                         className="w-full mt-4 bg-gray-900 disabled:bg-gray-300 hover:bg-black text-white font-black py-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-gray-200"
                     >
-                        {submitting ? 'Posting...' : (
+                        {submitting ? (
+                            <>
+                                <DataLoader className="w-5 h-5 text-current" /> Posting...
+                            </>
+                        ) : (
                             <>
                                 <Send size={18} /> Whisper Anonymously
                             </>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUp, ArrowDown, MessageSquare, Flag, Loader2, Trash2, RefreshCw } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageSquare, Flag, Loader2, Trash2, RefreshCw, Search, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import NewWhisperModal from './NewWhisperModal';
 import WhisperCommentsModal from './WhisperCommentsModal';
-import { getWhispers, interactWithWhisper, deleteWhisper } from '../../services/communityService';
+import { getWhispers, interactWithWhisper, deleteWhisper, getUserInteractions } from '../../services/communityService';
 import { getCurrentUser } from '../../services/authService';
+import { DataLoader } from '../common/CustomLoaders';
 
 const WhispersFeed = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,17 +14,33 @@ const WhispersFeed = () => {
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('new'); // 'new' or 'top'
     const [currentUser, setCurrentUser] = useState(null);
+    const [userInteractions, setUserInteractions] = useState({ upvotes: new Set(), downvotes: new Set(), flags: new Set() });
+    const [searchQuery, setSearchQuery] = useState('');
 
     const loadWhispers = async () => {
         setLoading(true);
-        const [whispersRes, userRes] = await Promise.all([
+        const [whispersRes, userRes, interactionsRes] = await Promise.all([
             getWhispers(),
-            getCurrentUser()
+            getCurrentUser(),
+            getUserInteractions()
         ]);
         if (whispersRes.success) {
             setWhispers(whispersRes.data);
         }
         setCurrentUser(userRes);
+
+        if (interactionsRes?.success && interactionsRes.data) {
+            const upvotes = new Set();
+            const downvotes = new Set();
+            const flags = new Set();
+            interactionsRes.data.forEach(int => {
+                if (int.interaction_type === 'UPVOTE') upvotes.add(int.whisper_id);
+                if (int.interaction_type === 'DOWNVOTE') downvotes.add(int.whisper_id);
+                if (int.interaction_type === 'FLAG') flags.add(int.whisper_id);
+            });
+            setUserInteractions({ upvotes, downvotes, flags });
+        }
+
         setLoading(false);
     };
 
@@ -32,6 +49,10 @@ const WhispersFeed = () => {
     }, []);
 
     const handleInteract = async (id, type) => {
+        if (type === 'UPVOTE' && userInteractions.upvotes.has(id)) return;
+        if (type === 'DOWNVOTE' && userInteractions.downvotes.has(id)) return;
+        if (type === 'FLAG' && userInteractions.flags.has(id)) return;
+
         // Optimistic UI update
         setWhispers(prev => prev.map(w => {
             if (w.id === id) {
@@ -40,6 +61,14 @@ const WhispersFeed = () => {
             }
             return w;
         }));
+
+        setUserInteractions(prev => {
+            const next = { ...prev };
+            if (type === 'UPVOTE') next.upvotes = new Set([...prev.upvotes, id]);
+            if (type === 'DOWNVOTE') next.downvotes = new Set([...prev.downvotes, id]);
+            if (type === 'FLAG') next.flags = new Set([...prev.flags, id]);
+            return next;
+        });
 
         const result = await interactWithWhisper(id, type);
         if (!result.success && result.error) {
@@ -73,18 +102,21 @@ const WhispersFeed = () => {
         return `${Math.floor(hrs / 24)}d ago`;
     };
 
-    const sortedWhispers = [...whispers].sort((a, b) => {
-        if (sortBy === 'top') {
-            const scoreA = a.upvotes - a.downvotes;
-            const scoreB = b.upvotes - b.downvotes;
-            return scoreB - scoreA;
-        }
-        return new Date(b.created_at) - new Date(a.created_at);
-    });
+    const sortedWhispers = [...whispers]
+        .sort((a, b) => {
+            if (sortBy === 'top') {
+                return (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes);
+            }
+            return new Date(b.created_at) - new Date(a.created_at);
+        })
+        .filter(w => {
+            if (!searchQuery.trim()) return true;
+            return w.text.toLowerCase().includes(searchQuery.toLowerCase());
+        });
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto">
-            <div className="flex justify-between items-end mb-6">
+            <div className="flex justify-between items-end mb-4">
                 <div>
                     <h2 className="text-xl font-black text-gray-900">Campus Whispers</h2>
                     <p className="text-sm text-gray-500 font-medium mb-3">100% Anonymous. Spill the tea.</p>
@@ -106,7 +138,7 @@ const WhispersFeed = () => {
                             disabled={loading}
                             className="px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors flex items-center gap-1 disabled:opacity-50"
                         >
-                            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}><path d="M5.46257 4.43262C7.21556 2.91688 9.5007 2 12 2C17.5228 2 22 6.47715 22 12C22 14.1361 21.3302 16.1158 20.1892 17.7406L17 12H20C20 7.58172 16.4183 4 12 4C9.84982 4 7.89777 4.84827 6.46023 6.22842L5.46257 4.43262ZM18.5374 19.5674C16.7844 21.0831 14.4993 22 12 22C6.47715 22 2 17.5228 2 12C2 9.86386 2.66979 7.88416 3.8108 6.25944L7 12H4C4 16.4183 7.58172 20 12 20C14.1502 20 16.1022 19.1517 17.5398 17.7716L18.5374 19.5674Z"></path></svg>
                             Refresh
                         </button>
                     </div>
@@ -116,10 +148,27 @@ const WhispersFeed = () => {
                 </button>
             </div>
 
+            {/* Search bar */}
+            <div className="relative mb-5">
+                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search whispers..."
+                    className="w-full pl-9 pr-9 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-400 focus:bg-white transition-colors"
+                />
+                {searchQuery && (
+                    <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <X size={14} />
+                    </button>
+                )}
+            </div>
+
             <div className="space-y-4">
                 {loading ? (
                     <div className="py-12 flex flex-col items-center justify-center text-gray-400">
-                        <Loader2 className="animate-spin mb-2" size={24} />
+                        <DataLoader className="w-8 h-8 text-[#002F45] mb-4" />
                         <p className="text-sm font-medium">Loading whispers...</p>
                     </div>
                 ) : sortedWhispers.length === 0 ? (
@@ -133,8 +182,8 @@ const WhispersFeed = () => {
                                 <span className="text-xs font-bold text-primary-500 bg-primary-50 px-2 py-1 rounded-md">Anonymous</span>
                                 <div className="flex items-center gap-3">
                                     <span className="text-xs text-gray-400 font-medium">{getTimeAgo(whisper.created_at)}</span>
-                                    <button onClick={() => handleInteract(whisper.id, 'FLAG')} className="text-gray-300 hover:text-red-500 transition-colors" title="Report this post">
-                                        <Flag size={14} />
+                                    <button onClick={() => handleInteract(whisper.id, 'FLAG')} className={`${userInteractions.flags.has(whisper.id) ? 'text-red-500 cursor-default' : 'text-gray-300 hover:text-red-500'} transition-colors`} title={userInteractions.flags.has(whisper.id) ? "You flagged this post" : "Report this post"}>
+                                        <Flag size={14} className={userInteractions.flags.has(whisper.id) ? 'fill-current' : ''} />
                                     </button>
                                 </div>
                             </div>
@@ -143,13 +192,13 @@ const WhispersFeed = () => {
                             </p>
                             <div className="flex items-center justify-between border-t border-gray-50 pt-3">
                                 <div className="flex items-center gap-1 bg-gray-50 rounded-full px-1 py-1 border border-gray-100">
-                                    <button onClick={() => handleInteract(whisper.id, 'UPVOTE')} className="p-1.5 rounded-full hover:bg-white text-gray-400 hover:text-green-600 transition-colors shadow-sm">
+                                    <button onClick={() => handleInteract(whisper.id, 'UPVOTE')} className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.upvotes.has(whisper.id) ? 'text-green-600 bg-white cursor-default' : 'text-gray-400 hover:text-green-600 hover:bg-white'}`}>
                                         <ArrowUp size={16} strokeWidth={3} />
                                     </button>
                                     <span className="text-sm font-black text-gray-700 min-w-[20px] text-center">
                                         {whisper.upvotes - whisper.downvotes}
                                     </span>
-                                    <button onClick={() => handleInteract(whisper.id, 'DOWNVOTE')} className="p-1.5 rounded-full hover:bg-white text-gray-400 hover:text-red-500 transition-colors shadow-sm">
+                                    <button onClick={() => handleInteract(whisper.id, 'DOWNVOTE')} className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.downvotes.has(whisper.id) ? 'text-red-500 bg-white cursor-default' : 'text-gray-400 hover:text-red-500 hover:bg-white'}`}>
                                         <ArrowDown size={16} strokeWidth={3} />
                                     </button>
                                 </div>
