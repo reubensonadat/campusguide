@@ -1,5 +1,5 @@
  import React, { useState, useEffect } from 'react';
-import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks, Copy, Fingerprint, Cloud, CloudOff, RefreshCw, Check, Share2, Hash, CreditCard, Camera } from 'lucide-react';
+import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks, Copy, Fingerprint, Cloud, CloudOff, RefreshCw, Check, Share2, Hash, CreditCard, Camera, Bell } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
@@ -45,6 +45,7 @@ const Profile = () => {
   const [restoreId, setRestoreId] = useState('');
   const [restorePin, setRestorePin] = useState('');
   const [isRestoring, setIsRestoring] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useLocalStorage('ucc_notifications_enabled', true);
   
   // Local form state for the edit modal
   const [formData, setFormData] = useState(profile);
@@ -375,6 +376,23 @@ const Profile = () => {
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>
+
+            <div className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0">
+              <div className="flex items-center gap-4">
+                <Bell size={24} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[17px] text-gray-900 font-medium">App Notifications</span>
+              </div>
+              <button
+                onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+                className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${
+                  notificationsEnabled ? 'bg-[#002F45]' : 'bg-gray-200'
+                }`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                  notificationsEnabled ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
 
             <button 
               onClick={() => navigate('/contact')}

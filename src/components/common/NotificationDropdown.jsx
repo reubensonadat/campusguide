@@ -1,200 +1,339 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, BellOff, Book, Wallet, DollarSign, Calendar, X, Check, Trash2 } from 'lucide-react';
+import {
+  Bell, BellOff, Megaphone, MessageCircle,
+  ShoppingBag, X, ChevronRight, Check, CheckCheck,
+  Loader2
+} from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
 
-// Helper to format timestamps
-const formatTimeAgo = (isoString) => {
-  if (!isoString) return '';
-  const date = new Date(isoString);
-  const now = new Date();
-  const diffInMinutes = Math.floor((now - date) / 60000);
-  
-  if (diffInMinutes < 1) return 'Just now';
-  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) return `${diffInHours}h ago`;
-  return `${Math.floor(diffInHours / 24)}d ago`;
+// ─── Type config ─────────────────────────────────────────────────────────────
+const TYPE_CONFIG = {
+  announcement: { label: 'ANNOUNCEMENT', Icon: Megaphone, color: 'text-[#002F45]', bg: 'bg-[#002F45]/10' },
+  whisper: { label: 'WHISPER', Icon: MessageCircle, color: 'text-purple-600', bg: 'bg-purple-50' },
+  thrift: { label: 'THRIFT', Icon: ShoppingBag, color: 'text-emerald-600', bg: 'bg-emerald-50' },
 };
 
-const getIconForType = (type) => {
-  switch (type) {
-    case 'class': return <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0"><Book size={14} className="text-blue-500" /></div>;
-    case 'budget': return <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center shrink-0"><Wallet size={14} className="text-red-500" /></div>;
-    case 'payday': return <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center shrink-0"><DollarSign size={14} className="text-green-500" /></div>;
-    case 'community': return <div className="w-8 h-8 rounded-full bg-[#002F45]/10 flex items-center justify-center shrink-0"><Calendar size={14} className="text-[#002F45]" /></div>;
-    default: return <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0"><BellOff size={14} className="text-gray-500" /></div>;
-  }
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function formatTimeAgo(ts) {
+  if (!ts) return '';
+  const diff = (Date.now() - new Date(ts)) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
+// ─── Community item card ─────────────────────────────────────────────────────
+const CommunityCard = ({ item, onMarkRead, onNavigate, isRead }) => {
+  const cfg = TYPE_CONFIG[item.updateType] ?? TYPE_CONFIG.announcement;
+  const Icon = cfg.Icon;
+
+  const handleClick = () => {
+    onMarkRead(item.id);
+    const tab =
+      item.updateType === 'whisper' ? 'whispers' :
+        item.updateType === 'thrift' ? 'thrift' : 'announcements';
+    onNavigate(tab);
+  };
+
+  return (
+    <div
+      onClick={handleClick}
+      className={`p-3 rounded-xl flex gap-3 items-start cursor-pointer transition-colors group ${isRead ? 'bg-gray-50/60 hover:bg-gray-100/60' : 'bg-white hover:bg-gray-50 border border-gray-100 shadow-sm'
+        }`}
+    >
+      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${cfg.bg}`}>
+        <Icon size={15} className={cfg.color} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className={`text-[9px] font-black tracking-widest uppercase ${cfg.color}`}>
+          {cfg.label}
+        </span>
+        <p className={`text-sm font-bold line-clamp-1 mt-0.5 ${isRead ? 'text-gray-500' : 'text-gray-900'}`}>
+          {item.title || item.item_name ||
+            (item.updateType === 'whisper' ? 'Campus Whisper' : 'New Update')}
+        </p>
+        <p className={`text-xs font-medium line-clamp-2 mt-0.5 leading-snug ${isRead ? 'text-gray-400' : 'text-gray-500'}`}>
+          {item.description || item.content || item.text || ''}
+        </p>
+        <p className="text-[10px] text-gray-400 font-medium mt-1">
+          {formatTimeAgo(item.created_at)}
+        </p>
+      </div>
+      {/* Unread dot indicator */}
+      {!isRead && (
+        <span className="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-2" />
+      )}
+    </div>
+  );
 };
 
-const NotificationDropdown = ({ isOpen, onClose, update, onSeeMore, onDismissUpdate }) => {
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [isDismissed, setIsDismissed] = useState(false);
-  const { notifications, markAsRead, markAllAsRead, removeNotification, clearAll } = useNotifications();
+// ─── Component ────────────────────────────────────────────────────────────────
+const NotificationDropdown = ({
+  isOpen,
+  onClose,
+  unreadItems = [],
+  readItems = [],
+  fetchStatus = 'idle',
+  notificationsEnabled = true,
+  onMarkItemRead,
+  onMarkAllRead,
+  onNavigate,
+}) => {
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { notifications, markAsRead, removeNotification } = useNotifications();
 
-  // Reset local dismissed state every time the dropdown opens
+  // Position the dropdown below the bell icon
   useEffect(() => {
-    if (isOpen) setIsDismissed(false);
-  }, [isOpen]);
+    if (!isOpen || !dropdownRef.current) return;
+    const anchor =
+      document.getElementById('bell-anchor-mobile') ||
+      document.getElementById('bell-anchor-desktop');
+    if (!anchor) return;
 
-  useEffect(() => {
-    if (isOpen) {
-      const mobileAnchor = document.getElementById('bell-anchor-mobile');
-      const desktopAnchor = document.getElementById('bell-anchor-desktop');
+    const rect = anchor.getBoundingClientRect();
+    const el = dropdownRef.current;
+    const W = 320;
+    let left = rect.left + rect.width / 2 - W / 2;
+    left = Math.max(12, Math.min(left, window.innerWidth - W - 12));
 
-      let activeAnchor = null;
-      if (mobileAnchor && mobileAnchor.getBoundingClientRect().width > 0) {
-        activeAnchor = mobileAnchor;
-      } else if (desktopAnchor && desktopAnchor.getBoundingClientRect().width > 0) {
-        activeAnchor = desktopAnchor;
-      }
-
-      if (activeAnchor) {
-        const rect = activeAnchor.getBoundingClientRect();
-        const dropdownWidth = 320; // Slightly wider for better text layout
-        const gap = 8; 
-        
-        let calculatedLeft = rect.left + (rect.width / 2) - (dropdownWidth / 2);
-        if (calculatedLeft + dropdownWidth > window.innerWidth - 16) {
-          calculatedLeft = window.innerWidth - dropdownWidth - 16;
-        }
-        if (calculatedLeft < 16) {
-          calculatedLeft = 16;
-        }
-
-        setPosition({
-          top: rect.bottom + gap,
-          left: calculatedLeft,
-        });
-      }
-    }
+    el.style.top = `${rect.bottom + 8}px`;
+    el.style.left = `${left}px`;
+    el.style.width = `${W}px`;
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const showUpdate = update && !isDismissed;
-  const hasContent = showUpdate || notifications.length > 0;
+  // ── Muted state ──
+  if (!notificationsEnabled) {
+    return createPortal(
+      <>
+        <div className="fixed inset-0 z-[9998]" onClick={onClose} />
+        <div
+          ref={dropdownRef}
+          className="fixed z-[9999] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
+          style={{ maxHeight: '75vh' }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
+            <div className="flex items-center gap-2">
+              <Bell size={16} className="text-[#002F45]" />
+              <span className="text-sm font-black text-gray-900">Notifications</span>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          {/* Muted empty state */}
+          <div className="flex flex-col items-center py-10 text-center px-6">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+              <BellOff size={22} className="text-gray-300" />
+            </div>
+            <p className="text-sm font-bold text-gray-900">Notifications are muted</p>
+            <p className="text-xs text-gray-400 mt-1 font-medium">
+              Enable notifications in your Profile settings to see updates here.
+            </p>
+          </div>
+
+          {/* Footer */}
+          <div className="border-t border-gray-100 px-3 py-2 shrink-0">
+            <button
+              onClick={() => { onNavigate?.('announcements'); }}
+              className="w-full text-left text-xs font-bold text-[#002F45] hover:text-[#001a26] p-2 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-between group"
+            >
+              Go to Community Hub
+              <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </>,
+      document.body
+    );
+  }
+
+  // ── Determine if we have any content at all ──
+  const hasUnread = unreadItems.length > 0;
+  const hasRead = readItems.length > 0;
+  const hasInApp = notifications.length > 0;
+  const isLoading = fetchStatus === 'loading' && unreadItems.length === 0 && readItems.length === 0;
 
   return createPortal(
     <>
-      <div className="fixed inset-0 z-[9998]" onClick={onClose} style={{ background: 'transparent' }} />
-      
-      <div 
-        className="fixed w-80 bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-gray-100 z-[9999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 flex flex-col max-h-[80vh]"
-        style={{ top: `${position.top}px`, left: `${position.left}px` }}
+      {/* Transparent full-screen backdrop — click to close */}
+      <div className="fixed inset-0 z-[9998]" onClick={onClose} />
+
+      {/* Dropdown panel */}
+      <div
+        ref={dropdownRef}
+        className="fixed z-[9999] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
+        style={{ maxHeight: '75vh' }}
       >
-        {/* Header */}
-        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
-          <h3 className="font-bold text-gray-900">Notifications</h3>
-          {notifications.length > 0 && (
-            <button 
-              onClick={markAllAsRead}
-              className="text-xs font-bold text-[#002F45] hover:text-[#001a26]"
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
+          <div className="flex items-center gap-2">
+            <Bell size={16} className="text-[#002F45]" />
+            <span className="text-sm font-black text-gray-900">Notifications</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {hasUnread && unreadItems.length > 1 && (
+              <button
+                onClick={() => onMarkAllRead?.()}
+                className="flex items-center gap-1 text-[11px] font-bold text-[#002F45]/70 hover:text-emerald-600 transition-colors px-2 py-1 rounded-lg hover:bg-gray-50"
+              >
+                <CheckCheck size={13} /> Mark all read
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
             >
-              Mark all read
+              <X size={16} />
             </button>
-          )}
+          </div>
         </div>
 
-        {/* Scrollable List */}
-        <div className="overflow-y-auto overflow-x-hidden p-2 flex flex-col gap-1 hide-scrollbar">
-          {/* External Community Update */}
-          {showUpdate && (
-            <div 
-              onClick={() => {
-                let tab = 'announcements';
-                if (update.updateType === 'whisper') tab = 'whispers';
-                if (update.updateType === 'thrift') tab = 'thrift';
-                navigate(`/community?tab=${tab}`);
-                onClose();
-              }}
-              className="relative p-3 rounded-xl bg-[#002F45]/5 flex flex-col gap-2 border border-[#002F45]/10 cursor-pointer hover:bg-[#002F45]/10 transition-colors"
-            >
-              <div className="flex gap-3 items-start">
-                {getIconForType('community')}
-                <div className="flex-1 min-w-0">
-                  <span className="inline-block text-[10px] font-black tracking-widest uppercase mb-1 text-[#002F45]">
-                    {update.updateType === 'announcement' ? 'ANNOUNCEMENT' : update.updateType === 'whisper' ? 'WHISPER' : 'THRIFT'}
-                  </span>
-                  <h4 className="text-sm font-bold text-gray-900 mb-0.5 line-clamp-1">
-                    {update.title || update.item_name || (update.updateType === 'whisper' ? 'Campus Whisper' : 'New Update')}
-                  </h4>
-                  <p className="text-xs text-gray-600 font-medium line-clamp-2 leading-snug">
-                    {update.description || update.content || update.text || ''}
-                  </p>
-                </div>
-              </div>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsDismissed(true);  // immediately hide in UI
-                  if (onDismissUpdate) onDismissUpdate();  // persist to localStorage
-                }}
-                className="self-end text-[11px] font-bold text-[#002F45]/60 hover:text-red-500 bg-white border border-[#002F45]/15 px-3 py-1 rounded-full transition-colors"
-              >
-                Mark as read
-              </button>
+        {/* ── Scrollable body ── */}
+        <div className="flex-1 overflow-y-auto flex flex-col min-h-0">
+
+          {/* Loading state */}
+          {isLoading && (
+            <div className="flex flex-col items-center py-10 text-center">
+              <Loader2 size={24} className="text-gray-300 animate-spin mb-3" />
+              <p className="text-xs text-gray-400 font-medium">Loading notifications...</p>
             </div>
           )}
 
-          {/* Internal App Notifications */}
-          {notifications.length > 0 ? (
-            notifications.map((notif) => (
-              <div 
-                key={notif.id}
-                onClick={() => {
-                  markAsRead(notif.id);
-                  if (notif.type === 'class') {
-                    navigate('/tools?tab=timetable');
-                  } else if (notif.type === 'budget' || notif.type === 'payday') {
-                    navigate('/tools?tab=budget');
-                  }
-                  onClose();
-                }}
-                className={`p-3 rounded-xl flex gap-3 items-start transition-colors group cursor-pointer ${notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-gray-50'}`}
-              >
-                {getIconForType(notif.type)}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2 mb-0.5">
-                    <h4 className={`text-sm font-bold line-clamp-1 ${notif.isRead ? 'text-gray-700' : 'text-gray-900'}`}>
-                      {notif.title}
-                    </h4>
-                    <span className="text-[10px] font-medium text-gray-400 whitespace-nowrap shrink-0 mt-0.5">
-                      {formatTimeAgo(notif.timestamp)}
-                    </span>
-                  </div>
-                  <p className={`text-xs font-medium line-clamp-2 leading-snug ${notif.isRead ? 'text-gray-500' : 'text-gray-600'}`}>
-                    {notif.message}
-                  </p>
-                </div>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); removeNotification(notif.id); }}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-all shrink-0"
-                >
-                  <X size={14} />
-                </button>
+          {/* Error state (only shown if no data at all) */}
+          {fetchStatus === 'error' && !hasUnread && !hasRead && (
+            <div className="flex flex-col items-center py-8 text-center px-6">
+              <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center mb-3">
+                <Bell size={18} className="text-red-300" />
               </div>
-            ))
-          ) : (
-            !showUpdate && (
-              <div className="flex flex-col items-center py-6 text-center">
-                <BellOff size={24} className="text-gray-300 mb-2" />
-                <p className="text-sm font-bold text-gray-900">You're all caught up! 🎉</p>
-                <p className="text-xs text-gray-500 mt-1 font-medium px-4">You have no new alerts or classes coming up right now.</p>
-              </div>
-            )
+              <p className="text-sm font-bold text-gray-900">Couldn't load updates</p>
+              <p className="text-xs text-gray-400 mt-1 font-medium">
+                Check your connection and try again.
+              </p>
+            </div>
           )}
+
+          {/* ── UNREAD SECTION ── */}
+          {!isLoading && hasUnread && (
+            <div className="px-3 pt-3 pb-1">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-black tracking-widest uppercase text-gray-400">New</span>
+                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 text-white text-[9px] font-bold">
+                    {unreadItems.length}
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                {unreadItems.map(item => (
+                  <CommunityCard
+                    key={item.id}
+                    item={item}
+                    isRead={false}
+                    onMarkRead={onMarkItemRead}
+                    onNavigate={onNavigate}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── EMPTY / CAUGHT UP STATE ── */}
+          {!isLoading && !hasUnread && fetchStatus !== 'error' && (
+            <div className="flex flex-col items-center py-6 text-center px-6">
+              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mb-2">
+                <Check size={18} className="text-green-400" />
+              </div>
+              <p className="text-sm font-bold text-gray-900">You're all caught up! 🎉</p>
+              <p className="text-xs text-gray-400 mt-1 font-medium">
+                No new notifications right now.
+              </p>
+            </div>
+          )}
+
+          {/* ── READ SECTION ── */}
+          {!isLoading && hasRead && (
+            <div className="px-3 pt-2 pb-1">
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-[10px] font-black tracking-widest uppercase text-gray-300">Recent Notifications</span>
+              </div>
+              <div className="flex flex-col gap-1 opacity-50">
+                {readItems.slice(0, 5).map(item => (
+                  <CommunityCard
+                    key={item.id}
+                    item={item}
+                    isRead={true}
+                    onMarkRead={onMarkItemRead}
+                    onNavigate={onNavigate}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── IN-APP NOTIFICATIONS (class reminders, budget alerts, etc.) ── */}
+          {hasInApp && (
+            <div className="px-3 pt-2 pb-1">
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-[10px] font-black tracking-widest uppercase text-gray-400">App Reminders</span>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                {notifications.map(notif => (
+                  <div
+                    key={notif.id}
+                    onClick={() => {
+                      markAsRead(notif.id);
+                      if (notif.type === 'class') navigate('/tools?tab=timetable');
+                      else if (notif.type === 'budget' || notif.type === 'payday') navigate('/tools?tab=budget');
+                      onClose();
+                    }}
+                    className={`p-3 rounded-xl flex gap-3 items-start cursor-pointer transition-colors group ${notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-blue-50 hover:bg-blue-100/70'
+                      }`}
+                  >
+                    <div className="w-8 h-8 rounded-xl bg-[#002F45]/10 flex items-center justify-center shrink-0">
+                      <Bell size={14} className="text-[#002F45]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className={`text-sm font-bold line-clamp-1 ${notif.isRead ? 'text-gray-700' : 'text-gray-900'}`}>
+                          {notif.title}
+                        </p>
+                        <span className="text-[10px] text-gray-400 font-medium whitespace-nowrap shrink-0 mt-0.5">
+                          {formatTimeAgo(notif.timestamp)}
+                        </span>
+                      </div>
+                      <p className={`text-xs font-medium line-clamp-2 mt-0.5 leading-snug ${notif.isRead ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {notif.message}
+                      </p>
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); removeNotification(notif.id); }}
+                      className="opacity-0 group-hover:opacity-100 p-1 text-gray-300 hover:text-red-400 transition-all shrink-0 rounded-full mt-0.5"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
 
-        {/* Footer with See More link */}
-        <div className="border-t border-gray-100 bg-white p-2 shrink-0">
+        {/* ── Footer ── */}
+        <div className="border-t border-gray-100 px-3 py-2 shrink-0">
           <button
-            onClick={() => {
-              if (onSeeMore) onSeeMore();
-              onClose();
-            }}
+            onClick={() => { onNavigate?.('announcements'); }}
             className="w-full text-left text-xs font-bold text-[#002F45] hover:text-[#001a26] p-2 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-between group"
           >
             Go to Community Hub

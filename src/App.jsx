@@ -31,6 +31,7 @@ function NavigationObserver() {
   const location = useLocation();
 
   useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to top on route change
     triggerHaptic(30); // Gentle 30ms buzz on navigation
   }, [location.pathname]);
 

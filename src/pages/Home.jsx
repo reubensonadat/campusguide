@@ -103,9 +103,8 @@ const Home = () => {
   const [homeWidgetsRaw] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
   const homeWidgets = useMemo(() => ({ ...DEFAULT_HOME_WIDGETS, ...homeWidgetsRaw }), [homeWidgetsRaw]);
 
-  // 🛎️ NEW: NOTIFICATION LOGIC STATES
+  // 🛎️ NOTIFICATION LOGIC STATES
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [hasClearedNotifDot, setHasClearedNotifDot] = useState(false);
 
   const supportEmail = state?.supportEmail || 'anonymous@uccguide.com';
   const handlePaymentSuccess = () => toast.success('Thank you for your support!');
@@ -250,66 +249,94 @@ const Home = () => {
   const [featuredContent, setFeaturedContent] = useState(null); 
   const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(false);
 
-  const [latestUpdate, setLatestUpdate] = useState(null);
+  // ── Community notification state (inbox model) ────────────────────────────
+  const [recentUpdates, setRecentUpdates] = useState([]);
+  const [fetchStatus, setFetchStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+  const [seenVersion, setSeenVersion] = useState(0); // bump to re-derive seenIds
+  const [notificationsEnabled] = useLocalStorage('ucc_notifications_enabled', true);
 
-  const dismissUpdate = () => {
-    setLatestUpdate(prev => {
-      if (prev) {
-        const dismissedIds = JSON.parse(localStorage.getItem('ucc_dismissed_updates') || '[]');
-        const idStr = String(prev.id);
-        if (!dismissedIds.includes(idStr)) {
-          localStorage.setItem('ucc_dismissed_updates', JSON.stringify([...dismissedIds, idStr]));
-        }
-      }
-      return null;
-    });
-  };
+  // Derived: seen IDs from localStorage (re-computed when seenVersion changes)
+  const seenIds = useMemo(() => {
+    return new Set(JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]').map(String));
+  }, [seenVersion]);
+
+  // Derived: unread vs read community items
+  const unreadItems = useMemo(() => recentUpdates.filter(item => !seenIds.has(String(item.id))), [recentUpdates, seenIds]);
+  const readItems   = useMemo(() => recentUpdates.filter(item => seenIds.has(String(item.id))), [recentUpdates, seenIds]);
+
+  // Mark a single community item as read
+  const markItemAsRead = useCallback((id) => {
+    const current = JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]');
+    const updated = [...new Set([...current, String(id)])];
+    localStorage.setItem('ucc_seen_updates', JSON.stringify(updated));
+    setSeenVersion(v => v + 1);
+  }, []);
+
+  // Mark all unread community items as read
+  const markAllAsRead = useCallback(() => {
+    const current = JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]');
+    const allIds = unreadItems.map(item => String(item.id));
+    const updated = [...new Set([...current, ...allIds])];
+    localStorage.setItem('ucc_seen_updates', JSON.stringify(updated));
+    setSeenVersion(v => v + 1);
+  }, [unreadItems]);
+
+  // Navigate to community hub with correct tab
+  const handleNavigateToCommunity = useCallback((tab) => {
+    navigate(`/community?tab=${tab}`);
+    setIsNotifOpen(false);
+  }, [navigate]);
 
   const { unreadCount } = useNotifications();
 
-  // 🛎️ NEW: Derive the boolean for the red dot based on global updates
-  const hasUnseen = (latestUpdate && !hasClearedNotifDot) || unreadCount > 0;
+  // Red dot: purely data-driven — shows only when there are truly unread items
+  const showRedDot = notificationsEnabled && (unreadItems.length > 0 || unreadCount > 0);
 
+  // ── Fetch community updates (gated by notificationsEnabled) ─────────────
   useEffect(() => {
-    const seenIds = JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]');
+    if (!notificationsEnabled) {
+      setRecentUpdates([]);
+      setFetchStatus('idle');
+      return;
+    }
 
-    const fetchLatestUpdates = async () => {
+    const fetchCommunityUpdates = async () => {
+      setFetchStatus('loading');
       try {
         const [annRes, whisperRes, thriftRes] = await Promise.all([
-          supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(1),
-          supabase.from('campus_whispers').select('*').order('created_at', { ascending: false }).limit(1),
-          supabase.from('thrift_listings').select('*').order('created_at', { ascending: false }).limit(1)
+          supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(10),
+          supabase.from('campus_whispers').select('*').order('created_at', { ascending: false }).limit(10),
+          supabase.from('thrift_listings').select('*').order('created_at', { ascending: false }).limit(10)
         ]);
 
         const items = [];
-        if (annRes.data && annRes.data[0]) items.push({ ...annRes.data[0], updateType: 'announcement' });
-        if (whisperRes.data && whisperRes.data[0]) items.push({ ...whisperRes.data[0], updateType: 'whisper' });
-        if (thriftRes.data && thriftRes.data[0]) items.push({ ...thriftRes.data[0], updateType: 'thrift' });
+        if (annRes.data) items.push(...annRes.data.map(i => ({ ...i, updateType: 'announcement' })));
+        if (whisperRes.data) items.push(...whisperRes.data.map(i => ({ ...i, updateType: 'whisper' })));
+        if (thriftRes.data) items.push(...thriftRes.data.map(i => ({ ...i, updateType: 'thrift' })));
 
+        // Sort DESCENDING — newest first
         items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        const dismissedIds = JSON.parse(localStorage.getItem('ucc_dismissed_updates') || '[]');
-        const newest = items.find(item => !dismissedIds.includes(String(item.id)));
-
-        if (newest) {
-          setLatestUpdate(newest);
-          if (seenIds.includes(String(newest.id))) {
-            setHasClearedNotifDot(true);
-          } else {
-            localStorage.setItem('ucc_seen_updates', JSON.stringify([...seenIds, String(newest.id)]))
-          }
-        }
+        setRecentUpdates(items);
+        setFetchStatus('success');
       } catch (err) {
-        console.error("Error fetching latest updates", err);
+        console.error("Error fetching community updates", err);
+        setFetchStatus('error');
+        // Do NOT wipe recentUpdates — preserve stale data on error
       }
     };
 
+    fetchCommunityUpdates();
+  }, [notificationsEnabled]);
+
+  // ── Fetch ad / featured content (always runs, separate concern) ──────────
+  useEffect(() => {
     const fetchAdOrFallback = async () => {
       try {
         const { data: adsData } = await supabase
           .from('advertisements')
           .select('*')
           .ilike('status', 'active')
-          .eq('package_id', 'home_banner') 
+          .eq('package_id', 'home_banner')
           .gte('expires_at', new Date().toISOString());
 
         if (!adsData || adsData.length === 0) {
@@ -331,7 +358,6 @@ const Home = () => {
       }
     };
 
-    fetchLatestUpdates();
     fetchAdOrFallback();
   }, []);
 
@@ -391,32 +417,27 @@ const Home = () => {
             <div className="flex items-center gap-3">
               {/* Notification Bell */}
               <div id="bell-anchor-mobile" className="relative">
-                <button 
-                  onClick={() => {
-                    setIsNotifOpen(!isNotifOpen); 
-                    if(hasUnseen) setHasClearedNotifDot(true);
-                  }} 
+                <button
+                  onClick={() => setIsNotifOpen(!isNotifOpen)}
                   className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform"
                 >
                   <Bell size={18} />
-                  {hasUnseen && (
+                  {showRedDot && (
                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-[#001a26]"></span>
                   )}
                 </button>
                 
                 {/* Dropdown Panel */}
-                <NotificationDropdown 
-                  isOpen={isNotifOpen} 
-                  onClose={() => setIsNotifOpen(false)} 
-                  update={latestUpdate}
-                  onDismissUpdate={dismissUpdate}
-                  onSeeMore={() => {
-                    let tab = 'announcements';
-                    if (latestUpdate?.updateType === 'whisper') tab = 'whispers';
-                    if (latestUpdate?.updateType === 'thrift') tab = 'thrift';
-                    navigate(`/community?tab=${tab}`); 
-                    setIsNotifOpen(false);
-                  }}
+                <NotificationDropdown
+                  isOpen={isNotifOpen}
+                  onClose={() => setIsNotifOpen(false)}
+                  unreadItems={unreadItems}
+                  readItems={readItems}
+                  fetchStatus={fetchStatus}
+                  notificationsEnabled={notificationsEnabled}
+                  onMarkItemRead={markItemAsRead}
+                  onMarkAllRead={markAllAsRead}
+                  onNavigate={handleNavigateToCommunity}
                 />
               </div>
 
@@ -868,29 +889,25 @@ const Home = () => {
                   
                   {/* 🛎️ NEW: Desktop Bell Icon */}
                   <div id="bell-anchor-desktop" className="relative">
-                    <button 
-                      onClick={() => {
-                        setIsNotifOpen(!isNotifOpen); 
-                        if(hasUnseen) setHasClearedNotifDot(true);
-                      }} 
+                    <button
+                      onClick={() => setIsNotifOpen(!isNotifOpen)}
                       className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-200 cursor-pointer transition-all"
                     >
                       <Bell size={18} />
-                      {hasUnseen && (
+                      {showRedDot && (
                         <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
                       )}
                     </button>
-                    <NotificationDropdown 
-                      isOpen={isNotifOpen} 
-                      onClose={() => setIsNotifOpen(false)} 
-                      update={latestUpdate}
-                      onSeeMore={() => {
-                        let tab = 'announcements';
-                        if (latestUpdate?.updateType === 'whisper') tab = 'whispers';
-                        if (latestUpdate?.updateType === 'thrift') tab = 'thrift';
-                        navigate(`/community?tab=${tab}`); 
-                        setIsNotifOpen(false);
-                      }}
+                    <NotificationDropdown
+                      isOpen={isNotifOpen}
+                      onClose={() => setIsNotifOpen(false)}
+                      unreadItems={unreadItems}
+                      readItems={readItems}
+                      fetchStatus={fetchStatus}
+                      notificationsEnabled={notificationsEnabled}
+                      onMarkItemRead={markItemAsRead}
+                      onMarkAllRead={markAllAsRead}
+                      onNavigate={handleNavigateToCommunity}
                     />
                   </div>
                 </div>
