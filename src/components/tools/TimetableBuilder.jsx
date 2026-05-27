@@ -11,6 +11,7 @@ import { triggerAuthSheet } from '../onboarding/AuthModal';
 import { getTodayHoliday } from '../../services/holidayService';
 import { CustomEyes } from '../common/CustomIcons';
 
+
 const formatTime12Hour = (time24) => {
   if (!time24) return '';
   const [hours, minutes] = time24.split(':').map(Number);
