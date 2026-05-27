@@ -36,9 +36,12 @@ export const secureDevice = async (deviceId, pin) => {
       // If user exists, it might just mean they signed up before. 
       // We ignore duplicate key errors for the users table if necessary, 
       // but optimally it shouldn't happen on fresh device generation.
-      if (insertError && insertError.code !== '23505') {
+           if (insertError && insertError.code !== '23505') {
         console.error('Failed to create public user record:', insertError);
       }
+
+      // Persist the Auth UUID so thrift and other services can query by user_id
+      localStorage.setItem('ucc_user_id', data.user.id);
     }
 
     return { success: true, user: data.user };
@@ -68,8 +71,10 @@ export const restoreLifecycle = async (oldDeviceId, pin) => {
 
     if (error) throw error;
     
-    // Save the old device ID locally so the app adopts it
+        // Save the old device ID locally so the app adopts it
     localStorage.setItem('ucc_device_id', oldDeviceId.toUpperCase());
+    // Persist the Auth UUID so thrift and other services can query by user_id
+    localStorage.setItem('ucc_user_id', data.user.id);
 
     return { success: true, user: data.user };
   } catch (error) {

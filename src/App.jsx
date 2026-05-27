@@ -69,10 +69,17 @@ function AppContent() {
   useAppNotifications();
 
   // Preload Paystack script when app loads
+    // Recovery: if user is already authenticated but ucc_user_id was never persisted
   useEffect(() => {
-    preloadPaystack().catch(error => {
-      console.error('Failed to preload Paystack:', error);
-    });
+    const recoverUserId = async () => {
+      if (!localStorage.getItem('ucc_user_id')) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.id) {
+          localStorage.setItem('ucc_user_id', user.id);
+        }
+      }
+    };
+    recoverUserId();
   }, []);
 
   // Onboarding

@@ -98,13 +98,14 @@ export const handlePayment = async ({ amount, email, reference, metadata }) => {
     // Return a promise that resolves when payment is complete
     return new Promise((resolve, reject) => {
       // Create Paystack handler with proper callback setup
-      const handler = window.PaystackPop.setup({
+            const handler = window.PaystackPop.setup({
         key: paystackKey,
         email: email,
         amount: amount * 100, // Convert to pesewas (cents)
         ref: reference,
         currency: 'GHS', // Ghana Cedis
         metadata: metadata,
+        ...(metadata.customer_phone ? { phone: metadata.customer_phone } : {}),
         callback: function (response) {
           console.log('Paystack callback:', response);
           if (response.status === 'success') {

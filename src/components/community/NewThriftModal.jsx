@@ -1,8 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { X, UploadCloud, Tag, Image, CheckCircle } from 'lucide-react';
+import { X, UploadCloud, Tag, Image, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { addThriftListing } from '../../services/communityService';
-import { PaymentButton } from '../payment/PaymentButton';
+import { createThriftListing, canPostThriftListing } from '../../services/thriftService';
 import { supabase } from '../../lib/supabase';
 import { DataLoader } from '../common/CustomLoaders';
 
@@ -19,6 +18,7 @@ const NewThriftModal = ({ isOpen, onClose }) => {
     const [imagePreview, setImagePreview] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [checkingLimit, setCheckingLimit] = useState(false);
     const fileInputRef = useRef(null);
 
     const handleInputChange = (e) => {
@@ -70,15 +70,42 @@ const NewThriftModal = ({ isOpen, onClose }) => {
         processFile(file);
     }, []);
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (!formData.title || !formData.price || !formData.location || !formData.whatsapp) {
             toast.error('Please fill out all required fields.');
             return;
         }
+        
+        // Check if user can post more listings today
+        setCheckingLimit(true);
+        const userId = localStorage.getItem('ucc_user_id');
+        if (userId) {
+            const { canPost, count, error } = await canPostThriftListing(userId);
+            setCheckingLimit(false);
+            
+            if (error) {
+                toast.error('Error checking posting limit. Please try again.');
+                return;
+            }
+            
+            if (!canPost) {
+                toast.error(`You've reached your daily limit of 2 thrift listings. Try again tomorrow.`);
+                return;
+            }
+            
+            if (count > 0) {
+                toast.success(`You have ${2 - count} posting(s) remaining today.`);
+            }
+        } else {
+            setCheckingLimit(false);
+            toast.error('Please log in to post thrift listings.');
+            return;
+        }
+        
         setStep(2);
     };
 
-    const handleSuccess = async (res) => {
+    const handleSubmit = async () => {
         setUploading(true);
         let finalImageUrl = null;
 
@@ -109,18 +136,42 @@ const NewThriftModal = ({ isOpen, onClose }) => {
             }
         }
 
-        const { success, error } = await addThriftListing({
-            ...formData,
+        const userId = localStorage.getItem('ucc_user_id');
+        if (!userId) {
+            toast.error('Please log in to post thrift listings.');
+            setUploading(false);
+            return;
+        }
+
+                const { listing, error, existingListing } = await createThriftListing({
+            user_id: userId,
+            item_name: formData.title,
+            price: parseFloat(formData.price),
+            description: formData.condition,
+            contact_info: formData.whatsapp,
             image_url: finalImageUrl,
-            paystack_reference: res.reference
+            status: 'ACTIVE'
         });
+
+        if (error === 'DUPLICATE_ACTIVE') {
+            toast.error('You already have an active listing for this item. Extend it from your profile instead.', { duration: 5000 });
+            return;
+        }
+        if (error === 'COOLDOWN') {
+            toast.error('Please wait 1 hour after deleting a listing before posting again.', { duration: 5000 });
+            return;
+        }
+        if (error) {
+            toast.error('Failed to create listing');
+            return;
+        }
         setUploading(false);
 
-        if (success) {
-            setFormData({ title: '', price: '', condition: 'Used - Good', location: '', whatsapp: '' });
+        if (listing) {
+            setFormData({ title: '', price: '', condition: 'Brand New', location: '', whatsapp: '' });
             setImageFile(null);
             setImagePreview(null);
-            toast.success('Listing posted and sent for review!');
+            toast.success('Listing posted successfully!');
             setStep(1);
             onClose();
         } else {
@@ -253,11 +304,19 @@ const NewThriftModal = ({ isOpen, onClose }) => {
 
                             <div className="bg-amber-50 text-amber-800 p-4 rounded-xl text-sm font-medium border border-amber-100">
                                 <span className="font-bold block mb-1">📋 Important Rules:</span>
-                                • Listing fee is GH₵ 10<br/>
-                                • Needs admin approval before going live<br/>
-                                • Expires automatically in 7 days
+                                • Free to post (max 2 listings per day)<br/>
+                                • Appears immediately in the thrift section<br/>
+                                • Expires automatically in 7 days<br/>
+                                • Boost your listing to appear at the top
                             </div>
 
+                            {checkingLimit && (
+                                <div className="flex items-center justify-center gap-2 py-2 text-primary-600 font-semibold text-sm">
+                                    <DataLoader className="w-5 h-5" />
+                                    Checking posting limit...
+                                </div>
+                            )}
+                            
                             {uploading && (
                                 <div className="flex items-center justify-center gap-2 py-2 text-primary-600 font-semibold text-sm">
                                     <DataLoader className="w-5 h-5" />
@@ -266,20 +325,17 @@ const NewThriftModal = ({ isOpen, onClose }) => {
                             )}
 
                             <div className="flex gap-3">
-                                <button onClick={() => setStep(1)} disabled={uploading} className="px-4 py-3 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 font-bold rounded-xl transition-colors">
+                                <button onClick={() => setStep(1)} disabled={uploading || checkingLimit} className="px-4 py-3 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 font-bold rounded-xl transition-colors">
                                     Back
                                 </button>
                                 <div className="flex-1">
-                                    <PaymentButton
-                                        amount={10}
-                                        email="thrift@campusguide.com"
-                                        onPaymentSuccess={handleSuccess}
-                                        onPaymentError={(err) => toast.error(err.message || 'Payment failed.')}
-                                        disabled={!imagePreview || uploading}
+                                    <button
+                                        onClick={handleSubmit}
+                                        disabled={!imagePreview || uploading || checkingLimit}
                                         className="w-full flex justify-center items-center gap-2 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-primary-200"
                                     >
-                                        Pay GH₵10 & Post Item
-                                    </PaymentButton>
+                                        Post Item (Free)
+                                    </button>
                                     {!imagePreview && (
                                         <p className="text-center text-xs text-red-500 font-medium mt-2">Upload a photo to continue</p>
                                     )}

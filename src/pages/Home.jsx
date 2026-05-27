@@ -7,6 +7,7 @@ import NotificationDropdown from '../components/common/NotificationDropdown'; //
 import { getIconComponent } from '../components/tools/PlanYourDay';
 import { FocusTimer } from '../components/tools/FocusTimer';
 import { getUpcomingAcademicEvents } from '../data/academicCalendar';
+import { getCurrentSemesterInfo } from '../services/academicCalendarService';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { getTodayHoliday } from '../services/holidayService';
 import { syncToCloud, shouldSyncNow, shouldPullNow, bidirectionalSync } from '../services/syncService';
@@ -142,12 +143,18 @@ const Home = () => {
   // ── Holiday awareness ──────────────────────────────────────────────────────
   const [todayHoliday, setTodayHoliday] = useState(null);
 
+  // ── Semester awareness ──────────────────────────────────────────────────────
+  const [semesterInfo, setSemesterInfo] = useState(null);
+
   // ── Device ID + Cloud Sync ─────────────────────────────────────────────────
   const { deviceId } = useDeviceId();
 
   useEffect(() => {
     // Fire-and-forget: fetch today's holiday
     getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => {});
+
+    // Fire-and-forget: fetch semester info
+    getCurrentSemesterInfo().then(info => { if (info) setSemesterInfo(info); }).catch(() => {});
 
     // Fire-and-forget: cloud sync if 24h has passed
     const runSync = async () => {
@@ -539,6 +546,24 @@ const Home = () => {
                 </div>
               );
             })()}
+
+            {/* Semester Status */}
+            {homeWidgets.calendar && semesterInfo && (
+              <div className="flex items-center gap-3 bg-[#002F45]/60 backdrop-blur-md border border-[#6EABC6]/30 px-4 py-3 rounded-2xl shadow-sm w-full">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10">
+                  <Calendar size={18} className="text-[#6EABC6]" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-white font-bold text-sm">{semesterInfo.title}</span>
+                  <span className="text-[#6EABC6] text-xs font-medium leading-tight">
+                    {semesterInfo.subtitle}
+                    {semesterInfo.details && (
+                      <span className="block mt-0.5">• {semesterInfo.details}</span>
+                    )}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
