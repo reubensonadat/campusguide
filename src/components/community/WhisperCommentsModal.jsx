@@ -103,7 +103,7 @@ const WhisperCommentsModal = ({ isOpen, onClose, whisper, onCommentAdded }) => {
                 {/* Original Whisper */}
                 <div className="p-5 bg-gray-50 border-b border-gray-100 shrink-0">
                     <span className="text-xs font-bold text-primary-500 bg-primary-100/50 px-2 py-1 rounded-md mb-2 inline-block">Anonymous</span>
-                    <p className="text-gray-800 font-medium leading-relaxed whitespace-pre-wrap">{whisper.text}</p>
+                    <p className="text-gray-800 font-medium leading-relaxed whitespace-pre-wrap break-words">{whisper.text}</p>
                 </div>
 
                 {/* Comments List */}
@@ -120,7 +120,7 @@ const WhisperCommentsModal = ({ isOpen, onClose, whisper, onCommentAdded }) => {
                         comments.map((comment, index) => (
                             <div key={comment.id} className="bg-gray-50 rounded-2xl rounded-tl-none p-4 w-[85%] border border-gray-100">
                                 <span className="text-[10px] font-black text-gray-400 block mb-1">Reply #{index + 1}</span>
-                                <p className="text-gray-700 text-sm font-medium whitespace-pre-wrap">{comment.text}</p>
+                                <p className="text-gray-700 text-sm font-medium whitespace-pre-wrap break-words">{comment.text}</p>
                             </div>
                         ))
                     )}

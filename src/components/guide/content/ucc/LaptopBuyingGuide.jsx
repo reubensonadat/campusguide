@@ -24,12 +24,6 @@ const LaptopBuyingGuide = () => {
         "Ignoring keyboard and trackpad quality (you'll be typing a lot)",
         "Buying from unauthorized dealers (warranty may not be honored)"
       ],
-      checklist: [
-        { text: "Checked department-specific requirements", checked: false },
-        { text: "Set realistic budget", checked: false },
-        { text: "Researched at least 3 options", checked: false },
-        { text: "Verified student discounts", checked: false }
-      ],
       resources: [
         { title: "LaptopConnect.shop", description: "Special discounts for UCC students.", url: "https://www.laptopconnect.shop/" }
       ],
@@ -118,11 +112,11 @@ const LaptopBuyingGuide = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide' },
-    { id: 'resources', label: 'Links' },
-    { id: 'warnings', label: 'Common Mistakes' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

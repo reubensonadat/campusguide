@@ -160,11 +160,10 @@ const Accommodation = () => {
       )
     }
   ];
-
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'steps', label: 'Action Plan' },
-    { id: 'resources', label: 'Links' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
   ];
 
   return { sections, tabs };

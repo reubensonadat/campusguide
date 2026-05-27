@@ -17,7 +17,7 @@ export const UpcomingEventsWidget = ({ upcomingPlannedTasks, navigate }) => {
     <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
       <div className="flex justify-between items-start mb-4">
         <span className="text-sm font-black text-gray-900 tracking-tight">Upcoming Events</span>
-        <button onClick={() => navigate('/tools?tab=plan-day')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
+        <button onClick={() => navigate('/tools/plan-day')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
           View all <ChevronRight size={13} />
         </button>
       </div>
@@ -47,7 +47,7 @@ export const UpcomingEventsWidget = ({ upcomingPlannedTasks, navigate }) => {
           );
         })}
         {upcomingPlannedTasks.length > 4 && (
-          <button onClick={() => navigate('/tools?tab=plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
+          <button onClick={() => navigate('/tools/plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
             +{upcomingPlannedTasks.length - 4} more events
           </button>
         )}

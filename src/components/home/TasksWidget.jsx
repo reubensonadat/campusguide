@@ -15,7 +15,7 @@ export const TasksWidget = ({ todaysTasks, toggleTaskStatus, navigate }) => {
     <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
       <div className="flex justify-between items-start mb-4">
         <span className="text-sm font-black text-gray-900 tracking-tight">Today's Tasks</span>
-        <button onClick={() => navigate('/tools?tab=plan-day')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
+        <button onClick={() => navigate('/tools/plan-day')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
           Manage <ChevronRight size={13} />
         </button>
       </div>
@@ -27,7 +27,7 @@ export const TasksWidget = ({ todaysTasks, toggleTaskStatus, navigate }) => {
             <p className="text-xs text-slate-500 mt-0.5">Want to organize your day?</p>
           </div>
           <button 
-            onClick={() => navigate('/tools?tab=plan-day')}
+            onClick={() => navigate('/tools/plan-day')}
             className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:border-primary-200 transition-all"
           >
             Plan Day
@@ -71,7 +71,7 @@ export const TasksWidget = ({ todaysTasks, toggleTaskStatus, navigate }) => {
             );
           })}
           {todaysTasks.length > 3 && (
-              <button onClick={() => navigate('/tools?tab=plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
+              <button onClick={() => navigate('/tools/plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
                   +{todaysTasks.length - 3} more tasks
               </button>
           )}

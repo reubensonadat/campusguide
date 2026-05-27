@@ -22,12 +22,6 @@ const FoodDining = () => {
         "Science Market prices drop slightly in the evening.",
         "Sammo packs usually include a drink (good value)."
       ],
-      checklist: [
-        { text: "Located Bush Canteen", checked: false },
-        { text: "Tried Waakye at Science Market", checked: false },
-        { text: "Found a late-night Indomie spot", checked: false },
-        { text: "Checked cash/MoMo balance before ordering", checked: false }
-      ],
       resources: [
         { title: "Bush Canteen", description: "The HQ for local food (Fufu, Banku). Behind Main Library.", url: "https://maps.google.com/?q=Bush+Canteen+UCC" },
         { title: "Science Market", description: "Central food hub at New Site. Fried Yam, Rice, Snacks.", url: "https://maps.google.com/?q=Science+Market+UCC" },
@@ -116,11 +110,6 @@ const FoodDining = () => {
     { id: 2, fullName: "Science Market", shortForm: "Sci Mkt", description: "Snacks & Waakye", url: "Science Market UCC" },
     { id: 3, fullName: "Sammo Kitchen", shortForm: "Sammo", description: "Fried Rice", url: "Sammo Kitchen UCC" },
     { id: 4, fullName: "Deep Dish", shortForm: "Oguaa", description: "Continental", url: "Oguaa Hall UCC" },
-  ];
-
-  const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'resources', label: 'Food Map' },
   ];
 
   return { sections, buildings, openGoogleMaps, tabs };

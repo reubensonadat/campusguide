@@ -56,9 +56,8 @@ const ContactDirectory = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Emergency' },
+    { id: 'overview', label: 'Overview' },
   ];
 
   return { sections, tabs };

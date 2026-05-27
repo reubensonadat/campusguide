@@ -32,14 +32,6 @@ const CourseRegistration = () => {
         { title: "UCC Student Portal", description: "The only place to register.", url: "https://portal.ucc.edu.gh" },
         { title: "Academic Calendar", description: "Check opening/closing dates.", url: "https://ucc.edu.gh/calendar" }
       ],
-      checklist: [
-        { text: "Paid ~60% of Fees", checked: false },
-        { text: "Financial Hold Lifted", checked: false },
-        { text: "Checked Assigned Liberal/African Studies", checked: false },
-        { text: "Added Required Electives", checked: false },
-        { text: "Clicked 'SUBMIT' (Not Save)", checked: false },
-        { text: "Printed Slip for Records", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -125,11 +117,11 @@ const CourseRegistration = () => {
       )
     }
   ];
-
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'steps', label: 'Procedure' },
-    { id: 'warnings', label: 'Traps' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

@@ -1,6 +1,6 @@
 {
-  "name": "UCC Campus Guide",
-  "short_name": "UCC Guide",
+  "name": "Campus Guide",
+  "short_name": "Campus Guide",
   "description": "A comprehensive guide for University of Cape Coast students",
   "start_url": "/",
   "scope": "/",

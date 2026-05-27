@@ -54,7 +54,8 @@ const MapView = () => {
                 ...prev,
                 center: mapCoords,
                 zoom: 17,
-                pitch: 45 // Add some pitch for a modern look if supported
+                pitch: 45, // Add some pitch for a modern look if supported
+                transitionDuration: 1200
             }));
             setSelectedLocation({ ...loc, coords: mapCoords });
 
@@ -217,7 +218,7 @@ const MapView = () => {
     ];
 
     return (
-        <div className="flex-1 h-full w-full relative bg-slate-50 flex flex-col animate-in fade-in overflow-hidden">
+        <div className="flex-1 h-full w-full relative bg-slate-50 dark:bg-[#0a0a0a] flex flex-col animate-in fade-in overflow-hidden">
             {/* --- MAP CONTAINER --- */}
             <div className="absolute inset-0 z-0 h-full w-full">
                 <Map 
@@ -237,9 +238,21 @@ const MapView = () => {
 
                     {/* Live User Marker */}
                     {isLiveNavigating && userLocation && (
-                        <MapMarker longitude={userLocation[0]} latitude={userLocation[1]}>
+                        <MapMarker 
+                            longitude={userLocation[0]} 
+                            latitude={userLocation[1]}
+                            onClick={() => {
+                                setViewport(prev => ({
+                                    ...prev,
+                                    center: userLocation,
+                                    zoom: 17,
+                                    pitch: 60,
+                                    transitionDuration: 1200
+                                }));
+                            }}
+                        >
                             <MarkerContent>
-                                <div className="relative flex items-center justify-center">
+                                <div className="relative flex items-center justify-center cursor-pointer">
                                     <div className="absolute w-8 h-8 bg-blue-500 rounded-full opacity-30 animate-ping" />
                                     <div className="relative w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg" />
                                 </div>
@@ -267,9 +280,9 @@ const MapView = () => {
                                 </MarkerContent>
                                 {isSelected && (
                                     <MarkerPopup onClose={() => setSelectedLocation(null)}>
-                                        <div className="w-48 text-center pt-3 pb-2 px-2 bg-white rounded-2xl shadow-xl border border-slate-100">
-                                            <h3 className="font-bold text-[13px] text-slate-900 leading-tight mb-1">{loc.fullName}</h3>
-                                            <p className="text-[11px] text-slate-500 mb-3 leading-tight">{loc.description}</p>
+                                        <div className="w-48 text-center pt-3 pb-2 px-2 bg-white dark:bg-[#111111] rounded-2xl shadow-xl border border-slate-100 dark:border-gray-800">
+                                            <h3 className="font-bold text-[13px] text-slate-900 dark:text-gray-100 leading-tight mb-1">{loc.fullName}</h3>
+                                            <p className="text-[11px] text-slate-500 dark:text-gray-400 mb-3 leading-tight">{loc.description}</p>
                                             <div className="flex flex-col gap-2 mt-2">
                                                 <button
                                                     onClick={() => handleRouteToLocation([lat, lng])}
@@ -290,14 +303,14 @@ const MapView = () => {
                                                             statistics: {}
                                                         });
                                                     }}
-                                                    className="w-full text-[12px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                                                    className="w-full text-[12px] font-bold bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 px-2 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-sm"
                                                 >
                                                     <Info size={14} /> Read More
                                                 </button>
 
                                                 <button
                                                     onClick={() => openGoogleMaps(loc.url)}
-                                                    className="w-full text-[11px] font-medium text-slate-500 hover:text-slate-700 flex items-center justify-center gap-1 transition-colors"
+                                                    className="w-full text-[11px] font-medium text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-200 flex items-center justify-center gap-1 transition-colors"
                                                 >
                                                     <ExternalLink size={12} /> Open in Google Maps
                                                 </button>
@@ -327,9 +340,9 @@ const MapView = () => {
                                 </button>
                             </div>
                         )}
-                        <div className="bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200/60 rounded-2xl px-8 py-4 flex flex-col items-center animate-in slide-in-from-top-4">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Remaining Distance</span>
-                            <span className="text-4xl font-black text-slate-800 tracking-tight">
+                        <div className="bg-white/95 dark:bg-[#111111]/95 backdrop-blur-md shadow-2xl border border-slate-200/60 dark:border-gray-800/60 rounded-2xl px-8 py-4 flex flex-col items-center animate-in slide-in-from-top-4">
+                            <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-1">Remaining Distance</span>
+                            <span className="text-4xl font-black text-slate-800 dark:text-gray-100 tracking-tight">
                                 {distanceRemaining > 1000 
                                     ? `${(distanceRemaining / 1000).toFixed(1)} km` 
                                     : `${Math.round(distanceRemaining)} m`}
@@ -347,7 +360,7 @@ const MapView = () => {
 
             {/* --- FLOATING DESKTOP SIDEBAR / MOBILE BOTTOM SHEET --- */}
             <div className={`
-                absolute z-20 bg-white shadow-xl border border-slate-200/60 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col overflow-hidden
+                absolute z-20 bg-white dark:bg-[#111111] shadow-xl border border-slate-200/60 dark:border-gray-800/60 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col overflow-hidden
                 
                 /* Desktop positioning (left sidebar) */
                 lg:top-4 lg:left-4 lg:bottom-auto lg:rounded-2xl lg:w-96 lg:max-h-[calc(100vh-8rem)]
@@ -357,7 +370,7 @@ const MapView = () => {
                 ${isMobileMenuOpen ? 'top-20 lg:top-4' : 'h-auto lg:top-4 lg:h-auto'}
             `}>
                 {/* Header / Search Bar */}
-                <div className="px-3 py-3 bg-white flex-shrink-0 relative border-b border-slate-100 flex items-center gap-3">
+                <div className="px-3 py-3 bg-white dark:bg-[#111111] flex-shrink-0 relative border-b border-slate-100 dark:border-gray-800 flex items-center gap-3">
                     <div className="flex-1 relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <input
@@ -366,20 +379,20 @@ const MapView = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onFocus={() => window.innerWidth < 1024 && setIsMobileMenuOpen(true)}
                             placeholder="Search locations..."
-                            className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium"
+                            className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 dark:bg-[#1e1e1e] dark:text-white border border-slate-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium"
                         />
                     </div>
 
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-primary-600 transition-colors lg:hidden bg-slate-50 border border-slate-200 shadow-sm"
+                        className="p-2 rounded-xl text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors lg:hidden bg-slate-50 dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-700 shadow-sm"
                     >
                         {isMobileMenuOpen ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
                     </button>
                 </div>
 
                 {/* Content Area (Locations List) */}
-                <div className={`overflow-y-auto custom-scrollbar bg-slate-50/50 flex-1 p-2 transition-all duration-300 ${!isMobileMenuOpen && (typeof window !== 'undefined' && window.innerWidth < 1024) ? 'opacity-0 h-0 hidden lg:block lg:h-auto lg:opacity-100' : 'opacity-100 block'}`}>
+                <div className={`overflow-y-auto custom-scrollbar bg-slate-50/50 dark:bg-[#0a0a0a]/50 flex-1 p-2 transition-all duration-300 ${!isMobileMenuOpen && (typeof window !== 'undefined' && window.innerWidth < 1024) ? 'opacity-0 h-0 hidden lg:block lg:h-auto lg:opacity-100' : 'opacity-100 block'}`}>
                     <div className="space-y-1.5">
                         {filteredLocations.map(loc => {
                             const hasCoords = !!getCoordinates(loc.url);
@@ -387,46 +400,46 @@ const MapView = () => {
                                 <button
                                     key={loc.id}
                                     onClick={() => handleLocationSelect(loc)}
-                                    className="w-full text-left bg-white p-3 hover:bg-primary-50/50 border border-slate-100 hover:border-primary-100 rounded-xl group transition-all flex justify-between items-center shadow-sm"
+                                    className="w-full text-left bg-white dark:bg-[#111111] p-3 hover:bg-primary-50/50 dark:hover:bg-gray-800/50 border border-slate-100 dark:border-gray-800 hover:border-primary-100 dark:hover:border-gray-700 rounded-xl group transition-all flex justify-between items-center shadow-sm"
                                 >
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="font-bold text-slate-900 group-hover:text-primary-700 text-sm">{loc.fullName}</span>
-                                            {loc.shortForm && <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded font-black uppercase text-slate-600">{loc.shortForm}</span>}
+                                            <span className="font-bold text-slate-900 dark:text-gray-100 group-hover:text-primary-700 text-sm">{loc.fullName}</span>
+                                            {loc.shortForm && <span className="text-[10px] bg-slate-100 dark:bg-gray-800 px-1.5 py-0.5 rounded font-black uppercase text-slate-600 dark:text-gray-300">{loc.shortForm}</span>}
                                         </div>
-                                        <p className="text-[11px] text-slate-500 line-clamp-1">{loc.description}</p>
+                                        <p className="text-[11px] text-slate-500 dark:text-gray-400 line-clamp-1">{loc.description}</p>
                                     </div>
-                                    <div className="text-slate-300 group-hover:text-primary-400 flex-shrink-0 ml-2 bg-slate-50 p-1.5 rounded-lg">
+                                    <div className="text-slate-300 dark:text-gray-600 group-hover:text-primary-400 flex-shrink-0 ml-2 bg-slate-50 dark:bg-[#1e1e1e] p-1.5 rounded-lg">
                                         {hasCoords ? <CustomMapPin className="w-4 h-4" /> : <ExternalLink className="w-3.5 h-3.5" />}
                                     </div>
                                 </button>
                             );
                         })}
-                        {filteredLocations.length === 0 && <p className="text-center text-slate-400 text-sm py-8 font-medium">No results found.</p>}
+                        {filteredLocations.length === 0 && <p className="text-center text-slate-400 dark:text-gray-500 text-sm py-8 font-medium">No results found.</p>}
                     </div>
                 </div>
             </div>
 
             {/* RICH KNOWLEDGE MODAL (BOTTOM SHEET) */}
             {knowledgeModalData && typeof document !== 'undefined' && createPortal(
-                <div className="fixed inset-0 z-[99999] flex items-end justify-center sm:items-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[99999] flex items-end justify-center sm:items-center p-0 sm:p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
                     {/* Background click to close */}
                     <div className="absolute inset-0" onClick={() => setKnowledgeModalData(null)}></div>
                     
-                    <div className="relative bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 flex flex-col max-h-[66vh]">
+                    <div className="relative bg-white dark:bg-[#111111] rounded-t-3xl sm:rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 flex flex-col max-h-[66vh]">
                         {/* Drag Handle for mobile */}
                         <div className="pt-3 pb-1 flex justify-center items-center w-full shrink-0 sm:hidden">
-                            <div className="w-12 h-1.5 bg-slate-200 rounded-full"></div>
+                            <div className="w-12 h-1.5 bg-slate-200 dark:bg-gray-700 rounded-full"></div>
                         </div>
 
                         {/* Header (No Image) */}
                         <div className="flex items-start justify-between px-6 pt-2 sm:pt-6 pb-2 shrink-0">
-                            <h2 className="text-2xl font-black text-slate-900 leading-tight pr-4">
+                            <h2 className="text-2xl font-black text-slate-900 dark:text-gray-100 leading-tight pr-4">
                                 {knowledgeModalData.title}
                             </h2>
                             <button 
                                 onClick={() => setKnowledgeModalData(null)}
-                                className="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-full transition-colors shrink-0"
+                                className="bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 text-slate-500 dark:text-gray-400 p-2 rounded-full transition-colors shrink-0"
                             >
                                 <XIcon size={20} />
                             </button>
@@ -447,25 +460,25 @@ const MapView = () => {
 
                             {/* History */}
                             <div className="mb-6">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Historical Context</h3>
-                                <p className="text-sm text-slate-600 leading-relaxed">{knowledgeModalData.history}</p>
+                                <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-2">Historical Context</h3>
+                                <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed">{knowledgeModalData.history}</p>
                             </div>
 
                             {/* Architecture */}
                             <div className="mb-6">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Architecture & Function</h3>
-                                <p className="text-sm text-slate-600 leading-relaxed">{knowledgeModalData.architecture}</p>
+                                <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-2">Architecture & Function</h3>
+                                <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed">{knowledgeModalData.architecture}</p>
                             </div>
 
                             {/* Statistics Grid */}
                             {knowledgeModalData.statistics && Object.keys(knowledgeModalData.statistics).length > 0 && (
                                 <div className="mb-6">
-                                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Verified Data Points</h3>
+                                    <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-3">Verified Data Points</h3>
                                     <div className="grid grid-cols-2 gap-3">
                                         {Object.entries(knowledgeModalData.statistics).map(([key, val]) => (
-                                            <div key={key} className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                                <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">{key}</div>
-                                                <div className="text-xs font-bold text-slate-800">{val}</div>
+                                            <div key={key} className="bg-slate-50 dark:bg-gray-800 p-3 rounded-xl border border-slate-100 dark:border-gray-700">
+                                                <div className="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-1">{key}</div>
+                                                <div className="text-xs font-bold text-slate-800 dark:text-gray-100">{val}</div>
                                             </div>
                                         ))}
                                     </div>
@@ -474,7 +487,7 @@ const MapView = () => {
 
                             {/* Disclaimer */}
                             {knowledgeModalData.disclaimer && (
-                                <p className="text-[10px] text-slate-400 italic text-center mt-8 pb-4 border-t border-slate-100 pt-4">
+                                <p className="text-[10px] text-slate-400 dark:text-gray-500 italic text-center mt-8 pb-4 border-t border-slate-100 dark:border-gray-800 pt-4">
                                     {knowledgeModalData.disclaimer}
                                 </p>
                             )}

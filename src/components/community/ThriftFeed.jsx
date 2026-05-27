@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, Search, X } from 'lucide-react';
+import { CustomSafetyCheck } from '../common/CustomIcons';
 import { CustomMapPin } from '../common/CustomMapPin';
 import NewThriftModal from './NewThriftModal';
 import { getThriftListings } from '../../services/communityService';
@@ -304,6 +305,17 @@ const ThriftFeed = () => {
                 <button onClick={() => setIsModalOpen(true)} className="bg-primary-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-md hover:bg-primary-700 transition-colors whitespace-nowrap">
                     + Sell Item
                 </button>
+            </div>
+
+            {/* Disclaimer */}
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-2.5 mb-4 flex gap-2.5 items-start">
+                <CustomSafetyCheck size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                <div>
+                    <h4 className="font-black text-blue-900 text-[11px] mb-0.5 uppercase tracking-wide">Buyer Safety</h4>
+                    <p className="text-[10px] text-blue-800 font-medium leading-snug">
+                        Verify the product or service before making payments.
+                    </p>
+                </div>
             </div>
 
             {/* Search + Wishlist button */}

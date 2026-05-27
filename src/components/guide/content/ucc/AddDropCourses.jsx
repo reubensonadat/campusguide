@@ -31,14 +31,6 @@ const AddDropCourses = () => {
         { title: "UCC Student Portal", description: "Course registration system.", url: "https://portal.ucc.edu.gh" },
         { title: "Academic Affairs (DAA)", description: "Official regulations and policies.", url: "https://daa.ucc.edu.gh" }
       ],
-      checklist: [
-        { text: "Spoke to Academic Advisor", checked: false },
-        { text: "Checked Timetable", checked: false },
-        { text: "Updated Portal Registration", checked: false },
-        { text: "Printed New Slip", checked: false },
-        { text: "HOD Signed Slip", checked: false },
-        { text: "Submitted to Department", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -105,11 +97,11 @@ const AddDropCourses = () => {
       )
     }
   ];
-
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'steps', label: 'Procedure' },
-    { id: 'warnings', label: 'Warnings' }
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

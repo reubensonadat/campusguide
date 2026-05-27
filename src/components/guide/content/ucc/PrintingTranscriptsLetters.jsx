@@ -34,12 +34,6 @@ const PrintingTranscriptsLetters = () => {
         { title: "Document Request Forms", description: "Download various request forms.", url: "https://ucc.edu.gh/document-forms" },
         { title: "Online Request Portal", description: "Request documents via the web.", url: "https://documents.ucc.edu.gh" }
       ],
-      checklist: [
-        { text: "Check for account holds", checked: false },
-        { text: "Complete request form accurately", checked: false },
-        { text: "Pay processing fees", checked: false },
-        { text: "Submit to exams office", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -92,11 +86,10 @@ const PrintingTranscriptsLetters = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Request Process' },
-    { id: 'resources', label: 'Links' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
   ];
 
   return { sections, tabs };

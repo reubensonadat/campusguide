@@ -42,12 +42,6 @@ const IDCard = () => {
         { day: "Photo sessions", time: "Based on departmental schedule" },
         { day: "Collection", time: "Announced by course reps" },
       ],
-      checklist: [
-        { text: "Attend photo-taking session", checked: false },
-        { text: "Dress formally", checked: false },
-        { text: "Wait for course rep announcement", checked: false },
-        { text: "Collect ID card", checked: false }
-      ],
 
       // --- FULL TEXT CONTENT RESTORED ---
       content: (
@@ -135,11 +129,10 @@ const IDCard = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Action Plan' },
-    { id: 'resources', label: 'Helpful Links' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
   ];
 
   return { sections, tabs };

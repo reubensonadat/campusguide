@@ -92,8 +92,51 @@
   --gray-100-soft: #f8fafc;
 }
 
-/* Dark mode variables */
+/* Master CSS Dark Mode Overrides */
+/* 1. Catch the Body */
+.dark body { background-color: #000000 !important; color: #f8fafc !important; }
 
+/* 2. Catch panels and sidebars (including opacity and responsive variants) */
+.dark .bg-white, .dark .bg-white\/95, .dark .bg-white\/90, .dark .bg-white\/80, .dark .lg\:bg-white, .dark .md\:bg-white { background-color: #111111 !important; }
+
+/* 3. Catch deep backgrounds (including arbitrary hex and opacity variants) */
+.dark .bg-\[\#f0f2f8\], .dark .bg-slate-50, .dark .bg-gray-50, .dark .bg-slate-100, .dark .bg-gray-100, .dark .bg-gray-50\/30, .dark .bg-gray-50\/50, .dark .bg-gray-50\/95 { background-color: #000000 !important; }
+
+/* 4. Text and Border inversions */
+.dark .text-gray-900, .dark .text-slate-900, .dark .text-black { color: #f8fafc !important; }
+.dark .text-gray-800, .dark .text-slate-800 { color: #f1f5f9 !important; }
+.dark .text-gray-700, .dark .text-slate-700 { color: #e2e8f0 !important; }
+.dark .text-gray-600, .dark .text-slate-600 { color: #cbd5e1 !important; }
+.dark .text-gray-500, .dark .text-slate-500 { color: #94a3b8 !important; }
+.dark .border-gray-100, .dark .border-slate-100 { border-color: #1e293b !important; }
+.dark .border-gray-200, .dark .border-slate-200 { border-color: #334155 !important; }
+.dark .divide-y > :not([hidden]) ~ :not([hidden]), .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]), .dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: #1e293b !important; }
+
+/* 5. Catch missed colored backgrounds and Glowing Shadows */
+.dark .bg-primary-50, .dark .bg-indigo-50\/30, .dark .bg-indigo-50, .dark .bg-primary-100, .dark .bg-slate-50\/50, .dark .bg-primary-100\/30, .dark .bg-primary-200\/30 { background-color: #111111 !important; border-color: #1e293b !important; }
+.dark .shadow-primary-200, .dark .shadow-2xl, .dark .shadow-xl, .dark .shadow-lg, .dark .shadow-md, .dark .shadow-sm { box-shadow: none !important; }
+
+/* 5.1 Random Light Colors in Guide & Disclaimers */
+.dark .bg-blue-50, .dark .bg-rose-50\/50, .dark .bg-rose-100, .dark .bg-white\/60 { background-color: #111111 !important; border-color: #1e293b !important; }
+.dark .bg-amber-50 { background-color: rgba(251, 191, 36, 0.1) !important; border-color: rgba(251, 191, 36, 0.2) !important; }
+.dark .text-blue-900 { color: #60a5fa !important; }
+.dark .text-blue-800 { color: #93c5fd !important; }
+.dark .text-rose-900 { color: #fb7185 !important; }
+.dark .text-rose-800\/70 { color: #fda4af !important; }
+.dark .text-rose-600 { color: #f43f5e !important; }
+.dark .text-amber-900 { color: #fbbf24 !important; }
+.dark .text-amber-800 { color: #fcd34d !important; }
+.dark .border-rose-100, .dark .border-blue-100, .dark .border-amber-100 { border-color: #1e293b !important; }
+
+/* Catch Light Gradients (e.g. Support Card) */
+.dark .from-primary-50 { background-image: none !important; background-color: #111111 !important; border-color: #1e293b !important; }
+
+/* 6. Brand Color Inversions (Dark Teal/Blue to Light Blue for Icons & Toggles) */
+.dark .text-\[\#002F45\] { color: #38bdf8 !important; }
+.dark .bg-\[\#002F45\] { background-color: #0ea5e9 !important; }
+.dark .border-\[\#002F45\], .dark .border-\[\#002F45\]\/10, .dark .border-\[\#002F45\]\/20 { border-color: #0ea5e9 !important; }
+.dark .bg-\[\#002F45\]\/5, .dark .bg-\[\#002F45\]\/10 { background-color: #111111 !important; }
+.dark .text-\[\#002F45\]\/60 { color: #7dd3fc !important; }
 * {
   box-sizing: border-box;
   padding: 0;

@@ -113,10 +113,8 @@ const Transportation = () => {
     { id: "S4", fullName: "SRC Hall Stop", shortForm: "SRC/Super Drop", description: "Drop-off for SRC & Superannuation.", url: "SRC Hall UCC" },
     { id: "S5", fullName: "UCC Hospital Stop", shortForm: "Clinic Drop", description: "Take the Old Site bus to stop here.", url: "University of Cape Coast Hospital" },
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'resources', label: 'Map & Stops' },
+    { id: 'overview', label: 'Overview' },
   ];
 
   return { sections, tabs, buildings, openGoogleMaps };

@@ -37,12 +37,6 @@ const StudyTechniques = () => {
         { title: "ChatGPT for Study Help", description: "AI-powered study assistant for explaining concepts.", url: "https://chat.openai.com" },
         { title: "Perplexity AI", description: "AI research assistant for finding sources.", url: "https://www.perplexity.ai" }
       ],
-      checklist: [
-        { text: "Identify your learning style", checked: false },
-        { text: "Create study schedule", checked: false },
-        { text: "Set up optimal study space", checked: false },
-        { text: "Try active recall techniques", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -109,11 +103,10 @@ const StudyTechniques = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Study Process' },
-    { id: 'resources', label: 'AI Tools' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
   ];
 
   return { sections, tabs };

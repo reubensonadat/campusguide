@@ -49,6 +49,8 @@ import Contact from './pages/Contact';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
+import { PrivacyPolicy, TermsOfService } from './pages/Legal';
+import { LetterGenerator } from './pages/LetterGenerator';
 
 function AppContent() {
   const { selectedCampusId } = useCampus();
@@ -98,13 +100,16 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/guide" element={<Guide />} />
           <Route path="/guide/:topic" element={<Guide />} />
-          <Route path="/tools" element={<Tools />} />
+          <Route path="/tools/*" element={<Tools />} />
+          <Route path="/tools/letter-generator" element={<LetterGenerator />} />
           <Route path="/community" element={<Community />} />
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 

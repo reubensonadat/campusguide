@@ -303,8 +303,8 @@ const NotificationDropdown = ({
                       key={notif.id}
                       onClick={() => {
                         markAsRead(notif.id);
-                        if (notif.type === 'class') navigate('/tools?tab=timetable');
-                        else if (notif.type === 'budget' || notif.type === 'payday') navigate('/tools?tab=budget');
+                        if (notif.type === 'class') navigate('/tools/timetable');
+                        else if (notif.type === 'budget' || notif.type === 'payday') navigate('/tools/budget');
                         onClose();
                       }}
                       className={`p-3 rounded-xl flex gap-3 items-start cursor-pointer transition-colors group ${notifStyles.card}`}

@@ -72,10 +72,8 @@ const FAQsTroubleshooting = () => {
       )
     }
   ];
-
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'resources', label: 'Help Desk' },
   ];
 
   return { sections, tabs };

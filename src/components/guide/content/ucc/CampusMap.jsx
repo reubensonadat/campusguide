@@ -32,14 +32,6 @@ const CampusMap = (props = {}) => {
     {
       title: "Campus Navigation",
       summary: "The Ultimate Guide to UCC Acronyms, Landmarks, and Transport.",
-      
-      checklist: [
-        { text: "Located my Faculty Block", checked: false },
-        { text: "Found the nearest Shuttle Station", checked: false },
-        { text: "Visited the University Hospital", checked: false },
-        { text: "Located Sam Jonah Library", checked: false },
-        { text: "Saved Campus Security Number", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -126,11 +118,6 @@ const CampusMap = (props = {}) => {
     { id: "H7", fullName: "SRC Hall", shortForm: "SRC", description: "Modern Hall (New Site).", url: "5.1245, -1.2910" },
     { id: "HF1", fullName: "UCC Hospital", shortForm: "Hospital", description: "Main healthcare facility.", url: "5.1105, -1.2885" },
     { id: "S1", fullName: "Science Market", shortForm: "Sci Market", description: "Food, stationery, printing.", url: "5.1151540113856075, -1.2926691771448782" }
-  ];
-
-  const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'resources', label: 'Directions' },
   ];
 
   const getCoordinates = (url) => {

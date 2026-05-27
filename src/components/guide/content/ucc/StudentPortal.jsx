@@ -44,14 +44,6 @@ const StudentPortal = () => {
         { name: "IT Support Center", role: "Technical support for portal issues", contact: "itsupport@ucc.edu.gh | +233 123 456 789" },
         { name: "Student Affairs", role: "General student support services", contact: "studentaffairs@ucc.edu.gh | +233 123 456 788" }
       ],
-      checklist: [
-        { text: "Access portal with correct URL", checked: false },
-        { text: "Change default password", checked: false },
-        { text: "Set up security questions", checked: false },
-        { text: "Explore dashboard features", checked: false },
-        { text: "Set up student email", checked: false },
-        { text: "Save support contacts", checked: false }
-      ],
 
       // --- FULL TEXT CONTENT RESTORED ---
       content: (
@@ -128,10 +120,9 @@ const StudentPortal = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Access Process' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
     { id: 'resources', label: 'Resources' },
   ];
 

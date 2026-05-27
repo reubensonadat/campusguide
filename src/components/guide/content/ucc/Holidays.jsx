@@ -47,12 +47,11 @@ const Holidays = () => {
             ),
         }
     ];
+  const tabs = [
+    { id: 'overview', label: 'Overview' },
+  ];
 
-    const tabs = [
-        { id: 'overview', label: 'Overview' }
-    ];
-
-    return { sections, tabs };
+  return { sections, tabs };
 };
 
 const ProtocolItem = ({ step, title, text }) => (

@@ -76,7 +76,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
     <Modal
       isOpen={isOpen}
       onClose={closeModal}
-      title="Support UCC Campus Guide"
+      title="Support Campus Guide"
       size="md"
     >
       <div className="space-y-5">
@@ -93,15 +93,15 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
 
             {/* Header Message */}
             <div className="text-center pb-2">
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Make a Difference</h3>
-              <p className="text-gray-600 text-sm leading-relaxed px-4">
-                Help keep the UCC Campus Guide <strong className="text-[#002F45]">alive</strong> and <strong className="text-[#002F45]">growing</strong> for every student.
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Make a Difference</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed px-4">
+                Help keep the Campus Guide <strong className="text-[#002F45] dark:text-[#6EABC6]">alive</strong> and <strong className="text-[#002F45] dark:text-[#6EABC6]">growing</strong> for every student.
               </p>
             </div>
 
             {/* Quick Amount Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Choose Amount (GH₵)
               </label>
               <div className="grid grid-cols-4 gap-2.5">
@@ -113,8 +113,8 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                       setCustomAmount('');
                     }}
                     className={`py-3 px-2 rounded-xl font-bold text-sm transition-all border-2 ${selectedAmount === amount && !customAmount
-                      ? 'border-[#002F45] bg-[#002F45]/5 text-[#002F45] shadow-sm'
-                      : 'border-gray-200 bg-white text-gray-600 hover:border-[#002F45]/30 hover:bg-[#002F45]/5'
+                      ? 'border-[#002F45] bg-[#002F45]/5 text-[#002F45] dark:border-[#6EABC6] dark:bg-[#6EABC6]/10 dark:text-[#6EABC6] shadow-sm'
+                      : 'border-gray-200 bg-white text-gray-600 dark:border-gray-700 dark:bg-[#111111] dark:text-gray-400 hover:border-[#002F45]/30 hover:bg-[#002F45]/5 dark:hover:border-[#6EABC6]/30 dark:hover:bg-[#6EABC6]/5'
                       }`}
                   >
                     ₵{amount}
@@ -125,7 +125,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
 
             {/* Custom Amount */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Or Enter Custom Amount
               </label>
               <div className="relative">
@@ -137,7 +137,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                   min="5"
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
-                  className={`w-full pl-14 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all ${customAmount && parseFloat(customAmount) < 5 ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+                  className={`w-full pl-14 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all dark:text-white dark:bg-[#111111] ${customAmount && parseFloat(customAmount) < 5 ? 'border-red-300 bg-red-50 dark:border-red-500/50 dark:bg-red-900/20' : 'border-gray-200 dark:border-gray-800'}`}
                   placeholder="Enter amount (Min 5)"
                 />
               </div>
@@ -158,7 +158,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all dark:bg-[#111111] dark:border-gray-800 dark:text-white"
                   placeholder="Your Name"
                 />
               </div>
@@ -172,7 +172,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all dark:bg-[#111111] dark:border-gray-800 dark:text-white"
                     placeholder="020..."
                   />
                 </div>
@@ -184,12 +184,12 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all dark:bg-[#111111] dark:border-gray-800 dark:text-white"
                     placeholder="mail@..."
                   />
                 </div>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 To confirm your spot on the leaderboard and for updates.
               </p>
             </div>
@@ -218,7 +218,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
             <div className="border-t border-gray-100 pt-4">
               <button
                 onClick={() => setShowWhySupport(!showWhySupport)}
-                className="w-full flex items-center justify-between text-sm font-semibold text-gray-700 hover:text-[#002F45] transition-colors"
+                className="w-full flex items-center justify-between text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#002F45] dark:hover:text-[#6EABC6] transition-colors"
               >
                 <span>Why support us?</span>
                 {showWhySupport ? (
@@ -263,7 +263,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                   Thank You for Your Support! 🎉
                 </h3>
                 <p className="text-green-700 mb-4">
-                  Your contribution helps us keep UCC Campus Guide free for all students.
+                  Your contribution helps us keep the Campus Guide free for all students.
                 </p>
                 <p className="text-sm text-green-600">
                   Transaction ID: {paymentResult.data.reference}

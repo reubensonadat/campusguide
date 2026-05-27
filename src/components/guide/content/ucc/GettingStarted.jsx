@@ -173,12 +173,11 @@ const GettingStarted = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Welcome' },
-    { id: 'steps', label: 'First Week' },
-    { id: 'resources', label: 'Links' },
-    { id: 'warnings', label: 'Alerts' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

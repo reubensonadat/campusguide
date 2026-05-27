@@ -37,12 +37,6 @@ const PresidentialReimbursement = () => {
         "Missing the application deadline (strictly enforced).",
         "Losing original receipts before the application period opens."
       ],
-      checklist: [
-        { text: "Pay all required fees in full", checked: false },
-        { text: "Keep original fee receipts safe", checked: false },
-        { text: "Verify bank account activity", checked: false },
-        { text: "Download official application form", checked: false }
-      ],
       resources: [
         { title: "Reimbursement Guidelines", description: "Complete eligibility requirements.", url: "https://ucc.edu.gh/presidential-reimbursement" },
         { title: "Finance Office Contact", description: "For reimbursement inquiries.", url: "https://ucc.edu.gh/finance-contacts" }
@@ -101,12 +95,11 @@ const PresidentialReimbursement = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Application Process' },
-    { id: 'resources', label: 'Links' },
-    { id: 'warnings', label: 'Mistakes' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

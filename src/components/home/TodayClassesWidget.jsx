@@ -16,7 +16,7 @@ export const TodayClassesWidget = ({ todaysClassesWithStatus, allCompleted, toda
     <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 min-h-[140px] border border-gray-100 flex flex-col justify-center">
       <div className="flex justify-between items-start mb-4">
         <span className="text-sm font-black text-gray-900 tracking-tight">Today's Classes</span>
-        <button onClick={() => navigate('/tools?tab=timetable')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
+        <button onClick={() => navigate('/tools/timetable')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
           View all <ChevronRight size={13} />
         </button>
       </div>
@@ -37,7 +37,7 @@ export const TodayClassesWidget = ({ todaysClassesWithStatus, allCompleted, toda
             </div>
           </div>
           <button 
-            onClick={() => navigate('/tools?tab=timetable')}
+            onClick={() => navigate('/tools/timetable')}
             className="flex bg-primary-50 text-primary-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-100 transition-colors"
           >
             Add Class

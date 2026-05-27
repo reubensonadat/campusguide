@@ -82,10 +82,9 @@ const TimeManagement = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Time Mastery Process' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
   ];
 
   return { sections, tabs };

@@ -6,6 +6,7 @@ import WhisperCommentsModal from './WhisperCommentsModal';
 import { getWhispers, interactWithWhisper, deleteWhisper, getUserInteractions } from '../../services/communityService';
 import { getCurrentUser } from '../../services/authService';
 import { DataLoader } from '../common/CustomLoaders';
+import { Linkify } from '../../utils/linkify';
 
 const WhispersFeed = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -187,8 +188,8 @@ const WhispersFeed = () => {
                                     </button>
                                 </div>
                             </div>
-                            <p className="text-gray-800 text-lg font-medium leading-relaxed mb-4 whitespace-pre-wrap">
-                                {whisper.text}
+                            <p className="text-gray-800 text-lg font-medium leading-relaxed mb-4 whitespace-pre-wrap break-words">
+                                <Linkify text={whisper.text} />
                             </p>
                             <div className="flex items-center justify-between border-t border-gray-50 pt-3">
                                 <div className="flex items-center gap-1 bg-gray-50 rounded-full px-1 py-1 border border-gray-100">

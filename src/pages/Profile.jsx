@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, BookOpen, Clock, Fingerprint, Calendar as CalendarIcon, MapPin, Pencil, Settings, UserCircle, Bell, X, Camera, Save, CheckCircle, RefreshCw, Smartphone, User, Trash2, Phone, Mail, ChevronRight, Shield, HelpCircle, Heart, Edit3, Calendar, StickyNote, ListChecks, Copy, Cloud, CloudOff, Share2, Hash, CreditCard, Check } from 'lucide-react';
+import { ArrowRight, BookOpen, Clock, Fingerprint, Calendar as CalendarIcon, MapPin, Pencil, Settings, UserCircle, Bell, X, Camera, Save, CheckCircle, RefreshCw, Smartphone, User, Trash2, Phone, Mail, ChevronRight, Shield, HelpCircle, Heart, Edit3, Calendar, StickyNote, ListChecks, Copy, Cloud, CloudOff, Share2, Hash, CreditCard, Check, Moon, FileText } from 'lucide-react';
 import { DataLoader } from '../components/common/CustomLoaders';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
 import { useNavigate } from 'react-router-dom';
+import { CustomSettings } from '../components/common/CustomIcons';
 import { useAppContext } from '../context/AppContext';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { restoreFromCloud } from '../services/syncService';
@@ -28,6 +29,15 @@ const LibrarySvgIcon = ({ size = 20, className = '' }) => (
 const Profile = () => {
   const navigate = useNavigate();
   const { actions } = useAppContext();
+  
+  const [theme, setTheme] = useLocalStorage('theme', 'light');
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
   const [profile, setProfile] = useLocalStorage('ucc_profile', {
     name: '',
     phone: '',
@@ -152,8 +162,14 @@ const Profile = () => {
       <div className="max-w-3xl mx-auto px-6 pt-12 space-y-8">
         
         {/* Header */}
-        <div>
+        <div className="flex justify-between items-center">
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">Profile</h1>
+          <button 
+            onClick={() => navigate('/settings')}
+            className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
+          >
+            <Settings size={20} />
+          </button>
         </div>
 
         {/* Vertical Wallet Pass Student ID Card */}
@@ -168,9 +184,7 @@ const Profile = () => {
               <div className="flex justify-between items-start relative z-10">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1.5 shadow-md">
-                      <img src="/logo.png" alt="UCC" className="w-full h-full object-contain" />
-                    </div>
+                    <img src="/logo.png" alt="UCC" className="w-10 h-10 object-contain rounded-md shadow-sm" />
                     <div>
                       <h3 className="text-white font-black tracking-widest text-sm uppercase leading-tight drop-shadow-sm">Campus Guide</h3>
                       <p className="text-white/80 text-[10px] font-bold uppercase tracking-[0.2em]">Student ID</p>
@@ -185,7 +199,7 @@ const Profile = () => {
                 </div>
 
                 {/* QR Code */}
-                <div className="w-[68px] h-[68px] bg-white p-1.5 rounded-xl shadow-md border border-white/20 opacity-95">
+                <div className="w-[68px] h-[68px] bg-[#ffffff] p-1.5 rounded-xl shadow-md border border-white/20 opacity-95">
                   <img 
                     src={`https://quickchart.io/qr?text=${encodeURIComponent(
                       `UCC ID: ${profile.student_id || 'N/A'}\nName: ${profile.name || 'N/A'}\nCourse: ${profile.course || 'N/A'}`
@@ -198,7 +212,7 @@ const Profile = () => {
               </div>
 
               <div className="mt-8 flex items-end gap-5 relative z-10">
-                <div className="w-[4.5rem] h-[4.5rem] rounded-xl overflow-hidden bg-white shadow-xl shrink-0 border-2 border-white/40">
+                <div className="w-[4.5rem] h-[4.5rem] rounded-xl overflow-hidden shadow-xl shrink-0 border-2 border-white/40">
                   <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 pb-1">
@@ -352,11 +366,27 @@ const Profile = () => {
 
         <hr className="border-gray-100" />
 
-        {/* Settings List */}
-        <div className="space-y-2 pt-2">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-4">Settings</h2>
+        {/* Quick Settings Links */}
+        <div>
+          <h2 className="text-xl font-black text-gray-900 mb-4 px-2">Quick Settings</h2>
           
           <div className="space-y-1">
+            <div className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0">
+              <div className="flex items-center gap-4">
+                <Moon size={24} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[17px] text-gray-900 font-medium">Dark Mode</span>
+              </div>
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${
+                  theme === 'dark' ? 'bg-[#002F45]' : 'bg-gray-200'
+                }`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                  theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
             <button 
               onClick={() => setIsEditModalOpen(true)}
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
@@ -403,6 +433,39 @@ const Profile = () => {
               <div className="flex items-center gap-4">
                 <Phone size={24} className="text-gray-700" strokeWidth={1.5} />
                 <span className="text-[17px] text-gray-900 font-medium">UCC Contacts & Help</span>
+              </div>
+              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+            </button>
+
+            <button 
+              onClick={() => navigate('/settings')}
+              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
+            >
+              <div className="flex items-center gap-4">
+                <CustomSettings size={24} className="text-gray-700" />
+                <span className="text-[17px] text-gray-900 font-medium">Full Settings</span>
+              </div>
+              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+            </button>
+
+            <button 
+              onClick={() => navigate('/terms')}
+              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
+            >
+              <div className="flex items-center gap-4">
+                <FileText size={24} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[17px] text-gray-900 font-medium">Terms of Service</span>
+              </div>
+              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+            </button>
+
+            <button 
+              onClick={() => navigate('/privacy')}
+              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
+            >
+              <div className="flex items-center gap-4">
+                <Shield size={24} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[17px] text-gray-900 font-medium">Privacy Policy</span>
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>

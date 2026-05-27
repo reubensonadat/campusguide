@@ -27,14 +27,6 @@ const PaymentsReceipts = () => {
       ],
       consequences: "Incorrect or unverified payments will lead to being barred from examinations, inability to access halls, and obstruction of academic registration.",
       resources: [], // Filled if needed
-      checklist: [
-        { text: "Checked correct fee schedule", checked: false },
-        { text: "Generated invoice on portal", checked: false },
-        { text: "Used approved payment channel", checked: false },
-        { text: "Paid with correct Student ID", checked: false },
-        { text: "Secured official receipt", checked: false },
-        { text: "Verified payment on portal", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -107,11 +99,10 @@ const PaymentsReceipts = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Payment Cycle' },
-    { id: 'warnings', label: 'Pitfalls' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

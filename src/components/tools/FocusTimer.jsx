@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, Square, Coffee, CheckCircle2, RotateCcw } from 'lucide-react';
-import { BreathingCircle } from './BreathingCircle';
+import { MiniGameHub } from './minigames/MiniGameHub';
 import { toast } from 'react-hot-toast';
 
 const FOCUS_OPTIONS = [15, 25, 30, 45, 60];
@@ -64,17 +64,7 @@ export const FocusTimer = ({ task, onComplete, onCancel }) => {
 
         {/* Timer UI or Brain Break UI */}
         {mode === 'brain-break' ? (
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6 w-full mb-8 backdrop-blur-md">
-            <BreathingCircle />
-            <div className="mt-6 flex justify-center">
-              <button 
-                onClick={() => setMode('focus')}
-                className="text-white/60 text-sm font-bold hover:text-white transition-colors underline"
-              >
-                Back to Timer
-              </button>
-            </div>
-          </div>
+          <MiniGameHub onBackToFocus={() => setMode('focus')} />
         ) : (
           <>
             <div className="relative w-72 h-72 mb-12 flex items-center justify-center">

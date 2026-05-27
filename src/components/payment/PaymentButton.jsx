@@ -12,7 +12,7 @@ const PaymentButton = ({
   onPaymentError,
   className = '',
   disabled = false,
-  children = 'Support UCC Campus Guide'
+  children = 'Support Campus Guide'
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);

@@ -74,10 +74,9 @@ const BankingMoMo = () => {
       )
     }
   ];
-
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'warnings', label: 'Safety' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

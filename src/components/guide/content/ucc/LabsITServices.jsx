@@ -103,10 +103,9 @@ const LabsITServices = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Action Plan' }
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
   ];
 
   return { sections, tabs };

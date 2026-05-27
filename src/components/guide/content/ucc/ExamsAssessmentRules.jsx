@@ -31,14 +31,6 @@ const ExamsAssessmentRules = () => {
         { title: "Student Handbook (Exams)", description: "Official rules on assessment.", url: "https://elearning.ucc.edu.gh/" },
         { title: "Past Questions Portal", description: "Access previous exam papers.", url: "#" }
       ],
-      checklist: [
-        { text: "Printed Exam Permit (Colour)", checked: false },
-        { text: "Checked Seat Number on Notice Board", checked: false },
-        { text: "Bought 2 Blue/Black Pens", checked: false },
-        { text: "Removed Smart Watch", checked: false },
-        { text: "Phone left at home/hostel", checked: false },
-        { text: "Dressed appropriately (No cap)", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -130,11 +122,11 @@ const ExamsAssessmentRules = () => {
       )
     }
   ];
-
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'steps', label: 'Procedure' },
-    { id: 'warnings', label: 'Malpractice' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

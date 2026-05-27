@@ -19,6 +19,7 @@ export const AuthBottomSheet = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     const handleOpen = async (e) => {
@@ -170,7 +171,7 @@ export const AuthBottomSheet = () => {
 
           <button
             type="submit"
-            disabled={loading || pin.length !== 6 || (mode === 'restore' && !deviceId)}
+            disabled={loading || pin.length !== 6 || (mode === 'restore' && !deviceId) || !termsAccepted}
             className="w-full py-4 mt-4 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:hover:bg-primary-600 text-white rounded-2xl font-bold text-lg shadow-[0_8px_20px_rgba(37,99,235,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
           >
             {loading ? (
@@ -179,6 +180,19 @@ export const AuthBottomSheet = () => {
               mode === 'register' ? 'Secure & Continue' : 'Restore & Continue'
             )}
           </button>
+          
+          <div className="mt-4 px-2 flex items-start gap-3">
+            <input 
+              type="checkbox" 
+              id="terms" 
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="mt-1 w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
+            />
+            <label htmlFor="terms" className="text-xs text-gray-500 leading-relaxed">
+              I agree to the <a href="/terms" className="text-primary-600 font-bold hover:underline" onClick={() => setIsOpen(false)}>Terms of Service</a> and <a href="/privacy" className="text-primary-600 font-bold hover:underline" onClick={() => setIsOpen(false)}>Privacy Policy</a>.
+            </label>
+          </div>
         </form>
 
         <div className="mt-8 text-center pb-4">

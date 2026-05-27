@@ -84,10 +84,9 @@ const ClubsSocieties = () => {
       )
     }
   ];
-
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'steps', label: 'How to Join' }
+    { id: 'steps', label: 'Steps' },
   ];
 
   return { sections, tabs };

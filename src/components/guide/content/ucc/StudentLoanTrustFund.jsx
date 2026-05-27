@@ -31,14 +31,6 @@ const StudentLoanTrustFund = () => {
         { title: "SLTF Official Portal", description: "Apply for student loan and check status.", url: "https://www.sltf.gov.gh" },
         { title: "FAQs and Support", description: "Common questions and contact info.", url: "https://www.sltf.gov.gh/contact-us/" }
       ],
-      checklist: [
-        { text: "Verify eligibility requirements", checked: false },
-        { text: "Gather all required documents", checked: false },
-        { text: "Find suitable guarantors", checked: false },
-        { text: "Complete online application", checked: false },
-        { text: "Submit guarantor forms", checked: false },
-        { text: "Understand repayment terms", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -113,11 +105,11 @@ const StudentLoanTrustFund = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Application Process' },
-    { id: 'warnings', label: 'Pitfalls' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

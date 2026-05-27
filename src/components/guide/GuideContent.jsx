@@ -396,20 +396,41 @@ const GuideContent = ({ guide, isOpen, onClose }) => {
 
   // Memoize the tabs to prevent unnecessary re-renders
   const tabs = useMemo(() => {
-    return guide?.tabs || [
+    let baseTabs = guide?.tabs || [
       { id: 'overview', label: 'Overview' },
       { id: 'steps', label: 'Steps' },
       { id: 'resources', label: 'Resources' },
       { id: 'warnings', label: 'Warnings' }
     ];
-  }, [guide?.tabs]);
 
-  // Set the first tab as active when the guide changes
-  React.useEffect(() => {
-    if (guide?.tabs?.length > 0) {
-      setActiveTab(guide.tabs[0].id);
+    // 1. Completely remove checklist everywhere
+    baseTabs = baseTabs.filter(tab => tab.id !== 'checklist');
+
+    // 2. Only show tabs if there is actual content for them in the current section
+    if (section) {
+      baseTabs = baseTabs.filter(tab => {
+        if (tab.id === 'overview') return true; 
+        if (tab.id === 'steps') return section.steps && section.steps.length > 0;
+        if (tab.id === 'resources') return (section.resources && section.resources.length > 0) || (section.contacts && section.contacts.length > 0);
+        if (tab.id === 'warnings') return (section.commonMistakes && section.commonMistakes.length > 0) || section.consequences;
+        if (tab.id === 'directions') return guide?.buildings && guide.buildings.length > 0;
+        if (tab.id === 'location') return guide?.location;
+        return true; 
+      });
     }
-  }, [guide?.tabs]);
+
+    return baseTabs;
+  }, [guide?.tabs, section, guide?.buildings, guide?.location]);
+
+  // Ensure active tab is valid when tabs change
+  React.useEffect(() => {
+    if (tabs && tabs.length > 0) {
+      const isCurrentTabValid = tabs.some(tab => tab.id === activeTab);
+      if (!isCurrentTabValid) {
+        setActiveTab(tabs[0].id);
+      }
+    }
+  }, [tabs, activeTab]);
 
   // Return null if guide is not available
   if (!guide || !section) {

@@ -29,12 +29,6 @@ const CommonMistakesFreshers = () => {
         { title: "UCC Student Handbook", description: "The official rulebook for grades and conduct.", url: "https://ucc.edu.gh/student-handbook" },
         { title: "Counselling Centre", description: "Mental health and academic advice.", url: "https://portal.ucc.edu.gh/onlineReg/src/coun.php" }
       ],
-      checklist: [
-        { text: "Read the Student Handbook (Regulation 11.0)", checked: false },
-        { text: "Met my Academic Advisor", checked: false },
-        { text: "Created a personal study timetable", checked: false },
-        { text: "Budgeted allowance for the semester", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -103,11 +97,10 @@ const CommonMistakesFreshers = () => {
       )
     }
   ];
-
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'warnings', label: 'Mistakes' },
-    { id: 'resources', label: 'Links' },
+    { id: 'resources', label: 'Resources' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

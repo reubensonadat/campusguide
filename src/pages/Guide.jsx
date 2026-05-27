@@ -398,13 +398,13 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
 
                   {/* Tabs */}
                   <div className="flex gap-8 border-b border-gray-100 -mb-8 overflow-x-auto no-scrollbar mask-linear-fade pb-1">
-                    {['overview', 'steps', 'resources', 'checklist', 'warnings'].map(tab => (
+                    {(currentTopicData.component().tabs || []).map(tab => (
                       <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 capitalize ${activeTab === tab ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`pb-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap px-1 capitalize ${activeTab === tab.id ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
                       >
-                        {tab}
+                        {tab.label}
                       </button>
                     ))}
                   </div>

@@ -33,13 +33,6 @@ const StudentSupportServices = () => {
       resources: [
         { title: "Counseling Center", description: "Book a confidential session online.", url: "https://portal.ucc.edu.gh/onlineReg/src/coun.php" }
       ],
-      checklist: [
-        { text: "Know locations of all support offices", checked: false },
-        { text: "Save counseling center contacts", checked: false },
-        { text: "Explore academic support options", checked: false },
-        { text: "Visit career services early", checked: false },
-        { text: "Understand confidentiality policies", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -92,11 +85,10 @@ const StudentSupportServices = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Getting Support' },
-    { id: 'resources', label: 'Links' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'resources', label: 'Resources' },
   ];
 
   return { sections, tabs };

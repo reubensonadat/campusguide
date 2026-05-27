@@ -32,13 +32,6 @@ const PartTimeWorkGigs = () => {
         "Save a portion of earnings for emergencies",
         "Build professional relationships with supervisors"
       ],
-      checklist: [
-        { text: "Update CV", checked: false },
-        { text: "Check job board", checked: false },
-        { text: "Apply for work-study", checked: false },
-        { text: "Create study schedule", checked: false },
-        { text: "Set work hours limit", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -91,10 +84,9 @@ const PartTimeWorkGigs = () => {
       )
     }
   ];
-
   const tabs = [
-    { id: 'overview', label: 'Guide & Context' },
-    { id: 'steps', label: 'Job Search Process' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'steps', label: 'Steps' },
   ];
 
   return { sections, tabs };

@@ -22,12 +22,6 @@ const AttendanceRegulations = () => {
         "Waiting until exam week to submit a medical report from 2 months ago."
       ],
       consequences: "If you breach the attendance limit, you will be barred from writing the final exam. This results in an automatic Grade E (Fail) or 'Incomplete', requiring you to resit the entire course.",
-      checklist: [
-        { text: "Signed register for today's lecture", checked: false },
-        { text: "Validated medical report at UCC Hospital", checked: false },
-        { text: "Checked attendance percentage mid-semester", checked: false },
-        { text: "Informed Class Rep of emergency absence", checked: false }
-      ],
 
       content: (
         <div className="space-y-12">
@@ -81,11 +75,10 @@ const AttendanceRegulations = () => {
       )
     }
   ];
-
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'steps', label: 'Management' },
-    { id: 'warnings', label: 'Consequences' },
+    { id: 'steps', label: 'Steps' },
+    { id: 'warnings', label: 'Warnings' },
   ];
 
   return { sections, tabs };

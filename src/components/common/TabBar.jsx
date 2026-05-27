@@ -28,7 +28,7 @@ const TabBar = () => {
   useEffect(() => {
     // Small timeout to ensure DOM layout is complete before measuring
     const timeoutId = setTimeout(() => {
-      const activeIndex = displayTabs.findIndex(tab => tab.path === location.pathname);
+      const activeIndex = displayTabs.findIndex(tab => location.pathname === tab.path || (tab.path === '/tools' && location.pathname.startsWith('/tools/')));
       if (activeIndex !== -1 && tabsRef.current[activeIndex]) {
         const el = tabsRef.current[activeIndex];
         setPillStyle({
@@ -85,7 +85,7 @@ const TabBar = () => {
         />
 
         {displayTabs.map((tab, index) => {
-          const isActive = location.pathname === tab.path;
+          const isActive = location.pathname === tab.path || (tab.path === '/tools' && location.pathname.startsWith('/tools/'));
           const Icon = tab.icon;
 
           return (

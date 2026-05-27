@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity } from './CustomIcons';
+import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomSettings } from './CustomIcons';
 import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Sidebar = ({ onExpandedChange }) => {
@@ -67,7 +67,7 @@ const Sidebar = ({ onExpandedChange }) => {
         <div 
           className={`ml-3 font-black text-lg text-gray-900 tracking-tight whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 w-0'}`}
         >
-          UCC Guide
+          Campus Guide
         </div>
       </div>
 
@@ -115,7 +115,7 @@ const Sidebar = ({ onExpandedChange }) => {
           title={!isExpanded ? "Settings" : ""}
         >
           <div className="flex-shrink-0 flex items-center justify-center w-6 h-6">
-            <Settings size={22} className={location.pathname === '/settings' ? 'text-white' : 'text-gray-500 group-hover:text-gray-900 transition-colors'} />
+            <CustomSettings size={22} className={location.pathname === '/settings' ? 'text-white' : 'text-gray-500 group-hover:text-gray-900 transition-colors'} />
           </div>
           <span 
             className={`ml-3 text-sm font-bold whitespace-nowrap transition-all duration-300 ${
