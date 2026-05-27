@@ -7,6 +7,7 @@ import { getWhispers, interactWithWhisper, deleteWhisper, getUserInteractions } 
 import { getCurrentUser } from '../../services/authService';
 import { DataLoader } from '../common/CustomLoaders';
 import { Linkify } from '../../utils/linkify';
+import { useScrollReveal } from '../../hooks/useScrollReveal';
 
 const WhispersFeed = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -177,8 +178,51 @@ const WhispersFeed = () => {
                         No whispers yet. Be the first to spill the tea!
                     </div>
                 ) : (
-                    sortedWhispers.map(whisper => (
-                        <div key={whisper.id} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                    sortedWhispers.map((whisper, index) => (
+                        <WhisperCard
+                            key={whisper.id}
+                            whisper={whisper}
+                            index={index}
+                            userInteractions={userInteractions}
+                            currentUser={currentUser}
+                            onInteract={handleInteract}
+                            onDelete={handleDelete}
+                            onComment={setSelectedWhisper}
+                            getTimeAgo={getTimeAgo}
+                        />
+                    ))
+                )}
+            </div>
+
+            <NewWhisperModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); loadWhispers(); }} />
+            <WhisperCommentsModal
+                isOpen={!!selectedWhisper}
+                onClose={() => setSelectedWhisper(null)}
+                whisper={selectedWhisper}
+                onCommentAdded={(id) => {
+                    setWhispers(prev => prev.map(w => w.id === id ? { ...w, comment_count: w.comment_count + 1 } : w));
+                    setSelectedWhisper(prev => prev ? { ...prev, comment_count: prev.comment_count + 1 } : null);
+                }}
+            />
+        </div>
+    );
+};
+
+/* ─── Animated Whisper Card ─── */
+const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract, onDelete, onComment, getTimeAgo }) => {
+    const { ref, isVisible } = useScrollReveal({ threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+    const delay = Math.min(index * 70, 350);
+
+    return (
+        <div
+            ref={ref}
+            style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+                transition: `opacity 0.45s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.45s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+            }}
+        >
+            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
                             <div className="flex justify-between items-start mb-3">
                                 <span className="text-xs font-bold text-primary-500 bg-primary-50 px-2 py-1 rounded-md">Anonymous</span>
                                 <div className="flex items-center gap-3">
@@ -216,22 +260,8 @@ const WhispersFeed = () => {
                                 </div>
                             </div>
                         </div>
-                    ))
-                )}
-            </div>
-
-            <NewWhisperModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); loadWhispers(); }} />
-            <WhisperCommentsModal 
-                isOpen={!!selectedWhisper} 
-                onClose={() => setSelectedWhisper(null)} 
-                whisper={selectedWhisper} 
-                onCommentAdded={(id) => {
-                    setWhispers(prev => prev.map(w => w.id === id ? { ...w, comment_count: w.comment_count + 1 } : w));
-                    setSelectedWhisper(prev => prev ? { ...prev, comment_count: prev.comment_count + 1 } : null);
-                }}
-            />
         </div>
-    );
+        );
 };
 
 export default WhispersFeed;

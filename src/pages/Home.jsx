@@ -95,6 +95,18 @@ const getWeatherIconAndAdvice = (code, temp) => {
 const Home = () => {
   React.useEffect(() => { window.scrollTo(0, 0); }, []);
 
+  // ── Invisible dark-mode sync ──────────────────────────────────────────────
+  // Reads the theme preference from localStorage (set in Profile) and applies
+  // the `dark` class to <html> so every component on this page can react to it.
+  const [theme] = useLocalStorage('theme', 'light');
+  React.useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
   const navigate = useNavigate();
   const { state, actions } = useAppContext();
   const [timetable] = useLocalStorage('ucc_timetable', []);
@@ -308,6 +320,9 @@ const Home = () => {
   const unreadItems = useMemo(() => recentUpdates.filter(item => !seenIds.has(String(item.id))), [recentUpdates, seenIds]);
   const readItems   = useMemo(() => recentUpdates.filter(item => seenIds.has(String(item.id))), [recentUpdates, seenIds]);
 
+  // In-app notification context (must be before markAllAsRead)
+  const { unreadCount, markAllAsRead: markAllInAppRead } = useNotifications();
+
   // Mark a single community item as read
   const markItemAsRead = useCallback((id) => {
     const current = JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]');
@@ -316,22 +331,22 @@ const Home = () => {
     setSeenVersion(v => v + 1);
   }, []);
 
-  // Mark all unread community items as read
+  // Mark all unread community items as read (also clears in-app notification dot)
   const markAllAsRead = useCallback(() => {
     const current = JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]');
     const allIds = unreadItems.map(item => String(item.id));
     const updated = [...new Set([...current, ...allIds])];
     localStorage.setItem('ucc_seen_updates', JSON.stringify(updated));
     setSeenVersion(v => v + 1);
-  }, [unreadItems]);
+    // Also mark all in-app notifications as read so the red dot disappears
+    markAllInAppRead?.();
+  }, [unreadItems, markAllInAppRead]);
 
   // Navigate to community hub with correct tab
   const handleNavigateToCommunity = useCallback((tab) => {
     navigate(`/community?tab=${tab}`);
     setIsNotifOpen(false);
   }, [navigate]);
-
-  const { unreadCount } = useNotifications();
 
   // Red dot: purely data-driven — shows only when there are truly unread items
   const showRedDot = notificationsEnabled && (unreadItems.length > 0 || unreadCount > 0);

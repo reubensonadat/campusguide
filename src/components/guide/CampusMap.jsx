@@ -218,7 +218,7 @@ const MapView = () => {
     ];
 
     return (
-        <div className="flex-1 h-full w-full relative bg-slate-50 dark:bg-[#0a0a0a] flex flex-col animate-in fade-in overflow-hidden">
+        <div className="absolute inset-0 bg-slate-50 dark:bg-[#0a0a0a] flex flex-col animate-in fade-in overflow-hidden">
             {/* --- MAP CONTAINER --- */}
             <div className="absolute inset-0 z-0 h-full w-full">
                 <Map 

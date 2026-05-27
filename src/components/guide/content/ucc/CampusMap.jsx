@@ -131,7 +131,7 @@ const CampusMap = (props = {}) => {
 
   const defaultCenter = [5.11676647092683, -1.293229663589804];
 
-  return { sections, buildings, openGoogleMaps, tabs, getCoordinates, defaultCenter };
+  return { sections, buildings, openGoogleMaps, getCoordinates, defaultCenter };
 };
 
 const AcronymTile = ({ code, site, onClick }) => (

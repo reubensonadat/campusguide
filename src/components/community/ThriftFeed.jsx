@@ -6,6 +6,7 @@ import NewThriftModal from './NewThriftModal';
 import { getThriftListings } from '../../services/communityService';
 import { DataLoader } from '../common/CustomLoaders';
 import { useWishlist } from '../../hooks/useWishlist';
+import { useScrollReveal } from '../../hooks/useScrollReveal';
 
 // Outline heart — not saved
 const HeartOutline = ({ size = 16, className = '' }) => (
@@ -146,6 +147,27 @@ const WishlistOverlay = ({ wishlistItems, items, toggleWishlist, onClose }) => (
     </div>
 );
 
+/* ─── Animated Thrift Card Wrapper ─── */
+const RevealThriftCard = ({ item, index, toggleWishlist, isWishlisted, getTimeAgo }) => {
+    const { ref, isVisible } = useScrollReveal({ threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+    // Stagger delay: 0ms, 60ms, 120ms, 180ms ... capped at 300ms
+    const delay = Math.min(index * 60, 300);
+
+    return (
+        <div
+            ref={ref}
+            className="break-inside-avoid"
+            style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(24px) scale(0.97)',
+                transition: `opacity 0.5s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.5s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+            }}
+        >
+            <ThriftCard item={item} toggleWishlist={toggleWishlist} isWishlisted={isWishlisted} getTimeAgo={getTimeAgo} />
+        </div>
+    );
+};
+
 /* ─── ThriftCard ─── */
 const ThriftCard = ({ item, toggleWishlist, isWishlisted, getTimeAgo }) => {
     const parts = item.description?.split('\nLocation: ') || [];
@@ -285,10 +307,8 @@ const ThriftFeed = () => {
 
         return (
             <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-                {filteredItems.map(item => (
-                    <div key={item.id} className="break-inside-avoid">
-                        <ThriftCard item={item} toggleWishlist={toggleWishlist} isWishlisted={isWishlisted} getTimeAgo={getTimeAgo} />
-                    </div>
+                {filteredItems.map((item, index) => (
+                    <RevealThriftCard key={item.id} item={item} index={index} toggleWishlist={toggleWishlist} isWishlisted={isWishlisted} getTimeAgo={getTimeAgo} />
                 ))}
             </div>
         );

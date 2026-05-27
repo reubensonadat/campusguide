@@ -164,11 +164,11 @@ const Profile = () => {
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">Profile</h1>
-          <button 
+          <button
             onClick={() => navigate('/settings')}
             className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
           >
-            <Settings size={20} />
+            <CustomSettings size={20} />
           </button>
         </div>
 
