@@ -64,7 +64,7 @@ const CommunityCard = ({ item, onMarkRead, onNavigate, isRead }) => {
       </div>
       {/* Unread dot indicator */}
       {!isRead && (
-        <span className="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-2" />
+        <span className="w-2 h-2 bg-[#002F45] rounded-full shrink-0 mt-2" />
       )}
     </div>
   );
@@ -229,7 +229,7 @@ const NotificationDropdown = ({
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-black tracking-widest uppercase text-gray-400">New</span>
-                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 text-white text-[9px] font-bold">
+                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#002F45] text-white text-[9px] font-bold">
                     {unreadItems.length}
                   </span>
                 </div>
@@ -288,21 +288,30 @@ const NotificationDropdown = ({
                 <span className="text-[10px] font-black tracking-widest uppercase text-gray-400">App Reminders</span>
               </div>
               <div className="flex flex-col gap-1.5">
-                {notifications.map(notif => (
-                  <div
-                    key={notif.id}
-                    onClick={() => {
-                      markAsRead(notif.id);
-                      if (notif.type === 'class') navigate('/tools?tab=timetable');
-                      else if (notif.type === 'budget' || notif.type === 'payday') navigate('/tools?tab=budget');
-                      onClose();
-                    }}
-                    className={`p-3 rounded-xl flex gap-3 items-start cursor-pointer transition-colors group ${notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-blue-50 hover:bg-blue-100/70'
-                      }`}
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-[#002F45]/10 flex items-center justify-center shrink-0">
-                      <Bell size={14} className="text-[#002F45]" />
-                    </div>
+                {notifications.map(notif => {
+                  // Type-specific colors: brand=class, red=budget, green=payday
+                  const notifStyles = notif.isRead
+                    ? { card: 'bg-white hover:bg-gray-50', iconBg: 'bg-gray-100', iconColor: 'text-gray-400' }
+                    : notif.type === 'budget'
+                      ? { card: 'bg-red-50 hover:bg-red-100/70', iconBg: 'bg-red-100', iconColor: 'text-red-600' }
+                      : notif.type === 'payday'
+                        ? { card: 'bg-green-50 hover:bg-green-100/70', iconBg: 'bg-green-100', iconColor: 'text-green-600' }
+                        : { card: 'bg-[#002F45]/5 hover:bg-[#002F45]/10', iconBg: 'bg-[#002F45]/10', iconColor: 'text-[#002F45]' };
+
+                  return (
+                    <div
+                      key={notif.id}
+                      onClick={() => {
+                        markAsRead(notif.id);
+                        if (notif.type === 'class') navigate('/tools?tab=timetable');
+                        else if (notif.type === 'budget' || notif.type === 'payday') navigate('/tools?tab=budget');
+                        onClose();
+                      }}
+                      className={`p-3 rounded-xl flex gap-3 items-start cursor-pointer transition-colors group ${notifStyles.card}`}
+                    >
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${notifStyles.iconBg}`}>
+                        <Bell size={14} className={notifStyles.iconColor} />
+                      </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <p className={`text-sm font-bold line-clamp-1 ${notif.isRead ? 'text-gray-700' : 'text-gray-900'}`}>
@@ -323,7 +332,8 @@ const NotificationDropdown = ({
                       <X size={13} />
                     </button>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

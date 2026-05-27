@@ -26,6 +26,7 @@ const Tools = () => {
   const [isAuthVerified, setIsAuthVerified] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     // Trigger auth immediately when entering the tools section
     triggerAuthSheet(() => {
       setIsAuthVerified(true);

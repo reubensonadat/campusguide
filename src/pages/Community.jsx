@@ -270,7 +270,7 @@ const Community = () => {
                     <>
                         {/* Sticky Feed Header & Filters */}
                         <div
-                            className="sticky z-20 bg-gray-50/95 backdrop-blur-md pt-2 pb-4 -mx-4 px-4 md:mx-0 md:px-0 transition-all duration-300"
+                            className={`sticky z-20 bg-gray-50/95 backdrop-blur-md -mx-4 px-4 md:mx-0 md:px-0 transition-all duration-300 ${isScrolled ? 'pt-1 pb-2' : 'pt-2 pb-4'}`}
                             style={{ top: isScrolled ? '50px' : '76px' }}
                         >
                     <div className={`flex items-center gap-4 transition-all duration-300 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-10 opacity-100 mb-4'}`}>
@@ -280,12 +280,14 @@ const Community = () => {
                     </div>
 
                     {/* Filter Categories - Horizontally Scrollable */}
-                   <div className="flex overflow-x-auto hide-scrollbar gap-2 px-4 py-2 md:px-4 lg:pl-4">
+                    <div className={`flex overflow-x-auto hide-scrollbar gap-2 px-4 md:px-4 lg:pl-4 transition-all duration-300 ${isScrolled ? 'py-1' : 'py-2'}`}>
                         {CATEGORIES.map(category => (
                             <button
                                 key={category.id}
                                 onClick={() => setSelectedCategory(category.id)}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 shadow-sm ${selectedCategory === category.id
+                                className={`whitespace-nowrap rounded-xl font-bold transition-all duration-200 shadow-sm ${
+                                    isScrolled ? 'px-4 py-2 text-xs' : 'px-5 py-2.5 text-sm'
+                                } ${selectedCategory === category.id
                                     ? 'bg-white text-primary-600 shadow-md scale-105 border border-gray-100'
                                     : 'bg-transparent text-gray-500 hover:bg-gray-100 border border-transparent'
                                     }`}

@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Button } from '../components/common/Button';
-import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, Circle, Calendar } from 'lucide-react';
+import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, Circle, Calendar, PartyPopper, Play, BookOpen, Plus } from 'lucide-react';
 import { CustomMapPin } from '../components/common/CustomMapPin';
-import { CustomGuide, CustomTools } from '../components/common/CustomIcons';
+import { CustomGuide, CustomTools, CustomEyes } from '../components/common/CustomIcons';
 import NotificationDropdown from '../components/common/NotificationDropdown'; // 🛎️ NEW: Import
 import { getIconComponent } from '../components/tools/PlanYourDay';
+import { FocusTimer } from '../components/tools/FocusTimer';
 import { getUpcomingAcademicEvents } from '../data/academicCalendar';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { getTodayHoliday } from '../services/holidayService';
@@ -102,6 +103,7 @@ const Home = () => {
   const [quickNotes, setQuickNotes] = useLocalStorage('ucc_quick_notes', '');
   const [homeWidgetsRaw] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
   const homeWidgets = useMemo(() => ({ ...DEFAULT_HOME_WIDGETS, ...homeWidgetsRaw }), [homeWidgetsRaw]);
+  const [activeTask, setActiveTask] = useState(null);
 
   // 🛎️ NOTIFICATION LOGIC STATES
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -164,9 +166,19 @@ const Home = () => {
         const startMins = getTimeMinutes(c.startTime);
         const endMins = c.endTime ? getTimeMinutes(c.endTime) : startMins + 60; // Assume 1hr duration if no end time
         let status = 'upcoming';
+        let timeUntilStr = '';
         if (currentTimeMinutes >= endMins) status = 'completed';
         else if (currentTimeMinutes >= startMins && currentTimeMinutes < endMins) status = 'ongoing';
-        return { ...c, status, startMins, endMins };
+        else if (startMins > currentTimeMinutes) {
+          const diffMins = startMins - currentTimeMinutes;
+          if (diffMins < 60) timeUntilStr = `in ${diffMins}m`;
+          else {
+            const hrs = Math.floor(diffMins / 60);
+            const rmins = diffMins % 60;
+            timeUntilStr = `in ${hrs}h${rmins > 0 ? ` ${rmins}m` : ''}`;
+          }
+        }
+        return { ...c, status, startMins, endMins, timeUntilStr };
       });
   }, [timetable, currentTimeMinutes]);
 
@@ -180,6 +192,38 @@ const Home = () => {
     return tasks.filter(t => t.date === todayStr).sort((a, b) => a.time.localeCompare(b.time));
   }, [tasks]);
 
+  const suggestedClassTasks = useMemo(() => {
+    return todaysClassesWithStatus.filter(cls => {
+        const classTitle = cls.courseName || cls.name || 'Class';
+        const expectedTitle = `Revise ${classTitle}`;
+        return !todaysTasks.some(t => t.title === expectedTitle);
+    });
+  }, [todaysClassesWithStatus, todaysTasks]);
+
+  const handleAddSuggestion = (cls) => {
+    let suggestedTime = '08:00'; // Default
+    const classTimeStr = cls.startTime || cls.time;
+    
+    if (classTimeStr) {
+        const [h, m] = classTimeStr.split(':').map(Number);
+        const newH = h - 1 < 0 ? 23 : h - 1; // 1 hour before
+        suggestedTime = `${String(newH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+    const d = new Date();
+    const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    
+    const newTask = {
+        id: Date.now().toString(),
+        title: `Revise ${cls.courseName || cls.name || 'Class'}`,
+        time: suggestedTime,
+        endTime: null,
+        icon: 'study',
+        status: 'pending',
+        date: todayStr
+    };
+    setTasks([...tasks, newTask]);
+  };
+
   // Upcoming planned tasks (next 14 days, excluding today)
   const upcomingPlannedTasks = useMemo(() => {
     const d = new Date();
@@ -192,10 +236,10 @@ const Home = () => {
       .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
   }, [tasks]);
 
-  const toggleTaskStatus = (id) => {
+  const toggleTaskStatus = (id, forceComplete = false) => {
     setTasks(prev => prev.map(t => {
       if (t.id === id) {
-        return { ...t, status: t.status === 'completed' ? 'pending' : 'completed' };
+        return { ...t, status: forceComplete ? 'completed' : (t.status === 'completed' ? 'pending' : 'completed') };
       }
       return t;
     }));
@@ -504,11 +548,11 @@ const Home = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#002F45" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"></path></svg>
                   </div>
                   <div>
-                    <p className="text-[15px] font-bold text-gray-900">
-                      {todayHoliday ? `🎉 ${todayHoliday.name}` : 'No classes today!'}
+                    <p className="text-[15px] font-bold text-gray-900 flex items-center gap-1.5">
+                      {todayHoliday ? <><PartyPopper className="w-4 h-4 text-primary-600" /> {todayHoliday.name}</> : 'No classes today!'}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5 font-medium">
-                      {todayHoliday ? 'Enjoy the public holiday!' : 'Enjoy your free time.'}
+                    <p className="text-xs text-gray-500 mt-0.5 font-medium flex items-center">
+                      {todayHoliday ? <>No classes today unless your lecturer said so <CustomEyes size={14} className="inline ml-1" /></> : 'Enjoy your free time.'}
                     </p>
                   </div>
                 </div>
@@ -550,6 +594,7 @@ const Home = () => {
                         <span>
                             {cls.status === 'ongoing' ? 'Happening Now • ' : ''}
                             {cls.status === 'completed' ? 'Completed • ' : ''}
+                            {cls.status === 'upcoming' && cls.timeUntilStr ? <span className="text-orange-500 font-bold">{cls.timeUntilStr} • </span> : ''}
                             {cls.startTime && cls.endTime ? `${formatTime12Hour(cls.startTime)} – ${formatTime12Hour(cls.endTime)}` : formatTime12Hour(cls.startTime) || ''}
                         </span>
                         {cls.location && (
@@ -559,6 +604,7 @@ const Home = () => {
                         )}
                       </p>
                     </div>
+
                   </div>
                 ))}
               </div>
@@ -576,18 +622,41 @@ const Home = () => {
             </div>
 
             {todaysTasks.length === 0 ? (
-              <div className="flex items-center justify-between py-2 bg-slate-50 p-4 rounded-xl border border-slate-100 border-dashed">
-                <div>
-                  <p className="text-sm font-bold text-slate-800">No tasks planned</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Want to organize your day?</p>
+              suggestedClassTasks.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Suggested Task</p>
+                    <div className="flex items-center justify-between py-2 bg-primary-50 p-4 rounded-xl border border-primary-100">
+                        <div className="flex items-center gap-3">
+                           <div className="w-8 h-8 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0">
+                              <BookOpen size={16} />
+                           </div>
+                           <div className="min-w-0 pr-2">
+                              <p className="text-sm font-bold text-slate-800 break-words leading-tight">Revise {suggestedClassTasks[0].courseName || suggestedClassTasks[0].name || 'Class'}</p>
+                              <p className="text-xs text-slate-500 mt-0.5 font-medium truncate">Before class</p>
+                           </div>
+                        </div>
+                        <button 
+                            onClick={() => handleAddSuggestion(suggestedClassTasks[0])}
+                            className="bg-white border border-primary-200 text-primary-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-primary-50 transition-all flex items-center gap-1 flex-shrink-0"
+                        >
+                            <Plus size={14} /> Add
+                        </button>
+                    </div>
                 </div>
-                <button 
-                  onClick={() => navigate('/tools?tab=plan-day')}
-                  className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:border-primary-200 transition-all"
-                >
-                  Plan Day
-                </button>
-              </div>
+              ) : (
+                <div className="flex items-center justify-between py-2 bg-slate-50 p-4 rounded-xl border border-slate-100 border-dashed">
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">No tasks planned</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Want to organize your day?</p>
+                  </div>
+                  <button 
+                    onClick={() => navigate('/tools?tab=plan-day')}
+                    className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:border-primary-200 transition-all"
+                  >
+                    Plan Day
+                  </button>
+                </div>
+              )
             ) : (
               <div className="space-y-3">
                 {todaysTasks.slice(0, 3).map((task) => {
@@ -622,6 +691,17 @@ const Home = () => {
                           {task.endTime ? ` – ${formatTime12Hour(task.endTime)}` : ''}
                         </p>
                       </div>
+
+                      {/* Play Button */}
+                      {!isCompleted && (
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); setActiveTask(task); }}
+                            className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-colors ml-auto flex-shrink-0"
+                            title="Start Focus Timer"
+                        >
+                            <Play size={18} className="fill-current" />
+                        </button>
+                      )}
                     </div>
                   );
                 })}
@@ -1028,6 +1108,32 @@ const Home = () => {
         </div>
       </div>
       {/* end DESKTOP */}
+
+      {/* Pomodoro Focus Timer Overlay */}
+      {activeTask && (
+          <FocusTimer 
+              task={activeTask} 
+              onComplete={(id) => {
+                  if (activeTask.isClassStudy) {
+                      const d = new Date();
+                      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                      const newTask = {
+                          id: Date.now().toString(),
+                          title: activeTask.title,
+                          time: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
+                          date: dateStr,
+                          icon: 'study',
+                          status: 'completed'
+                      };
+                      setTasks([...tasks, newTask]);
+                  } else {
+                      toggleTaskStatus(id, true);
+                  }
+                  setActiveTask(null);
+              }}
+              onCancel={() => setActiveTask(null)}
+          />
+      )}
 
     </div>
   );

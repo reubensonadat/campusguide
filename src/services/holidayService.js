@@ -3,6 +3,25 @@ import { supabase } from '../lib/supabase';
 const HOLIDAY_CACHE_KEY = 'ucc_ghana_holidays';
 const HOLIDAY_CACHE_YEAR_KEY = 'ucc_holidays_year';
 
+// ── Hardcoded fallback for 2026 Ghana public holidays ────────────────────────
+// Used when the API is unreachable and no cache exists (e.g. Eid al-Adha on May 27).
+const HARDCODED_HOLIDAYS = {
+  2026: [
+    { date: '2026-01-01', name: "New Year's Day", type: 'public' },
+    { date: '2026-01-07', name: 'Constitution Day', type: 'public' },
+    { date: '2026-03-06', name: 'Independence Day', type: 'public' },
+    { date: '2026-03-30', name: 'Eid al-Fitr', type: 'public' },
+    { date: '2026-05-01', name: 'May Day', type: 'public' },
+    { date: '2026-05-25', name: 'African Union Day', type: 'public' },
+    { date: '2026-05-27', name: 'Eid al-Adha', type: 'public' },
+    { date: '2026-07-01', name: 'Republic Day', type: 'public' },
+    { date: '2026-08-04', name: "Founders' Day", type: 'public' },
+    { date: '2026-09-21', name: 'Kwame Nkrumah Memorial Day', type: 'public' },
+    { date: '2026-12-25', name: 'Christmas Day', type: 'public' },
+    { date: '2026-12-26', name: 'Boxing Day', type: 'public' },
+  ],
+};
+
 /**
  * Fetches Ghana public holidays for the current year.
  * Uses date.nager.at free API (no key required).
@@ -73,18 +92,31 @@ export const fetchGhanaHolidays = async (year = new Date().getFullYear()) => {
     return holidays;
   } catch (error) {
     console.error('Failed to fetch holidays:', error);
-    // Return cached data even if stale
-    return JSON.parse(localStorage.getItem(HOLIDAY_CACHE_KEY) || '[]');
+    // Return cached data even if stale, or hardcoded fallback
+    const cached = JSON.parse(localStorage.getItem(HOLIDAY_CACHE_KEY) || '[]');
+    if (cached.length > 0) return cached;
+    return HARDCODED_HOLIDAYS[year] || [];
   }
 };
 
 /**
  * Checks if today is a Ghana public holiday.
  * Returns the holiday object or null.
+ * Checks hardcoded list FIRST (always reliable for known variable-date holidays like Eid).
  */
 export const getTodayHoliday = async () => {
-  const holidays = await fetchGhanaHolidays();
+  const year = new Date().getFullYear();
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+  // 1. Check hardcoded fallback first — these are guaranteed correct
+  const hardcoded = HARDCODED_HOLIDAYS[year];
+  if (hardcoded) {
+    const hardcodedMatch = hardcoded.find(h => h.date === today);
+    if (hardcodedMatch) return hardcodedMatch;
+  }
+
+  // 2. Then check dynamic sources (API / cache / Supabase)
+  const holidays = await fetchGhanaHolidays();
   return holidays.find(h => h.date === today) || null;
 };
 

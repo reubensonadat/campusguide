@@ -48,11 +48,19 @@ const GPACalculator = () => {
     const neededAvgGpa = neededPoints / remaining;
     
     if (neededAvgGpa > 4.0) {
-      setTargetResult({ error: `Impossible! You'd need an average GPA of ${neededAvgGpa.toFixed(2)} which exceeds 4.0.` });
+      setTargetResult({ error: `It is mathematically impossible to reach a ${target.toFixed(2)} GPA. You would need an average GPA of ${neededAvgGpa.toFixed(2)} in your remaining classes, but the maximum possible GPA is 4.0.` });
     } else if (neededAvgGpa < 0) {
-      setTargetResult({ success: `You are already safe! You can average 0.0 and still hit your target.` });
+      setTargetResult({ success: `You are mathematically guaranteed to reach your target! Even if you average a 0.0 GPA in your remaining classes, your cumulative GPA will stay above ${target.toFixed(2)}.` });
     } else {
-      setTargetResult({ success: `You need to average a ${neededAvgGpa.toFixed(2)} GPA in your next ${remaining} credits.` });
+      let approximateGrade = 'A';
+      if (neededAvgGpa < 3.5) approximateGrade = 'B+';
+      if (neededAvgGpa < 3.0) approximateGrade = 'B';
+      if (neededAvgGpa < 2.5) approximateGrade = 'C+';
+      if (neededAvgGpa < 2.0) approximateGrade = 'C';
+      if (neededAvgGpa < 1.5) approximateGrade = 'D+';
+      if (neededAvgGpa < 1.0) approximateGrade = 'D';
+
+      setTargetResult({ success: `To reach your overall goal of ${target.toFixed(2)}, you must maintain an average GPA of ${neededAvgGpa.toFixed(2)} in your next ${remaining} credit hours. This means you should aim for mostly ${approximateGrade}'s in your upcoming classes.` });
     }
   };
 
@@ -222,13 +230,14 @@ const GPACalculator = () => {
 
       {/* Target GPA Solver Card */}
       <Card className="mb-6 bg-white border-gray-100 shadow-sm">
-        <CardHeader className="pb-3 border-b border-gray-100">
-          <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
+        <CardHeader className="pb-3 border-b border-gray-100 bg-indigo-50/30 rounded-t-xl">
+          <CardTitle className="text-gray-900 text-lg flex items-center gap-2 mb-1">
             <Target className="w-5 h-5 text-indigo-500" />
-            Target GPA Solver
+            GPA Forecaster
           </CardTitle>
+          <p className="text-sm text-gray-500 font-medium">Find out exactly what grades you need in your upcoming classes to reach your dream GPA. Just tell us your goal and how many credit hours you have left to take!</p>
         </CardHeader>
-        <CardContent className="pt-4">
+        <CardContent className="pt-5">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
             <div className="flex-1 w-full space-y-1">
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Target GPA</label>

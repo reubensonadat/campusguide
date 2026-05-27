@@ -10,7 +10,7 @@ import CampusIllustration from '/Leader-rafiki.svg';
 
 const Guide = () => {
   const [selectedTopicId, setSelectedTopicId] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth < 1024 && !selectedTopicId);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Essentials");
   const [activeTab, setActiveTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
@@ -282,7 +282,7 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
 };
 
   return (
-    <div className="flex bg-gray-50/30 lg:h-screen lg:overflow-hidden min-h-screen relative font-sans selection:bg-primary-100 selection:text-primary-900 transition-colors duration-300">
+    <div className="flex bg-white lg:h-screen lg:overflow-hidden min-h-screen relative font-sans selection:bg-primary-100 selection:text-primary-900 transition-colors duration-300">
 
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-50">
@@ -291,7 +291,9 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="p-2 -mr-2 text-gray-600 hover:bg-gray-50 rounded-lg"
         >
-          {isSidebarOpen ? <X className="w-6 h-6" /> : <List className="w-6 h-6" />}
+          {isSidebarOpen ? <X className="w-6 h-6" /> : (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M16 18V20H5V18H16ZM21 11V13H3V11H21ZM19 4V6H8V4H19Z"></path></svg>
+          )}
         </button>
       </div>
 
@@ -430,8 +432,8 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
             </div>
           )
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white h-full pb-24">
-            <div className="relative w-full max-w-lg -mr-6">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white h-full">
+            <div className="relative w-full max-w-lg -mr-6 pt-16">
               <img
                 src={CampusIllustration}
                 alt="Campus illustration"

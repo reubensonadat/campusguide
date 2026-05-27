@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { formulasData } from '../../data/formulas';
 import { Modal } from '../common/Modal';
 import { CustomGuide, CustomTools, CustomCommunity, CustomProfile, CustomSettings } from '../common/CustomIcons';
+import { FormulaLoaderIcon } from '../common/CustomLoaders';
 import {
   Play, RotateCcw, Lightbulb,
   Search, X, ArrowRight, AlertTriangle, CheckCircle2,
@@ -214,7 +215,7 @@ const FormulaCalculator = () => {
       const res = modalFormula.calculate(cleanVals);
       setResult(res);
       setIsCalculating(false);
-    }, 2000);
+    }, 500);
   };
 
   const handleFillExample = () => {
@@ -288,19 +289,30 @@ const FormulaCalculator = () => {
 
       {/* ── Category Pills ── */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-thin">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-              activeCategory === cat
-                ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
-                : 'bg-white text-gray-500 border border-gray-200 hover:border-primary-200 hover:text-primary-600'
-            }`}
-          >
-            {cat === 'All' ? `All (${formulasData.reduce((s, c) => s + c.formulas.length, 0)})` : cat === '⭐ Favorites' ? `⭐ Favorites (${favorites.size})` : cat}
-          </button>
-        ))}
+        {categories.map(cat => {
+          const getCount = () => {
+            if (cat === 'All') return formulasData.reduce((s, c) => s + c.formulas.length, 0);
+            if (cat === '⭐ Favorites') return favorites.size;
+            const categoryData = formulasData.find(c => c.category === cat);
+            return categoryData ? categoryData.formulas.length : 0;
+          };
+
+          return (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                activeCategory === cat
+                  ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20'
+                  : 'bg-white text-gray-500 border border-gray-200 hover:border-primary-200 hover:text-primary-600'
+              }`}
+            >
+              {activeCategory === cat || cat === 'All' || cat === '⭐ Favorites' 
+                ? `${cat} (${getCount()})` 
+                : cat}
+            </button>
+          );
+        })}
       </div>
 
       {/* ── Formula Cards Grid ── */}
@@ -535,7 +547,7 @@ const FormulaCalculator = () => {
             >
               {isCalculating ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <FormulaLoaderIcon className="w-4 h-4 text-white" />
                   Querying database...
                 </>
               ) : (
@@ -554,7 +566,7 @@ const FormulaCalculator = () => {
               <div className="rounded-xl border border-primary-200/50 bg-gradient-to-br from-primary-50/80 to-blue-50/50 p-6 text-center">
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
-                    <Database className="w-5 h-5 text-primary-600 animate-pulse" />
+                    <FormulaLoaderIcon className="w-6 h-6 text-primary-600" />
                   </div>
                   <div>
                     <p className="text-sm font-bold text-primary-800">Processing calculation...</p>

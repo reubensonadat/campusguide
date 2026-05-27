@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Button } from '../common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../common/Card';
-import { Plus, Trash2, Calendar, Bell, Download, X, AlertCircle, User, Phone, Target } from 'lucide-react';
+import { Plus, Trash2, Calendar, Bell, Download, X, AlertCircle, User, Phone, Target, PartyPopper, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CustomMapPin } from '../common/CustomMapPin';
 import { Modal } from '../common/Modal';
 import { DAYS_OF_WEEK, TIME_SLOTS, GRADE_POINTS } from '../../utils/constants';
 import { requestNotificationPermission, isNotificationSupported } from '../../services/notificationService';
 import { triggerAuthSheet } from '../onboarding/AuthModal';
+import { getTodayHoliday } from '../../services/holidayService';
+import { CustomEyes } from '../common/CustomIcons';
 
 const formatTime12Hour = (time24) => {
   if (!time24) return '';
@@ -19,10 +21,33 @@ const formatTime12Hour = (time24) => {
 
 const TimetableBuilder = () => {
   const [courses, setCourses] = useLocalStorage('ucc_timetable', []);
+  const [profile] = useLocalStorage('ucc_profile', { level: '100', semester: '1' });
   const [showAddForm, setShowAddForm] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [conflictError, setConflictError] = useState('');
+  const [todayHoliday, setTodayHoliday] = useState(null);
+
+  const TERMS = [
+      '100_1', '100_2', '200_1', '200_2', '300_1', '300_2',
+      '400_1', '400_2', '500_1', '500_2', '600_1', '600_2'
+  ];
+  
+  const [activeTermIndex, setActiveTermIndex] = useState(() => {
+      const defaultTerm = `${profile.level || '100'}_${profile.semester || '1'}`;
+      const idx = TERMS.indexOf(defaultTerm);
+      return idx >= 0 ? idx : 0;
+  });
+
+  const activeTerm = TERMS[activeTermIndex];
+  const [activeLevel, activeSemester] = activeTerm.split('_');
+
+  const displayCourses = React.useMemo(() => {
+      return courses.filter(c => {
+          const cTerm = c.academic_year ? `${c.academic_year}_${c.semester}` : `${profile.level || '100'}_${profile.semester || '1'}`;
+          return cTerm === activeTerm;
+      });
+  }, [courses, activeTerm, profile]);
 
   const timetableRef = useRef(null);
 
@@ -30,6 +55,7 @@ const TimetableBuilder = () => {
     if (isNotificationSupported()) {
       setNotificationsEnabled(Notification.permission === 'granted');
     }
+    getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => {});
   }, []);
 
   const handleEnableNotifications = async () => {
@@ -50,7 +76,9 @@ const TimetableBuilder = () => {
     lecturer: '',
     contact: '',
     targetGrade: '',
-    creditHours: 3
+    creditHours: 3,
+    academic_year: activeLevel,
+    semester: activeSemester
   });
 
   const colors = [
@@ -59,7 +87,7 @@ const TimetableBuilder = () => {
   ];
 
   const checkConflict = (courseToCheck) => {
-    return courses.find(course =>
+    return displayCourses.find(course =>
       course.day === courseToCheck.day &&
       ((courseToCheck.startTime >= course.startTime && courseToCheck.startTime < course.endTime) ||
         (courseToCheck.endTime > course.startTime && courseToCheck.endTime <= course.endTime) ||
@@ -123,11 +151,19 @@ const TimetableBuilder = () => {
     setSelectedCourse(null);
   };
 
-  // Group courses by day and sort by time
-  const coursesByDay = DAYS_OF_WEEK.reduce((acc, day) => {
-    acc[day] = courses.filter(course => course.day === day).sort((a, b) => a.startTime.localeCompare(b.startTime));
+  // Compute coursesByDay using displayCourses
+  const coursesByDay = React.useMemo(() => {
+    const acc = {};
+    displayCourses.forEach(course => {
+      if (!acc[course.day]) acc[course.day] = [];
+      acc[course.day].push(course);
+    });
+    // Sort courses by start time
+    Object.keys(acc).forEach(day => {
+      acc[day].sort((a, b) => a.startTime.localeCompare(b.startTime));
+    });
     return acc;
-  }, {});
+  }, [displayCourses]);
 
   return (
     <div className="pb-20">
@@ -179,12 +215,48 @@ const TimetableBuilder = () => {
               </Button>
             </div>
           </div>
+          
+          {/* Semester Toggle UI */}
+          <div className="flex items-center justify-center mt-6 bg-[#002F45]/5 rounded-2xl p-2 max-w-sm mx-auto border border-[#002F45]/10">
+              <button 
+                  onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
+                  disabled={activeTermIndex === 0}
+                  className="p-2 rounded-xl text-[#002F45] hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+              >
+                  <ChevronLeft size={20} />
+              </button>
+              
+              <div className="flex-1 text-center flex flex-col">
+                  <span className="text-sm font-black text-[#002F45]">Level {activeLevel}</span>
+                  <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Semester {activeSemester}</span>
+              </div>
+
+              <button 
+                  onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
+                  disabled={activeTermIndex === TERMS.length - 1}
+                  className="p-2 rounded-xl text-[#002F45] hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+              >
+                  <ChevronRight size={20} />
+              </button>
+          </div>
         </CardHeader>
         <CardContent>
+          {todayHoliday && (
+            <div className="mb-6 mt-6 p-4 bg-primary-50 border border-primary-100 rounded-2xl flex items-center justify-between shadow-sm">
+              <div>
+                <h3 className="font-bold text-primary-900 text-lg flex items-center gap-2">
+                  <PartyPopper className="w-5 h-5 text-primary-600" /> Public Holiday: {todayHoliday.name}
+                </h3>
+                <p className="text-sm text-primary-700 font-medium mt-1 flex items-center">
+                  No classes today unless your lecturer said so <CustomEyes size={16} className="inline ml-1" />
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Exportable Container */}
           <div ref={timetableRef} className="px-1 py-4 md:p-6 bg-slate-50/50 rounded-2xl">
-            {courses.length === 0 ? (
+            {displayCourses.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-3xl border border-dashed border-gray-200">
                 <div className="w-16 h-16 bg-[#002F45]/5 text-[#002F45] rounded-full flex items-center justify-center mx-auto mb-4">
                   <Calendar size={32} />
@@ -340,7 +412,17 @@ const TimetableBuilder = () => {
                   <input
                     type="time"
                     value={newCourse.startTime}
-                    onChange={(e) => setNewCourse({ ...newCourse, startTime: e.target.value })}
+                    onChange={(e) => {
+                      const newStart = e.target.value;
+                      if (!newStart) {
+                        setNewCourse({ ...newCourse, startTime: newStart });
+                        return;
+                      }
+                      let [h, m] = newStart.split(':').map(Number);
+                      h = (h + 2) % 24;
+                      const newEnd = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                      setNewCourse({ ...newCourse, startTime: newStart, endTime: newEnd });
+                    }}
                     className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
                     required
                   />

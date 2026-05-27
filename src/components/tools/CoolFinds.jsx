@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, Search, ArrowRight, Loader2 } from 'lucide-react';
+import { ExternalLink, Search, ArrowRight } from 'lucide-react';
 import { CustomGuide, CustomTools, CustomCommunity, CustomProfile, CustomSettings } from '../common/CustomIcons';
+import { DataLoader } from '../common/CustomLoaders';
 import { supabase } from '../../lib/supabase';
 
 const CATEGORIES = [
@@ -96,8 +97,8 @@ const CoolFinds = () => {
       {/* Resources Grid */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-[#002F45] animate-spin mb-4" />
-          <p className="text-sm font-medium text-gray-500">Loading resources...</p>
+          <DataLoader />
+          <p className="text-sm font-medium text-gray-500 mt-6">Loading resources...</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -1,5 +1,6 @@
- import React, { useState, useEffect } from 'react';
-import { User, Trash2, Phone, Mail, ChevronRight, X, Shield, HelpCircle, CheckCircle, Heart, Edit3, Calendar, StickyNote, Clock, ListChecks, Copy, Fingerprint, Cloud, CloudOff, RefreshCw, Check, Share2, Hash, CreditCard, Camera, Bell } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight, BookOpen, Clock, Fingerprint, Calendar as CalendarIcon, MapPin, Pencil, Settings, UserCircle, Bell, X, Camera, Save, CheckCircle, RefreshCw, Smartphone, User, Trash2, Phone, Mail, ChevronRight, Shield, HelpCircle, Heart, Edit3, Calendar, StickyNote, ListChecks, Copy, Cloud, CloudOff, Share2, Hash, CreditCard, Check } from 'lucide-react';
+import { DataLoader } from '../components/common/CustomLoaders';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
@@ -32,6 +33,7 @@ const Profile = () => {
     phone: '',
     course: '',
     level: '',
+    semester: '1',
     student_id: '',
     avatarUrl: `https://api.dicebear.com/9.x/avataaars/svg?seed=UCCStudent&backgroundColor=cce1eb,99c3d6`
   });
@@ -204,13 +206,13 @@ const Profile = () => {
                     {profile.name || 'Setup your profile'}
                   </h2>
                   <p className="text-white/90 text-[10px] sm:text-xs font-bold uppercase tracking-wider drop-shadow-sm break-words line-clamp-2 leading-snug">
-                    {profile.course || 'Course'} {profile.level && `• L${profile.level}`}
+                    {profile.course || 'Course'} {profile.level && `  L${profile.level}`} {profile.semester && ` Sem ${profile.semester}`}
                   </p>
                   {/* App Unique ID shown below the details */}
                   <div className="mt-1.5 flex items-center gap-1.5 opacity-80">
                     <Fingerprint size={12} className="text-white/70" />
                     <span className="text-white font-mono font-bold text-[9px] uppercase tracking-[0.2em] drop-shadow-sm">
-                      App ID: {deviceId?.split('-')[0] || 'UNKNOWN'}
+                      App ID: {deviceId || 'UNKNOWN'}
                     </span>
                   </div>
                 </div>
@@ -512,21 +514,34 @@ const Profile = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Level</label>
-                <select
-                  value={formData.level || ''}
-                  onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                  className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
-                >
-                  <option value="">Select Level</option>
-                  <option value="100">100</option>
-                  <option value="200">200</option>
-                  <option value="300">300</option>
-                  <option value="400">400</option>
-                  <option value="500">500</option>
-                  <option value="600">600</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Level</label>
+                    <select
+                      value={formData.level || ''}
+                      onChange={(e) => setFormData({ ...formData, level: e.target.value })}
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
+                    >
+                      <option value="">Select Level</option>
+                      <option value="100">100</option>
+                      <option value="200">200</option>
+                      <option value="300">300</option>
+                      <option value="400">400</option>
+                      <option value="500">500</option>
+                      <option value="600">600</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Semester</label>
+                    <select
+                      value={formData.semester || '1'}
+                      onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
+                    >
+                      <option value="1">Sem 1</option>
+                      <option value="2">Sem 2</option>
+                    </select>
+                  </div>
               </div>
             </div>
 
@@ -543,7 +558,7 @@ const Profile = () => {
               >
                 {isSaving ? (
                   <>
-                    <CheckCircle size={20} className="animate-pulse" />
+                    <DataLoader className="w-5 h-5 text-gray-400" />
                     Saving...
                   </>
                 ) : (
