@@ -5557,6 +5557,1257 @@ export const formulasData = [
             return { result: `P = ${res.toExponential(4)} W`, steps: `(2k × ${q}² × ${a}²) / (3c³)` };
           }
         }
+      },
+
+      {
+        id: 'straight_line_depreciation',
+        name: 'Straight-Line Depreciation',
+        description: 'Allocates equal depreciation expense each year over the useful life of an asset.',
+        equation: 'D = (C - S) / N',
+        variables: [
+          { id: 'D', label: 'Annual Depreciation', unit: 'GH¢' },
+          { id: 'C', label: 'Cost of Asset', unit: 'GH¢' },
+          { id: 'S', label: 'Salvage Value', unit: 'GH¢' },
+          { id: 'N', label: 'Useful Life', unit: 'years' },
+        ],
+        calculate: (inputs) => {
+          const { D, C, S, N } = inputs;
+          const known = [D, C, S, N].filter(v => v !== undefined && v !== null);
+          if (known.length < 3) return { result: null, steps: ['Need at least 3 of 4 values.'] };
+          if (D === undefined) {
+            const r = (C - S) / N;
+            return { result: { D: r }, steps: [`D = (C - S) / N`, `D = (${C} - ${S}) / ${N}`, `D = ${r.toFixed(4)} GH¢`] };
+          }
+          if (C === undefined) {
+            const r = D * N + S;
+            return { result: { C: r }, steps: [`C = D × N + S`, `C = ${D} × ${N} + ${S}`, `C = ${r.toFixed(4)} GH¢`] };
+          }
+          if (S === undefined) {
+            const r = C - D * N;
+            return { result: { S: r }, steps: [`S = C - D × N`, `S = ${C} - ${D} × ${N}`, `S = ${r.toFixed(4)} GH¢`] };
+          }
+          const r = (C - S) / D;
+          return { result: { N: r }, steps: [`N = (C - S) / D`, `N = (${C} - ${S}) / ${D}`, `N = ${r.toFixed(4)} years`] };
+        }
+      },
+      {
+        id: 'declining_balance_depreciation',
+        name: 'Declining Balance Depreciation',
+        description: 'Computes depreciation using a fixed rate applied to the declining book value each year.',
+        equation: 'D = R × BV',
+        variables: [
+          { id: 'D', label: 'Depreciation Expense', unit: 'GH¢' },
+          { id: 'R', label: 'Depreciation Rate', unit: '' },
+          { id: 'BV', label: 'Book Value (start of year)', unit: 'GH¢' },
+        ],
+        calculate: (inputs) => {
+          const { D, R, BV } = inputs;
+          const known = [D, R, BV].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (D === undefined) {
+            const r = R * BV;
+            return { result: { D: r }, steps: [`D = R × BV`, `D = ${R} × ${BV}`, `D = ${r.toFixed(4)} GH¢`] };
+          }
+          if (R === undefined) {
+            const r = D / BV;
+            return { result: { R: r }, steps: [`R = D / BV`, `R = ${D} / ${BV}`, `R = ${r.toFixed(4)}`] };
+          }
+          const r = D / R;
+          return { result: { BV: r }, steps: [`BV = D / R`, `BV = ${D} / ${R}`, `BV = ${r.toFixed(4)} GH¢`] };
+        }
+      },
+      {
+        id: 'net_present_value',
+        name: 'Net Present Value (NPV)',
+        description: 'Discounts future cash flows to present value and subtracts the initial investment.',
+        equation: 'NPV = Σ(CFt / (1+r)^t) - C0',
+        variables: [
+          { id: 'NPV', label: 'Net Present Value', unit: 'GH¢' },
+          { id: 'CF', label: 'Cash Flow (sum of discounted)', unit: 'GH¢' },
+          { id: 'C0', label: 'Initial Investment', unit: 'GH¢' },
+        ],
+        calculate: (inputs) => {
+          const { NPV, CF, C0 } = inputs;
+          const known = [NPV, CF, C0].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values. CF should be the sum of all discounted cash flows.'] };
+          if (NPV === undefined) {
+            const r = CF - C0;
+            return { result: { NPV: r }, steps: [`NPV = CF - C0`, `NPV = ${CF} - ${C0}`, `NPV = ${r.toFixed(4)} GH¢`] };
+          }
+          if (CF === undefined) {
+            const r = NPV + C0;
+            return { result: { CF: r }, steps: [`CF = NPV + C0`, `CF = ${NPV} + ${C0}`, `CF = ${r.toFixed(4)} GH¢`] };
+          }
+          const r = CF - NPV;
+          return { result: { C0: r }, steps: [`C0 = CF - NPV`, `C0 = ${CF} - ${NPV}`, `C0 = ${r.toFixed(4)} GH¢`] };
+        }
+      },
+      {
+        id: 'payback_period',
+        name: 'Payback Period',
+        description: 'Time required for cumulative cash inflows to recover the initial investment.',
+        equation: 'PP = C0 / CF',
+        variables: [
+          { id: 'PP', label: 'Payback Period', unit: 'years' },
+          { id: 'C0', label: 'Initial Investment', unit: 'GH¢' },
+          { id: 'CF', label: 'Annual Cash Inflow', unit: 'GH¢/year' },
+        ],
+        calculate: (inputs) => {
+          const { PP, C0, CF } = inputs;
+          const known = [PP, C0, CF].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (PP === undefined) {
+            const r = C0 / CF;
+            return { result: { PP: r }, steps: [`PP = C0 / CF`, `PP = ${C0} / ${CF}`, `PP = ${r.toFixed(4)} years`] };
+          }
+          if (C0 === undefined) {
+            const r = PP * CF;
+            return { result: { C0: r }, steps: [`C0 = PP × CF`, `C0 = ${PP} × ${CF}`, `C0 = ${r.toFixed(4)} GH¢`] };
+          }
+          const r = C0 / PP;
+          return { result: { CF: r }, steps: [`CF = C0 / PP`, `CF = ${C0} / ${PP}`, `CF = ${r.toFixed(4)} GH¢/year`] };
+        }
+      },
+      {
+        id: 'contribution_margin',
+        name: 'Contribution Margin',
+        description: 'The portion of each sale that contributes to covering fixed costs and generating profit.',
+        equation: 'CM = P - VC',
+        variables: [
+          { id: 'CM', label: 'Contribution Margin per Unit', unit: 'GH¢' },
+          { id: 'P', label: 'Selling Price per Unit', unit: 'GH¢' },
+          { id: 'VC', label: 'Variable Cost per Unit', unit: 'GH¢' },
+        ],
+        calculate: (inputs) => {
+          const { CM, P, VC } = inputs;
+          const known = [CM, P, VC].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (CM === undefined) {
+            const r = P - VC;
+            return { result: { CM: r }, steps: [`CM = P - VC`, `CM = ${P} - ${VC}`, `CM = ${r.toFixed(4)} GH¢`] };
+          }
+          if (P === undefined) {
+            const r = CM + VC;
+            return { result: { P: r }, steps: [`P = CM + VC`, `P = ${CM} + ${VC}`, `P = ${r.toFixed(4)} GH¢`] };
+          }
+          const r = P - CM;
+          return { result: { VC: r }, steps: [`VC = P - CM`, `VC = ${P} - ${CM}`, `VC = ${r.toFixed(4)} GH¢`] };
+        }
+      },
+      {
+        id: 'breakeven_units',
+        name: 'Break-Even Point (Units)',
+        description: 'Number of units that must be sold to cover all fixed and variable costs with zero profit.',
+        equation: 'BEP = FC / CM',
+        variables: [
+          { id: 'BEP', label: 'Break-Even Units', unit: 'units' },
+          { id: 'FC', label: 'Total Fixed Costs', unit: 'GH¢' },
+          { id: 'CM', label: 'Contribution Margin per Unit', unit: 'GH¢' },
+        ],
+        calculate: (inputs) => {
+          const { BEP, FC, CM } = inputs;
+          const known = [BEP, FC, CM].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (BEP === undefined) {
+            const r = FC / CM;
+            return { result: { BEP: r }, steps: [`BEP = FC / CM`, `BEP = ${FC} / ${CM}`, `BEP = ${r.toFixed(4)} units`] };
+          }
+          if (FC === undefined) {
+            const r = BEP * CM;
+            return { result: { FC: r }, steps: [`FC = BEP × CM`, `FC = ${BEP} × ${CM}`, `FC = ${r.toFixed(4)} GH¢`] };
+          }
+          const r = FC / BEP;
+          return { result: { CM: r }, steps: [`CM = FC / BEP`, `CM = ${FC} / ${BEP}`, `CM = ${r.toFixed(4)} GH¢`] };
+        }
+      },
+      {
+        id: 'current_ratio',
+        name: 'Current Ratio',
+        description: 'Measures a company\'s ability to pay short-term obligations using current assets.',
+        equation: 'CR = CA / CL',
+        variables: [
+          { id: 'CR', label: 'Current Ratio', unit: '' },
+          { id: 'CA', label: 'Current Assets', unit: 'GH¢' },
+          { id: 'CL', label: 'Current Liabilities', unit: 'GH¢' },
+        ],
+        calculate: (inputs) => {
+          const { CR, CA, CL } = inputs;
+          const known = [CR, CA, CL].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (CR === undefined) {
+            const r = CA / CL;
+            return { result: { CR: r }, steps: [`CR = CA / CL`, `CR = ${CA} / ${CL}`, `CR = ${r.toFixed(4)}`] };
+          }
+          if (CA === undefined) {
+            const r = CR * CL;
+            return { result: { CA: r }, steps: [`CA = CR × CL`, `CA = ${CR} × ${CL}`, `CA = ${r.toFixed(4)} GH¢`] };
+          }
+          const r = CA / CR;
+          return { result: { CL: r }, steps: [`CL = CA / CR`, `CL = ${CA} / ${CR}`, `CL = ${r.toFixed(4)} GH¢`] };
+        }
+      },
+      {
+        id: 'acid_test_ratio',
+        name: 'Acid-Test (Quick) Ratio',
+        description: 'A stricter liquidity measure excluding inventory from current assets.',
+        equation: 'QR = (CA - Inventory) / CL',
+        variables: [
+          { id: 'QR', label: 'Quick Ratio', unit: '' },
+          { id: 'CA', label: 'Current Assets', unit: 'GH¢' },
+          { id: 'Inv', label: 'Inventory', unit: 'GH¢' },
+          { id: 'CL', label: 'Current Liabilities', unit: 'GH¢' },
+        ],
+        calculate: (inputs) => {
+          const { QR, CA, Inv, CL } = inputs;
+          const known = [QR, CA, Inv, CL].filter(v => v !== undefined && v !== null);
+          if (known.length < 3) return { result: null, steps: ['Need at least 3 of 4 values.'] };
+          if (QR === undefined) {
+            const r = (CA - Inv) / CL;
+            return { result: { QR: r }, steps: [`QR = (CA - Inv) / CL`, `QR = (${CA} - ${Inv}) / ${CL}`, `QR = ${r.toFixed(4)}`] };
+          }
+          if (CA === undefined) {
+            const r = QR * CL + Inv;
+            return { result: { CA: r }, steps: [`CA = QR × CL + Inv`, `CA = ${QR} × ${CL} + ${Inv}`, `CA = ${r.toFixed(4)} GH¢`] };
+          }
+          if (Inv === undefined) {
+            const r = CA - QR * CL;
+            return { result: { Inv: r }, steps: [`Inv = CA - QR × CL`, `Inv = ${CA} - ${QR} × ${CL}`, `Inv = ${r.toFixed(4)} GH¢`] };
+          }
+          const r = (CA - Inv) / QR;
+          return { result: { CL: r }, steps: [`CL = (CA - Inv) / QR`, `CL = (${CA} - ${Inv}) / ${QR}`, `CL = ${r.toFixed(4)} GH¢`] };
+        }
+      },
+      {
+        id: 'debt_to_equity',
+        name: 'Debt-to-Equity Ratio',
+        description: 'Compares total liabilities to shareholders\' equity, indicating financial leverage.',
+        equation: 'D/E = TL / SE',
+        variables: [
+          { id: 'DE', label: 'Debt-to-Equity Ratio', unit: '' },
+          { id: 'TL', label: 'Total Liabilities', unit: 'GH¢' },
+          { id: 'SE', label: 'Shareholders Equity', unit: 'GH¢' },
+        ],
+        calculate: (inputs) => {
+          const { DE, TL, SE } = inputs;
+          const known = [DE, TL, SE].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (DE === undefined) {
+            const r = TL / SE;
+            return { result: { DE: r }, steps: [`D/E = TL / SE`, `D/E = ${TL} / ${SE}`, `D/E = ${r.toFixed(4)}`] };
+          }
+          if (TL === undefined) {
+            const r = DE * SE;
+            return { result: { TL: r }, steps: [`TL = D/E × SE`, `TL = ${DE} × ${SE}`, `TL = ${r.toFixed(4)} GH¢`] };
+          }
+          const r = TL / DE;
+          return { result: { SE: r }, steps: [`SE = TL / D/E`, `SE = ${TL} / ${DE}`, `SE = ${r.toFixed(4)} GH¢`] };
+        }
+      },
+      {
+        id: 'margin_of_safety',
+        name: 'Margin of Safety',
+        description: 'The difference between actual sales and break-even sales, expressed as a percentage of actual sales.',
+        equation: 'MoS = (Actual - BEP) / Actual × 100',
+        variables: [
+          { id: 'MoS', label: 'Margin of Safety', unit: '%' },
+          { id: 'Actual', label: 'Actual Sales (units or GH¢)', unit: '' },
+          { id: 'BEP', label: 'Break-Even Point (units or GH¢)', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { MoS, Actual, BEP } = inputs;
+          const known = [MoS, Actual, BEP].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (MoS === undefined) {
+            const r = ((Actual - BEP) / Actual) * 100;
+            return { result: { MoS: r }, steps: [`MoS = (Actual - BEP) / Actual × 100`, `MoS = (${Actual} - ${BEP}) / ${Actual} × 100`, `MoS = ${r.toFixed(4)}%`] };
+          }
+          if (Actual === undefined) {
+            const r = BEP / (1 - MoS / 100);
+            return { result: { Actual: r }, steps: [`Actual = BEP / (1 - MoS/100)`, `Actual = ${BEP} / (1 - ${MoS}/100)`, `Actual = ${r.toFixed(4)}`] };
+          }
+          const r = Actual * (1 - MoS / 100);
+          return { result: { BEP: r }, steps: [`BEP = Actual × (1 - MoS/100)`, `BEP = ${Actual} × (1 - ${MoS}/100)`, `BEP = ${r.toFixed(4)}`] };
+        }
+      },
+
+      // ─── TIER 2: NURSING & HEALTH SCIENCES (10 formulas) ───
+      {
+        id: 'bmi_calculation',
+        name: 'Body Mass Index (BMI)',
+        description: 'Screens for weight category based on height and weight.',
+        equation: 'BMI = W / H²',
+        variables: [
+          { id: 'BMI', label: 'Body Mass Index', unit: 'kg/m²' },
+          { id: 'W', label: 'Weight', unit: 'kg' },
+          { id: 'H', label: 'Height', unit: 'm' },
+        ],
+        calculate: (inputs) => {
+          const { BMI, W, H } = inputs;
+          const known = [BMI, W, H].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (BMI === undefined) {
+            const r = W / (H * H);
+            return { result: { BMI: r }, steps: [`BMI = W / H²`, `BMI = ${W} / ${H}²`, `BMI = ${W} / ${(H*H).toFixed(4)}`, `BMI = ${r.toFixed(2)} kg/m²`] };
+          }
+          if (W === undefined) {
+            const r = BMI * H * H;
+            return { result: { W: r }, steps: [`W = BMI × H²`, `W = ${BMI} × ${H}²`, `W = ${r.toFixed(2)} kg`] };
+          }
+          const r = Math.sqrt(W / BMI);
+          return { result: { H: r }, steps: [`H = √(W / BMI)`, `H = √(${W} / ${BMI})`, `H = ${r.toFixed(4)} m`] };
+        }
+      },
+      {
+        id: 'drug_dosage_weight',
+        name: 'Drug Dosage by Weight',
+        description: 'Calculates the drug dose based on patient weight and prescribed dose per kilogram.',
+        equation: 'Dose = W × DosePerKg',
+        variables: [
+          { id: 'Dose', label: 'Total Dose', unit: 'mg' },
+          { id: 'W', label: 'Patient Weight', unit: 'kg' },
+          { id: 'DPK', label: 'Dose per kg', unit: 'mg/kg' },
+        ],
+        calculate: (inputs) => {
+          const { Dose, W, DPK } = inputs;
+          const known = [Dose, W, DPK].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (Dose === undefined) {
+            const r = W * DPK;
+            return { result: { Dose: r }, steps: [`Dose = W × DosePerKg`, `Dose = ${W} × ${DPK}`, `Dose = ${r.toFixed(2)} mg`] };
+          }
+          if (W === undefined) {
+            const r = Dose / DPK;
+            return { result: { W: r }, steps: [`W = Dose / DosePerKg`, `W = ${Dose} / ${DPK}`, `W = ${r.toFixed(2)} kg`] };
+          }
+          const r = Dose / W;
+          return { result: { DPK: r }, steps: [`DosePerKg = Dose / W`, `DosePerKg = ${Dose} / ${W}`, `DosePerKg = ${r.toFixed(2)} mg/kg`] };
+        }
+      },
+      {
+        id: 'iv_flow_rate',
+        name: 'IV Flow Rate',
+        description: 'Calculates the drops per minute for an intravenous infusion.',
+        equation: 'Drops/min = (Volume × DropFactor) / Time(min)',
+        variables: [
+          { id: 'Rate', label: 'Flow Rate', unit: 'drops/min' },
+          { id: 'Vol', label: 'Volume to Infuse', unit: 'mL' },
+          { id: 'DF', label: 'Drop Factor', unit: 'drops/mL' },
+          { id: 'Time', label: 'Infusion Time', unit: 'minutes' },
+        ],
+        calculate: (inputs) => {
+          const { Rate, Vol, DF, Time } = inputs;
+          const known = [Rate, Vol, DF, Time].filter(v => v !== undefined && v !== null);
+          if (known.length < 3) return { result: null, steps: ['Need at least 3 of 4 values.'] };
+          if (Rate === undefined) {
+            const r = (Vol * DF) / Time;
+            return { result: { Rate: r }, steps: [`Rate = (Vol × DF) / Time`, `Rate = (${Vol} × ${DF}) / ${Time}`, `Rate = ${r.toFixed(2)} drops/min`] };
+          }
+          if (Vol === undefined) {
+            const r = (Rate * Time) / DF;
+            return { result: { Vol: r }, steps: [`Vol = (Rate × Time) / DF`, `Vol = (${Rate} × ${Time}) / ${DF}`, `Vol = ${r.toFixed(2)} mL`] };
+          }
+          if (DF === undefined) {
+            const r = (Rate * Time) / Vol;
+            return { result: { DF: r }, steps: [`DF = (Rate × Time) / Vol`, `DF = (${Rate} × ${Time}) / ${Vol}`, `DF = ${r.toFixed(2)} drops/mL`] };
+          }
+          const r = (Vol * DF) / Rate;
+          return { result: { Time: r }, steps: [`Time = (Vol × DF) / Rate`, `Time = (${Vol} × ${DF}) / ${Rate}`, `Time = ${r.toFixed(2)} min`] };
+        }
+      },
+      {
+        id: 'body_surface_area',
+        name: 'Body Surface Area (Mosteller)',
+        description: 'Estimates total body surface area for drug dosing and burn assessment using the Mosteller formula.',
+        equation: 'BSA = √(H × W / 3600)',
+        variables: [
+          { id: 'BSA', label: 'Body Surface Area', unit: 'm²' },
+          { id: 'H', label: 'Height', unit: 'cm' },
+          { id: 'W', label: 'Weight', unit: 'kg' },
+        ],
+        calculate: (inputs) => {
+          const { BSA, H, W } = inputs;
+          const known = [BSA, H, W].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (BSA === undefined) {
+            const r = Math.sqrt((H * W) / 3600);
+            return { result: { BSA: r }, steps: [`BSA = √(H × W / 3600)`, `BSA = √(${H} × ${W} / 3600)`, `BSA = √${((H*W)/3600).toFixed(4)}`, `BSA = ${r.toFixed(4)} m²`] };
+          }
+          if (H === undefined) {
+            const r = (BSA * BSA * 3600) / W;
+            return { result: { H: r }, steps: [`H = (BSA² × 3600) / W`, `H = (${BSA}² × 3600) / ${W}`, `H = ${r.toFixed(2)} cm`] };
+          }
+          const r = (BSA * BSA * 3600) / H;
+          return { result: { W: r }, steps: [`W = (BSA² × 3600) / H`, `W = (${BSA}² × 3600) / ${H}`, `W = ${r.toFixed(2)} kg`] };
+        }
+      },
+      {
+        id: 'mean_arterial_pressure',
+        name: 'Mean Arterial Pressure (MAP)',
+        description: 'Average arterial pressure throughout one cardiac cycle, critical for organ perfusion assessment.',
+        equation: 'MAP = DBP + 1/3 × (SBP - DBP)',
+        variables: [
+          { id: 'MAP', label: 'Mean Arterial Pressure', unit: 'mmHg' },
+          { id: 'SBP', label: 'Systolic Blood Pressure', unit: 'mmHg' },
+          { id: 'DBP', label: 'Diastolic Blood Pressure', unit: 'mmHg' },
+        ],
+        calculate: (inputs) => {
+          const { MAP, SBP, DBP } = inputs;
+          const known = [MAP, SBP, DBP].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (MAP === undefined) {
+            const r = DBP + (1/3) * (SBP - DBP);
+            return { result: { MAP: r }, steps: [`MAP = DBP + 1/3(SBP - DBP)`, `MAP = ${DBP} + 1/3(${SBP} - ${DBP})`, `MAP = ${DBP} + ${((1/3)*(SBP-DBP)).toFixed(2)}`, `MAP = ${r.toFixed(2)} mmHg`] };
+          }
+          if (SBP === undefined) {
+            const r = 3 * MAP - 2 * DBP;
+            return { result: { SBP: r }, steps: [`SBP = 3×MAP - 2×DBP`, `SBP = 3×${MAP} - 2×${DBP}`, `SBP = ${r.toFixed(2)} mmHg`] };
+          }
+          const r = (3 * MAP - SBP) / 2;
+          return { result: { DBP: r }, steps: [`DBP = (3×MAP - SBP) / 2`, `DBP = (3×${MAP} - ${SBP}) / 2`, `DBP = ${r.toFixed(2)} mmHg`] };
+        }
+      },
+      {
+        id: 'cardiac_output',
+        name: 'Cardiac Output',
+        description: 'Volume of blood pumped by the heart per minute, a key hemodynamic measurement.',
+        equation: 'CO = HR × SV',
+        variables: [
+          { id: 'CO', label: 'Cardiac Output', unit: 'L/min' },
+          { id: 'HR', label: 'Heart Rate', unit: 'beats/min' },
+          { id: 'SV', label: 'Stroke Volume', unit: 'mL/beat' },
+        ],
+        calculate: (inputs) => {
+          const { CO, HR, SV } = inputs;
+          const known = [CO, HR, SV].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values. SV in mL, CO in L/min.'] };
+          if (CO === undefined) {
+            const r = (HR * SV) / 1000;
+            return { result: { CO: r }, steps: [`CO = (HR × SV) / 1000`, `CO = (${HR} × ${SV}) / 1000`, `CO = ${r.toFixed(2)} L/min`] };
+          }
+          if (HR === undefined) {
+            const r = (CO * 1000) / SV;
+            return { result: { HR: r }, steps: [`HR = (CO × 1000) / SV`, `HR = (${CO} × 1000) / ${SV}`, `HR = ${r.toFixed(2)} beats/min`] };
+          }
+          const r = (CO * 1000) / HR;
+          return { result: { SV: r }, steps: [`SV = (CO × 1000) / HR`, `SV = (${CO} × 1000) / ${HR}`, `SV = ${r.toFixed(2)} mL/beat`] };
+        }
+      },
+      {
+        id: 'creatinine_clearance',
+        name: 'Creatinine Clearance (Cockcroft-Gault)',
+        description: 'Estimates kidney function using serum creatinine, age, weight, and gender.',
+        equation: 'CrCl = ((140 - Age) × W) / (72 × SCr) × (0.85 if female)',
+        variables: [
+          { id: 'CrCl', label: 'Creatinine Clearance', unit: 'mL/min' },
+          { id: 'Age', label: 'Age', unit: 'years' },
+          { id: 'W', label: 'Weight', unit: 'kg' },
+          { id: 'SCr', label: 'Serum Creatinine', unit: 'mg/dL' },
+          { id: 'F', label: 'Female? (1=yes, 0=no)', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { CrCl, Age, W, SCr, F } = inputs;
+          if (CrCl === undefined && Age !== undefined && W !== undefined && SCr !== undefined) {
+            const genderFactor = F === 1 ? 0.85 : 1;
+            const r = ((140 - Age) * W * genderFactor) / (72 * SCr);
+            return { result: { CrCl: r }, steps: [`CrCl = ((140-Age)×W) / (72×SCr) × genderFactor`, `CrCl = ((140-${Age})×${W}) / (72×${SCr}) × ${genderFactor}`, `CrCl = ${r.toFixed(2)} mL/min`] };
+          }
+          return { result: null, steps: ['Need Age, Weight, SCr, and Female flag to compute CrCl.'] };
+        }
+      },
+      {
+        id: 'fi_o2_delivery',
+        name: 'FiO2 Delivery Estimation',
+        description: 'Estimates the fraction of inspired oxygen based on nasal cannula flow rate.',
+        equation: 'FiO2 = 0.21 + 0.04 × L/min',
+        variables: [
+          { id: 'FiO2', label: 'Fraction of Inspired O2', unit: '' },
+          { id: 'LPM', label: 'Nasal Cannula Flow', unit: 'L/min' },
+        ],
+        calculate: (inputs) => {
+          const { FiO2, LPM } = inputs;
+          if (FiO2 === undefined && LPM !== undefined) {
+            const r = 0.21 + 0.04 * LPM;
+            return { result: { FiO2: r }, steps: [`FiO2 = 0.21 + 0.04 × L/min`, `FiO2 = 0.21 + 0.04 × ${LPM}`, `FiO2 = ${r.toFixed(2)} (${(r*100).toFixed(0)}%)`] };
+          }
+          if (LPM === undefined && FiO2 !== undefined) {
+            const r = (FiO2 - 0.21) / 0.04;
+            return { result: { LPM: r }, steps: [`L/min = (FiO2 - 0.21) / 0.04`, `L/min = (${FiO2} - 0.21) / 0.04`, `L/min = ${r.toFixed(2)}`] };
+          }
+          return { result: null, steps: ['Need 1 of 2 values to compute the other.'] };
+        }
+      },
+      {
+        id: 'fluid_maintenance',
+        name: 'Fluid Maintenance Rate (4-2-1 Rule)',
+        description: 'Calculates hourly IV fluid rate for pediatric patients using the 4-2-1 rule.',
+        equation: 'Rate = 4mL/kg (first 10kg) + 2mL/kg (next 10kg) + 1mL/kg (remaining kg)',
+        variables: [
+          { id: 'Rate', label: 'Fluid Rate', unit: 'mL/hr' },
+          { id: 'W', label: 'Weight', unit: 'kg' },
+        ],
+        calculate: (inputs) => {
+          const { Rate, W } = inputs;
+          if (Rate === undefined && W !== undefined) {
+            let r;
+            if (W <= 10) { r = 4 * W; }
+            else if (W <= 20) { r = 40 + 2 * (W - 10); }
+            else { r = 60 + 1 * (W - 20); }
+            return { result: { Rate: r }, steps: [`Weight = ${W}kg`, W <= 10 ? `4mL × ${W}kg = ${r} mL/hr` : W <= 20 ? `40 + 2mL × ${W-10}kg = ${r} mL/hr` : `60 + 1mL × ${W-20}kg = ${r} mL/hr`] };
+          }
+          return { result: null, steps: ['Need weight to compute fluid rate.'] };
+        }
+      },
+      {
+        id: 'anion_gap',
+        name: 'Anion Gap',
+        description: 'Calculates the anion gap to help diagnose causes of metabolic acidosis.',
+        equation: 'AG = Na - (Cl + HCO3)',
+        variables: [
+          { id: 'AG', label: 'Anion Gap', unit: 'mEq/L' },
+          { id: 'Na', label: 'Sodium', unit: 'mEq/L' },
+          { id: 'Cl', label: 'Chloride', unit: 'mEq/L' },
+          { id: 'HCO3', label: 'Bicarbonate', unit: 'mEq/L' },
+        ],
+        calculate: (inputs) => {
+          const { AG, Na, Cl, HCO3 } = inputs;
+          const known = [AG, Na, Cl, HCO3].filter(v => v !== undefined && v !== null);
+          if (known.length < 3) return { result: null, steps: ['Need at least 3 of 4 values.'] };
+          if (AG === undefined) {
+            const r = Na - (Cl + HCO3);
+            return { result: { AG: r }, steps: [`AG = Na - (Cl + HCO3)`, `AG = ${Na} - (${Cl} + ${HCO3})`, `AG = ${Na} - ${Cl+HCO3}`, `AG = ${r.toFixed(2)} mEq/L`] };
+          }
+          if (Na === undefined) {
+            const r = AG + Cl + HCO3;
+            return { result: { Na: r }, steps: [`Na = AG + Cl + HCO3`, `Na = ${AG} + ${Cl} + ${HCO3}`, `Na = ${r.toFixed(2)} mEq/L`] };
+          }
+          if (Cl === undefined) {
+            const r = Na - AG - HCO3;
+            return { result: { Cl: r }, steps: [`Cl = Na - AG - HCO3`, `Cl = ${Na} - ${AG} - ${HCO3}`, `Cl = ${r.toFixed(2)} mEq/L`] };
+          }
+          const r = Na - AG - Cl;
+          return { result: { HCO3: r }, steps: [`HCO3 = Na - AG - Cl`, `HCO3 = ${Na} - ${AG} - ${Cl}`, `HCO3 = ${r.toFixed(2)} mEq/L`] };
+        }
+      },
+
+      // ─── TIER 3: ECONOMICS (10 formulas) ───
+      {
+        id: 'gdp_nominal',
+        name: 'Nominal GDP',
+        description: 'Total market value of all final goods and services produced using current prices.',
+        equation: 'GDP = C + I + G + (X - M)',
+        variables: [
+          { id: 'GDP', label: 'Nominal GDP', unit: 'GH¢' },
+          { id: 'C', label: 'Consumption', unit: 'GH¢' },
+          { id: 'I', label: 'Investment', unit: 'GH¢' },
+          { id: 'G', label: 'Government Spending', unit: 'GH¢' },
+          { id: 'NX', label: 'Net Exports (X-M)', unit: 'GH¢' },
+        ],
+        calculate: (inputs) => {
+          const { GDP, C, I, G, NX } = inputs;
+          const known = [GDP, C, I, G, NX].filter(v => v !== undefined && v !== null);
+          if (known.length < 4) return { result: null, steps: ['Need at least 4 of 5 values.'] };
+          if (GDP === undefined) {
+            const r = C + I + G + NX;
+            return { result: { GDP: r }, steps: [`GDP = C + I + G + NX`, `GDP = ${C} + ${I} + ${G} + ${NX}`, `GDP = ${r.toFixed(2)} GH¢`] };
+          }
+          if (C === undefined) { const r = GDP - I - G - NX; return { result: { C: r }, steps: [`C = GDP - I - G - NX = ${r.toFixed(2)}`] }; }
+          if (I === undefined) { const r = GDP - C - G - NX; return { result: { I: r }, steps: [`I = GDP - C - G - NX = ${r.toFixed(2)}`] }; }
+          if (G === undefined) { const r = GDP - C - I - NX; return { result: { G: r }, steps: [`G = GDP - C - I - NX = ${r.toFixed(2)}`] }; }
+          const r = GDP - C - I - G;
+          return { result: { NX: r }, steps: [`NX = GDP - C - I - G = ${r.toFixed(2)}`] };
+        }
+      },
+      {
+        id: 'cpi_inflation',
+        name: 'CPI Inflation Rate',
+        description: 'Measures the percentage change in the Consumer Price Index between two periods.',
+        equation: 'Inflation = (CPI2 - CPI1) / CPI1 × 100',
+        variables: [
+          { id: 'Inf', label: 'Inflation Rate', unit: '%' },
+          { id: 'CPI2', label: 'CPI Current Period', unit: '' },
+          { id: 'CPI1', label: 'CPI Base Period', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { Inf, CPI2, CPI1 } = inputs;
+          const known = [Inf, CPI2, CPI1].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (Inf === undefined) {
+            const r = ((CPI2 - CPI1) / CPI1) * 100;
+            return { result: { Inf: r }, steps: [`Inflation = (CPI2 - CPI1) / CPI1 × 100`, `= (${CPI2} - ${CPI1}) / ${CPI1} × 100`, `= ${r.toFixed(2)}%`] };
+          }
+          if (CPI2 === undefined) {
+            const r = CPI1 * (1 + Inf / 100);
+            return { result: { CPI2: r }, steps: [`CPI2 = CPI1 × (1 + Inf/100)`, `= ${CPI1} × (1 + ${Inf}/100)`, `= ${r.toFixed(2)}`] };
+          }
+          const r = CPI2 / (1 + Inf / 100);
+          return { result: { CPI1: r }, steps: [`CPI1 = CPI2 / (1 + Inf/100)`, `= ${CPI2} / (1 + ${Inf}/100)`, `= ${r.toFixed(2)}`] };
+        }
+      },
+      {
+        id: 'unemployment_rate',
+        name: 'Unemployment Rate',
+        description: 'Percentage of the labor force that is unemployed but actively seeking work.',
+        equation: 'UR = (Unemployed / Labor Force) × 100',
+        variables: [
+          { id: 'UR', label: 'Unemployment Rate', unit: '%' },
+          { id: 'U', label: 'Number Unemployed', unit: '' },
+          { id: 'LF', label: 'Labor Force', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { UR, U, LF } = inputs;
+          const known = [UR, U, LF].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (UR === undefined) {
+            const r = (U / LF) * 100;
+            return { result: { UR: r }, steps: [`UR = (U / LF) × 100`, `UR = (${U} / ${LF}) × 100`, `UR = ${r.toFixed(2)}%`] };
+          }
+          if (U === undefined) {
+            const r = (UR / 100) * LF;
+            return { result: { U: r }, steps: [`U = (UR/100) × LF`, `U = (${UR}/100) × ${LF}`, `U = ${r.toFixed(0)}`] };
+          }
+          const r = (U / UR) * 100;
+          return { result: { LF: r }, steps: [`LF = (U / UR) × 100`, `LF = (${U} / ${UR}) × 100`, `LF = ${r.toFixed(0)}`] };
+        }
+      },
+      {
+        id: 'multiplier_effect',
+        name: 'Spending Multiplier',
+        description: 'The factor by which a change in spending changes equilibrium GDP.',
+        equation: 'k = 1 / (1 - MPC)',
+        variables: [
+          { id: 'k', label: 'Multiplier', unit: '' },
+          { id: 'MPC', label: 'Marginal Propensity to Consume', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { k, MPC } = inputs;
+          if (k === undefined && MPC !== undefined) {
+            const r = 1 / (1 - MPC);
+            return { result: { k: r }, steps: [`k = 1 / (1 - MPC)`, `k = 1 / (1 - ${MPC})`, `k = ${r.toFixed(4)}`] };
+          }
+          if (MPC === undefined && k !== undefined) {
+            const r = 1 - (1 / k);
+            return { result: { MPC: r }, steps: [`MPC = 1 - (1/k)`, `MPC = 1 - (1/${k})`, `MPC = ${r.toFixed(4)}`] };
+          }
+          return { result: null, steps: ['Need 1 of 2 values.'] };
+        }
+      },
+      {
+        id: 'mps_from_mpc',
+        name: 'Marginal Propensity to Save',
+        description: 'The fraction of additional income that is saved rather than spent.',
+        equation: 'MPS = 1 - MPC',
+        variables: [
+          { id: 'MPS', label: 'MPS', unit: '' },
+          { id: 'MPC', label: 'MPC', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { MPS, MPC } = inputs;
+          if (MPS === undefined && MPC !== undefined) {
+            const r = 1 - MPC;
+            return { result: { MPS: r }, steps: [`MPS = 1 - MPC`, `MPS = 1 - ${MPC}`, `MPS = ${r.toFixed(4)}`] };
+          }
+          if (MPC === undefined && MPS !== undefined) {
+            const r = 1 - MPS;
+            return { result: { MPC: r }, steps: [`MPC = 1 - MPS`, `MPC = 1 - ${MPS}`, `MPC = ${r.toFixed(4)}`] };
+          }
+          return { result: null, steps: ['Need 1 of 2 values.'] };
+        }
+      },
+      {
+        id: 'cross_price_elasticity',
+        name: 'Cross-Price Elasticity of Demand',
+        description: 'Measures how the quantity demanded of one good responds to a price change in another good.',
+        equation: 'XED = (%ΔQd_A) / (%ΔP_B)',
+        variables: [
+          { id: 'XED', label: 'Cross-Price Elasticity', unit: '' },
+          { id: 'dQ', label: '% Change in Qd of A', unit: '%' },
+          { id: 'dP', label: '% Change in Price of B', unit: '%' },
+        ],
+        calculate: (inputs) => {
+          const { XED, dQ, dP } = inputs;
+          const known = [XED, dQ, dP].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (XED === undefined) {
+            const r = dQ / dP;
+            return { result: { XED: r }, steps: [`XED = %ΔQd_A / %ΔP_B`, `XED = ${dQ} / ${dP}`, `XED = ${r.toFixed(4)}`] };
+          }
+          if (dQ === undefined) {
+            const r = XED * dP;
+            return { result: { dQ: r }, steps: [`%ΔQd = XED × %ΔP`, `%ΔQd = ${XED} × ${dP}`, `%ΔQd = ${r.toFixed(2)}%`] };
+          }
+          const r = dQ / XED;
+          return { result: { dP: r }, steps: [`%ΔP = %ΔQd / XED`, `%ΔP = ${dQ} / ${XED}`, `%ΔP = ${r.toFixed(2)}%`] };
+        }
+      },
+      {
+        id: 'income_elasticity',
+        name: 'Income Elasticity of Demand',
+        description: 'Measures how quantity demanded responds to changes in consumer income.',
+        equation: 'YED = %ΔQd / %ΔIncome',
+        variables: [
+          { id: 'YED', label: 'Income Elasticity', unit: '' },
+          { id: 'dQ', label: '% Change in Qd', unit: '%' },
+          { id: 'dY', label: '% Change in Income', unit: '%' },
+        ],
+        calculate: (inputs) => {
+          const { YED, dQ, dY } = inputs;
+          const known = [YED, dQ, dY].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (YED === undefined) {
+            const r = dQ / dY;
+            return { result: { YED: r }, steps: [`YED = %ΔQd / %ΔIncome`, `YED = ${dQ} / ${dY}`, `YED = ${r.toFixed(4)}`] };
+          }
+          if (dQ === undefined) {
+            const r = YED * dY;
+            return { result: { dQ: r }, steps: [`%ΔQd = YED × %ΔIncome = ${r.toFixed(2)}%`] };
+          }
+          const r = dQ / YED;
+          return { result: { dY: r }, steps: [`%ΔIncome = %ΔQd / YED = ${r.toFixed(2)}%`] };
+        }
+      },
+      {
+        id: 'cobb_douglas',
+        name: 'Cobb-Douglas Production Function',
+        description: 'Models output as a function of labor and capital with constant returns to scale when alpha + beta = 1.',
+        equation: 'Y = A × L^α × K^β',
+        variables: [
+          { id: 'Y', label: 'Output', unit: '' },
+          { id: 'A', label: 'Total Factor Productivity', unit: '' },
+          { id: 'L', label: 'Labor', unit: '' },
+          { id: 'alpha', label: 'Labor Elasticity (α)', unit: '' },
+          { id: 'K', label: 'Capital', unit: '' },
+          { id: 'beta', label: 'Capital Elasticity (β)', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { Y, A, L, alpha, K, beta } = inputs;
+          if (Y === undefined && A !== undefined && L !== undefined && alpha !== undefined && K !== undefined && beta !== undefined) {
+            const r = A * Math.pow(L, alpha) * Math.pow(K, beta);
+            return { result: { Y: r }, steps: [`Y = A × L^α × K^β`, `Y = ${A} × ${L}^${alpha} × ${K}^${beta}`, `Y = ${A} × ${Math.pow(L, alpha).toFixed(4)} × ${Math.pow(K, beta).toFixed(4)}`, `Y = ${r.toFixed(4)}`] };
+          }
+          if (A === undefined && Y !== undefined && L !== undefined && alpha !== undefined && K !== undefined && beta !== undefined) {
+            const r = Y / (Math.pow(L, alpha) * Math.pow(K, beta));
+            return { result: { A: r }, steps: [`A = Y / (L^α × K^β)`, `A = ${r.toFixed(4)}`] };
+          }
+          return { result: null, steps: ['Need at least 5 of 6 values (solve for Y or A).'] };
+        }
+      },
+      {
+        id: 'phillips_curve',
+        name: 'Simple Phillips Curve',
+        description: 'Shows the inverse short-run relationship between unemployment and inflation.',
+        equation: 'π = πe - a(U - Un)',
+        variables: [
+          { id: 'pi', label: 'Actual Inflation', unit: '%' },
+          { id: 'pie', label: 'Expected Inflation', unit: '%' },
+          { id: 'a', label: 'Sensitivity Parameter', unit: '' },
+          { id: 'U', label: 'Actual Unemployment', unit: '%' },
+          { id: 'Un', label: 'Natural Unemployment', unit: '%' },
+        ],
+        calculate: (inputs) => {
+          const { pi, pie, a, U, Un } = inputs;
+          const known = [pi, pie, a, U, Un].filter(v => v !== undefined && v !== null);
+          if (known.length < 4) return { result: null, steps: ['Need at least 4 of 5 values.'] };
+          if (pi === undefined) {
+            const r = pie - a * (U - Un);
+            return { result: { pi: r }, steps: [`π = πe - a(U - Un)`, `π = ${pie} - ${a}(${U} - ${Un})`, `π = ${pie} - ${(a*(U-Un)).toFixed(2)}`, `π = ${r.toFixed(2)}%`] };
+          }
+          if (pie === undefined) { const r = pi + a * (U - Un); return { result: { pie: r }, steps: [`πe = π + a(U - Un) = ${r.toFixed(2)}%`] }; }
+          if (U === undefined) { const r = Un + (pie - pi) / a; return { result: { U: r }, steps: [`U = Un + (πe - π)/a = ${r.toFixed(2)}%`] }; }
+          if (Un === undefined) { const r = U - (pie - pi) / a; return { result: { Un: r }, steps: [`Un = U - (πe - π)/a = ${r.toFixed(2)}%`] }; }
+          const r = (pie - pi) / (U - Un);
+          return { result: { a: r }, steps: [`a = (πe - π) / (U - Un) = ${r.toFixed(4)}`] };
+        }
+      },
+      {
+        id: 'real_gdp_growth',
+        name: 'Real GDP Growth Rate',
+        description: 'Percentage change in inflation-adjusted GDP between two periods.',
+        equation: 'Growth = (RGDP2 - RGDP1) / RGDP1 × 100',
+        variables: [
+          { id: 'Growth', label: 'Growth Rate', unit: '%' },
+          { id: 'RGDP2', label: 'Real GDP Current', unit: 'GH¢' },
+          { id: 'RGDP1', label: 'Real GDP Previous', unit: 'GH¢' },
+        ],
+        calculate: (inputs) => {
+          const { Growth, RGDP2, RGDP1 } = inputs;
+          const known = [Growth, RGDP2, RGDP1].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (Growth === undefined) {
+            const r = ((RGDP2 - RGDP1) / RGDP1) * 100;
+            return { result: { Growth: r }, steps: [`Growth = (RGDP2 - RGDP1)/RGDP1 × 100`, `= (${RGDP2} - ${RGDP1})/${RGDP1} × 100`, `= ${r.toFixed(2)}%`] };
+          }
+          if (RGDP2 === undefined) {
+            const r = RGDP1 * (1 + Growth / 100);
+            return { result: { RGDP2: r }, steps: [`RGDP2 = RGDP1(1 + Growth/100) = ${r.toFixed(2)}`] };
+          }
+          const r = RGDP2 / (1 + Growth / 100);
+          return { result: { RGDP1: r }, steps: [`RGDP1 = RGDP2 / (1 + Growth/100) = ${r.toFixed(2)}`] };
+        }
+      },
+
+      // ─── TIER 4: ELECTRICAL ENGINEERING (10 formulas) ───
+      {
+        id: 'ohms_law_power',
+        name: 'Ohm\'s Law (Power Variant)',
+        description: 'Relates voltage, current, resistance, and power in an electrical circuit.',
+        equation: 'P = V × I = I²R = V²/R',
+        variables: [
+          { id: 'P', label: 'Power', unit: 'W' },
+          { id: 'V', label: 'Voltage', unit: 'V' },
+          { id: 'I', label: 'Current', unit: 'A' },
+          { id: 'R', label: 'Resistance', unit: 'Ω' },
+        ],
+        calculate: (inputs) => {
+          const { P, V, I, R } = inputs;
+          const known = [P, V, I, R].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 4 values.'] };
+          const res = {};
+          const steps = [];
+          if (P === undefined && V !== undefined && I !== undefined) { res.P = V * I; steps.push(`P = V × I = ${V} × ${I} = ${res.P.toFixed(4)} W`); }
+          if (P === undefined && I !== undefined && R !== undefined) { res.P = I * I * R; steps.push(`P = I²R = ${I}²×${R} = ${res.P.toFixed(4)} W`); }
+          if (P === undefined && V !== undefined && R !== undefined) { res.P = (V * V) / R; steps.push(`P = V²/R = ${V}²/${R} = ${res.P.toFixed(4)} W`); }
+          if (V === undefined && I !== undefined && R !== undefined) { res.V = I * R; steps.push(`V = I × R = ${I} × ${R} = ${res.V.toFixed(4)} V`); }
+          if (V === undefined && P !== undefined && I !== undefined) { res.V = P / I; steps.push(`V = P/I = ${P}/${I} = ${res.V.toFixed(4)} V`); }
+          if (I === undefined && V !== undefined && R !== undefined) { res.I = V / R; steps.push(`I = V/R = ${V}/${R} = ${res.I.toFixed(4)} A`); }
+          if (I === undefined && P !== undefined && V !== undefined) { res.I = P / V; steps.push(`I = P/V = ${P}/${V} = ${res.I.toFixed(4)} A`); }
+          if (R === undefined && V !== undefined && I !== undefined) { res.R = V / I; steps.push(`R = V/I = ${V}/${I} = ${res.R.toFixed(4)} Ω`); }
+          if (R === undefined && P !== undefined && I !== undefined) { res.R = P / (I * I); steps.push(`R = P/I² = ${P}/${I}² = ${res.R.toFixed(4)} Ω`); }
+          if (Object.keys(res).length === 0) return { result: null, steps: ['Cannot solve with given values.'] };
+          return { result: res, steps };
+        }
+      },
+      {
+        id: 'kvl',
+        name: 'Kirchhoff\'s Voltage Law',
+        description: 'The sum of all voltages around a closed loop equals zero.',
+        equation: 'ΣV = 0 (Vsource = ΣVdrops)',
+        variables: [
+          { id: 'Vs', label: 'Source Voltage', unit: 'V' },
+          { id: 'Vd', label: 'Sum of Voltage Drops', unit: 'V' },
+        ],
+        calculate: (inputs) => {
+          const { Vs, Vd } = inputs;
+          if (Vs === undefined && Vd !== undefined) {
+            return { result: { Vs: Vd }, steps: [`Vs = ΣVdrops = ${Vd} V`] };
+          }
+          if (Vd === undefined && Vs !== undefined) {
+            return { result: { Vd: Vs }, steps: [`ΣVdrops = Vs = ${Vs} V`] };
+          }
+          return { result: null, steps: ['Need 1 of 2 values.'] };
+        }
+      },
+      {
+        id: 'kcl',
+        name: 'Kirchhoff\'s Current Law',
+        description: 'The sum of currents entering a node equals the sum of currents leaving it.',
+        equation: 'ΣI_in = ΣI_out',
+        variables: [
+          { id: 'Iin', label: 'Sum of Incoming Currents', unit: 'A' },
+          { id: 'Iout', label: 'Sum of Outgoing Currents', unit: 'A' },
+        ],
+        calculate: (inputs) => {
+          const { Iin, Iout } = inputs;
+          if (Iin === undefined && Iout !== undefined) {
+            return { result: { Iin: Iout }, steps: [`ΣI_in = ΣI_out = ${Iout} A`] };
+          }
+          if (Iout === undefined && Iin !== undefined) {
+            return { result: { Iout: Iin }, steps: [`ΣI_out = ΣI_in = ${Iin} A`] };
+          }
+          return { result: null, steps: ['Need 1 of 2 values.'] };
+        }
+      },
+      {
+        id: 'rc_time_constant',
+        name: 'RC Time Constant',
+        description: 'Time for voltage to reach 63.2% of its final value in an RC circuit.',
+        equation: 'τ = R × C',
+        variables: [
+          { id: 'tau', label: 'Time Constant', unit: 's' },
+          { id: 'R', label: 'Resistance', unit: 'Ω' },
+          { id: 'C', label: 'Capacitance', unit: 'F' },
+        ],
+        calculate: (inputs) => {
+          const { tau, R, C } = inputs;
+          const known = [tau, R, C].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (tau === undefined) {
+            const r = R * C;
+            return { result: { tau: r }, steps: [`τ = R × C`, `τ = ${R} × ${C}`, `τ = ${r.toExponential(4)} s`] };
+          }
+          if (R === undefined) { const r = tau / C; return { result: { R: r }, steps: [`R = τ/C = ${r.toFixed(4)} Ω`] }; }
+          const r = tau / R;
+          return { result: { C: r }, steps: [`C = τ/R = ${r.toExponential(4)} F`] };
+        }
+      },
+      {
+        id: 'rl_time_constant',
+        name: 'RL Time Constant',
+        description: 'Time for current to reach 63.2% of its final value in an RL circuit.',
+        equation: 'τ = L / R',
+        variables: [
+          { id: 'tau', label: 'Time Constant', unit: 's' },
+          { id: 'L', label: 'Inductance', unit: 'H' },
+          { id: 'R', label: 'Resistance', unit: 'Ω' },
+        ],
+        calculate: (inputs) => {
+          const { tau, L, R } = inputs;
+          const known = [tau, L, R].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (tau === undefined) {
+            const r = L / R;
+            return { result: { tau: r }, steps: [`τ = L / R`, `τ = ${L} / ${R}`, `τ = ${r.toExponential(4)} s`] };
+          }
+          if (L === undefined) { const r = tau * R; return { result: { L: r }, steps: [`L = τ × R = ${r.toFixed(4)} H`] }; }
+          const r = L / tau;
+          return { result: { R: r }, steps: [`R = L / τ = ${r.toFixed(4)} Ω`] };
+        }
+      },
+      {
+        id: 'impedance_series_rcl',
+        name: 'Series RCL Impedance',
+        description: 'Total impedance of a series resistor-capacitor-inductor circuit.',
+        equation: 'Z = √(R² + (XL - XC)²)',
+        variables: [
+          { id: 'Z', label: 'Impedance', unit: 'Ω' },
+          { id: 'R', label: 'Resistance', unit: 'Ω' },
+          { id: 'XL', label: 'Inductive Reactance', unit: 'Ω' },
+          { id: 'XC', label: 'Capacitive Reactance', unit: 'Ω' },
+        ],
+        calculate: (inputs) => {
+          const { Z, R, XL, XC } = inputs;
+          if (Z === undefined && R !== undefined && XL !== undefined && XC !== undefined) {
+            const r = Math.sqrt(R*R + (XL - XC)*(XL - XC));
+            return { result: { Z: r }, steps: [`Z = √(R² + (XL-XC)²)`, `Z = √(${R}² + (${XL}-${XC})²)`, `Z = √(${(R*R).toFixed(2)} + ${((XL-XC)*(XL-XC)).toFixed(2)})`, `Z = ${r.toFixed(4)} Ω`] };
+          }
+          return { result: null, steps: ['Need R, XL, XC to compute Z.'] };
+        }
+      },
+      {
+        id: 'transformer_ratio',
+        name: 'Transformer Turns Ratio',
+        description: 'Relates primary and secondary voltages to the number of turns in a transformer.',
+        equation: 'Vp/Vs = Np/Ns',
+        variables: [
+          { id: 'Vp', label: 'Primary Voltage', unit: 'V' },
+          { id: 'Vs', label: 'Secondary Voltage', unit: 'V' },
+          { id: 'Np', label: 'Primary Turns', unit: '' },
+          { id: 'Ns', label: 'Secondary Turns', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { Vp, Vs, Np, Ns } = inputs;
+          const known = [Vp, Vs, Np, Ns].filter(v => v !== undefined && v !== null);
+          if (known.length < 3) return { result: null, steps: ['Need at least 3 of 4 values.'] };
+          if (Vp === undefined) { const r = Vs * Np / Ns; return { result: { Vp: r }, steps: [`Vp = Vs × Np/Ns = ${r.toFixed(4)} V`] }; }
+          if (Vs === undefined) { const r = Vp * Ns / Np; return { result: { Vs: r }, steps: [`Vs = Vp × Ns/Np = ${r.toFixed(4)} V`] }; }
+          if (Np === undefined) { const r = (Vp / Vs) * Ns; return { result: { Np: r }, steps: [`Np = (Vp/Vs) × Ns = ${r.toFixed(2)}`] }; }
+          const r = (Vs / Vp) * Np;
+          return { result: { Ns: r }, steps: [`Ns = (Vs/Vp) × Np = ${r.toFixed(2)}`] };
+        }
+      },
+      {
+        id: 'three_phase_power',
+        name: 'Three-Phase Power',
+        description: 'Calculates total active power in a balanced three-phase system.',
+        equation: 'P = √3 × VL × IL × cos(φ)',
+        variables: [
+          { id: 'P', label: 'Three-Phase Power', unit: 'W' },
+          { id: 'VL', label: 'Line Voltage', unit: 'V' },
+          { id: 'IL', label: 'Line Current', unit: 'A' },
+          { id: 'pf', label: 'Power Factor (cos φ)', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { P, VL, IL, pf } = inputs;
+          const known = [P, VL, IL, pf].filter(v => v !== undefined && v !== null);
+          if (known.length < 3) return { result: null, steps: ['Need at least 3 of 4 values.'] };
+          if (P === undefined) {
+            const r = Math.sqrt(3) * VL * IL * pf;
+            return { result: { P: r }, steps: [`P = √3 × VL × IL × cosφ`, `P = 1.732 × ${VL} × ${IL} × ${pf}`, `P = ${r.toFixed(2)} W`] };
+          }
+          if (VL === undefined) { const r = P / (Math.sqrt(3) * IL * pf); return { result: { VL: r }, steps: [`VL = P/(√3×IL×cosφ) = ${r.toFixed(2)} V`] }; }
+          if (IL === undefined) { const r = P / (Math.sqrt(3) * VL * pf); return { result: { IL: r }, steps: [`IL = P/(√3×VL×cosφ) = ${r.toFixed(2)} A`] }; }
+          const r = P / (Math.sqrt(3) * VL * IL);
+          return { result: { pf: r }, steps: [`cosφ = P/(√3×VL×IL) = ${r.toFixed(4)}`] };
+        }
+      },
+      {
+        id: 'motor_slip',
+        name: 'Induction Motor Slip',
+        description: 'Measures the difference between synchronous speed and actual rotor speed as a fraction.',
+        equation: 's = (Ns - Nr) / Ns × 100',
+        variables: [
+          { id: 's', label: 'Slip', unit: '%' },
+          { id: 'Ns', label: 'Synchronous Speed', unit: 'RPM' },
+          { id: 'Nr', label: 'Rotor Speed', unit: 'RPM' },
+        ],
+        calculate: (inputs) => {
+          const { s, Ns, Nr } = inputs;
+          const known = [s, Ns, Nr].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (s === undefined) {
+            const r = ((Ns - Nr) / Ns) * 100;
+            return { result: { s: r }, steps: [`s = (Ns - Nr)/Ns × 100`, `s = (${Ns} - ${Nr})/${Ns} × 100`, `s = ${r.toFixed(2)}%`] };
+          }
+          if (Nr === undefined) { const r = Ns * (1 - s/100); return { result: { Nr: r }, steps: [`Nr = Ns(1 - s/100) = ${r.toFixed(2)} RPM`] }; }
+          const r = Nr / (1 - s/100);
+          return { result: { Ns: r }, steps: [`Ns = Nr/(1 - s/100) = ${r.toFixed(2)} RPM`] };
+        }
+      },
+      {
+        id: 'wheatstone_bridge',
+        name: 'Wheatstone Bridge',
+        description: 'Balanced condition for a Wheatstone bridge circuit used to measure unknown resistance.',
+        equation: 'R1/R2 = R3/R4',
+        variables: [
+          { id: 'R1', label: 'R1', unit: 'Ω' },
+          { id: 'R2', label: 'R2', unit: 'Ω' },
+          { id: 'R3', label: 'R3', unit: 'Ω' },
+          { id: 'R4', label: 'R4 (unknown)', unit: 'Ω' },
+        ],
+        calculate: (inputs) => {
+          const { R1, R2, R3, R4 } = inputs;
+          const known = [R1, R2, R3, R4].filter(v => v !== undefined && v !== null);
+          if (known.length < 3) return { result: null, steps: ['Need at least 3 of 4 values.'] };
+          if (R4 === undefined) { const r = (R3 * R2) / R1; return { result: { R4: r }, steps: [`R4 = (R3 × R2) / R1`, `R4 = (${R3} × ${R2}) / ${R1}`, `R4 = ${r.toFixed(4)} Ω`] }; }
+          if (R1 === undefined) { const r = (R3 * R2) / R4; return { result: { R1: r }, steps: [`R1 = (R3×R2)/R4 = ${r.toFixed(4)} Ω`] }; }
+          if (R2 === undefined) { const r = (R1 * R4) / R3; return { result: { R2: r }, steps: [`R2 = (R1×R4)/R3 = ${r.toFixed(4)} Ω`] }; }
+          const r = (R1 * R4) / R2;
+          return { result: { R3: r }, steps: [`R3 = (R1×R4)/R2 = ${r.toFixed(4)} Ω`] };
+        }
+      },
+
+      // ─── TIER 5: EVERYDAY MATH & LIFE SKILLS (10 formulas) ───
+      {
+        id: 'tip_split_calculator',
+        name: 'Tip and Split Calculator',
+        description: 'Calculates how much each person pays including tip.',
+        equation: 'Each = (Bill + Bill×Tip%) / People',
+        variables: [
+          { id: 'Each', label: 'Amount per Person', unit: 'GH¢' },
+          { id: 'Bill', label: 'Total Bill', unit: 'GH¢' },
+          { id: 'TipPct', label: 'Tip Percentage', unit: '%' },
+          { id: 'People', label: 'Number of People', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { Each, Bill, TipPct, People } = inputs;
+          if (Each === undefined && Bill !== undefined && TipPct !== undefined && People !== undefined) {
+            const r = (Bill + Bill * TipPct / 100) / People;
+            return { result: { Each: r }, steps: [`Each = (Bill + Tip) / People`, `Each = (${Bill} + ${Bill}×${TipPct}%) / ${People}`, `Each = (${Bill} + ${(Bill*TipPct/100).toFixed(2)}) / ${People}`, `Each = ${r.toFixed(2)} GH¢`] };
+          }
+          return { result: null, steps: ['Need Bill, Tip%, and People to compute per-person amount.'] };
+        }
+      },
+      {
+        id: 'loan_amortization_monthly',
+        name: 'Monthly Loan Payment',
+        description: 'Calculates the fixed monthly payment for an amortizing loan.',
+        equation: 'M = P × r(1+r)^n / ((1+r)^n - 1)',
+        variables: [
+          { id: 'M', label: 'Monthly Payment', unit: 'GH¢' },
+          { id: 'P', label: 'Loan Principal', unit: 'GH¢' },
+          { id: 'r', label: 'Monthly Interest Rate', unit: '' },
+          { id: 'n', label: 'Number of Payments', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { M, P, r, n } = inputs;
+          if (M === undefined && P !== undefined && r !== undefined && n !== undefined) {
+            if (r === 0) { const res = P / n; return { result: { M: res }, steps: [`No interest: M = P/n = ${res.toFixed(2)} GH¢`] }; }
+            const rn = Math.pow(1 + r, n);
+            const res = P * r * rn / (rn - 1);
+            return { result: { M: res }, steps: [`M = P×r(1+r)^n / ((1+r)^n - 1)`, `M = ${P}×${r}×${rn.toFixed(4)}/(${rn.toFixed(4)} - 1)`, `M = ${res.toFixed(2)} GH¢`] };
+          }
+          return { result: null, steps: ['Need P, r (monthly), and n to compute M.'] };
+        }
+      },
+      {
+        id: 'currency_conversion',
+        name: 'Currency Conversion',
+        description: 'Converts an amount from one currency to another using the exchange rate.',
+        equation: 'Converted = Amount × Rate',
+        variables: [
+          { id: 'Conv', label: 'Converted Amount', unit: '' },
+          { id: 'Amt', label: 'Original Amount', unit: '' },
+          { id: 'Rate', label: 'Exchange Rate', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { Conv, Amt, Rate } = inputs;
+          const known = [Conv, Amt, Rate].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (Conv === undefined) { const r = Amt * Rate; return { result: { Conv: r }, steps: [`Converted = Amount × Rate = ${Amt} × ${Rate} = ${r.toFixed(2)}`] }; }
+          if (Amt === undefined) { const r = Conv / Rate; return { result: { Amt: r }, steps: [`Amount = Converted / Rate = ${r.toFixed(2)}`] }; }
+          const r = Conv / Amt;
+          return { result: { Rate: r }, steps: [`Rate = Converted / Amount = ${r.toFixed(4)}`] };
+        }
+      },
+      {
+        id: 'fuel_cost_calculator',
+        name: 'Fuel Cost Calculator',
+        description: 'Calculates the total fuel cost for a trip based on distance, fuel efficiency, and fuel price.',
+        equation: 'Cost = (Distance / Efficiency) × Price',
+        variables: [
+          { id: 'Cost', label: 'Total Fuel Cost', unit: 'GH¢' },
+          { id: 'Dist', label: 'Distance', unit: 'km' },
+          { id: 'Eff', label: 'Fuel Efficiency', unit: 'km/L' },
+          { id: 'Price', label: 'Fuel Price per Liter', unit: 'GH¢/L' },
+        ],
+        calculate: (inputs) => {
+          const { Cost, Dist, Eff, Price } = inputs;
+          const known = [Cost, Dist, Eff, Price].filter(v => v !== undefined && v !== null);
+          if (known.length < 3) return { result: null, steps: ['Need at least 3 of 4 values.'] };
+          if (Cost === undefined) {
+            const r = (Dist / Eff) * Price;
+            return { result: { Cost: r }, steps: [`Cost = (Dist/Eff) × Price`, `Cost = (${Dist}/${Eff}) × ${Price}`, `Cost = ${(Dist/Eff).toFixed(2)}L × ${Price}`, `Cost = ${r.toFixed(2)} GH¢`] };
+          }
+          if (Dist === undefined) { const r = (Cost / Price) * Eff; return { result: { Dist: r }, steps: [`Dist = (Cost/Price)×Eff = ${r.toFixed(2)} km`] }; }
+          if (Eff === undefined) { const r = Dist / (Cost / Price); return { result: { Eff: r }, steps: [`Eff = Dist/(Cost/Price) = ${r.toFixed(2)} km/L`] }; }
+          const r = Cost / (Dist / Eff);
+          return { result: { Price: r }, steps: [`Price = Cost/(Dist/Eff) = ${r.toFixed(2)} GH¢/L`] };
+        }
+      },
+      {
+        id: 'age_calculator',
+        name: 'Age Calculator',
+        description: 'Calculates exact age in years, months, and days from a birth date.',
+        equation: 'Age = Today - BirthDate',
+        variables: [
+          { id: 'Years', label: 'Age (years)', unit: 'years' },
+          { id: 'BY', label: 'Birth Year', unit: '' },
+          { id: 'BM', label: 'Birth Month (1-12)', unit: '' },
+          { id: 'BD', label: 'Birth Day', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { BY, BM, BD } = inputs;
+          if (BY === undefined) return { result: null, steps: ['Enter birth year, month, and day.'] };
+          const today = new Date();
+          const birth = new Date(BY, (BM || 1) - 1, BD || 1);
+          let years = today.getFullYear() - birth.getFullYear();
+          let months = today.getMonth() - birth.getMonth();
+          let days = today.getDate() - birth.getDate();
+          if (days < 0) { months--; const prev = new Date(today.getFullYear(), today.getMonth(), 0); days += prev.getDate(); }
+          if (months < 0) { years--; months += 12; }
+          return { result: { Years: years }, steps: [`Born: ${BY}-${BM||'?'}-${BD||'?'}`, `Age: ${years} years, ${months} months, ${days} days`] };
+        }
+      },
+      {
+        id: 'gpa_projection',
+        name: 'GPA Projection (What-If)',
+        description: 'Projects your cumulative GPA if you achieve a certain semester GPA.',
+        equation: 'NewCGPA = (OldCGPA×OldCredits + SemGPA×SemCredits) / (OldCredits + SemCredits)',
+        variables: [
+          { id: 'NewCGPA', label: 'Projected Cumulative GPA', unit: '' },
+          { id: 'OldCGPA', label: 'Current Cumulative GPA', unit: '' },
+          { id: 'OldCr', label: 'Total Credits Earned', unit: '' },
+          { id: 'SemGPA', label: 'Expected Semester GPA', unit: '' },
+          { id: 'SemCr', label: 'Semester Credits', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { NewCGPA, OldCGPA, OldCr, SemGPA, SemCr } = inputs;
+          if (NewCGPA === undefined && OldCGPA !== undefined && OldCr !== undefined && SemGPA !== undefined && SemCr !== undefined) {
+            const r = (OldCGPA * OldCr + SemGPA * SemCr) / (OldCr + SemCr);
+            return { result: { NewCGPA: r }, steps: [`NewCGPA = (Old×Cr + Sem×Cr) / Total`, `= (${OldCGPA}×${OldCr} + ${SemGPA}×${SemCr}) / ${OldCr+SemCr}`, `= ${(OldCGPA*OldCr).toFixed(2)} + ${(SemGPA*SemCr).toFixed(2)} / ${OldCr+SemCr}`, `= ${r.toFixed(4)}`] };
+          }
+          return { result: null, steps: ['Need OldCGPA, OldCredits, SemGPA, and SemCredits.'] };
+        }
+      },
+      {
+        id: 'savings_goal',
+        name: 'Savings Goal Calculator',
+        description: 'Calculates how much to save monthly to reach a target amount.',
+        equation: 'Monthly = Goal / Months',
+        variables: [
+          { id: 'Monthly', label: 'Monthly Savings', unit: 'GH¢' },
+          { id: 'Goal', label: 'Savings Target', unit: 'GH¢' },
+          { id: 'Months', label: 'Time to Goal', unit: 'months' },
+        ],
+        calculate: (inputs) => {
+          const { Monthly, Goal, Months } = inputs;
+          const known = [Monthly, Goal, Months].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (Monthly === undefined) { const r = Goal / Months; return { result: { Monthly: r }, steps: [`Monthly = Goal / Months = ${Goal} / ${Months} = ${r.toFixed(2)} GH¢`] }; }
+          if (Goal === undefined) { const r = Monthly * Months; return { result: { Goal: r }, steps: [`Goal = Monthly × Months = ${Monthly} × ${Months} = ${r.toFixed(2)} GH¢`] }; }
+          const r = Goal / Monthly;
+          return { result: { Months: r }, steps: [`Months = Goal / Monthly = ${Goal} / ${Monthly} = ${r.toFixed(1)} months`] };
+        }
+      },
+      {
+        id: 'compound_growth',
+        name: 'Compound Growth (Population/Investment)',
+        description: 'Projects future value using a constant compound growth rate.',
+        equation: 'FV = PV × (1 + r)^n',
+        variables: [
+          { id: 'FV', label: 'Future Value', unit: '' },
+          { id: 'PV', label: 'Present Value', unit: '' },
+          { id: 'r', label: 'Growth Rate per Period', unit: '' },
+          { id: 'n', label: 'Number of Periods', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { FV, PV, r, n } = inputs;
+          const known = [FV, PV, r, n].filter(v => v !== undefined && v !== null);
+          if (known.length < 3) return { result: null, steps: ['Need at least 3 of 4 values.'] };
+          if (FV === undefined) {
+            const res = PV * Math.pow(1 + r, n);
+            return { result: { FV: res }, steps: [`FV = PV × (1+r)^n`, `FV = ${PV} × (1+${r})^${n}`, `FV = ${PV} × ${Math.pow(1+r,n).toFixed(4)}`, `FV = ${res.toFixed(2)}`] };
+          }
+          if (PV === undefined) {
+            const res = FV / Math.pow(1 + r, n);
+            return { result: { PV: res }, steps: [`PV = FV / (1+r)^n = ${res.toFixed(2)}`] };
+          }
+          if (r === undefined) {
+            const res = Math.pow(FV / PV, 1 / n) - 1;
+            return { result: { r: res }, steps: [`r = (FV/PV)^(1/n) - 1 = ${(res*100).toFixed(4)}%`] };
+          }
+          const res = Math.log(FV / PV) / Math.log(1 + r);
+          return { result: { n: res }, steps: [`n = ln(FV/PV) / ln(1+r) = ${res.toFixed(2)} periods`] };
+        }
+      },
+      {
+        id: 'unit_price_comparison',
+        name: 'Unit Price Comparison',
+        description: 'Compares the price per unit of two products to determine the better deal.',
+        equation: 'UnitPrice = Price / Quantity',
+        variables: [
+          { id: 'UP1', label: 'Unit Price (Product 1)', unit: 'GH¢/unit' },
+          { id: 'P1', label: 'Price (Product 1)', unit: 'GH¢' },
+          { id: 'Q1', label: 'Quantity (Product 1)', unit: '' },
+          { id: 'UP2', label: 'Unit Price (Product 2)', unit: 'GH¢/unit' },
+          { id: 'P2', label: 'Price (Product 2)', unit: 'GH¢' },
+          { id: 'Q2', label: 'Quantity (Product 2)', unit: '' },
+        ],
+        calculate: (inputs) => {
+          const { P1, Q1, P2, Q2 } = inputs;
+          if (P1 !== undefined && Q1 !== undefined && P2 !== undefined && Q2 !== undefined) {
+            const up1 = P1 / Q1;
+            const up2 = P2 / Q2;
+            const winner = up1 < up2 ? 'Product 1' : up2 < up1 ? 'Product 2' : 'Same';
+            return { result: { UP1: up1, UP2: up2 }, steps: [`Product 1: ${P1}/${Q1} = ${up1.toFixed(4)} GH¢/unit`, `Product 2: ${P2}/${Q2} = ${up2.toFixed(4)} GH¢/unit`, `Better deal: ${winner}`] };
+          }
+          return { result: null, steps: ['Need P1, Q1, P2, Q2 to compare.'] };
+        }
+      },
+      {
+        id: 'salary_tax_estimator',
+        name: 'Simple Salary Tax Estimator',
+        description: 'Estimates take-home pay after a flat tax rate.',
+        equation: 'TakeHome = Salary × (1 - TaxRate/100)',
+        variables: [
+          { id: 'TakeHome', label: 'Take-Home Pay', unit: 'GH¢' },
+          { id: 'Salary', label: 'Gross Salary', unit: 'GH¢' },
+          { id: 'TaxRate', label: 'Tax Rate', unit: '%' },
+        ],
+        calculate: (inputs) => {
+          const { TakeHome, Salary, TaxRate } = inputs;
+          const known = [TakeHome, Salary, TaxRate].filter(v => v !== undefined && v !== null);
+          if (known.length < 2) return { result: null, steps: ['Need at least 2 of 3 values.'] };
+          if (TakeHome === undefined) {
+            const r = Salary * (1 - TaxRate / 100);
+            return { result: { TakeHome: r }, steps: [`TakeHome = Salary × (1 - Tax%)`, `= ${Salary} × (1 - ${TaxRate}%)`, `= ${Salary} × ${(1-TaxRate/100).toFixed(4)}`, `= ${r.toFixed(2)} GH¢`] };
+          }
+          if (Salary === undefined) {
+            const r = TakeHome / (1 - TaxRate / 100);
+            return { result: { Salary: r }, steps: [`Salary = TakeHome / (1 - Tax%) = ${r.toFixed(2)} GH¢`] };
+          }
+          const r = (1 - TakeHome / Salary) * 100;
+          return { result: { TaxRate: r }, steps: [`TaxRate = (1 - TakeHome/Salary) × 100 = ${r.toFixed(2)}%`] };
+        }
       }
     ]
   }

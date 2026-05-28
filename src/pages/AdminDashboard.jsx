@@ -24,7 +24,6 @@ const AdminDashboard = () => {
         if (location.pathname.includes('lostfound')) setActiveTab('lostfound');
         else if (location.pathname.includes('upload')) setActiveTab('upload');
         else if (location.pathname.includes('thrift')) setActiveTab('thrift');
-        else if (location.pathname.includes('cms')) setActiveTab('cms');
         else setActiveTab('moderation');
     }, [location.pathname]);
 
@@ -279,12 +278,6 @@ const AdminDashboard = () => {
                     <button onClick={() => navigate('/admin/upload')} className={`flex items-center gap-3 p-3 rounded-xl font-bold whitespace-nowrap transition-colors ${activeTab === 'upload' ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-100'}`}>
                         <Megaphone size={20}/> Post Update / Ad
                     </button>
-                    <button onClick={() => { setActiveTab('cms'); navigate('/admin/cms'); }} className={`flex items-center gap-3 p-3 rounded-xl font-bold whitespace-nowrap transition-colors ${activeTab === 'cms' ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-100'}`}>
-                        <div className={`w-5 h-5 ${activeTab === 'cms' ? 'text-primary-600' : 'text-gray-600'}`}>
-                            <CustomGuide />
-                        </div>
-                        Guide CMS
-                    </button>
                 </div>
                 <div className="p-4 mt-auto border-t border-gray-200 hidden md:block">
                     <button onClick={logout} className="flex items-center gap-2 text-red-500 font-bold hover:bg-red-50 w-full p-3 rounded-xl transition-colors">
@@ -502,11 +495,6 @@ const AdminDashboard = () => {
                             </button>
                         </form>
                     </div>
-                )}
-
-                {/* GUIDE CMS TAB */}
-                {activeTab === 'cms' && (
-                    <GuideCMSManager />
                 )}
             </div>
             

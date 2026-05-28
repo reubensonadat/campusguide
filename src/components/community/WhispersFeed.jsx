@@ -227,7 +227,7 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
                                 <span className="text-xs font-bold text-primary-500 bg-primary-50 px-2 py-1 rounded-md">Anonymous</span>
                                 <div className="flex items-center gap-3">
                                     <span className="text-xs text-gray-400 font-medium">{getTimeAgo(whisper.created_at)}</span>
-                                    <button onClick={() => handleInteract(whisper.id, 'FLAG')} className={`${userInteractions.flags.has(whisper.id) ? 'text-red-500 cursor-default' : 'text-gray-300 hover:text-red-500'} transition-colors`} title={userInteractions.flags.has(whisper.id) ? "You flagged this post" : "Report this post"}>
+                                    <button onClick={() => onInteract(whisper.id, 'FLAG')} className={`${userInteractions.flags.has(whisper.id) ? 'text-red-500 cursor-default' : 'text-gray-300 hover:text-red-500'} transition-colors`} title={userInteractions.flags.has(whisper.id) ? "You flagged this post" : "Report this post"}>
                                         <Flag size={14} className={userInteractions.flags.has(whisper.id) ? 'fill-current' : ''} />
                                     </button>
                                 </div>
@@ -237,23 +237,23 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
                             </p>
                             <div className="flex items-center justify-between border-t border-gray-50 pt-3">
                                 <div className="flex items-center gap-1 bg-gray-50 rounded-full px-1 py-1 border border-gray-100">
-                                    <button onClick={() => handleInteract(whisper.id, 'UPVOTE')} className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.upvotes.has(whisper.id) ? 'text-green-600 bg-white cursor-default' : 'text-gray-400 hover:text-green-600 hover:bg-white'}`}>
+                                    <button onClick={() => onInteract(whisper.id, 'UPVOTE')} className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.upvotes.has(whisper.id) ? 'text-green-600 bg-white cursor-default' : 'text-gray-400 hover:text-green-600 hover:bg-white'}`}>
                                         <ArrowUp size={16} strokeWidth={3} />
                                     </button>
                                     <span className="text-sm font-black text-gray-700 min-w-[20px] text-center">
                                         {whisper.upvotes - whisper.downvotes}
                                     </span>
-                                    <button onClick={() => handleInteract(whisper.id, 'DOWNVOTE')} className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.downvotes.has(whisper.id) ? 'text-red-500 bg-white cursor-default' : 'text-gray-400 hover:text-red-500 hover:bg-white'}`}>
+                                    <button onClick={() => onInteract(whisper.id, 'DOWNVOTE')} className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.downvotes.has(whisper.id) ? 'text-red-500 bg-white cursor-default' : 'text-gray-400 hover:text-red-500 hover:bg-white'}`}>
                                         <ArrowDown size={16} strokeWidth={3} />
                                     </button>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     {currentUser?.id === whisper.user_id && (
-                                        <button onClick={() => handleDelete(whisper.id)} className="p-1.5 text-gray-300 hover:text-red-500 transition-colors rounded-full hover:bg-red-50" title="Delete whisper">
+                                        <button onClick={() => onDelete(whisper.id)} className="p-1.5 text-gray-300 hover:text-red-500 transition-colors rounded-full hover:bg-red-50" title="Delete whisper">
                                             <Trash2 size={16} />
                                         </button>
                                     )}
-                                    <button onClick={() => setSelectedWhisper(whisper)} className="flex items-center gap-1.5 text-gray-400 hover:text-primary-600 transition-colors text-sm font-bold px-3 py-1.5 rounded-full hover:bg-primary-50">
+                                    <button onClick={() => onComment(whisper)} className="flex items-center gap-1.5 text-gray-400 hover:text-primary-600 transition-colors text-sm font-bold px-3 py-1.5 rounded-full hover:bg-primary-50">
                                         <MessageSquare size={16} />
                                         {whisper.comment_count}
                                     </button>
