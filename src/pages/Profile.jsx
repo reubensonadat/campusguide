@@ -6,6 +6,7 @@ import { useDeviceId } from '../hooks/useDeviceId';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
 import { useNavigate } from 'react-router-dom';
 import { CustomSettings } from '../components/common/CustomIcons';
+import { AboutIcon } from '../common/CustomTaskIcons';
 import { useAppContext } from '../context/AppContext';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { restoreFromCloud } from '../services/syncService';
@@ -198,12 +199,12 @@ const Profile = () => {
 
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Profile</h1>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Profile</h1>
           <button
             onClick={() => navigate('/settings')}
             className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
           >
-            <CustomSettings size={20} />
+            <CustomSettings size={18} />
           </button>
         </div>
 
@@ -351,9 +352,9 @@ const Profile = () => {
           )}
         </div>
 
-        {/* Promotional Card (Support Project) */}
+        {/* Promotional Card (Support Project) — NOW routes to /support */}
         <div
-          onClick={() => actions?.setShowSupportModal(true)}
+          onClick={() => navigate('/support')}
           className="bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-gray-100 p-6 flex items-center justify-between overflow-hidden relative group cursor-pointer active:scale-[0.98] transition-transform"
         >
           <div className="relative z-10">
@@ -362,7 +363,7 @@ const Profile = () => {
               Help us keep this app free and growing for all students.
             </p>
             <span className="inline-block bg-[#002F45] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm">
-              Support Now
+              Read Our Story
             </span>
           </div>
           <div className="relative z-10 w-24 h-24 -mr-4 flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
@@ -372,16 +373,16 @@ const Profile = () => {
 
         {/* Customize Home */}
         <div className="space-y-2 pt-2">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-4">Customize Home</h2>
-          <p className="text-sm text-gray-500 font-medium -mt-2 mb-4">Choose what appears on your home screen.</p>
+          <h2 className="text-xl font-bold text-gray-900 tracking-tight mb-4">Customize Home</h2>
+          <p className="text-xs text-gray-500 font-medium -mt-2 mb-4">Choose what appears on your home screen.</p>
           <div className="space-y-1">
             {widgetToggles.map(({ key, label, Icon }) => (
               <div key={key} className="flex items-center justify-between py-3.5 border-b border-gray-100 last:border-0">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
-                    <Icon size={20} className="text-gray-600" strokeWidth={1.5} />
+                  <div className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
+                    <Icon size={18} className="text-gray-600" strokeWidth={1.5} />
                   </div>
-                  <span className="text-[17px] text-gray-900 font-medium">{label}</span>
+                  <span className="text-[15px] text-gray-900 font-medium">{label}</span>
                 </div>
                 <button
                   onClick={() => toggleWidget(key)}
@@ -402,7 +403,7 @@ const Profile = () => {
 
         {/* Smart Section — Device Identity & Cloud Sync */}
         <div className="space-y-2 pt-2">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-4">Cloud Sync</h2>
+          <h2 className="text-xl font-bold text-gray-900 tracking-tight mb-4">Cloud Sync</h2>
 
           {/* Device ID Card */}
           <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
@@ -479,13 +480,13 @@ const Profile = () => {
 
         {/* Quick Settings Links */}
         <div>
-          <h2 className="text-xl font-black text-gray-900 mb-4 px-2">Quick Settings</h2>
+          <h2 className="text-lg font-black text-gray-900 mb-4 px-2">Quick Settings</h2>
 
           <div className="space-y-1">
             <div className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0">
               <div className="flex items-center gap-4">
-                <Moon size={24} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[17px] text-gray-900 font-medium">Dark Mode</span>
+                <Moon size={20} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[15px] text-gray-900 font-medium">Dark Mode</span>
               </div>
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -503,8 +504,8 @@ const Profile = () => {
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
             >
               <div className="flex items-center gap-4">
-                <User size={24} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[17px] text-gray-900 font-medium">Personal information</span>
+                <User size={20} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[15px] text-gray-900 font-medium">Personal information</span>
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>
@@ -514,16 +515,16 @@ const Profile = () => {
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
             >
               <div className="flex items-center gap-4">
-                <Share2 size={24} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[17px] text-gray-900 font-medium">Invite Friends (Share App)</span>
+                <Share2 size={20} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[15px] text-gray-900 font-medium">Invite Friends (Share App)</span>
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>
 
             <div className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0">
               <div className="flex items-center gap-4">
-                <Bell size={24} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[17px] text-gray-900 font-medium">App Notifications</span>
+                <Bell size={20} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[15px] text-gray-900 font-medium">App Notifications</span>
               </div>
               <button
                 onClick={() => setNotificationsEnabled(!notificationsEnabled)}
@@ -538,12 +539,23 @@ const Profile = () => {
             </div>
 
             <button
+              onClick={() => navigate('/support')}
+              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
+            >
+              <div className="flex items-center gap-4">
+                <AboutIcon size={20} className="text-gray-700" />
+                <span className="text-[15px] text-gray-900 font-medium">About & Support</span>
+              </div>
+              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+            </button>
+
+            <button
               onClick={() => navigate('/contact')}
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
             >
               <div className="flex items-center gap-4">
-                <Phone size={24} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[17px] text-gray-900 font-medium">UCC Contacts & Help</span>
+                <Phone size={20} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[15px] text-gray-900 font-medium">UCC Contacts & Help</span>
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>
@@ -553,8 +565,8 @@ const Profile = () => {
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
             >
               <div className="flex items-center gap-4">
-                <CustomSettings size={24} className="text-gray-700" />
-                <span className="text-[17px] text-gray-900 font-medium">Full Settings</span>
+                <CustomSettings size={20} className="text-gray-700" />
+                <span className="text-[15px] text-gray-900 font-medium">Full Settings</span>
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>
@@ -564,8 +576,8 @@ const Profile = () => {
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
             >
               <div className="flex items-center gap-4">
-                <FileText size={24} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[17px] text-gray-900 font-medium">Terms of Service</span>
+                <FileText size={20} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[15px] text-gray-900 font-medium">Terms of Service</span>
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>
@@ -575,8 +587,8 @@ const Profile = () => {
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
             >
               <div className="flex items-center gap-4">
-                <Shield size={24} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[17px] text-gray-900 font-medium">Privacy Policy</span>
+                <Shield size={20} className="text-gray-700" strokeWidth={1.5} />
+                <span className="text-[15px] text-gray-900 font-medium">Privacy Policy</span>
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>
@@ -587,8 +599,8 @@ const Profile = () => {
                 className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
               >
                 <div className="flex items-center gap-4">
-                  <CheckCircle size={24} className="text-[#002F45]" strokeWidth={1.5} />
-                  <span className="text-[17px] text-gray-900 font-medium">Take Survey Test</span>
+                  <CheckCircle size={20} className="text-[#002F45]" strokeWidth={1.5} />
+                  <span className="text-[15px] text-gray-900 font-medium">Take Survey Test</span>
                 </div>
                 <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
               </button>
@@ -599,8 +611,8 @@ const Profile = () => {
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
             >
               <div className="flex items-center gap-4">
-                <Trash2 size={24} className="text-red-500" strokeWidth={1.5} />
-                <span className="text-[17px] text-gray-900 font-medium">Clear App Data</span>
+                <Trash2 size={20} className="text-red-500" strokeWidth={1.5} />
+                <span className="text-[15px] text-gray-900 font-medium">Clear App Data</span>
               </div>
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
             </button>

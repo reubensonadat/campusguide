@@ -27,17 +27,6 @@ import { triggerHaptic } from './utils/haptics';
 import { supabase } from './lib/supabase';
 import AuthBottomSheet from './components/onboarding/AuthModal';
 
-function NavigationObserver() {
-  const location = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0); // Scroll to top on route change
-    triggerHaptic(30); // Gentle 30ms buzz on navigation
-  }, [location.pathname]);
-
-  return null;
-}
-
 // Page imports
 import Home from './pages/Home';
 import Guide from './pages/Guide';
@@ -52,6 +41,17 @@ import AdminDashboard from './pages/AdminDashboard';
 import { PrivacyPolicy, TermsOfService } from './pages/Legal';
 import { LetterGenerator } from './pages/LetterGenerator';
 
+function NavigationObserver() {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    triggerHaptic(30);
+  }, [location.pathname]);
+
+  return null;
+}
+
 function AppContent() {
   const { selectedCampusId } = useCampus();
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
@@ -62,14 +62,13 @@ function AppContent() {
   useFeedbackTimer();
   const { showModal: showFeedback, closeModal: closeFeedback } = useFeedbackModal();
 
-  // Class Reminders Logic (Old browser notifications, kept for compatibility if needed, but in-app is handled by useAppNotifications)
+  // Class Reminders Logic
   useClassReminders();
   
   // New In-App Notifications Background Worker
   useAppNotifications();
 
-  // Preload Paystack script when app loads
-    // Recovery: if user is already authenticated but ucc_user_id was never persisted
+  // Recovery: if user is already authenticated but ucc_user_id was never persisted
   useEffect(() => {
     const recoverUserId = async () => {
       if (!localStorage.getItem('ucc_user_id')) {
@@ -94,7 +93,7 @@ function AppContent() {
   // Handle closing support modal and resetting timer
   const handleCloseModal = () => {
     closeModal();
-    resetTimer(); // Reset timer to show modal again after 5 minutes
+    resetTimer();
   };
 
   return (
@@ -107,9 +106,10 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/guide" element={<Guide />} />
           <Route path="/guide/:topic" element={<Guide />} />
-          <Route path="/tools/*" element={<Tools />} />
           <Route path="/tools/letter-generator" element={<LetterGenerator />} />
+          <Route path="/tools/*" element={<Tools />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/support" element={<Support />} />
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/settings" element={<Settings />} />

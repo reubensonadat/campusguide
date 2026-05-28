@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Book, ChevronRight, MapPin, Phone, Info, Layout, CheckCircle, List, ArrowRight, MousePointer2, Search, X } from 'lucide-react';
 import { CustomGuide } from '../components/common/CustomIcons';
+import PageHeader from '../components/common/PageHeader';
 
 import { GUIDE_TOPICS } from '../data/guide';
 
@@ -285,7 +286,7 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
     <div className="flex bg-white lg:h-screen lg:overflow-hidden min-h-screen relative font-sans selection:bg-primary-100 selection:text-primary-900 transition-colors duration-300">
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-50">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-[calc(4rem_+_env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 z-50">
         <span className="font-bold text-lg text-gray-900">Student Guide</span>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -309,7 +310,7 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
           <div className="flex-1 overflow-y-auto px-4 pb-24 lg:pb-8 custom-scrollbar">
 
             {/* Title — scrolls away when user scrolls down */}
-            <div className="pt-20 lg:pt-6 pb-2">
+            <div className="pt-[calc(5rem_+_env(safe-area-inset-top,0px))] lg:pt-6 pb-2">
               <h2 className="text-xl font-black text-slate-900 tracking-tight">Campus Guide</h2>
             </div>
 
@@ -383,18 +384,19 @@ const TopicContentRenderer = ({ topic, activeTab }) => {
       <div className="flex-1 flex flex-col h-full lg:overflow-hidden relative w-full bg-white transition-colors duration-300">
         {selectedTopicId && currentTopicData ? (
           currentTopicData.isInteractive ? (
-            <div className="w-full fixed inset-0 top-16 lg:top-0 lg:relative lg:flex-1 flex flex-col z-0">
+            <div className="w-full fixed inset-0 top-[calc(4rem_+_env(safe-area-inset-top,0px))] lg:top-0 lg:relative lg:flex-1 flex flex-col z-0">
               <currentTopicData.component />
             </div>
           ) : (
-            <div className="flex-1 lg:overflow-y-auto custom-scrollbar pt-20 lg:pt-0 pb-32">
+            <div className="flex-1 lg:overflow-y-auto custom-scrollbar pt-[calc(5rem_+_env(safe-area-inset-top,0px))] lg:pt-0 pb-32">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 md:px-12 md:py-16">
 
                 {/* Topic Header */}
                 <div className="mb-8 sm:mb-12 border-b border-gray-100 pb-8 sm:pb-10">
-                  <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-8 leading-tight tracking-tight">
-                    {currentTopicData.title || 'Guide'}
-                  </h1>
+                  <PageHeader
+                    title={currentTopicData.title || 'Guide'}
+                    onBack={window.innerWidth < 1024 ? () => setSelectedTopicId(null) : undefined}
+                  />
 
                   {/* Tabs */}
                   <div className="flex gap-8 border-b border-gray-100 -mb-8 overflow-x-auto no-scrollbar mask-linear-fade pb-1">

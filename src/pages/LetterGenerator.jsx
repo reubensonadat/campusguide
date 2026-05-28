@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Copy, FileText, CheckCircle2 } from 'lucide-react';
+import { Copy, FileText, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { generateLetter } from '../services/aiService';
 import { toast } from 'react-hot-toast';
+import PageHeader from '../components/common/PageHeader';
 
 export const LetterGenerator = () => {
   const navigate = useNavigate();
@@ -46,17 +47,12 @@ export const LetterGenerator = () => {
   return (
     <div className="min-h-screen bg-gray-50/50 pb-24 font-sans selection:bg-[#002F45]/20 selection:text-[#002F45]">
       {/* Header */}
-      <div className="max-w-5xl mx-auto px-4 md:px-6 pt-10 pb-6 flex items-center gap-4">
-        <button 
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors shadow-sm"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <div>
-          <h1 className="text-2xl font-black text-gray-900">Letter Generator</h1>
-          <p className="text-sm font-medium text-gray-500 mt-1">Draft formal academic letters instantly</p>
-        </div>
+      <div className="max-w-5xl mx-auto px-4 md:px-6 pt-12">
+        <PageHeader
+          title="Letter Generator"
+          subtitle="Draft formal academic letters instantly"
+          onBack={true}
+        />
       </div>
 
       <div className="max-w-5xl mx-auto px-4 md:px-6">

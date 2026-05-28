@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { toast } from 'react-hot-toast';
+import PageHeader from '../components/common/PageHeader';
 import {
   Phone,
   Mail,
@@ -136,19 +137,16 @@ const Contact = () => {
 
   const newLocal = "text-white bg-blue hover:bg-blue-700 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none";
   return (
-    <div className="p-4 md:p-8 pb-24 bg-gray-50/50 min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45] transition-colors duration-300">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="pb-24 bg-gray-50/50 min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45] transition-colors duration-300">
+      <div className="max-w-4xl mx-auto space-y-6 px-6 pt-12 md:px-8">
 
-        {/* Header Section */}
-        <div className="mb-8 md:flex md:items-center md:justify-between gap-6">
-          <div>
-            <h1 className="text-3xl font-black tracking-tight text-gray-900 mb-2">Contact Support</h1>
-            <p className="text-gray-500 font-medium max-w-lg">We're here to help you succeed at UCC. Reach out with any questions or feedback.</p>
-          </div>
-          <div className="flex justify-center mt-6 md:mt-0">
-            <img src={headerImage} alt="Contact Support" className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-xl pointer-events-none" />
-          </div>
-        </div>
+        <PageHeader
+          title="Contact Support"
+          subtitle="We're here to help. Reach out with any questions or feedback."
+          right={
+            <img src={headerImage} alt="Contact Support" className="w-20 h-20 md:w-28 md:h-28 object-contain drop-shadow-xl pointer-events-none" />
+          }
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           

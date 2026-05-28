@@ -1,6 +1,6 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '../components/common/Button';
-import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, Circle, Calendar, PartyPopper, Play, BookOpen, Plus } from 'lucide-react';
+import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, Circle, Calendar, PartyPopper, Play, BookOpen, Plus, Flame, AlertTriangle, FileText } from 'lucide-react';
 import { CustomMapPin } from '../components/common/CustomMapPin';
 import { CustomGuide, CustomTools, CustomEyes } from '../components/common/CustomIcons';
 import NotificationDropdown from '../components/common/NotificationDropdown'; // 🛎️ NEW: Import
@@ -20,6 +20,8 @@ import { PaymentButton } from '../components/payment/PaymentButton';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { supabase } from '../lib/supabase';
 import { useNotifications } from '../context/NotificationContext';
+
+import { getAssignments, getAssignmentsByUrgency, markAssignmentStatus, onAssignmentsChanged } from '../services/assignmentService';
 
 import CampusIllustration from '/college-campus-rafiki.svg';
 
@@ -80,15 +82,24 @@ const LibrarySvg = ({ size = 16, className = '' }) => (
 const getWeatherIconAndAdvice = (code, temp) => {
   if (temp > 32) return { svgType: 'sunny', color: 'text-orange-500', bg: 'bg-orange-500/10', advice: 'Very hot today. Walk in the shade!' };
   if (temp < 22) return { svgType: 'cloudy', color: 'text-blue-500', bg: 'bg-blue-500/10', advice: 'Cool weather today.' };
-  
+
   if (code === 0) return { svgType: 'sunny', color: 'text-yellow-500', bg: 'bg-yellow-500/10', advice: 'Clear skies. Perfect for walking.' };
   if (code >= 1 && code <= 3) return { svgType: 'cloudy-sun', color: 'text-slate-500', bg: 'bg-slate-500/10', advice: 'Partly cloudy. Good walking weather.' };
   if (code >= 45 && code <= 48) return { svgType: 'cloudy', color: 'text-slate-400', bg: 'bg-slate-400/10', advice: 'Foggy morning.' };
   if (code >= 51 && code <= 55) return { svgType: 'rainy', color: 'text-blue-400', bg: 'bg-blue-400/10', advice: 'Drizzling. Might want a light jacket.' };
   if (code >= 61 && code <= 82) return { svgType: 'rainy', color: 'text-blue-600', bg: 'bg-blue-600/10', advice: 'Raining. Grab an umbrella!' };
   if (code >= 95) return { svgType: 'rainy', color: 'text-purple-600', bg: 'bg-purple-600/10', advice: 'Thunderstorms. Seek shelter!' };
-  
+
   return { svgType: 'sunny', color: 'text-yellow-500', bg: 'bg-yellow-500/10', advice: 'Beautiful day on campus.' };
+};
+
+// ── Streak helpers ────────────────────────────────────────────────────────────
+const getISODate = (d) => d.toISOString().split('T')[0];
+const getWeekId = (d) => {
+  const start = new Date(d);
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - ((start.getDay() + 6) % 7)); // Monday
+  return getISODate(start);
 };
 
 // ── component ─────────────────────────────────────────────────────────────────
@@ -97,8 +108,6 @@ const Home = () => {
   React.useEffect(() => { window.scrollTo(0, 0); }, []);
 
   // ── Invisible dark-mode sync ──────────────────────────────────────────────
-  // Reads the theme preference from localStorage (set in Profile) and applies
-  // the `dark` class to <html> so every component on this page can react to it.
   const [theme] = useLocalStorage('theme', 'light');
   React.useEffect(() => {
     if (theme === 'dark') {
@@ -113,10 +122,143 @@ const Home = () => {
   const [timetable] = useLocalStorage('ucc_timetable', []);
   const [profile]    = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' });
   const [tasks, setTasks] = useLocalStorage('ucc_daily_tasks', []);
+  const [reminders, setReminders] = useLocalStorage('ucc_reminders', []);
+  const activeReminders = useMemo(() => {
+    return Array.isArray(reminders) ? reminders.filter(r => !r.completed) : [];
+  }, [reminders]);
   const [quickNotes, setQuickNotes] = useLocalStorage('ucc_quick_notes', '');
   const [homeWidgetsRaw] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
   const homeWidgets = useMemo(() => ({ ...DEFAULT_HOME_WIDGETS, ...homeWidgetsRaw }), [homeWidgetsRaw]);
   const [activeTask, setActiveTask] = useState(null);
+
+  // ── Assignments / Deadlines ──────────────────────────────────────────────
+  const [homeAssignments, setHomeAssignments] = useState(() => getAssignments());
+
+  // Listen for assignment changes — works for BOTH same-tab and cross-tab
+  useEffect(() => {
+    // Same-tab: custom event from assignmentService
+    const unsubCustom = onAssignmentsChanged(() => {
+      setHomeAssignments(getAssignments());
+    });
+    // Cross-tab: native storage event
+    const handleStorage = (e) => {
+      if (e.key === 'ucc_assignments') {
+        setHomeAssignments(getAssignments());
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      unsubCustom();
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
+  // Urgent deadlines: overdue + due today (shown as alert strip)
+  const urgentDeadlines = useMemo(() => {
+    const urgency = getAssignmentsByUrgency(homeAssignments);
+    return [...urgency.overdue, ...urgency.today].slice(0, 3);
+  }, [homeAssignments]);
+
+  // This-week assignments (shown in the task section below tasks)
+  const thisWeekDeadlines = useMemo(() => {
+    const urgency = getAssignmentsByUrgency(homeAssignments);
+    return urgency.thisWeek.slice(0, 4);
+  }, [homeAssignments]);
+
+  const handleQuickMarkSubmitted = (id) => {
+    const assignment = homeAssignments.find(a => a.id === id);
+    const oldStatus = assignment?.status || 'pending';
+    markAssignmentStatus(id, 'submitted');
+    setHomeAssignments(getAssignments());
+    toast((t) => (
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-bold text-gray-900">Marked as submitted</span>
+        <button
+          onClick={() => {
+            markAssignmentStatus(id, oldStatus);
+            setHomeAssignments(getAssignments());
+            toast.dismiss(t.id);
+            toast.success('Status reverted!');
+          }}
+          className="text-xs font-bold text-[#6EABC6] bg-[#6EABC6]/10 px-3 py-1 rounded-lg hover:bg-[#6EABC6]/20 transition-colors flex-shrink-0"
+        >
+          Undo
+        </button>
+      </div>
+    ), {
+      duration: 4000,
+      icon: '\u2705',
+      style: { borderRadius: '12px', padding: '12px 16px' },
+    });
+  };
+
+  // ── Daily Streak System ──────────────────────────────────────────────────
+  const [streakData, setStreakData] = useLocalStorage('ucc_streak', {
+    count: 0,
+    lastActiveDate: null,
+    bestStreak: 0,
+    freezeUsedWeek: null,
+  });
+  const streakUpdatedRef = useRef(false);
+
+  useEffect(() => {
+    if (streakUpdatedRef.current) return;
+    streakUpdatedRef.current = true;
+
+    const today = getISODate(new Date());
+    const yesterday = getISODate(new Date(Date.now() - 86400000));
+
+    // Already logged today — nothing to do
+    if (streakData.lastActiveDate === today) return;
+
+    let newCount = 1;
+    let newBest = streakData.bestStreak;
+    let newFreezeWeek = streakData.freezeUsedWeek;
+
+    if (streakData.lastActiveDate === yesterday) {
+      // Consecutive day — increment
+      newCount = streakData.count + 1;
+    } else if (streakData.lastActiveDate) {
+      // Gap detected — check if streak freeze can save it
+      const currentWeek = getWeekId(new Date());
+      const canUseFreeze = streakData.freezeUsedWeek !== currentWeek;
+
+      const lastDate = new Date(streakData.lastActiveDate + 'T12:00:00');
+      const todayDate = new Date(today + 'T12:00:00');
+      const diffDays = Math.round((todayDate - lastDate) / 86400000);
+
+      if (diffDays === 2 && canUseFreeze) {
+        // Freeze saves a 1-day gap (once per week)
+        newCount = streakData.count + 1;
+        newFreezeWeek = currentWeek;
+      }
+      // Otherwise: reset to 1 (default)
+    }
+
+    newBest = Math.max(newBest, newCount);
+
+    // Milestone toasts
+    if (newCount === 7) toast.success('7-day streak! Keep going!', { icon: '🔥' });
+    else if (newCount === 14) toast.success('2-week streak! You\'re on fire!', { icon: '🔥' });
+    else if (newCount === 30) toast.success('30-day streak! Legendary dedication!', { icon: '🏆' });
+    else if (newCount === 100) toast.success('100-day streak! You\'re a Campus Guide legend!', { icon: '💎' });
+
+    setStreakData({
+      count: newCount,
+      lastActiveDate: today,
+      bestStreak: newBest,
+      freezeUsedWeek: newFreezeWeek,
+    });
+  }, []);
+
+  // Streak tier for visual styling
+  const streakTier = useMemo(() => {
+    if (streakData.count >= 100) return 'legendary';
+    if (streakData.count >= 30) return 'committed';
+    if (streakData.count >= 7) return 'established';
+    if (streakData.count >= 3) return 'building';
+    return 'starting';
+  }, [streakData.count]);
 
   // 🛎️ NOTIFICATION LOGIC STATES
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -222,7 +364,7 @@ const Home = () => {
   const handleAddSuggestion = (cls) => {
     let suggestedTime = '08:00'; // Default
     const classTimeStr = cls.startTime || cls.time;
-    
+
     if (classTimeStr) {
         const [h, m] = classTimeStr.split(':').map(Number);
         const newH = h - 1 < 0 ? 23 : h - 1; // 1 hour before
@@ -230,7 +372,7 @@ const Home = () => {
     }
     const d = new Date();
     const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    
+
     const newTask = {
         id: Date.now().toString(),
         title: `Revise ${cls.courseName || cls.name || 'Class'}`,
@@ -309,7 +451,7 @@ const Home = () => {
   }, [currentTimeMinutes, todayHoliday]);
 
   // ── Announcement → Ad rotation logic ─────────────────────────────────────
-  const [featuredContent, setFeaturedContent] = useState(null); 
+  const [featuredContent, setFeaturedContent] = useState(null);
   const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(false);
 
   // ── Community notification state (inbox model) ────────────────────────────
@@ -446,7 +588,7 @@ const Home = () => {
   }, []);
 
   const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
-  
+
   const quickActions = [
     { title: 'Campus Map',  icon: Map,           action: () => navigate('/guide?topic=campus-map')          },
     { title: 'Timetable',   icon: CalendarDays,  action: () => navigate('/tools')                           },
@@ -454,6 +596,44 @@ const Home = () => {
     { title: 'Contact Us',  icon: MessageCircle, action: () => navigate('/contact')                         },
     { title: 'Settings',    icon: Settings,      action: () => navigate('/settings')                        },
   ];
+
+  // ── Streak badge component (reused in mobile + desktop) ────────────────
+  const StreakBadge = ({ variant = 'hero' }) => {
+    if (streakData.count < 1) return null;
+
+    const tierStyles = {
+      starting:   { bg: 'bg-white/10', border: 'border-white/10', text: 'text-white/70', flame: 'text-orange-400' },
+      building:   { bg: 'bg-white/10', border: 'border-white/10', text: 'text-white/80', flame: 'text-orange-400' },
+      established:{ bg: 'bg-orange-500/15', border: 'border-orange-500/20', text: 'text-orange-300', flame: 'text-orange-400' },
+      committed:  { bg: 'bg-orange-500/20', border: 'border-orange-500/25', text: 'text-orange-200', flame: 'text-orange-300' },
+      legendary:  { bg: 'bg-amber-500/20', border: 'border-amber-400/30', text: 'text-amber-200', flame: 'text-amber-300' },
+    };
+    const s = tierStyles[streakTier] || tierStyles.starting;
+
+    if (variant === 'desktop') {
+      const desktopStyles = {
+        starting:   { bg: 'bg-gray-100', border: 'border-gray-200', text: 'text-gray-600', flame: 'text-orange-500' },
+        building:   { bg: 'bg-gray-100', border: 'border-gray-200', text: 'text-gray-700', flame: 'text-orange-500' },
+        established:{ bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', flame: 'text-orange-500' },
+        committed:  { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-800', flame: 'text-orange-600' },
+        legendary:  { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-800', flame: 'text-amber-600' },
+      };
+      const ds = desktopStyles[streakTier] || desktopStyles.starting;
+      return (
+        <span className={`inline-flex items-center gap-1 ${ds.bg} ${ds.text} px-2 py-0.5 rounded-full text-[11px] font-bold ${ds.border} border`}>
+          <Flame size={11} className={ds.flame} />
+          {streakData.count}
+        </span>
+      );
+    }
+
+    return (
+      <span className={`inline-flex items-center gap-1 ${s.bg} ${s.text} px-2 py-0.5 rounded-full text-[11px] font-bold ${s.border} border`}>
+        <Flame size={11} className={s.flame} />
+        {streakData.count}
+      </span>
+    );
+  };
 
   // ── render ────────────────────────────────────────────────────────────────
   return (
@@ -465,18 +645,18 @@ const Home = () => {
       <div className="lg:hidden">
 
         {/* ── Chime-Style Hero ────────────────────────────────────────── */}
-        <div className="relative overflow-hidden bg-gradient-to-b from-[#001a26] to-[#002F45] px-6 pt-10 pb-16">
-          
+        <div className="relative overflow-hidden bg-gradient-to-b from-[#001a26] to-[#002F45] px-6 pt-[calc(2.5rem_+_env(safe-area-inset-top,0px))] pb-16">
+
           <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[150%] h-[100px] bg-[#001a26] rounded-[100%] blur-xl opacity-40 pointer-events-none"></div>
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#6EABC6] rounded-full mix-blend-screen filter blur-[80px] opacity-10 pointer-events-none"></div>
-          
+
           {/* Top Bar */}
           <div className="flex items-center justify-between mb-6 relative z-10">
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain rounded-md shadow-sm" />
               <span className="text-white font-bold tracking-widest text-xs uppercase opacity-90">Campus Guide</span>
             </div>
-            
+
             {/* 🛎️ NEW: Right side container for Bell + Avatar */}
             <div className="flex items-center gap-3">
               {/* Notification Bell */}
@@ -490,7 +670,7 @@ const Home = () => {
                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-[#001a26]"></span>
                   )}
                 </button>
-                
+
                 {/* Dropdown Panel */}
                 <NotificationDropdown
                   isOpen={isNotifOpen}
@@ -507,7 +687,7 @@ const Home = () => {
 
               {/* Profile Avatar */}
               {profile.avatarUrl ? (
-                <button 
+                <button
                   onClick={() => navigate('/profile')}
                   className="w-10 h-10 rounded-full border-2 border-white/20 shadow-lg overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white/10 p-0.5"
                 >
@@ -527,8 +707,9 @@ const Home = () => {
               <h2 className="text-white text-[1.8rem] font-black leading-tight tracking-tight mb-1">
                 {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'} 👋
               </h2>
-              <p className="text-[#6EABC6] text-sm font-semibold flex items-center gap-1 cursor-pointer active:opacity-70 transition-opacity">
+              <p className="text-[#6EABC6] text-sm font-semibold flex items-center gap-2 cursor-pointer active:opacity-70 transition-opacity">
                 {TODAY_LABEL}
+                <StreakBadge />
               </p>
             </div>
 
@@ -570,6 +751,45 @@ const Home = () => {
         {/* ── Overlapping Content & Body ──────────────────────────────── */}
         <div className="px-5 -mt-8 relative z-20 space-y-6 pb-6">
 
+          {/* Active Reminders Alert Box */}
+          {activeReminders.length > 0 && (
+            <div className="sticky top-0 z-30 bg-red-50 border border-red-100 rounded-2xl p-4 shadow-sm space-y-3 mb-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-red-800 uppercase tracking-widest flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                  Active Reminders ({activeReminders.length})
+                </span>
+                <button
+                  onClick={() => navigate('/tools')}
+                  className="text-[11px] font-black text-red-700 uppercase tracking-wider hover:underline bg-transparent border-none p-0 cursor-pointer"
+                >
+                  Manage
+                </button>
+              </div>
+              <div className="space-y-2">
+                {activeReminders.map((reminder) => (
+                  <div key={reminder.id} className="bg-white p-3 rounded-xl border border-red-100 flex items-center justify-between gap-3 shadow-sm">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-bold text-gray-900 truncate">{reminder.title}</p>
+                      <p className="text-[10px] font-semibold text-red-600 mt-0.5">
+                        Due: {new Date(reminder.dueDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const updated = reminders.map(r => r.id === reminder.id ? { ...r, completed: true } : r);
+                        setReminders(updated);
+                      }}
+                      className="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-[10px] font-black uppercase tracking-wider rounded-lg transition-colors shrink-0 border-none cursor-pointer"
+                    >
+                      Done
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* 1. Overlapping Floating Card (Today's Classes) */}
           {homeWidgets.classes && (<div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 min-h-[140px] border border-gray-100 flex flex-col justify-center">
             <div className="flex justify-between items-start mb-4">
@@ -594,7 +814,7 @@ const Home = () => {
                     </p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => navigate('/tools/timetable')}
                   className="flex bg-primary-50 text-primary-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-100 transition-colors"
                 >
@@ -617,7 +837,7 @@ const Home = () => {
                   <div key={i} className={`flex items-center gap-4 transition-opacity ${cls.status === 'completed' ? 'opacity-40' : 'opacity-100'}`}>
                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
                         cls.status === 'completed' ? 'bg-gray-100' :
-                        cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' : 
+                        cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' :
                         'bg-[#002F45]/5'
                     }`}>
                       {cls.status === 'completed' ? <CheckCircle2 size={16} className="text-gray-400" /> :
@@ -650,7 +870,7 @@ const Home = () => {
           </div>
           )}
 
-          {/* 1.5 Overlapping Floating Card (Today's Tasks) */}
+          {/* 1.5 Overlapping Floating Card (Today's Tasks + Deadlines) */}
           {homeWidgets.tasks && (<div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
             <div className="flex justify-between items-start mb-4">
               <span className="text-sm font-black text-gray-900 tracking-tight">Today's Tasks</span>
@@ -659,7 +879,45 @@ const Home = () => {
               </button>
             </div>
 
-            {todaysTasks.length === 0 ? (
+            {/* ── Urgent Deadlines Strip (overdue + due today) ── */}
+            {urgentDeadlines.length > 0 && (
+              <div className="mb-4 space-y-2">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-1">
+                    <AlertTriangle size={10} /> Deadlines
+                  </span>
+                  <button onClick={() => navigate('/tools/assignments')} className="text-[10px] font-bold text-[#6EABC6] hover:underline">
+                    View all
+                  </button>
+                </div>
+                {urgentDeadlines.map(a => {
+                  const todayStr = new Date().toISOString().split('T')[0];
+                  const isOverdue = a.dueDate < todayStr;
+                  return (
+                    <div key={a.id} className={`flex items-center gap-3 p-3 rounded-xl ${isOverdue ? 'bg-red-50 border border-red-100' : 'bg-orange-50 border border-orange-100'}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${isOverdue ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
+                        <FileText size={14} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-xs font-bold truncate ${isOverdue ? 'text-red-800' : 'text-orange-800'}`}>{a.title}</p>
+                        <p className={`text-[10px] font-medium ${isOverdue ? 'text-red-600' : 'text-orange-600'}`}>
+                          {isOverdue ? 'Overdue' : 'Due today'}{a.dueTime ? ` • ${formatTime12Hour(a.dueTime)}` : ''}{a.course ? ` • ${a.course}` : ''}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleQuickMarkSubmitted(a.id)}
+                        className="text-[9px] font-bold px-2 py-1 rounded-md bg-white shadow-sm border border-gray-100 text-green-700 hover:bg-green-50 active:scale-95 transition-all flex-shrink-0"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* ── Task list or empty state ── */}
+            {todaysTasks.length === 0 && urgentDeadlines.length === 0 ? (
               suggestedClassTasks.length > 0 ? (
                 <div className="flex flex-col gap-2">
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Suggested Task</p>
@@ -673,7 +931,7 @@ const Home = () => {
                               <p className="text-xs text-slate-500 mt-0.5 font-medium truncate">Before class</p>
                            </div>
                         </div>
-                        <button 
+                        <button
                             onClick={() => handleAddSuggestion(suggestedClassTasks[0])}
                             className="bg-white border border-primary-200 text-primary-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-primary-50 transition-all flex items-center gap-1 flex-shrink-0"
                         >
@@ -687,7 +945,7 @@ const Home = () => {
                     <p className="text-sm font-bold text-slate-800">No tasks planned</p>
                     <p className="text-xs text-slate-500 mt-0.5">Want to organize your day?</p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => navigate('/tools/plan-day')}
                     className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:border-primary-200 transition-all"
                   >
@@ -703,7 +961,7 @@ const Home = () => {
                   return (
                     <div key={task.id} className={`flex items-center gap-3 p-2 -mx-2 rounded-xl transition-all hover:bg-slate-50 ${isCompleted ? 'opacity-60' : 'opacity-100'}`}>
                       {/* Interactive Checkbox */}
-                      <button 
+                      <button
                           onClick={() => toggleTaskStatus(task.id)}
                           className="flex-shrink-0 text-slate-300 hover:text-primary-600 transition-colors p-1"
                       >
@@ -711,7 +969,7 @@ const Home = () => {
                       </button>
 
                       {/* Icon Block */}
-                      <div 
+                      <div
                           className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${
                               isCompleted ? 'bg-slate-100 text-slate-400' : 'bg-primary-50 text-primary-600 shadow-sm border border-primary-100/50'
                           }`}
@@ -732,7 +990,7 @@ const Home = () => {
 
                       {/* Play Button */}
                       {!isCompleted && (
-                        <button 
+                        <button
                             onClick={(e) => { e.stopPropagation(); setActiveTask(task); }}
                             className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-colors ml-auto flex-shrink-0"
                             title="Start Focus Timer"
@@ -748,6 +1006,53 @@ const Home = () => {
                         +{todaysTasks.length - 3} more tasks
                     </button>
                 )}
+              </div>
+            )}
+
+            {/* ── This Week Deadlines (upcoming assignments) ── */}
+            {thisWeekDeadlines.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 flex items-center gap-1">
+                    <Clock size={10} /> Coming Up
+                  </span>
+                  <button onClick={() => navigate('/tools/assignments')} className="text-[10px] font-bold text-[#6EABC6] hover:underline">
+                    View all
+                  </button>
+                </div>
+                {thisWeekDeadlines.map(a => {
+                  const todayStr = new Date().toISOString().split('T')[0];
+                  const d = new Date(a.dueDate + 'T12:00:00');
+                  const today = new Date(); today.setHours(0,0,0,0);
+                  const diffDays = Math.round((d - today) / 86400000);
+                  let dayLabel = '';
+                  if (diffDays === 1) dayLabel = 'Tomorrow';
+                  else if (diffDays <= 7) dayLabel = `${d.toLocaleDateString('en-US', { weekday: 'short' })} ${d.getDate()}`;
+
+                  return (
+                    <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl bg-amber-50/50 border border-amber-100/60">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        a.priority === 'high' ? 'bg-red-100 text-red-600' :
+                        a.priority === 'medium' ? 'bg-amber-100 text-amber-600' :
+                        'bg-blue-100 text-blue-600'
+                      }`}>
+                        <FileText size={14} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold truncate text-gray-900">{a.title}</p>
+                        <p className="text-[10px] font-medium text-amber-700">
+                          {dayLabel}{a.dueTime ? ` • ${formatTime12Hour(a.dueTime)}` : ''}{a.course ? ` • ${a.course}` : ''}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => navigate('/tools/assignments')}
+                        className="text-[9px] font-bold px-2 py-1 rounded-md bg-white shadow-sm border border-gray-100 text-[#6EABC6] hover:bg-[#6EABC6]/5 active:scale-95 transition-all flex-shrink-0"
+                      >
+                        Open
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -823,7 +1128,7 @@ const Home = () => {
           {homeWidgets.calendar && upcomingAcademicEvents.length > 0 && (
             <div className="bg-[#002F45] rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1)] p-6 border border-[#002F45]/90 flex flex-col justify-center mt-2 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mt-12 -mr-12 pointer-events-none blur-2xl" />
-              
+
               <div className="flex items-center gap-2 mb-4 relative z-10">
                 <div className="w-6 h-6 rounded-lg bg-white/10 flex items-center justify-center">
                   <Calendar size={12} className="text-[#6EABC6]" />
@@ -896,7 +1201,7 @@ const Home = () => {
 
             let actionText = '';
             let link = '';
-            
+
             if (isAd) {
                 const cleanPhone = d.phone_number ? d.phone_number.replace(/\D/g, '') : '';
                 if (d.contact_method === 'link' && d.contact_url) {
@@ -929,15 +1234,15 @@ const Home = () => {
                       {d.description || d.content}
                     </p>
                     <div className="flex items-center justify-between">
-                      <button 
+                      <button
                         onClick={() => setIsFeaturedExpanded(!isFeaturedExpanded)}
                         className="text-[13px] font-bold text-[#002F45] flex items-center gap-1 active:opacity-70"
                       >
                         {isFeaturedExpanded ? 'Show less' : 'Read more'} <ChevronRight size={14} className={isFeaturedExpanded ? 'rotate-90 transition-transform' : 'transition-transform'} />
                       </button>
-                      
+
                       {isFeaturedExpanded && link && (
-                        <button 
+                        <button
                           onClick={() => window.open(link, '_blank')}
                           className="bg-[#FFF4E5] text-[#B26B00] border border-[#FFE0B2] text-xs font-bold px-4 py-2 rounded-lg active:scale-95 transition-transform shadow-sm"
                         >
@@ -952,7 +1257,7 @@ const Home = () => {
           })()}
 
           {/* 4. Promotional Banner (Support Card - Mobile) */}
-          <div 
+          <div
             onClick={() => actions?.setShowSupportModal(true)}
             className="bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-gray-100 p-6 flex items-center justify-between overflow-hidden relative group cursor-pointer active:scale-[0.98] transition-transform"
           >
@@ -990,7 +1295,7 @@ const Home = () => {
             <div className="col-span-7 text-left mt-8">
               <div className="flex items-center gap-4 mb-4">
                 {profile.avatarUrl && (
-                  <div 
+                  <div
                     onClick={() => navigate('/profile')}
                     className="w-16 h-16 rounded-2xl border border-gray-200 shadow-sm overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white p-0.5"
                   >
@@ -999,12 +1304,15 @@ const Home = () => {
                 )}
                 <div className="flex-1 flex items-center justify-between">
                   <div>
-                    <p className="text-primary-600 text-sm font-semibold tracking-widest uppercase mb-1">{TODAY_LABEL}</p>
+                    <p className="text-primary-600 text-sm font-semibold tracking-widest uppercase mb-1 flex items-center gap-2">
+                      {TODAY_LABEL}
+                      <StreakBadge variant="desktop" />
+                    </p>
                     <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight">
                       {getGreeting()}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''} 👋
                     </h1>
                   </div>
-                  
+
                   {/* 🛎️ NEW: Desktop Bell Icon */}
                   <div id="bell-anchor-desktop" className="relative">
                     <button
@@ -1030,7 +1338,7 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              
+
               <h2 className="text-2xl font-bold text-gray-700 mb-4 tracking-tight leading-tight">
                 Your Essential{' '}
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 via-primary-600 to-primary-600">
@@ -1075,7 +1383,46 @@ const Home = () => {
         </div>
 
         {/* Desktop content */}
-        <div className="max-w-5xl mx-auto px-6 py-16 space-y-20">
+        <div className="max-w-5xl mx-auto px-6 py-16 space-y-12">
+
+          {/* Active Reminders (Desktop) */}
+          {activeReminders.length > 0 && (
+            <section className="bg-red-50 border border-red-100 rounded-3xl p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-black text-red-800 uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                  Active Reminders ({activeReminders.length})
+                </h3>
+                <button
+                  onClick={() => navigate('/tools')}
+                  className="text-xs font-black text-red-700 uppercase tracking-wider hover:underline bg-transparent border-none p-0 cursor-pointer"
+                >
+                  Manage Reminders
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {activeReminders.map((reminder) => (
+                  <div key={reminder.id} className="bg-white p-4 rounded-2xl border border-red-100 flex items-center justify-between gap-4 shadow-sm">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-base font-bold text-gray-900 truncate">{reminder.title}</p>
+                      <p className="text-xs font-semibold text-red-600 mt-1">
+                        Due: {new Date(reminder.dueDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const updated = reminders.map(r => r.id === reminder.id ? { ...r, completed: true } : r);
+                        setReminders(updated);
+                      }}
+                      className="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-black uppercase tracking-wider rounded-xl transition-colors shrink-0 border-none cursor-pointer"
+                    >
+                      Mark Done
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Quick Actions */}
           <section>
@@ -1124,7 +1471,7 @@ const Home = () => {
                     Your support keeps this project alive and growing for every UCC student.
                   </p>
                   <div className="max-w-sm mx-auto lg:mx-0 space-y-5">
-                    <button 
+                    <button
                       onClick={() => actions?.setShowSupportModal(true)}
                       className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-primary-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer"
                     >
@@ -1149,8 +1496,8 @@ const Home = () => {
 
       {/* Pomodoro Focus Timer Overlay */}
       {activeTask && (
-          <FocusTimer 
-              task={activeTask} 
+          <FocusTimer
+              task={activeTask}
               onComplete={(id) => {
                   if (activeTask.isClassStudy) {
                       const d = new Date();

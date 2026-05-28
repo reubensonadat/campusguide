@@ -9,8 +9,19 @@ const Modal = ({
   children,
   showCloseButton = true,
   closeOnBackdropClick = true,
-  className = ''
+  className = '',
+  size = 'md'
 }) => {
+  const sizeClasses = {
+    sm: 'sm:max-w-sm',
+    md: 'sm:max-w-md',
+    lg: 'sm:max-w-lg md:max-w-xl lg:max-w-2xl',
+    xl: 'sm:max-w-xl md:max-w-2xl lg:max-w-4xl',
+    '2xl': 'sm:max-w-2xl md:max-w-4xl lg:max-w-6xl',
+    full: 'sm:max-w-[95vw] md:max-w-[90vw]'
+  };
+  const sizeClass = sizeClasses[size] || sizeClasses.md;
+
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -96,7 +107,7 @@ const Modal = ({
     >
       <div
         ref={modalRef}
-        className={`modal-content bg-white w-full sm:w-[90vw] sm:max-w-md max-h-[90vh] flex flex-col rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 ${className}`}
+        className={`modal-content bg-white w-full sm:w-[90vw] ${sizeClass} max-h-[90vh] flex flex-col rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 ${className}`}
         style={{
           position: 'relative',
           transform: `translate(${position.x}px, ${position.y}px)`,

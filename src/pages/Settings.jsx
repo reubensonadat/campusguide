@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
+import PageHeader from '../components/common/PageHeader';
 import {
   Trash2,
   Download,
@@ -132,14 +133,13 @@ const Settings = () => {
   ];
 
   return (
-    <div className="p-4 md:p-8 pb-24 bg-gray-50/50 min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45]">
-      <div className="max-w-2xl mx-auto space-y-6">
-        
-        {/* Header Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-black tracking-tight text-gray-900 mb-2">Settings</h1>
-          <p className="text-gray-500 font-medium">Manage your data and app preferences.</p>
-        </div>
+    <div className="pb-24 bg-gray-50/50 min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45]">
+      <div className="max-w-2xl mx-auto space-y-6 px-6 pt-12 md:px-8">
+
+        <PageHeader
+          title="Settings"
+          subtitle="Manage your data and app preferences."
+        />
 
         {/* Data Statistics */}
         <div className="grid grid-cols-2 gap-4">

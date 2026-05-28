@@ -1,22 +1,20 @@
 import React from 'react';
-import { Shield, Lock, FileText, ArrowLeft } from 'lucide-react';
+import { Shield, Lock, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import PageHeader from '../components/common/PageHeader';
 
 export const PrivacyPolicy = () => {
     const navigate = useNavigate();
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-                <div className="max-w-3xl mx-auto px-4 h-16 flex items-center gap-4">
-                    <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <ArrowLeft size={20} className="text-gray-700" />
-                    </button>
-                    <h1 className="font-black text-lg text-gray-900 flex items-center gap-2">
-                        <Shield className="w-5 h-5 text-primary-600" /> Privacy Policy
-                    </h1>
-                </div>
+            <div className="max-w-3xl mx-auto px-4 pt-12">
+                <PageHeader
+                    title="Privacy Policy"
+                    subtitle="Last updated: May 2026. Learn how we handle your data."
+                    onBack={true}
+                />
             </div>
-            <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
+            <div className="max-w-3xl mx-auto px-4 py-6 space-y-8">
                 <section className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-4">
                     <h2 className="text-xl font-black text-gray-900">1. Information We Collect</h2>
                     <p className="text-gray-600 leading-relaxed font-medium">We collect information to provide better services to our users. This includes:</p>
@@ -48,17 +46,14 @@ export const TermsOfService = () => {
     const navigate = useNavigate();
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-                <div className="max-w-3xl mx-auto px-4 h-16 flex items-center gap-4">
-                    <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <ArrowLeft size={20} className="text-gray-700" />
-                    </button>
-                    <h1 className="font-black text-lg text-gray-900 flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-primary-600" /> Terms of Service
-                    </h1>
-                </div>
+            <div className="max-w-3xl mx-auto px-4 pt-12">
+                <PageHeader
+                    title="Terms of Service"
+                    subtitle="Last updated: May 2026. Rules for using Campus Guide."
+                    onBack={true}
+                />
             </div>
-            <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
+            <div className="max-w-3xl mx-auto px-4 py-6 space-y-8">
                 <section className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-4">
                     <h2 className="text-xl font-black text-gray-900">1. Acceptance of Terms</h2>
                     <p className="text-gray-600 leading-relaxed font-medium">By accessing or using the Campus Guide app, you agree to be bound by these Terms of Service and all applicable laws and regulations.</p>

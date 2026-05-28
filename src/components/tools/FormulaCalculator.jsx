@@ -376,7 +376,7 @@ const FormulaCalculator = () => {
         isOpen={!!modalFormula}
         onClose={handleCloseModal}
         title={modalFormula?.name || 'Formula Solver'}
-        className="max-w-2xl"
+        size="lg"
       >
         {modalFormula && (
           <div className="space-y-5">

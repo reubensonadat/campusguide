@@ -323,6 +323,7 @@ const TimetableBuilder = () => {
         isOpen={showAddForm}
         onClose={() => setShowAddForm(false)}
         title={newCourse.id ? 'Edit Class' : 'Add New Class'}
+        size="lg"
       >
         <form onSubmit={handleAddCourse} className="space-y-5">
           {conflictError && (
@@ -483,6 +484,7 @@ const TimetableBuilder = () => {
         isOpen={!!selectedCourse}
         onClose={() => setSelectedCourse(null)}
         title="Class Details"
+        size="lg"
       >
         {selectedCourse && (
           <div className="relative pb-4">

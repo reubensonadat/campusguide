@@ -315,7 +315,7 @@ const GPACalculator = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <Modal isOpen={showAddForm} onClose={() => setShowAddForm(false)} title={newCourse.id ? 'Edit Grade' : 'Calculate New Grade'}>
+              <Modal isOpen={showAddForm} onClose={() => setShowAddForm(false)} title={newCourse.id ? 'Edit Grade' : 'Calculate New Grade'} size="lg">
                   <div className="flex justify-end mb-4">
                     <button
                       className="text-xs font-bold bg-primary-100 text-primary-700 px-3 py-1.5 rounded-full hover:bg-primary-200 transition-colors"

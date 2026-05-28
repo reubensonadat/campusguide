@@ -6,6 +6,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import LostFoundModal from '../components/community/LostFoundModal';
 import ThriftFeed from '../components/community/ThriftFeed';
 import WhispersFeed from '../components/community/WhispersFeed';
+import PageHeader from '../components/common/PageHeader';
 
 import { supabase } from '../lib/supabase';
 import { DataLoader } from '../components/common/CustomLoaders';
@@ -22,15 +23,38 @@ const CATEGORIES = [
     { id: 'lost-and-found', label: 'Lost & Found' },
 ];
 
+const mainTabs = [
+    { id: 'general', label: 'General Feed' },
+    { id: 'thrift', label: 'Student Thrift' },
+    { id: 'whispers', label: 'Campus Whispers' }
+];
+
 const Community = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [feedData, setFeedData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isHomeBannerDismissed, setIsHomeBannerDismissed] = useLocalStorage('ucc_home_banner_dismissed', false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isLostFoundModalOpen, setIsLostFoundModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const [activeMainTab, setActiveMainTab] = useLocalStorage('ucc_community_tab', 'general'); // 'general', 'thrift', 'whispers', 'qa'
+    const [activeMainTab, setActiveMainTab] = useLocalStorage('ucc_community_tab', 'general');
+
+    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+    const tabsRef = React.useRef([]);
+
+    React.useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            const activeIndex = mainTabs.findIndex(tab => activeMainTab === tab.id);
+            if (activeIndex !== -1 && tabsRef.current[activeIndex]) {
+                const el = tabsRef.current[activeIndex];
+                setPillStyle({
+                    left: el.offsetLeft,
+                    width: el.offsetWidth,
+                    opacity: 1
+                });
+            }
+        }, 15);
+        return () => clearTimeout(timeoutId);
+    }, [activeMainTab]);
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -48,23 +72,20 @@ const Community = () => {
     const fetchCommunityData = async () => {
         setIsLoading(true);
         try {
-            // 1. Fetch Active Advertisements that have not expired
             const { data: adsData, error: adsError } = await supabase
                 .from('advertisements')
                 .select('*')
-                .ilike('status', 'active') // Handle 'Active', 'ACTIVE', 'active'
+                .ilike('status', 'active')
                 .gte('expires_at', new Date().toISOString());
 
             if (adsError) throw adsError;
 
-            // 2. Fetch University Announcements
             const { data: announcementsData, error: annError } = await supabase
                 .from('announcements')
                 .select('*');
 
             if (annError) throw annError;
 
-            // 3. Fetch Lost and Found (Only items from the last 3 days)
             const threeDaysAgo = new Date();
             threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
@@ -76,7 +97,6 @@ const Community = () => {
 
             if (lfError) throw lfError;
 
-            // 4. Format Ads for CommunityCard
             const formattedAds = (adsData || []).map(ad => {
                 let actionText = 'Message via WhatsApp';
                 let link = '#';
@@ -90,7 +110,6 @@ const Community = () => {
                     actionText = 'Call Now';
                     link = cleanPhone ? `tel:+${cleanPhone}` : '#';
                 } else {
-                    // Default to WhatsApp
                     actionText = 'Message via WhatsApp';
                     link = cleanPhone
                         ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${ad.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`
@@ -110,28 +129,25 @@ const Community = () => {
                 };
             });
 
-            // 5. Format Announcements for CommunityCard
             const formattedAnnouncements = (announcementsData || []).map(ann => ({
                 id: `ann-${ann.id}`,
                 type: 'announcement',
-                category: 'update', // Map Announcements to School Updates
+                category: 'update',
                 tag: 'OFFICIAL',
                 title: ann.title,
-                description: ann.description || ann.content, // Handling both naming conventions
+                description: ann.description || ann.content,
                 image: ann.flyer_url,
                 actionText: ann.action_text || null,
                 link: ann.action_link || null,
                 createdAt: new Date(ann.created_at).getTime(),
             }));
 
-            // 6. Format Lost and Found
             const formattedLostFound = (lostFoundData || []).map(lf => {
-                // Prepend location to description visually
                 const desc = lf.location ? `📍 Location: ${lf.location}\n\n${lf.description}` : lf.description;
                 const contact = lf.contact_info.replace(/\D/g, '');
                 return {
                     id: `lf-${lf.id}`,
-                    type: 'lost_and_found', // Distinct from 'ad' so it doesn't say SPONSORED
+                    type: 'lost_and_found',
                     category: 'lost-and-found',
                     tag: lf.type === 'lost' ? 'LOST ITEM' : 'FOUND ITEM',
                     title: lf.item_name,
@@ -143,14 +159,12 @@ const Community = () => {
                 }
             });
 
-            // 7. Combine and Sort (Newest First)
             const combinedFeed = [...formattedAnnouncements, ...formattedAds, ...formattedLostFound]
                 .sort((a, b) => b.createdAt - a.createdAt);
 
             setFeedData(combinedFeed);
         } catch (error) {
             console.error("Error fetching community feed:", JSON.stringify(error, null, 2));
-            // Optionally handle error UI here, but falling back to empty feed is okay for MVP
         } finally {
             setIsLoading(false);
         }
@@ -168,102 +182,62 @@ const Community = () => {
     return (
         <div className="pb-24 bg-gray-50/50 min-h-screen">
 
-            {/* Sticky Top Nav (Just the title) */}
-            <div className={`px-5 sticky top-0 z-30 border-b border-gray-100 shadow-sm/50 backdrop-blur-md bg-white/90 transition-all duration-300 ease-in-out ${isScrolled ? 'py-2 h-[50px]' : 'py-4 h-[76px]'}`}>
-                <div className="flex justify-between items-center w-[90%] md:w-[95%] max-w-[1600px] mx-auto h-full">
-                    <div className="flex flex-col justify-center">
-                        <h1 className={`font-black text-gray-900 tracking-tight transition-all duration-300 ${isScrolled ? 'text-lg' : 'text-2xl'}`}>
-                            Community
-                        </h1>
-                        <div className={`transition-all duration-300 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'}`}>
-                            <p className="text-sm font-medium text-gray-500">Events, updates & listings</p>
-                        </div>
-                    </div>
-
-                    {/* Buttons in upper right */}
-                    <div className={`flex items-center gap-2 transition-all duration-300 overflow-hidden ${isScrolled ? 'w-0 opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
-                                                <button
+            {/* Sticky Header */}
+            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 h-16">
+                <div className="w-[90%] md:w-[95%] max-w-[1600px] mx-auto h-full flex items-center justify-between">
+                    <span className="font-bold text-lg text-gray-900">Community</span>
+                    
+                    <div className="flex items-center gap-2">
+                        <button
                             onClick={() => setIsLostFoundModalOpen(true)}
-                            className="flex items-center justify-center p-2 rounded-xl bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors border border-primary-100/50 active:scale-95 group"
+                            className="flex items-center justify-center p-2 rounded-xl bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors border border-primary-100/50 active:scale-95 group animate-in fade-in"
                             aria-label="Report Lost/Found"
                         >
-                            <Star size={20} className="group-hover:rotate-12 transition-transform duration-300" />
+                            <Star size={16} className="group-hover:rotate-12 transition-transform duration-300" />
                         </button>
                         
                         <button
                             onClick={() => navigate('/advertise')}
-                            className={`whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 shadow-sm ${'bg-white text-amber-600 shadow-md scale-105 border border-gray-100'}`}
+                            className="whitespace-nowrap px-3.5 py-1.5 bg-[#002F45] text-white text-[11px] font-black uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-1.5"
                             aria-label="Showcase to the world"
                         >
-                            <div className="relative">
-                                <Megaphone size={20} className="group-hover:-rotate-12 transition-transform duration-300" />
-                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
-                            </div>
-                            <span className="text-[10px] font-bold tracking-tight mt-1">Showcase</span>
+                            <Megaphone size={12} />
+                            <span>Showcase</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Modified margins to user specs: w-[90%] or ~5% gaps left and right */}
-            <div className="w-[90%] md:w-[95%] max-w-[1600px] mx-auto pt-6">
+            <div className="w-[90%] md:w-[95%] max-w-[1600px] mx-auto pt-4">
 
-                {/* Scrollable 'Showcase to the World' Gentle Banner */}
-                {!isHomeBannerDismissed && (
-                    <div
-                        onClick={() => navigate('/advertise')}
-                        className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700 p-6 sm:p-8 lg:p-12 lg:h-[35vh] lg:min-h-[300px] flex flex-col justify-center text-white shadow-xl shadow-primary-200/50 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group mb-10"
-                    >
-                        {/* Close button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsHomeBannerDismissed(true);
+                {/* Main Tabs */}
+                <div className="w-full mb-4 relative">
+                    <div className="relative flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-100/80 w-full z-0 shadow-sm">
+                        <div 
+                            className="absolute h-[calc(100%-8px)] bg-[#002F45] rounded-lg z-0"
+                            style={{ 
+                                left: `${pillStyle.left}px`, 
+                                width: `${pillStyle.width}px`,
+                                opacity: pillStyle.opacity,
+                                transition: 'left 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease-in'
                             }}
-                            className="absolute top-4 right-4 z-20 text-white/50 hover:text-white bg-black/10 hover:bg-black/20 rounded-full p-2 transition-colors focus:outline-none"
-                            aria-label="Dismiss banner"
-                        >
-                            <X size={20} />
-                        </button>
-
-                        {/* Background decorations */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity duration-700"></div>
-                        <div className="absolute -bottom-10 right-4 lg:right-20 text-white/10 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-700">
-                            <Sparkles size={160} />
-                        </div>
-
-                        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between h-full w-full">
-                            <div className="max-w-2xl">
-
-                                <h3 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight mb-3 lg:mb-4 tracking-tight">
-                                    Showcase to the World
-                                </h3>
-                                <p className="text-primary-100/90 text-sm sm:text-base lg:text-lg font-medium max-w-xl leading-relaxed">
-                                    Reach thousands of students daily. Post your product or service here and gain 100% student viewership monopoly on the most visited app pages.
-                                </p>
-                            </div>
-
-                            <div className="mt-6 lg:mt-0 flex items-center gap-4">
-                                <span className="font-bold text-sm lg:text-base text-white/90 group-hover:text-white transition-colors">Start Advertising</span>
-                                <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-white flex items-center justify-center shrink-0 shadow-lg text-primary-600 group-hover:scale-110 transition-transform duration-300">
-                                    <ChevronRight size={24} strokeWidth={3} />
-                                </div>
-                            </div>
-                        </div>
+                        />
+                        {mainTabs.map((tab, index) => {
+                            const isActive = activeMainTab === tab.id;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    ref={el => tabsRef.current[index] = el}
+                                    onClick={() => setActiveMainTab(tab.id)}
+                                    className={`relative z-10 py-2 rounded-lg text-xs font-bold text-center flex-1 transition-colors duration-200 ${
+                                        isActive ? 'text-white' : 'text-gray-500 hover:text-gray-900'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            );
+                        })}
                     </div>
-                )}
-
-                {/* Main Tabs for the 4 sections */}
-                <div className="flex gap-2 mb-6 overflow-x-auto hide-scrollbar pb-2 px-4 md:px-0">
-                    <button onClick={() => setActiveMainTab('general')} className={`whitespace-nowrap px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 ${activeMainTab === 'general' ? 'bg-gray-900 text-white shadow-lg' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
-                        General Feed
-                    </button>
-                    <button onClick={() => setActiveMainTab('thrift')} className={`whitespace-nowrap px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 ${activeMainTab === 'thrift' ? 'bg-primary-600 text-white shadow-lg shadow-primary-200' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
-                        Student Thrift
-                    </button>
-                    <button onClick={() => setActiveMainTab('whispers')} className={`whitespace-nowrap px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 ${activeMainTab === 'whispers' ? 'bg-primary-600 text-white shadow-lg shadow-primary-200' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
-                        Campus Whispers
-                    </button>
                 </div>
 
                 {/* Conditional Rendering based on Main Tab */}
@@ -271,65 +245,55 @@ const Community = () => {
                     <>
                         {/* Sticky Feed Header & Filters */}
                         <div
-                            className={`sticky z-20 bg-gray-50/95 backdrop-blur-md -mx-4 px-4 md:mx-0 md:px-0 transition-all duration-300 ${isScrolled ? 'pt-1 pb-2' : 'pt-2 pb-4'}`}
-                            style={{ top: isScrolled ? '50px' : '76px' }}
+                            className="sticky z-20 bg-gray-50/95 backdrop-blur-md -mx-4 px-4 md:mx-0 md:px-0 pt-2 pb-3"
+                            style={{ top: '64px' }}
                         >
-                    <div className={`flex items-center gap-4 transition-all duration-300 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-10 opacity-100 mb-4'}`}>
-                        <div className="h-px bg-gray-200 flex-1"></div>
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2 whitespace-nowrap">Community Feed</span>
-                        <div className="h-px bg-gray-200 flex-1"></div>
-                    </div>
-
-                    {/* Filter Categories - Horizontally Scrollable */}
-                    <div className={`flex overflow-x-auto hide-scrollbar gap-2 px-4 md:px-4 lg:pl-4 transition-all duration-300 ${isScrolled ? 'py-1' : 'py-2'}`}>
-                        {CATEGORIES.map(category => (
-                            <button
-                                key={category.id}
-                                onClick={() => setSelectedCategory(category.id)}
-                                className={`whitespace-nowrap rounded-xl font-bold transition-all duration-200 shadow-sm ${
-                                    isScrolled ? 'px-4 py-2 text-xs' : 'px-5 py-2.5 text-sm'
-                                } ${selectedCategory === category.id
-                                    ? 'bg-white text-primary-600 shadow-md scale-105 border border-gray-100'
-                                    : 'bg-transparent text-gray-500 hover:bg-gray-100 border border-transparent'
-                                    }`}
-                            >
-                                {category.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Render Feed using CSS Grid or Empty State */}
-                {isLoading ? (
-                    <div className="py-20 flex flex-col items-center justify-center text-center gap-4">
-                        <DataLoader />
-                        <p className="text-gray-400 font-semibold text-sm">Loading community feed...</p>
-                    </div>
-                ) : filteredFeed.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
-                        {filteredFeed.map(post => (
-                            <CommunityCard key={post.id} post={post} />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="py-20 flex flex-col items-center justify-center text-center bg-white rounded-xl border border-gray-100 shadow-sm mb-8">
-                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                            <Megaphone className="text-gray-400" size={28} />
+                            <div className="flex overflow-x-auto hide-scrollbar gap-1.5 px-4 md:px-4 lg:pl-4 py-2">
+                                {CATEGORIES.map(category => (
+                                    <button
+                                        key={category.id}
+                                        onClick={() => setSelectedCategory(category.id)}
+                                        className={`whitespace-nowrap rounded-lg font-bold transition-all duration-200 px-3.5 py-2 text-xs ${selectedCategory === category.id
+                                            ? 'bg-white text-primary-600 shadow-md scale-105 border border-gray-100'
+                                            : 'bg-transparent text-gray-500 hover:bg-gray-100 border border-transparent'
+                                            }`}
+                                    >
+                                        {category.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">No listings found</h3>
-                        <p className="text-gray-500 font-medium max-w-sm">
-                            There are currently no items under this category. Be the first to advertise here!
-                        </p>
-                        <button
-                            onClick={() => navigate('/advertise')}
-                            className="mt-6 px-6 py-2.5 bg-primary-50 text-primary-700 font-bold rounded-xl hover:bg-primary-100 transition-colors"
-                        >
-                            Create Ad
-                        </button>
-                    </div>
-                )}
 
-                {filteredFeed.length > 0 && (
+                        {isLoading ? (
+                            <div className="py-20 flex flex-col items-center justify-center text-center gap-4">
+                                <DataLoader />
+                                <p className="text-gray-400 font-semibold text-sm">Loading community feed...</p>
+                            </div>
+                        ) : filteredFeed.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
+                                {filteredFeed.map(post => (
+                                    <CommunityCard key={post.id} post={post} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="py-20 flex flex-col items-center justify-center text-center bg-white rounded-xl border border-gray-100 shadow-sm mb-8">
+                                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                    <Megaphone className="text-gray-400" size={28} />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">No listings found</h3>
+                                <p className="text-gray-500 font-medium max-w-sm">
+                                    There are currently no items under this category. Be the first to advertise here!
+                                </p>
+                                <button
+                                    onClick={() => navigate('/advertise')}
+                                    className="mt-6 px-6 py-2.5 bg-primary-50 text-primary-700 font-bold rounded-xl hover:bg-primary-100 transition-colors"
+                                >
+                                    Create Ad
+                                </button>
+                            </div>
+                        )}
+
+                        {filteredFeed.length > 0 && (
                             <div className="text-center mt-12 pb-12">
                                 <p className="text-gray-400 font-medium text-sm">You've caught up with the latest listings</p>
                             </div>
