@@ -147,7 +147,7 @@ const NewThriftModal = ({ isOpen, onClose }) => {
             user_id: userId,
             item_name: formData.title,
             price: parseFloat(formData.price),
-            description: formData.condition,
+            description: `Condition: ${formData.condition}\nLocation: ${formData.location}`,
             contact_info: formData.whatsapp,
             image_url: finalImageUrl,
             status: 'ACTIVE'

@@ -39,23 +39,25 @@ export async function pushTimetableToCloud() {
   if (!courses.length) return;
 
   // ★ KEY FIX: Include academic_year and semester in each row
-  const rows = courses.map(c => ({
-    id: c.id,
-    user_id: userId,
-    name: c.name,
-    day: c.day,
-    start_time: c.start_time,
-    end_time: c.end_time,
-    location: c.location,
-    color: c.color,
-    lecturer: c.lecturer,
-    contact: c.contact,
-    target_grade: c.target_grade,
-    credit_hours: c.credit_hours,
-    // ★ NEW — semester scope fields
-    academic_year: c.academic_year || null,
-    semester: c.semester || null,
-  }));
+  const rows = courses
+    .filter(c => c.name && c.day && c.start_time && c.end_time)
+    .map(c => ({
+      id: c.id,
+      user_id: userId,
+      name: c.name,
+      day: c.day,
+      start_time: c.start_time,
+      end_time: c.end_time,
+      location: c.location || '',
+      color: c.color || '#002F45',
+      lecturer: c.lecturer || '',
+      contact: c.contact || '',
+      target_grade: c.target_grade || '',
+      credit_hours: c.credit_hours || 3,
+      // ★ NEW — semester scope fields
+      academic_year: c.academic_year || null,
+      semester: c.semester || null,
+    }));
 
   const { error } = await supabase
     .from('user_timetable')
@@ -180,9 +182,9 @@ export async function pushGPAToCloud() {
   const rows = gpaCourses.map(c => ({
     id: c.id,
     user_id: userId,
-    course_name: c.course_name || c.name,
-    grade: c.grade,
-    credit_hours: c.credit_hours,
+    name: c.course_name || c.name || '',
+    grade: c.grade || 'E',
+    credit_hours: c.credit_hours || 3,
     academic_year: c.academic_year || null,
     semester: c.semester || null,
   }));
@@ -215,8 +217,8 @@ export async function pullGPAFromCloud() {
   if (data && data.length > 0) {
     const localCourses = data.map(row => ({
       id: row.id,
-      course_name: row.course_name,
-      name: row.course_name,   // keep both for backward compat
+      course_name: row.name,
+      name: row.name,   // keep both for backward compat
       grade: row.grade,
       credit_hours: row.credit_hours,
       academic_year: row.academic_year,
@@ -240,7 +242,7 @@ export async function pushTasksToCloud() {
     user_id: userId,
     title: t.title,
     description: t.description || '',
-    completed: t.completed || false,
+    status: t.completed ? 'COMPLETED' : 'PENDING',
     date: t.date,
     academic_year: t.academic_year || null,
     semester: t.semester || null,
@@ -275,8 +277,8 @@ export async function pullTasksFromCloud() {
     const localTasks = data.map(row => ({
       id: row.id,
       title: row.title,
-      description: row.description,
-      completed: row.completed,
+      description: row.description || '',
+      completed: row.status === 'COMPLETED' || row.status === 'completed',
       date: row.date,
       academic_year: row.academic_year,
       semester: row.semester,
@@ -299,10 +301,10 @@ export async function pushBudgetToCloud() {
     id: t.id,
     user_id: userId,
     type: t.type,
-    amount: t.amount,
+    amount: parseFloat(t.amount) || 0,
     category: t.category,
     description: t.description || '',
-    date: t.date,
+    created_at: t.date ? new Date(t.date).toISOString() : new Date().toISOString(),
   }));
 
   const { error } = await supabase
@@ -336,8 +338,8 @@ export async function pullBudgetFromCloud() {
       type: row.type,
       amount: row.amount,
       category: row.category,
-      description: row.description,
-      date: row.date,
+      description: row.description || '',
+      date: row.created_at ? row.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
     }));
     localStorage.setItem('ucc_budget', JSON.stringify(localTxns));
   }
