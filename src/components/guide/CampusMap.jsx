@@ -229,7 +229,7 @@ const MapView = () => {
                     maxBounds={maxBounds}
                     minZoom={13}
                 >
-                    <MapControls position="top-right" showZoom showCompass showLocate onLocate={handleMapLocate} />
+                    <MapControls position="top-right" showZoom showCompass showLocate onLocate={handleMapLocate} className="top-[calc(0.5rem_+_env(safe-area-inset-top,0px))]" />
 
                     {/* Active Route */}
                     {activeRouteData && (
@@ -366,7 +366,7 @@ const MapView = () => {
                 lg:top-4 lg:left-4 lg:bottom-auto lg:rounded-2xl lg:w-96 lg:max-h-[calc(100vh-8rem)]
                 
                 /* Mobile positioning (floating above tab bar) */
-                bottom-[84px] left-3 right-3 rounded-2xl
+                bottom-[calc(84px_+_env(safe-area-inset-bottom,0px))] left-3 right-3 rounded-2xl
                 ${isMobileMenuOpen ? 'top-20 lg:top-4' : 'h-auto lg:top-4 lg:h-auto'}
             `}>
                 {/* Header / Search Bar */}

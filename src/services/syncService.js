@@ -20,6 +20,8 @@ function setLastSync() {
 
 function getUserId() {
   try {
+    const localUserId = localStorage.getItem('ucc_user_id');
+    if (localUserId) return localUserId;
     const profile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
     return profile?.user_id || profile?.id || null;
   } catch {
