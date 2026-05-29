@@ -107,10 +107,12 @@ const Profile = () => {
   }, []);
 
   const handleSave = () => {
-    triggerAuthSheet(() => {
-      setProfile(formData);
-      setIsEditModalOpen(false);
-    });
+    // Save to local state and localStorage immediately, close the modal instantly
+    setProfile(formData);
+    setIsEditModalOpen(false);
+    
+    // Trigger auth/sync in the background without blocking the UI
+    triggerAuthSheet(() => {});
   };
 
   const toggleWidget = (key) => {
@@ -195,7 +197,7 @@ const Profile = () => {
     <div className="min-h-screen bg-white pb-28 font-sans">
 
       {/* ── Main Profile View ────────────────────────────────────────────── */}
-      <div className="max-w-3xl mx-auto px-6 pt-12 space-y-8">
+      <div className="max-w-3xl mx-auto px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] space-y-8">
 
         {/* Header */}
         <div className="flex justify-between items-center">

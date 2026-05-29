@@ -183,7 +183,7 @@ const Community = () => {
         <div className="pb-24 bg-gray-50/50 min-h-screen">
 
             {/* Sticky Header */}
-            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 h-16">
+            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 pt-[env(safe-area-inset-top,0px)] h-[calc(4rem_+_env(safe-area-inset-top,0px))]">
                 <div className="w-[90%] md:w-[95%] max-w-[1600px] mx-auto h-full flex items-center justify-between">
                     <span className="font-bold text-lg text-gray-900">Community</span>
                     
@@ -246,7 +246,7 @@ const Community = () => {
                         {/* Sticky Feed Header & Filters */}
                         <div
                             className="sticky z-20 bg-gray-50/95 backdrop-blur-md -mx-4 px-4 md:mx-0 md:px-0 pt-2 pb-3"
-                            style={{ top: '64px' }}
+                            style={{ top: 'calc(4rem + env(safe-area-inset-top, 0px))' }}
                         >
                             <div className="flex overflow-x-auto hide-scrollbar gap-1.5 px-4 md:px-4 lg:pl-4 py-2">
                                 {CATEGORIES.map(category => (

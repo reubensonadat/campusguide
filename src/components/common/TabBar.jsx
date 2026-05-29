@@ -18,8 +18,8 @@ const TabBar = () => {
   ];
 
   const displayTabs = [...tabs];
-  if (location.pathname === '/settings') {
-    displayTabs[4] = { id: 'settings', label: 'Settings', icon: CustomSettings, path: '/settings' };
+  if (['/settings', '/privacy', '/terms'].includes(location.pathname)) {
+    displayTabs[4] = { id: 'settings', label: 'Settings', icon: CustomSettings, path: location.pathname };
   } else if (location.pathname === '/contact') {
     displayTabs[4] = { id: 'contact', label: 'Contact', icon: CustomContact, path: '/contact' };
   } else if (location.pathname === '/advertise') {
@@ -31,7 +31,11 @@ const TabBar = () => {
   useEffect(() => {
     // Small timeout to ensure DOM layout is complete before measuring
     const timeoutId = setTimeout(() => {
-      const activeIndex = displayTabs.findIndex(tab => location.pathname === tab.path || (tab.path === '/tools' && location.pathname.startsWith('/tools/')));
+      const activeIndex = displayTabs.findIndex(tab => 
+        location.pathname === tab.path || 
+        (tab.path === '/tools' && location.pathname.startsWith('/tools/')) ||
+        (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname))
+      );
       if (activeIndex !== -1 && tabsRef.current[activeIndex]) {
         const el = tabsRef.current[activeIndex];
         setPillStyle({
@@ -88,7 +92,9 @@ const TabBar = () => {
         />
 
         {displayTabs.map((tab, index) => {
-          const isActive = location.pathname === tab.path || (tab.path === '/tools' && location.pathname.startsWith('/tools/'));
+          const isActive = location.pathname === tab.path || 
+            (tab.path === '/tools' && location.pathname.startsWith('/tools/')) ||
+            (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname));
           const Icon = tab.icon;
 
           return (

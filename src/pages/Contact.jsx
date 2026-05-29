@@ -138,7 +138,7 @@ const Contact = () => {
   const newLocal = "text-white bg-blue hover:bg-blue-700 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none";
   return (
     <div className="pb-24 bg-gray-50/50 min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45] transition-colors duration-300">
-      <div className="max-w-4xl mx-auto space-y-6 px-6 pt-12 md:px-8">
+      <div className="max-w-4xl mx-auto space-y-6 px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] md:px-8">
 
         <PageHeader
           title="Contact Support"

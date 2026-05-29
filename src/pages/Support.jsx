@@ -113,7 +113,7 @@ const Support = () => {
 
   return (
     <div className="pb-24 bg-gray-50/30 min-h-screen">
-      <div className="max-w-3xl mx-auto px-6 pt-10 md:px-8">
+      <div className="max-w-3xl mx-auto px-6 pt-[calc(2.5rem_+_env(safe-area-inset-top,0px))] md:px-8">
 
         {/* ── App Identity ── */}
         <div className="text-center mb-10">

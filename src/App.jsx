@@ -98,7 +98,11 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex bg-gray-50/50">
-      <Toaster position="top-center" toastOptions={{ duration: 3000, style: { fontWeight: 'bold' } }} />
+      <Toaster 
+        position="top-center" 
+        containerStyle={{ top: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}
+        toastOptions={{ duration: 3000, style: { fontWeight: 'bold' } }} 
+      />
       <Sidebar onExpandedChange={setIsSidebarExpanded} />
       
       <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>

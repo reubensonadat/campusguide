@@ -134,7 +134,7 @@ const Settings = () => {
 
   return (
     <div className="pb-24 bg-gray-50/50 min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45]">
-      <div className="max-w-2xl mx-auto space-y-6 px-6 pt-12 md:px-8">
+      <div className="max-w-2xl mx-auto space-y-6 px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] md:px-8">
 
         <PageHeader
           title="Settings"

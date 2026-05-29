@@ -308,7 +308,7 @@ const Advertise = () => {
         <div className="min-h-screen bg-gray-50 flex flex-col font-sans selection:bg-primary-100 selection:text-primary-900 mb-24 sm:pb-0">
 
             {/* Header */}
-            <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-30">
+            <header className="bg-white border-b border-gray-100 px-4 pt-[calc(1rem_+_env(safe-area-inset-top,0px))] pb-4 sticky top-0 z-30">
                 <div className="max-w-3xl mx-auto flex items-center gap-4">
                     <button
                         onClick={() => step === 1 ? navigate(-1) : prevStep()}

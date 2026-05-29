@@ -108,14 +108,14 @@ const Sidebar = ({ onExpandedChange }) => {
         <button
           onClick={() => navigate('/settings')}
           className={`w-full flex items-center px-2.5 h-[44px] rounded-xl transition-all duration-200 group focus:outline-none ${
-            location.pathname === '/settings'
+            ['/settings', '/privacy', '/terms'].includes(location.pathname)
               ? 'bg-[#6EABC6] text-white shadow-sm' 
               : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
           }`}
           title={!isExpanded ? "Settings" : ""}
         >
           <div className="flex-shrink-0 flex items-center justify-center w-6 h-6">
-            <CustomSettings size={22} className={location.pathname === '/settings' ? 'text-white' : 'text-gray-500 group-hover:text-gray-900 transition-colors'} />
+            <CustomSettings size={22} className={['/settings', '/privacy', '/terms'].includes(location.pathname) ? 'text-white' : 'text-gray-500 group-hover:text-gray-900 transition-colors'} />
           </div>
           <span 
             className={`ml-3 text-sm font-bold whitespace-nowrap transition-all duration-300 ${

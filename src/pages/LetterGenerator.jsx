@@ -47,7 +47,7 @@ export const LetterGenerator = () => {
   return (
     <div className="min-h-screen bg-gray-50/50 pb-24 font-sans selection:bg-[#002F45]/20 selection:text-[#002F45]">
       {/* Header */}
-      <div className="max-w-5xl mx-auto px-4 md:px-6 pt-12">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))]">
         <PageHeader
           title="Letter Generator"
           subtitle="Draft formal academic letters instantly"

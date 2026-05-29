@@ -62,7 +62,7 @@ const Tools = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/30 font-sans selection:bg-primary-100 selection:text-primary-900 pb-20 md:pb-0 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[calc(2rem_+_env(safe-area-inset-top,0px))] pb-8">
 
         <PageHeader title="Student Tools" subtitle="Manage your schedule, track your academic progress, and solve complex formulas." />
 

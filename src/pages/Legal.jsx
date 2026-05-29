@@ -7,7 +7,7 @@ export const PrivacyPolicy = () => {
     const navigate = useNavigate();
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="max-w-3xl mx-auto px-4 pt-12">
+            <div className="max-w-3xl mx-auto px-4 pt-[calc(3rem_+_env(safe-area-inset-top,0px))]">
                 <PageHeader
                     title="Privacy Policy"
                     subtitle="Last updated: May 2026. Learn how we handle your data."
@@ -46,7 +46,7 @@ export const TermsOfService = () => {
     const navigate = useNavigate();
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            <div className="max-w-3xl mx-auto px-4 pt-12">
+            <div className="max-w-3xl mx-auto px-4 pt-[calc(3rem_+_env(safe-area-inset-top,0px))]">
                 <PageHeader
                     title="Terms of Service"
                     subtitle="Last updated: May 2026. Rules for using Campus Guide."
