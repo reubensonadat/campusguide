@@ -87,9 +87,22 @@ export const restoreLifecycle = async (oldDeviceId, pin) => {
  * Helper to get the current securely logged-in user.
  */
 export const getCurrentUser = async () => {
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error) return null;
-  return user;
+  const localUserId = localStorage.getItem('ucc_user_id');
+  if (localUserId) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) return session.user;
+    } catch (_) {}
+    return { id: localUserId, synthetic: true };
+  }
+  
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error) return null;
+    return user;
+  } catch (_) {
+    return null;
+  }
 };
 
 /**
