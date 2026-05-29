@@ -1,5 +1,4 @@
 import { supabase } from '../lib/supabase';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 
 // ── Local-first assignment service ─────────────────────────────────────────
 // Assignments are stored in localStorage for instant access and synced to
@@ -25,17 +24,53 @@ const notifyAssignmentsChanged = () => {
 /**
  * Subscribe to assignment changes (same-tab).
  * Returns an unsubscribe function.
- *
- * Usage:
- *   useEffect(() => {
- *     const unsub = onAssignmentsChanged(() => setHomeAssignments(getAssignments()));
- *     return unsub;
- *   }, []);
  */
 export const onAssignmentsChanged = (callback) => {
   window.addEventListener(ASSIGNMENTS_CHANGED_EVENT, callback);
   return () => window.removeEventListener(ASSIGNMENTS_CHANGED_EVENT, callback);
 };
+
+// ── Profile / Semester Helpers ────────────────────────────────────────────
+
+export function getProfileSemester() {
+  try {
+    const profile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
+    return {
+      academic_year: profile.level || '100',
+      semester: profile.semester || '1',
+    };
+  } catch {
+    return { academic_year: '100', semester: '1' };
+  }
+}
+
+export function backfillAssignmentsSemester() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+
+    const assignments = JSON.parse(raw);
+    const needsBackfill = assignments.some(a => !a.academic_year || !a.semester);
+    if (!needsBackfill) return;
+
+    const { academic_year, semester } = getProfileSemester();
+    const patched = assignments.map(a => ({
+      ...a,
+      academic_year: a.academic_year || academic_year,
+      semester: a.semester || semester,
+    }));
+
+    localStorage.setItem(LS_KEY, JSON.stringify(patched));
+    console.log('[assignmentService] backfilled', patched.length, 'assignments');
+  } catch (e) {
+    console.error('[assignmentService] backfill error:', e);
+  }
+}
+
+// Run backfill immediately upon loading this service
+backfillAssignmentsSemester();
+
+// ── CRUD Operations ───────────────────────────────────────────────────────
 
 /**
  * Get all assignments from localStorage
@@ -63,6 +98,8 @@ export const saveAssignments = (assignments) => {
  */
 export const addAssignment = (assignment) => {
   const assignments = getAssignments();
+  const { academic_year, semester } = getProfileSemester();
+
   const newAssignment = {
     id: Date.now().toString(),
     title: assignment.title || 'Untitled Assignment',
@@ -72,6 +109,9 @@ export const addAssignment = (assignment) => {
     priority: assignment.priority || 'medium',
     status: assignment.status || 'pending',
     notes: assignment.notes || '',
+    // Semester scope from profile (source of truth)
+    academic_year: assignment.academic_year || academic_year,
+    semester: assignment.semester || semester,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -110,6 +150,19 @@ export const deleteAssignment = (id) => {
  */
 export const markAssignmentStatus = (id, status) => {
   return updateAssignment(id, { status });
+};
+
+// ── Filtering & Grouping ──────────────────────────────────────────────────
+
+/**
+ * Get assignments filtered by semester
+ */
+export const getAssignmentsBySemester = (assignments, academicYear, semester) => {
+  const term = `${academicYear}_${semester}`;
+  return assignments.filter(a => {
+    const aTerm = `${a.academic_year}_${a.semester}`;
+    return aTerm === term;
+  });
 };
 
 /**
@@ -200,6 +253,8 @@ export const syncAssignmentsToCloud = async (userId) => {
       priority: a.priority,
       status: a.status,
       notes: a.notes || null,
+      academic_year: a.academic_year,
+      semester: a.semester,
       created_at: a.createdAt,
       updated_at: a.updatedAt || a.createdAt,
     }));
@@ -244,6 +299,8 @@ export const pullAssignmentsFromCloud = async (userId) => {
       priority: row.priority,
       status: row.status,
       notes: row.notes || '',
+      academic_year: row.academic_year,
+      semester: row.semester,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }));

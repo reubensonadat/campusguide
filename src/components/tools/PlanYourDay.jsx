@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import React, { useState, useEffect, useMemo } from 'react';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import useProfile from '../../hooks/useProfile';
 import { FocusTimer } from './FocusTimer';
 import {
     Plus, Trash2, CheckCircle2, Circle, ListTodo, Edit3,
@@ -10,6 +11,11 @@ import {
     MeetingIcon, ComputerWorkIcon, SleepIcon, 
     JobIcon, PlayIcon, ShoppingIcon 
 } from '../common/CustomTaskIcons';
+
+const TERMS = [
+  '100_1', '100_2', '200_1', '200_2', '300_1', '300_2',
+  '400_1', '400_2', '500_1', '500_2', '600_1', '600_2'
+];
 
 const AVAILABLE_ICONS = [
     { id: 'library', icon: LibraryIcon, label: 'Library' },
@@ -74,9 +80,6 @@ const formatDateDisplay = (dateStr) => {
 };
 
 // ─── COMPACT QUICK FILL GROUPS ─────────────────────────────────────
-// No emojis. SVG icons for group headers. All chips use neutral slate,
-// active/pressed uses primary-600 (the app's green/blue). 
-// End times included. Practical student-life entries.
 const QUICK_FILL_GROUPS = [
     {
         label: 'Morning',
@@ -120,6 +123,7 @@ const QUICK_FILL_GROUPS = [
 ];
 
 const PlanYourDay = () => {
+    const [profile, setProfile] = useProfile();
     const [tasks, setTasks] = useLocalStorage('ucc_daily_tasks', []);
     const [timetable] = useLocalStorage('ucc_timetable', []);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -136,16 +140,48 @@ const PlanYourDay = () => {
     const [taskDate, setTaskDate] = useState(getTodayStr());
     const [activeQuickFill, setActiveQuickFill] = useState(null);
 
-    const handleQuickFill = (template, groupIdx, itemIdx) => {
-        const key = `${groupIdx}-${itemIdx}`;
-        setTitle(template.title);
-        setSelectedIcon(template.icon);
-        setTime(template.time);
-        if (template.endTime) setEndTime(template.endTime);
-        setActiveQuickFill(key);
-        // Brief visual feedback, then reset
-        setTimeout(() => setActiveQuickFill(null), 300);
+    // ─── BACKFILL: Patch existing tasks that lack academic_year/semester ───
+    useEffect(() => {
+        const needsBackfill = tasks.some(t => !t.academic_year || !t.semester);
+        if (!needsBackfill) return;
+
+        const defaultYear = profile?.level || '100';
+        const defaultSem  = profile?.semester || '1';
+
+        const patched = tasks.map(t => ({
+            ...t,
+            academic_year: t.academic_year || defaultYear,
+            semester:      t.semester || defaultSem,
+        }));
+
+        setTasks(patched);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // ─── DERIVE active term from profile (SOURCE OF TRUTH) ───
+    const activeTerm = `${profile?.level || '100'}_${profile?.semester || '1'}`;
+    const activeTermIndex = TERMS.indexOf(activeTerm) >= 0 ? TERMS.indexOf(activeTerm) : 0;
+    const [activeLevel, activeSemester] = activeTerm.split('_');
+
+    const setActiveTermIndex = (newIndex) => {
+        const term = TERMS[newIndex];
+        if (!term) return;
+        const [level, semester] = term.split('_');
+        setProfile(prev => ({ ...prev, level, semester }));
     };
+
+    // ─── FILTER: Only tasks & timetable for the active term ───
+    const semesterTasks = useMemo(() => {
+        return tasks.filter(t => `${t.academic_year}_${t.semester}` === activeTerm);
+    }, [tasks, activeTerm]);
+
+    const semesterTimetable = useMemo(() => {
+        return timetable.filter(c => {
+            const cYear = c.academic_year || profile?.level || '100';
+            const cSem = c.semester || profile?.semester || '1';
+            return `${cYear}_${cSem}` === activeTerm;
+        });
+    }, [timetable, activeTerm, profile]);
 
     // Navigate between dates
     const navigateDate = (offset) => {
@@ -155,23 +191,35 @@ const PlanYourDay = () => {
     };
 
     // Filter tasks for the selected date
-    const todaysTasks = tasks.filter(t => t.date === selectedDate).sort((a, b) => a.time.localeCompare(b.time));
+    const todaysTasks = useMemo(() => {
+        return semesterTasks.filter(t => t.date === selectedDate).sort((a, b) => a.time.localeCompare(b.time));
+    }, [semesterTasks, selectedDate]);
 
     // Smart Suggestions from Timetable
-    const suggestedClasses = React.useMemo(() => {
+    const suggestedClasses = useMemo(() => {
         const d = new Date(selectedDate + 'T00:00:00');
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const dayName = days[d.getDay()];
-        if (!Array.isArray(timetable)) return [];
+        if (!Array.isArray(semesterTimetable)) return [];
         
-        const classesForDay = timetable.filter(c => c.day && c.day.toLowerCase() === dayName.toLowerCase());
+        const classesForDay = semesterTimetable.filter(c => c.day && c.day.toLowerCase() === dayName.toLowerCase());
         
         return classesForDay.filter(cls => {
             const classTitle = cls.courseName || cls.name || 'Class';
             const expectedTitle = `Revise ${classTitle}`;
             return !todaysTasks.some(t => t.title === expectedTitle);
         });
-    }, [timetable, selectedDate, todaysTasks]);
+    }, [semesterTimetable, selectedDate, todaysTasks]);
+
+    const handleQuickFill = (template, groupIdx, itemIdx) => {
+        const key = `${groupIdx}-${itemIdx}`;
+        setTitle(template.title);
+        setSelectedIcon(template.icon);
+        setTime(template.time);
+        if (template.endTime) setEndTime(template.endTime);
+        setActiveQuickFill(key);
+        setTimeout(() => setActiveQuickFill(null), 300);
+    };
 
     const handleAddSuggestion = (cls) => {
         let suggestedTime = '08:00';
@@ -190,7 +238,9 @@ const PlanYourDay = () => {
             endTime: null,
             icon: 'study',
             status: 'pending',
-            date: selectedDate
+            date: selectedDate,
+            academic_year: activeLevel,
+            semester: activeSemester
         };
         setTasks([...tasks, newTask]);
     };
@@ -206,7 +256,9 @@ const PlanYourDay = () => {
                 time: time,
                 endTime: endTime || null,
                 icon: selectedIcon,
-                date: taskDate
+                date: taskDate,
+                academic_year: activeLevel,
+                semester: activeSemester
             } : t));
         } else {
             const newTask = {
@@ -216,7 +268,9 @@ const PlanYourDay = () => {
                 endTime: endTime || null,
                 icon: selectedIcon,
                 status: 'pending',
-                date: taskDate
+                date: taskDate,
+                academic_year: activeLevel,
+                semester: activeSemester
             };
             setTasks([...tasks, newTask]);
         }
@@ -280,18 +334,42 @@ const PlanYourDay = () => {
 
     return (
         <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden relative min-h-[60vh]">
-            <div className="p-6 md:p-8 border-b border-gray-100 flex items-center justify-between bg-slate-50">
-                <div>
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">Plan Your Day</h2>
-                    <p className="text-sm font-medium text-slate-500 mt-1">Organize your daily routine outside of classes.</p>
+            <div className="p-6 md:p-8 border-b border-gray-100 bg-slate-50 flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Plan Your Day</h2>
+                        <p className="text-sm font-medium text-slate-500 mt-1">Organize your daily routine outside of classes.</p>
+                    </div>
+                    <button
+                        onClick={openAddModal}
+                        className="bg-primary-600 hover:bg-primary-700 text-white p-3 md:px-5 md:py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"
+                    >
+                        <Plus size={18} />
+                        <span className="hidden md:inline font-bold">Add Event</span>
+                    </button>
                 </div>
-                <button
-                    onClick={openAddModal}
-                    className="bg-primary-600 hover:bg-primary-700 text-white p-3 md:px-5 md:py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"
-                >
-                    <Plus size={18} />
-                    <span className="hidden md:inline font-bold">Add Event</span>
-                </button>
+
+                {/* ── Semester Toggle UI ── */}
+                <div className="flex items-center justify-center bg-white rounded-2xl p-2 max-w-sm w-full mx-auto shadow-sm border border-gray-100">
+                    <button 
+                        onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
+                        disabled={activeTermIndex === 0}
+                        className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+                    <div className="flex-1 text-center flex flex-col">
+                        <span className="text-sm font-black text-[#002F45]">Level {activeLevel}</span>
+                        <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Semester {activeSemester}</span>
+                    </div>
+                    <button 
+                        onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
+                        disabled={activeTermIndex === TERMS.length - 1}
+                        className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+                    >
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
             </div>
 
             {/* Date Navigation */}

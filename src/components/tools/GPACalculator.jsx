@@ -1,38 +1,161 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import useProfile from '../../hooks/useProfile';
 import { Button } from '../common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../common/Card';
 import { Modal } from '../common/Modal';
-import { Plus, Trash2, Calculator, Save, Info, Target, ArrowRight } from 'lucide-react';
+import { Plus, Trash2, Calculator, Info, Target, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GRADE_POINTS, GRADE_RANGES } from '../../utils/constants';
-import { calculateGPA, getGradeFromScore } from '../../utils/helpers';
+import { getGradeFromScore } from '../../utils/helpers';
 import { triggerAuthSheet } from '../onboarding/AuthModal';
 
+const TERMS = [
+  '100_1', '100_2', '200_1', '200_2', '300_1', '300_2',
+  '400_1', '400_2', '500_1', '500_2', '600_1', '600_2'
+];
+
 const GPACalculator = () => {
+  const [profile, setProfile] = useProfile();
   const [courses, setCourses] = useLocalStorage('ucc_gpa', []);
   const [showAddForm, setShowAddForm] = useState(false);
+  
+  // ─── DERIVE active term from profile (SOURCE OF TRUTH) ───
+  const activeTerm = `${profile?.level || '100'}_${profile?.semester || '1'}`;
+  const activeTermIndex = TERMS.indexOf(activeTerm) >= 0 ? TERMS.indexOf(activeTerm) : 0;
+  const [activeLevel, activeSemester] = activeTerm.split('_');
+
   const [newCourse, setNewCourse] = useState({
     name: '',
     creditHours: 3,
     score: '',
-    isDetailed: false, // flag to toggle view
+    isDetailed: false,
     examWeight: 60,
     examScore: '',
     assessments: [
       { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
       { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-    ]
+    ],
+    academic_year: activeLevel,
+    semester: activeSemester
   });
-
-  const [currentGPA, setCurrentGPA] = useState(0);
-  const [totalCredits, setTotalCredits] = useState(0);
-  const [totalGradePoints, setTotalGradePoints] = useState(0);
 
   // Target GPA Solver State
   const [targetGPA, setTargetGPA] = useState('');
   const [remainingCredits, setRemainingCredits] = useState('');
   const [targetResult, setTargetResult] = useState(null);
 
+  // ─── TOGGLE: Write to profile ───
+  const setActiveTermIndex = (newIndex) => {
+    const term = TERMS[newIndex];
+    if (!term) return;
+    const [level, semester] = term.split('_');
+    setProfile(prev => ({ ...prev, level, semester }));
+  };
+
+  // ─── BACKFILL: Patch existing GPA courses that lack academic_year/semester ───
+  useEffect(() => {
+    const needsBackfill = courses.some(c => !c.academic_year || !c.semester);
+    if (!needsBackfill) return;
+
+    const defaultYear = profile?.level || '100';
+    const defaultSem  = profile?.semester || '1';
+
+    const patched = courses.map(c => ({
+      ...c,
+      academic_year: c.academic_year || defaultYear,
+      semester:      c.semester || defaultSem,
+    }));
+
+    setCourses(patched);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
+
+  // ─── AUTO-MERGE TIMETABLE COURSES ───
+  useEffect(() => {
+    const timetableStr = localStorage.getItem('ucc_timetable');
+    if (timetableStr) {
+      try {
+        const timetableCourses = JSON.parse(timetableStr);
+        const defaultYear = profile?.level || '100';
+        const defaultSem  = profile?.semester || '1';
+
+        const newGpaCourses = timetableCourses.map(course => {
+          // Check if we already have this course in GPA
+          const existing = courses.find(c => c.id === course.id);
+          if (existing) return existing;
+          
+          return {
+            id: course.id,
+            name: course.name,
+            creditHours: course.creditHours || course.credit_hours || 3,
+            score: course.targetGrade && GRADE_RANGES[course.targetGrade] ? GRADE_RANGES[course.targetGrade].min : 0,
+            grade: course.targetGrade || 'E',
+            gradePoint: course.targetGrade && GRADE_POINTS[course.targetGrade] ? GRADE_POINTS[course.targetGrade] : 0,
+            isDetailed: false,
+            examWeight: 60,
+            examScore: '',
+            assessments: [
+              { id: Date.now() + Math.random(), name: 'Quiz 1', score: '', max: 20 },
+              { id: Date.now() + Math.random() + 1, name: 'Assignment 1', score: '', max: 20 }
+            ],
+            // Inherit semester fields
+            academic_year: course.academic_year || defaultYear,
+            semester: course.semester || defaultSem
+          };
+        });
+
+        const gpaOnlyCourses = courses.filter(c => !timetableCourses.find(tc => tc.id === c.id));
+        const mergedCourses = [...gpaOnlyCourses, ...newGpaCourses];
+        
+        if (JSON.stringify(mergedCourses) !== JSON.stringify(courses)) {
+          setCourses(mergedCourses);
+        }
+      } catch (e) {
+        console.error('Error auto-syncing timetable to GPA:', e);
+      }
+    }
+  }, [courses, setCourses, profile?.level, profile?.semester]);
+
+  // ─── FILTER: Show only GPA courses for the active term ───
+  const displayCourses = useMemo(() => {
+    return courses.filter(c => {
+      const cTerm = `${c.academic_year}_${c.semester}`;
+      return cTerm === activeTerm;
+    });
+  }, [courses, activeTerm]);
+
+  // ─── CALCULATE STATS ───
+  const semesterStats = useMemo(() => {
+    let credits = 0;
+    let points = 0;
+    displayCourses.forEach(c => {
+      const ch = parseFloat(c.creditHours) || 0;
+      credits += ch;
+      points += (parseFloat(c.gradePoint) || 0) * ch;
+    });
+    return {
+      gpa: credits > 0 ? (points / credits).toFixed(2) : '0.00',
+      credits,
+      points
+    };
+  }, [displayCourses]);
+
+  const cumulativeStats = useMemo(() => {
+    let credits = 0;
+    let points = 0;
+    courses.forEach(c => {
+      const ch = parseFloat(c.creditHours) || 0;
+      credits += ch;
+      points += (parseFloat(c.gradePoint) || 0) * ch;
+    });
+    return {
+      gpa: credits > 0 ? (points / credits).toFixed(2) : '0.00',
+      credits,
+      points
+    };
+  }, [courses]);
+
+  // Target GPA Solver Logic
   const calculateTarget = () => {
     const target = parseFloat(targetGPA);
     const remaining = parseInt(remainingCredits, 10);
@@ -42,9 +165,9 @@ const GPACalculator = () => {
       return;
     }
     
-    const futureTotalCredits = totalCredits + remaining;
+    const futureTotalCredits = cumulativeStats.credits + remaining;
     const futureTotalPoints = target * futureTotalCredits;
-    const neededPoints = futureTotalPoints - totalGradePoints;
+    const neededPoints = futureTotalPoints - cumulativeStats.points;
     const neededAvgGpa = neededPoints / remaining;
     
     if (neededAvgGpa > 4.0) {
@@ -63,57 +186,6 @@ const GPACalculator = () => {
       setTargetResult({ success: `To reach your overall goal of ${target.toFixed(2)}, you must maintain an average GPA of ${neededAvgGpa.toFixed(2)} in your next ${remaining} credit hours. This means you should aim for mostly ${approximateGrade}'s in your upcoming classes.` });
     }
   };
-
-  useEffect(() => {
-    // 1. Auto-merge timetable courses that have target grades
-    const timetableStr = localStorage.getItem('ucc_timetable');
-    if (timetableStr) {
-      try {
-        const timetableCourses = JSON.parse(timetableStr);
-        const newGpaCourses = timetableCourses
-          .map(course => {
-            // Check if we already have this course in GPA (don't overwrite detailed setups)
-            const existing = courses.find(c => c.id === course.id);
-            if (existing) return existing;
-            
-            return {
-              id: course.id,
-              name: course.name,
-              creditHours: course.creditHours || 3,
-              score: course.targetGrade ? GRADE_RANGES[course.targetGrade].min : 0,
-              grade: course.targetGrade || 'E',
-              gradePoint: course.targetGrade ? GRADE_POINTS[course.targetGrade] : 0,
-              isDetailed: false,
-              examWeight: 60,
-              examScore: '',
-              assessments: [
-                { id: Date.now() + Math.random(), name: 'Quiz 1', score: '', max: 20 },
-                { id: Date.now() + Math.random() + 1, name: 'Assignment 1', score: '', max: 20 }
-              ]
-            };
-          });
-
-        const gpaOnlyCourses = courses.filter(c => !timetableCourses.find(tc => tc.id === c.id));
-        const mergedCourses = [...gpaOnlyCourses, ...newGpaCourses];
-        
-        // If the merged array is different from current state, update it (prevents infinite loop)
-        if (JSON.stringify(mergedCourses) !== JSON.stringify(courses)) {
-          setCourses(mergedCourses);
-        }
-      } catch (e) {
-        console.error('Error auto-syncing timetable to GPA:', e);
-      }
-    }
-
-    // 2. Calculate Stats
-    const gpa = calculateGPA(courses);
-    const credits = courses.reduce((sum, course) => sum + course.creditHours, 0);
-    const points = courses.reduce((sum, course) => sum + (course.gradePoint * course.creditHours), 0);
-
-    setCurrentGPA(gpa);
-    setTotalCredits(credits);
-    setTotalGradePoints(points);
-  }, [courses, setCourses]);
 
   const handleAddCourse = () => {
     triggerAuthSheet(() => {
@@ -139,14 +211,13 @@ const GPACalculator = () => {
         }
 
         let examAchieved = parseFloat(newCourse.examScore) || 0;
-
         finalScore = caAchieved + examAchieved;
       } else {
         finalScore = parseFloat(newCourse.score) || 0;
       }
 
       if (newCourse.name && finalScore >= 0) {
-        const score = Math.min(100, Math.max(0, finalScore)); // clamp between 0 and 100
+        const score = Math.min(100, Math.max(0, finalScore));
         const grade = getGradeFromScore(score);
         const gradePoint = GRADE_POINTS[grade];
 
@@ -155,7 +226,9 @@ const GPACalculator = () => {
           id: newCourse.id || Date.now(),
           score: score,
           grade: grade,
-          gradePoint: gradePoint
+          gradePoint: gradePoint,
+          academic_year: activeLevel,
+          semester: activeSemester
         };
 
         if (courses.some(c => c.id === courseObject.id)) {
@@ -174,7 +247,9 @@ const GPACalculator = () => {
           assessments: [
             { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
             { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-          ]
+          ],
+          academic_year: activeLevel,
+          semester: activeSemester
         });
         setShowAddForm(false);
       }
@@ -194,25 +269,48 @@ const GPACalculator = () => {
 
   return (
     <div className="pb-20">
+      {/* ── Term Toggle UI ── */}
+      <div className="flex items-center justify-center mb-6 bg-white rounded-2xl p-2 max-w-sm mx-auto shadow-sm border border-gray-100">
+        <button 
+          onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
+          disabled={activeTermIndex === 0}
+          className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        
+        <div className="flex-1 text-center flex flex-col">
+          <span className="text-sm font-black text-[#002F45]">Level {activeLevel}</span>
+          <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Semester {activeSemester}</span>
+        </div>
+
+        <button 
+          onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
+          disabled={activeTermIndex === TERMS.length - 1}
+          className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+        >
+          <ChevronRight size={20} />
+        </button>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="border-primary-100 bg-[#002F45]/5">
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-sm font-bold text-primary-400 uppercase tracking-widest mb-2">Current GPA</p>
-              <p className="text-5xl font-black text-primary-600 mb-2">{currentGPA}</p>
-              <div className="text-xs font-medium text-primary-400">cumulative score</div>
+              <p className="text-sm font-bold text-primary-400 uppercase tracking-widest mb-2">Semester GPA</p>
+              <p className="text-5xl font-black text-primary-600 mb-2">{semesterStats.gpa}</p>
+              <div className="text-xs font-medium text-primary-400">{semesterStats.credits} credits this term</div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-indigo-100 bg-indigo-50/50">
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Total Credits</p>
-              <p className="text-4xl font-black text-gray-800 mb-2">{totalCredits}</p>
-              <div className="text-xs font-medium text-gray-400">hours registered</div>
+              <p className="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-2">Cumulative GPA</p>
+              <p className="text-4xl font-black text-indigo-600 mb-2">{cumulativeStats.gpa}</p>
+              <div className="text-xs font-medium text-indigo-400">{cumulativeStats.credits} total credits</div>
             </div>
           </CardContent>
         </Card>
@@ -221,8 +319,8 @@ const GPACalculator = () => {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Grade Points</p>
-              <p className="text-4xl font-black text-gray-800 mb-2">{totalGradePoints.toFixed(1)}</p>
-              <div className="text-xs font-medium text-gray-400">weighted points</div>
+              <p className="text-4xl font-black text-gray-800 mb-2">{cumulativeStats.points.toFixed(1)}</p>
+              <div className="text-xs font-medium text-gray-400">total weighted points</div>
             </div>
           </CardContent>
         </Card>
@@ -287,7 +385,6 @@ const GPACalculator = () => {
                   Course List
                 </CardTitle>
                 <div className="flex gap-2">
-                  {/* Sync button removed - handled automatically in useEffect */}
                   <Button
                     variant="primary"
                     size="sm"
@@ -302,7 +399,9 @@ const GPACalculator = () => {
                         assessments: [
                           { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
                           { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-                        ]
+                        ],
+                        academic_year: activeLevel,
+                        semester: activeSemester
                       });
                       setShowAddForm(true);
                     }}
@@ -346,7 +445,9 @@ const GPACalculator = () => {
                               assessments: [
                                 { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
                                 { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-                              ]
+                              ],
+                              academic_year: activeLevel,
+                              semester: activeSemester
                             });
                           } else {
                             const c = courses.find(course => course.id.toString() === selectedId);
@@ -384,9 +485,10 @@ const GPACalculator = () => {
                       <option value={2}>2 Credit Hours</option>
                       <option value={3}>3 Credit Hours</option>
                       <option value={4}>4 Credit Hours</option>
+                      <option value={5}>5 Credit Hours</option>
+                      <option value={6}>6 Credit Hours</option>
                     </select>
 
-                    {/* Show a Custom course name input only if 'Add Custom Result' is selected (id doesn't match a stored course) */}
                     {(!newCourse.id || !courses.some(c => c.id === newCourse.id)) && (
                       <input
                         type="text"
@@ -516,14 +618,14 @@ const GPACalculator = () => {
                         </div>
 
                         <div className="mt-4 p-4 bg-gray-900 text-white rounded-xl flex justify-between items-center shadow-lg">
-                          <div className="text-sm font-medium text-gray-300">Total Course Expected Score</div>
+                          <div className="text-sm font-medium text-gray-300">Total Expected Score</div>
                           <div className="text-2xl font-black text-primary-400 flex items-baseline gap-1">
                             {(() => {
                               const examW = parseFloat(newCourse.examWeight) || 60;
                               const caW = 100 - examW;
                               let tCAScore = 0; let tCAMax = 0;
                               newCourse.assessments.forEach(a => { tCAScore += (parseFloat(a.score)||0); tCAMax += (parseFloat(a.max)||0); });
-                              let caAchieved = tCAMax > 0 ? (tCAScore / tCAMax) * caW : tCAScore; // scale dynamic total score down to exact actual weight 
+                              let caAchieved = tCAMax > 0 ? (tCAScore / tCAMax) * caW : tCAScore; 
                               let examAchieved = (parseFloat(newCourse.examScore) || 0);
                               return (caAchieved + examAchieved).toFixed(1);
                             })()} <span className="text-sm text-gray-500 font-medium">/ 100</span>
@@ -540,7 +642,7 @@ const GPACalculator = () => {
               </Modal>
 
               <div className="space-y-3">
-                {courses.map(course => (
+                {displayCourses.map(course => (
                   <div 
                     key={course.id} 
                     className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-primary-100 transition-colors bg-white group shadow-sm cursor-pointer hover:shadow-md"
@@ -587,10 +689,10 @@ const GPACalculator = () => {
                   </div>
                 ))}
 
-                {courses.length === 0 && (
+                {displayCourses.length === 0 && (
                   <div className="text-center py-12 rounded-2xl border border-dashed border-gray-200 bg-gray-50/50">
                     <Calculator className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-900 font-bold">No grades added</p>
+                    <p className="text-gray-900 font-bold">No grades for this semester</p>
                     <p className="text-gray-500 text-sm mt-1">Add your separate course grades to calculate your GPA.</p>
                     <Button variant="link" onClick={() => setShowAddForm(true)} className="text-primary-600 mt-2">Add First Grade</Button>
                   </div>

@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import useProfile from '../../hooks/useProfile';
 import { Button } from '../common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../common/Card';
-import { Plus, Trash2, Calendar, Bell, Download, X, AlertCircle, User, Phone, Target, PartyPopper, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, Calendar, Bell, X, AlertCircle, User, Phone, Target, PartyPopper, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CustomMapPin } from '../common/CustomMapPin';
 import { Modal } from '../common/Modal';
-import { DAYS_OF_WEEK, TIME_SLOTS, GRADE_POINTS } from '../../utils/constants';
+import { DAYS_OF_WEEK } from '../../utils/constants';
 import { requestNotificationPermission, isNotificationSupported } from '../../services/notificationService';
 import { triggerAuthSheet } from '../onboarding/AuthModal';
 import { getTodayHoliday } from '../../services/holidayService';
 import { CustomEyes } from '../common/CustomIcons';
-
 
 const formatTime12Hour = (time24) => {
   if (!time24) return '';
@@ -22,7 +22,8 @@ const formatTime12Hour = (time24) => {
 
 const TimetableBuilder = () => {
   const [courses, setCourses] = useLocalStorage('ucc_timetable', []);
-  const [profile] = useLocalStorage('ucc_profile', { level: '100', semester: '1' });
+  const [profile, setProfile] = useProfile(); // FIX C: Using useProfile instead of useLocalStorage
+  
   const [showAddForm, setShowAddForm] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -33,22 +34,49 @@ const TimetableBuilder = () => {
       '100_1', '100_2', '200_1', '200_2', '300_1', '300_2',
       '400_1', '400_2', '500_1', '500_2', '600_1', '600_2'
   ];
-  
-  const [activeTermIndex, setActiveTermIndex] = useState(() => {
-      const defaultTerm = `${profile.level || '100'}_${profile.semester || '1'}`;
-      const idx = TERMS.indexOf(defaultTerm);
-      return idx >= 0 ? idx : 0;
-  });
 
-  const activeTerm = TERMS[activeTermIndex];
+  // Derive active term from profile — profile is the source of truth
+  const activeTerm = `${profile?.level || '100'}_${profile?.semester || '1'}`;
+  const activeTermIndex = TERMS.indexOf(activeTerm) >= 0 ? TERMS.indexOf(activeTerm) : 0;
   const [activeLevel, activeSemester] = activeTerm.split('_');
 
-  const displayCourses = React.useMemo(() => {
+  // ─── FIX A: BACKFILL: Patch existing courses that lack academic_year/semester ───
+  useEffect(() => {
+    const needsBackfill = courses.some(
+      c => !c.academic_year || !c.semester
+    );
+    if (!needsBackfill) return;
+
+    // We use the profile's current level/semester as the "best guess"
+    // for orphaned courses. If profile isn't set, default to 100/1.
+    const defaultYear = profile?.level || '100';
+    const defaultSem  = profile?.semester || '1';
+
+    const patched = courses.map(c => ({
+      ...c,
+      academic_year: c.academic_year || defaultYear,
+      semester:      c.semester || defaultSem,
+    }));
+
+    setCourses(patched);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
+
+  // Update profile when user navigates semesters via the toggle
+  const setActiveTermIndex = (newIndex) => {
+      const term = TERMS[newIndex];
+      if (!term) return;
+      const [level, semester] = term.split('_');
+      setProfile(prev => ({ ...prev, level, semester }));
+  };
+
+  const displayCourses = useMemo(() => {
       return courses.filter(c => {
-          const cTerm = c.academic_year ? `${c.academic_year}_${c.semester}` : `${profile.level || '100'}_${profile.semester || '1'}`;
+          // Because of backfill, all courses will have academic_year and semester now.
+          const cTerm = `${c.academic_year}_${c.semester}`;
           return cTerm === activeTerm;
       });
-  }, [courses, activeTerm, profile]);
+  }, [courses, activeTerm]);
 
   const timetableRef = useRef(null);
 
@@ -131,6 +159,7 @@ const TimetableBuilder = () => {
         setCourses([...courses, { ...newCourse, id: Date.now() }]);
       }
 
+      // FIX B: Add missing semester fields on reset
       setNewCourse({
         name: '',
         day: 'Monday',
@@ -140,8 +169,11 @@ const TimetableBuilder = () => {
         color: colors[tempCourses.length % colors.length],
         lecturer: '',
         contact: '',
-        creditHours: 3
+        creditHours: 3,
+        academic_year: activeLevel,
+        semester: activeSemester
       });
+      
       setConflictError('');
       setShowAddForm(false);
     });
@@ -153,7 +185,7 @@ const TimetableBuilder = () => {
   };
 
   // Compute coursesByDay using displayCourses
-  const coursesByDay = React.useMemo(() => {
+  const coursesByDay = useMemo(() => {
     const acc = {};
     displayCourses.forEach(course => {
       if (!acc[course.day]) acc[course.day] = [];
@@ -196,6 +228,7 @@ const TimetableBuilder = () => {
                 size="sm"
                 onClick={() => {
                   setConflictError('');
+                  // FIX B: Add missing semester fields on reset
                   setNewCourse({
                     name: '',
                     day: 'Monday',
@@ -205,7 +238,9 @@ const TimetableBuilder = () => {
                     color: colors[courses.length % colors.length],
                     lecturer: '',
                     contact: '',
-                    creditHours: 3
+                    creditHours: 3,
+                    academic_year: activeLevel,
+                    semester: activeSemester
                   });
                   setShowAddForm(true);
                 }}
