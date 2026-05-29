@@ -1205,15 +1205,18 @@ const Home = () => {
             if (isAd) {
                 const cleanPhone = d.phone_number ? d.phone_number.replace(/\D/g, '') : '';
                 if (d.contact_method === 'link' && d.contact_url) {
-                    actionText = 'Visit Link';
+                    actionText = d.action_text || 'Visit Link';
                     link = d.contact_url;
                 } else if (d.contact_method === 'phone' && cleanPhone) {
-                    actionText = 'Call Now';
+                    actionText = d.action_text || 'Call Now';
                     link = `tel:+${cleanPhone}`;
                 } else if (cleanPhone) {
-                    actionText = 'Message via WhatsApp';
-                    link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
+                    actionText = d.action_text || 'Message via WhatsApp';
+                    link = `https://wa.me/233${cleanPhone.startsWith('0') ? cleanPhone.slice(1) : cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
                 }
+            } else {
+                actionText = d.action_text || 'Visit Link';
+                link = d.action_link || '';
             }
 
             return (
@@ -1230,7 +1233,7 @@ const Home = () => {
                       {isAd ? 'SPONSORED' : 'OFFICIAL'}
                     </span>
                     <h4 className="text-base font-bold text-gray-900 mb-1">{d.title}</h4>
-                    <p className={`text-sm text-gray-500 font-medium mb-4 ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
+                    <p className={`text-sm text-gray-500 font-medium mb-4 whitespace-pre-wrap ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
                       {d.description || d.content}
                     </p>
                     <div className="flex items-center justify-between">
@@ -1241,10 +1244,10 @@ const Home = () => {
                         {isFeaturedExpanded ? 'Show less' : 'Read more'} <ChevronRight size={14} className={isFeaturedExpanded ? 'rotate-90 transition-transform' : 'transition-transform'} />
                       </button>
 
-                      {isFeaturedExpanded && link && (
+                      {link && (
                         <button
                           onClick={() => window.open(link, '_blank')}
-                          className="bg-[#FFF4E5] text-[#B26B00] border border-[#FFE0B2] text-xs font-bold px-4 py-2 rounded-lg active:scale-95 transition-transform shadow-sm"
+                          className="bg-[#002F45] hover:bg-[#001a26] text-white text-xs font-bold px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
                         >
                           {actionText}
                         </button>

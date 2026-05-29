@@ -11,7 +11,7 @@ const TabBar = () => {
 
   const tabs = [
     { id: 'home', label: 'Home', icon: CustomHome, path: '/' },
-    { id: 'guide', label: 'Guide', icon: CustomGuide, path: '/guide' },
+    { id: 'guide', label: 'Map', icon: CustomGuide, path: '/guide' },
     { id: 'tools', label: 'Tools', icon: CustomTools, path: '/tools' },
     { id: 'community', label: 'Community', icon: CustomCommunity, path: '/community' },
     { id: 'profile', label: 'Profile', icon: CustomProfile, path: '/profile' }

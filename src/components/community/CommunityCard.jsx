@@ -46,7 +46,7 @@ const CommunityCard = ({ post }) => {
 
                 {description && (
                     <div className="mb-5 flex-1 min-h-0 flex flex-col">
-                        <p className={`text-[15px] text-gray-600 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}>
+                        <p className={`text-[15px] text-gray-600 leading-relaxed whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
                             {description}
                         </p>
                         {description.length > 120 && (

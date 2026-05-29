@@ -26,7 +26,12 @@ export const useDeviceId = () => {
 
   const getLastSync = () => {
     const ts = localStorage.getItem(LAST_SYNC_KEY);
-    return ts ? new Date(ts) : null;
+    if (!ts) return null;
+    if (/^\d+$/.test(ts)) {
+      return new Date(parseInt(ts, 10));
+    }
+    const parsed = new Date(ts);
+    return isNaN(parsed.getTime()) ? null : parsed;
   };
 
   const setLastSync = (date = new Date()) => {

@@ -1,10 +1,10 @@
 {
   "name": "Campus Guide",
   "short_name": "Campus Guide",
-  "description": "A comprehensive guide for University of Cape Coast students",
+  "description": "The ultimate student companion app for university students",
   "start_url": "/",
   "scope": "/",
-  "theme_color": "#3b82f6",
+  "theme_color": "#002F45",
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait-primary",

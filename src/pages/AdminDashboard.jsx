@@ -476,11 +476,24 @@ const AdminDashboard = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Flyer/Logo Image</label>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Flyer/Logo Image (Optional)</label>
                                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative">
                                     <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                                     {uploadFormData.imagePreview ? (
-                                        <img src={uploadFormData.imagePreview} className="max-h-40 mx-auto rounded-lg shadow-sm" alt="Preview"/>
+                                        <div className="relative">
+                                            <img src={uploadFormData.imagePreview} className="max-h-40 mx-auto rounded-lg shadow-sm" alt="Preview"/>
+                                            <button 
+                                                type="button" 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setUploadFormData(prev => ({ ...prev, imageFile: null, imagePreview: null }));
+                                                }}
+                                                className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors"
+                                                title="Remove image"
+                                            >
+                                                <XCircle size={16} />
+                                            </button>
+                                        </div>
                                     ) : (
                                         <div className="flex flex-col items-center text-gray-500">
                                             <UploadCloud size={32} className="mb-2" />
@@ -490,7 +503,7 @@ const AdminDashboard = () => {
                                 </div>
                             </div>
 
-                            <button disabled={isUploading || (!uploadFormData.imageFile)} type="submit" className="w-full py-4 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white font-bold rounded-xl shadow-xl transition-all flex items-center justify-center gap-2">
+                            <button disabled={isUploading} type="submit" className="w-full py-4 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white font-bold rounded-xl shadow-xl transition-all flex items-center justify-center gap-2">
                                 {isUploading ? "Publishing..." : <><CheckCircle size={20}/> Publish {uploadFormData.post_type === 'announcement' ? 'Announcement' : 'Advertisement'}</>}
                             </button>
                         </form>

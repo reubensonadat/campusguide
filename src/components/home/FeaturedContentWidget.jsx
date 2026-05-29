@@ -29,7 +29,7 @@ export const FeaturedContentWidget = ({ featuredContent, isFeaturedExpanded, set
         <div className="p-5">
           <h4 className="font-bold text-gray-900 text-base mb-1">{d.title}</h4>
           
-          <div className={`text-sm text-gray-600 font-medium ${isFeaturedExpanded ? '' : 'line-clamp-2'}`}>
+          <div className={`text-sm text-gray-600 font-medium whitespace-pre-wrap ${isFeaturedExpanded ? '' : 'line-clamp-2'}`}>
             {d.description || d.content}
           </div>
           
@@ -40,22 +40,30 @@ export const FeaturedContentWidget = ({ featuredContent, isFeaturedExpanded, set
             {isFeaturedExpanded ? 'Show less' : 'Read more'}
           </button>
 
-          {isAd && (
+          {(isAd || d.action_link) && (
             <div className="flex gap-2">
-              {d.action_url && (
+              {!isAd && d.action_link && (
                 <button 
-                  onClick={() => window.open(d.action_url, '_blank')}
-                  className="flex-1 bg-gray-900 text-white rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                  onClick={() => window.open(d.action_link, '_blank')}
+                  className="flex-1 bg-gray-900 text-white rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
                 >
                   {d.action_text || 'Visit Link'} <ExternalLink size={14} />
                 </button>
               )}
-              {d.phone_number && (() => {
+              {isAd && d.action_url && (
+                <button 
+                  onClick={() => window.open(d.action_url, '_blank')}
+                  className="flex-1 bg-gray-900 text-white rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
+                >
+                  {d.action_text || 'Visit Link'} <ExternalLink size={14} />
+                </button>
+              )}
+              {isAd && d.phone_number && (() => {
                 const cleanPhone = d.phone_number ? d.phone_number.replace(/\D/g, '') : '';
                 return (
                   <button 
                     onClick={() => window.open(`https://wa.me/233${cleanPhone.startsWith('0') ? cleanPhone.slice(1) : cleanPhone}`, '_blank')}
-                    className="flex-1 bg-[#25D366] text-white rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                    className="flex-1 bg-[#25D366] text-white rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
                   >
                     WhatsApp
                   </button>
