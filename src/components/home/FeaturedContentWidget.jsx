@@ -59,10 +59,15 @@ export const FeaturedContentWidget = ({ featuredContent, isFeaturedExpanded, set
                 </button>
               )}
               {isAd && d.phone_number && (() => {
-                const cleanPhone = d.phone_number ? d.phone_number.replace(/\D/g, '') : '';
+                let cleanPhone = d.phone_number ? d.phone_number.toString().replace(/\D/g, '') : '';
+                if (cleanPhone.startsWith('0')) {
+                    cleanPhone = '233' + cleanPhone.slice(1);
+                } else if (!cleanPhone.startsWith('233') && cleanPhone.length === 9) {
+                    cleanPhone = '233' + cleanPhone;
+                }
                 return (
                   <button 
-                    onClick={() => window.open(`https://wa.me/233${cleanPhone.startsWith('0') ? cleanPhone.slice(1) : cleanPhone}`, '_blank')}
+                    onClick={() => window.open(`https://wa.me/${cleanPhone}`, '_blank')}
                     className="flex-1 bg-[#25D366] text-white rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
                   >
                     WhatsApp

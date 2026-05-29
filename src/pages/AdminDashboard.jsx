@@ -185,6 +185,17 @@ const AdminDashboard = () => {
                 finalImageUrl = publicUrl;
             }
 
+            const formatPhoneNumber = (value) => {
+                if (!value) return '';
+                let cleaned = value.replace(/\D/g, ''); // strip non-digits
+                if (cleaned.startsWith('0') && cleaned.length === 10) {
+                    cleaned = '233' + cleaned.substring(1);
+                } else if (!cleaned.startsWith('233') && cleaned.length === 9) {
+                    cleaned = '233' + cleaned;
+                }
+                return cleaned;
+            };
+
             if (uploadFormData.post_type === 'advertisement') {
                 const expiryDate = new Date();
                 expiryDate.setDate(expiryDate.getDate() + 30); // Default 30 days for admin uploads
@@ -192,19 +203,29 @@ const AdminDashboard = () => {
                 const { error: dbError } = await supabase.from('advertisements').insert([{
                     title: uploadFormData.title,
                     description: uploadFormData.description,
-                    phone_number: uploadFormData.phone_number,
+                    phone_number: formatPhoneNumber(uploadFormData.phone_number),
                     contact_method: uploadFormData.contact_method,
                     contact_url: uploadFormData.contact_url || null,
                     image_url: finalImageUrl,
                     category: uploadFormData.category,
                     package_id: uploadFormData.package_id,
                     status: 'ACTIVE',
-                    paystack_reference: 'ADMIN_UPLOAD',
+                    paystack_reference: `ADMIN_UPLOAD_${Date.now()}_${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
                     expires_at: expiryDate.toISOString()
                 }]);
                 if (dbError) throw new Error("DB Error: " + dbError.message);
             } else {
-                let actionLink = uploadFormData.contact_method === 'link' ? uploadFormData.contact_url : uploadFormData.phone_number;
+                let formattedNum = formatPhoneNumber(uploadFormData.phone_number);
+                let actionLink = null;
+                
+                if (uploadFormData.contact_method === 'link') {
+                    actionLink = uploadFormData.contact_url;
+                } else if (uploadFormData.contact_method === 'whatsapp' && formattedNum) {
+                    actionLink = `https://wa.me/${formattedNum}`;
+                } else if (uploadFormData.contact_method === 'phone' && formattedNum) {
+                    actionLink = `tel:+${formattedNum}`;
+                }
+                
                 if (!actionLink || actionLink.trim() === '') actionLink = null;
 
                 const { error: dbError } = await supabase.from('announcements').insert([{
@@ -431,12 +452,12 @@ const AdminDashboard = () => {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">Ad Category</label>
-                                        <select value={uploadFormData.category} onChange={e => setUploadFormData(prev => ({...prev, category: e.target.value}))} className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                        <select value={uploadFormData.category} onChange={e => setUploadFormData(prev => ({...prev, category: e.target.value}))} className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 font-bold text-gray-900">
                                             <option value="food">Food & Delivery</option>
-                                            <option value="services">Student Services</option>
-                                            <option value="tech">Tech & Electronics</option>
                                             <option value="clothing">Clothing & Fashion</option>
-                                            <option value="other">Other</option>
+                                            <option value="tech">Tech & Electronics</option>
+                                            <option value="services">Student Services</option>
+                                            <option value="event">Commercial Event</option>
                                         </select>
                                     </div>
                                     <div>

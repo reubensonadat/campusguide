@@ -27,11 +27,11 @@ const PageHeader = ({ title, subtitle, onBack, right }) => {
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-      <div className="flex items-center gap-4 min-w-0">
+      <div className="flex items-start gap-4 min-w-0">
         {onBack !== undefined && onBack !== false && (
           <button
             onClick={handleBack}
-            className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors flex-shrink-0"
+            className="p-2 -ml-2 mt-1 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0 animate-in fade-in"
             aria-label="Go back"
           >
             <ArrowLeft size={20} />

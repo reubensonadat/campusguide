@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Search, X } from 'lucide-react';
+import { MessageCircle, Search, X, Share2 } from 'lucide-react';
 import { CustomSafetyCheck } from '../common/CustomIcons';
 import { CustomMapPin } from '../common/CustomMapPin';
 import NewThriftModal from './NewThriftModal';
@@ -7,6 +7,17 @@ import { getThriftListings } from '../../services/communityService';
 import { DataLoader } from '../common/CustomLoaders';
 import { useWishlist } from '../../hooks/useWishlist';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { toast } from 'react-hot-toast';
+
+const handleShareThrift = (e, id) => {
+    if (e) e.stopPropagation();
+    const shareUrl = `${window.location.origin}/community?thriftId=${id}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        toast.success('Thrift item link copied to clipboard!');
+    }).catch(() => {
+        toast.error('Failed to copy link.');
+    });
+};
 
 // Outline heart — not saved
 const HeartOutline = ({ size = 16, className = '' }) => (
@@ -126,9 +137,12 @@ const WishlistOverlay = ({ wishlistItems, items, toggleWishlist, onClose }) => (
                                             </div>
                                             <button
                                                 onClick={() => {
-                                                    const wa = item.contact_info?.startsWith('0')
-                                                        ? '233' + item.contact_info.slice(1)
-                                                        : item.contact_info;
+                                                    let wa = item.contact_info ? item.contact_info.toString().replace(/\D/g, '') : '';
+                                                    if (wa.startsWith('0')) {
+                                                        wa = '233' + wa.slice(1);
+                                                    } else if (!wa.startsWith('233') && wa.length === 9) {
+                                                        wa = '233' + wa;
+                                                    }
                                                     window.open(`https://wa.me/${wa}`, '_blank');
                                                 }}
                                                 className="flex items-center gap-1 text-[10px] font-black text-[#25D366] bg-[#25D366]/10 hover:bg-[#25D366] hover:text-white px-2.5 py-1.5 rounded-lg transition-all"
@@ -177,16 +191,44 @@ const ThriftCard = ({ item, toggleWishlist, isWishlisted, getTimeAgo }) => {
     const cfg = getConditionCfg(condition);
     const isNew = condition === 'Brand New';
 
+    const pressTimer = React.useRef(null);
+    const sharedId = new URLSearchParams(window.location.search).get('thriftId');
+    const isShared = item.id.toString() === sharedId;
+
+    const startPress = (e) => {
+        pressTimer.current = setTimeout(() => {
+            handleShareThrift(null, item.id);
+        }, 2000);
+    };
+
+    const endPress = () => {
+        if (pressTimer.current) {
+            clearTimeout(pressTimer.current);
+            pressTimer.current = null;
+        }
+    };
+
     const openWA = (e) => {
         e.stopPropagation();
-        const wa = item.contact_info?.startsWith('0')
-            ? '233' + item.contact_info.slice(1)
-            : item.contact_info;
+        let wa = item.contact_info ? item.contact_info.toString().replace(/\D/g, '') : '';
+        if (wa.startsWith('0')) {
+            wa = '233' + wa.slice(1);
+        } else if (!wa.startsWith('233') && wa.length === 9) {
+            wa = '233' + wa;
+        }
         window.open(`https://wa.me/${wa}`, '_blank');
     };
 
     return (
-        <div className="flex flex-col group">
+        <div 
+            className={`flex flex-col group p-2.5 rounded-3xl transition-all duration-300 ${isShared ? 'ring-2 ring-primary-500 bg-primary-50/20 border border-primary-200' : 'border border-transparent'}`}
+            onMouseDown={startPress}
+            onMouseUp={endPress}
+            onMouseLeave={endPress}
+            onTouchStart={startPress}
+            onTouchEnd={endPress}
+            onTouchMove={endPress}
+        >
             {/* ── Full-bleed image ── */}
             <div className="relative rounded-2xl overflow-hidden bg-gray-100">
                 <img
@@ -228,14 +270,25 @@ const ThriftCard = ({ item, toggleWishlist, isWishlisted, getTimeAgo }) => {
                 <div className="flex items-center justify-between">
                     <span className="text-lg font-black text-gray-900">GH₵{item.price}</span>
 
-                    {/* Round WhatsApp button */}
-                    <button
-                        onClick={openWA}
-                        className="w-9 h-9 rounded-full bg-primary-600 flex items-center justify-center shadow-md shadow-primary-200 hover:bg-primary-700 hover:scale-110 active:scale-95 transition-all duration-200"
-                        title="WhatsApp Seller"
-                    >
-                        <MessageCircle size={16} className="text-white" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {/* Round Share button */}
+                        <button
+                            onClick={(e) => handleShareThrift(e, item.id)}
+                            className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:scale-110 active:scale-95 transition-all duration-200"
+                            title="Share Item"
+                        >
+                            <Share2 size={16} />
+                        </button>
+
+                        {/* Round WhatsApp button */}
+                        <button
+                            onClick={openWA}
+                            className="w-9 h-9 rounded-full bg-[#25D366] flex items-center justify-center shadow-md shadow-emerald-100 hover:bg-emerald-600 hover:scale-110 active:scale-95 transition-all duration-200"
+                            title="WhatsApp Seller"
+                        >
+                            <MessageCircle size={16} className="text-white" />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -254,7 +307,19 @@ const ThriftFeed = () => {
     const loadListings = async () => {
         setLoading(true);
         const { success, data } = await getThriftListings();
-        if (success) setItems(data);
+        if (success) {
+            const thriftId = new URLSearchParams(window.location.search).get('thriftId');
+            if (thriftId) {
+                const sorted = [...data].sort((a, b) => {
+                    if (a.id.toString() === thriftId) return -1;
+                    if (b.id.toString() === thriftId) return 1;
+                    return 0;
+                });
+                setItems(sorted);
+            } else {
+                setItems(data);
+            }
+        }
         setLoading(false);
     };
 

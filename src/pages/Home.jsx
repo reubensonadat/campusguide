@@ -1203,7 +1203,13 @@ const Home = () => {
             let link = '';
 
             if (isAd) {
-                const cleanPhone = d.phone_number ? d.phone_number.replace(/\D/g, '') : '';
+                let cleanPhone = d.phone_number ? d.phone_number.toString().replace(/\D/g, '') : '';
+                if (cleanPhone.startsWith('0')) {
+                    cleanPhone = '233' + cleanPhone.slice(1);
+                } else if (!cleanPhone.startsWith('233') && cleanPhone.length === 9) {
+                    cleanPhone = '233' + cleanPhone;
+                }
+
                 if (d.contact_method === 'link' && d.contact_url) {
                     actionText = d.action_text || 'Visit Link';
                     link = d.contact_url;
@@ -1212,7 +1218,7 @@ const Home = () => {
                     link = `tel:+${cleanPhone}`;
                 } else if (cleanPhone) {
                     actionText = d.action_text || 'Message via WhatsApp';
-                    link = `https://wa.me/233${cleanPhone.startsWith('0') ? cleanPhone.slice(1) : cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
+                    link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
                 }
             } else {
                 actionText = d.action_text || 'Visit Link';

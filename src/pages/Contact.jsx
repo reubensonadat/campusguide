@@ -1,25 +1,28 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
-import { Button } from '../components/common/Button';
-import { toast } from 'react-hot-toast';
-import PageHeader from '../components/common/PageHeader';
-import {
-  Phone,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Facebook,
-  Twitter,
-  Instagram,
-  Clock,
-  Users,
-  Send,
-  CheckCircle,
-  ChevronRight
-} from 'lucide-react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { Phone, Mail, MapPin, Send, ChevronDown, ArrowLeft } from 'lucide-react';
+import PageHeader from '../components/common/PageHeader';
 import headerImage from '/call-center-cuate.png';
 
+const FAQS = [
+  {
+    question: 'How do I suggest a new feature?',
+    answer: 'You can submit suggestions directly on this page using the feedback form below, or visit the Feature Upvote Board on the Support page to vote on existing requests!'
+  },
+  {
+    question: 'Is the Campus Guide app really free?',
+    answer: 'Yes! The app is 100% free for all UCC students. We do not display ads and rely entirely on student contributions and donations to pay database and server bills.'
+  },
+  {
+    question: 'How does the offline Sync Service work?',
+    answer: 'Your timetable and notes are saved locally first. When you connect to the internet, they sync automatically to our backend. You can find your unique App ID and Recovery PIN in settings to sync across devices (e.g. Android to iOS).'
+  },
+  {
+    question: 'How do I edit my Student ID card details?',
+    answer: 'Go to your Profile tab, click or tap directly on the Student ID pass card. An Edit Profile modal will open immediately where you can change your name, course, level, and avatar.'
+  }
+];
 
 const Contact = () => {
   React.useEffect(() => {
@@ -27,243 +30,156 @@ const Contact = () => {
   }, []);
 
   const navigate = useNavigate();
-
-  const [formData, setFormData] = React.useState({
-    name: '',
-    phone: '',
-    message: ''
-  });
-
-  const contactInfo = [
-    {
-      icon: Phone,
-      title: 'Phone',
-      details: ['+233 20 153 4711'],
-      action: 'tel:+233201534711',
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
-      border: 'border-blue-100'
-    },
-    {
-      icon: Mail,
-      title: 'Email',
-      details: ['uccguide25@gmail.com'],
-      action: 'mailto:uccguide25@gmail.com',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      icon: MapPin,
-      title: 'Office',
-      details: ['No physical location currently available'],
-      action: null,
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100'
-    },
-    {
-      icon: Clock,
-      title: 'Office Hours',
-      details: ['Everyday 9:00 AM - 6:00 PM'],
-      action: null,
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      border: 'border-orange-100'
-    }
-  ];
-
-  const socialMedia = [
-    {
-      icon: Facebook,
-      name: 'Facebook',
-      url: 'https://facebook.com/uccguide',
-      color: 'bg-blue-600',
-      hoverColor: 'hover:bg-blue-700'
-    },
-    {
-      icon: Twitter,
-      name: 'Twitter',
-      url: 'https://twitter.com/uccguide',
-      color: 'bg-sky-500',
-      hoverColor: 'hover:bg-sky-600'
-    },
-    {
-      icon: Instagram,
-      name: 'Instagram',
-      url: 'https://instagram.com/uccguide',
-      color: 'bg-pink-600',
-      hoverColor: 'hover:bg-pink-700'
-    }
-  ];
-
-  const faqs = [
-    {
-      question: 'How do I report a bug or suggest a feature?',
-      answer: 'Send us an email at support@uccguide.com with details about the bug or feature suggestion.',
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
-      border: 'border-blue-100'
-    },
-    {
-      question: 'Is the app really free?',
-      answer: 'Yes! The app is completely free for all UCC students. We rely on supporter donations to keep it running.',
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
-    },
-    {
-      question: 'How often is the app updated?',
-      answer: 'We update the app regularly with new features and improved content based on student feedback.',
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-100'
-    },
-    {
-      question: 'Can I contribute to the app?',
-      answer: 'Yes! We welcome contributions. Contact us to learn how you can help improve the app.',
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      border: 'border-orange-100'
-    }
-  ];
+  const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
+  const [activeFaq, setActiveFaq] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
-    toast.success('Message sent! We will get back to you soon.');
+    toast.success('Feedback sent! Thank you for helping improve the Guide.');
     setFormData({ name: '', phone: '', message: '' });
   };
 
-  const newLocal = "text-white bg-blue hover:bg-blue-700 px-8 py-3.5 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 border-none";
+  const toggleFaq = (index) => {
+    setActiveFaq(activeFaq === index ? null : index);
+  };
+
   return (
-    <div className="pb-24 bg-gray-50/50 min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45] transition-colors duration-300">
-      <div className="max-w-4xl mx-auto space-y-6 px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] md:px-8">
+    <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45]">
+      <div className="max-w-3xl mx-auto px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
+        
+        {/* Header matching Profile style */}
+        <div>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Contact Support</h1>
+          <p className="text-[10px] text-gray-400 font-medium mt-0.5">We're here to help. Reach out with any questions or feedback.</p>
+        </div>
 
-        <PageHeader
-          title="Contact Support"
-          subtitle="We're here to help. Reach out with any questions or feedback."
-          right={
-            <img src={headerImage} alt="Contact Support" className="w-20 h-20 md:w-28 md:h-28 object-contain drop-shadow-xl pointer-events-none" />
-          }
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Contact Information (Left Side) */}
-          <div className="space-y-4">
-            <h2 className="text-[11px] font-black uppercase tracking-widest text-gray-400 pl-2">Get in Touch</h2>
-            
-            <a href="mailto:uccguide25@gmail.com" className="block group">
-              <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden hover:border-[#6EABC6]/30 hover:shadow-md transition-all">
-                <CardContent className="p-6 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <Mail className="text-emerald-600" size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 text-sm">Email Support</h3>
-                    <p className="text-gray-500 text-xs mt-0.5">uccguide25@gmail.com</p>
-                  </div>
-                  <ChevronRight size={16} className="text-gray-300 group-hover:text-gray-600 ml-auto" />
-                </CardContent>
-              </Card>
-            </a>
-
-            <a href="tel:+233201534711" className="block group">
-              <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden hover:border-[#6EABC6]/30 hover:shadow-md transition-all">
-                <CardContent className="p-6 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <Phone className="text-blue-600" size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 text-sm">Call Center</h3>
-                    <p className="text-gray-500 text-xs mt-0.5">+233 20 153 4711</p>
-                  </div>
-                  <ChevronRight size={16} className="text-gray-300 group-hover:text-gray-600 ml-auto" />
-                </CardContent>
-              </Card>
-            </a>
-
-            <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden">
-              <CardContent className="p-6 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center flex-shrink-0">
-                  <MapPin className="text-purple-600" size={20} />
+        {/* Section 1: Support Channels */}
+        <div>
+          <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">Support Channels</h2>
+          <div className="space-y-1">
+            <a
+              href="mailto:uccguide25@gmail.com"
+              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100">
+                  <Mail size={18} className="text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-sm">Location</h3>
-                  <p className="text-gray-500 text-xs mt-0.5">University of Cape Coast, Ghana</p>
+                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Email Support</span>
+                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">uccguide25@gmail.com</span>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+              <ChevronDown size={16} className="-rotate-90 text-gray-300 group-hover:text-gray-950 transition-colors" />
+            </a>
 
-          {/* Contact Form (Right Side) */}
-          <div className="space-y-4">
-            <h2 className="text-[11px] font-black uppercase tracking-widest text-gray-400 pl-2">Send a Message</h2>
-            
-            <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden">
-              <CardContent className="p-6">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-1 block mb-1">Full Name</label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-semibold text-sm transition-all"
-                      placeholder="Enter your name"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-1 block mb-1">Phone Number</label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-semibold text-sm transition-all"
-                      placeholder="e.g. 054 123 4567"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-1 block mb-1">Message</label>
-                    <textarea
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-semibold text-sm min-h-[120px] resize-none transition-all"
-                      placeholder="How can we help you?"
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full py-4 mt-2 bg-[#002F45] hover:bg-[#001f2e] text-white font-black uppercase tracking-[0.15em] text-[12px] rounded-xl transition-all shadow-md active:scale-[0.98] flex justify-center items-center gap-2"
-                  >
-                    <Send size={16} />
-                    Send Message
-                  </button>
-                </form>
-              </CardContent>
-            </Card>
+            <a
+              href="tel:+233201534711"
+              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0 border border-purple-100">
+                  <Phone size={18} className="text-purple-600" />
+                </div>
+                <div>
+                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Voice Call Support</span>
+                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">+233 20 153 4711</span>
+                </div>
+              </div>
+              <ChevronDown size={16} className="-rotate-90 text-gray-300 group-hover:text-gray-950 transition-colors" />
+            </a>
+
+            <div
+              className="w-full flex items-center justify-between py-4 border-b border-gray-100 last:border-0 text-left"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100">
+                  <MapPin size={18} className="text-emerald-600" />
+                </div>
+                <div>
+                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Location</span>
+                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">University of Cape Coast, Ghana</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* FAQs */}
-        <div className="pt-4">
-          <h2 className="text-[11px] font-black uppercase tracking-widest text-gray-400 pl-2 mb-4">Frequently Asked Questions</h2>
-          <Card className="border border-gray-100 shadow-sm bg-white rounded-[24px] overflow-hidden">
-            <CardContent className="p-0">
-              <div className="divide-y divide-gray-100">
-                {faqs.map((faq, index) => (
-                  <div key={index} className="p-6 hover:bg-gray-50/50 transition-colors">
-                    <h3 className={`font-bold text-sm text-gray-900 mb-1.5`}>{faq.question}</h3>
-                    <p className="text-gray-500 text-xs leading-relaxed font-medium">{faq.answer}</p>
-                  </div>
-                ))}
+        <hr className="border-gray-100" />
+
+        {/* Section 2: Interactive FAQ Accordion */}
+        <div>
+          <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">Frequently Asked Questions</h2>
+          <div className="space-y-1">
+            {FAQS.map((faq, index) => {
+              const isOpen = activeFaq === index;
+              return (
+                <div key={index} className="border-b border-gray-100 last:border-0">
+                  <button
+                    onClick={() => toggleFaq(index)}
+                    className="w-full flex items-center justify-between py-4 text-left focus:outline-none group"
+                  >
+                    <span className="text-[14px] text-gray-900 font-bold pr-4 group-hover:text-primary-600 transition-colors">{faq.question}</span>
+                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {isOpen && (
+                    <div className="pb-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                      <p className="text-xs text-gray-500 leading-relaxed font-medium pl-1 pr-6">{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <hr className="border-gray-100" />
+
+        {/* Section 3: Send Feedback form */}
+        <div>
+          <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">Direct Suggestion Box</h2>
+          <div className="bg-gray-50/50 rounded-3xl p-6 border border-gray-100/50">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1 block mb-1">Your Name</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full p-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-300 font-semibold text-sm transition-all"
+                  placeholder="Enter your name"
+                  required
+                />
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1 block mb-1">Contact Phone</label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full p-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-300 font-semibold text-sm transition-all"
+                  placeholder="e.g. 054 123 4567"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1 block mb-1">What feature do you want developed next?</label>
+                <textarea
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full p-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-300 font-semibold text-sm min-h-[100px] resize-none transition-all"
+                  placeholder="Explain the feature idea and why it is useful..."
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full py-4 bg-[#002F45] hover:bg-[#001a26] text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md active:scale-[0.98] flex justify-center items-center gap-2 border-none cursor-pointer"
+              >
+                <Send size={14} /> Submit Suggestion
+              </button>
+            </form>
+          </div>
         </div>
 
       </div>

@@ -442,7 +442,7 @@ const Profile = () => {
           <div className="bg-white rounded-2xl p-5 border border-gray-100">
             <p className="text-sm font-bold text-gray-900 mb-3">Restore from another device</p>
             <p className="text-xs text-gray-500 font-medium mb-3">Enter your old ID and 6-digit PIN to pull your saved data.</p>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2.5">
               <input
                 type="text"
                 value={restoreId}
@@ -451,29 +451,27 @@ const Profile = () => {
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
                 maxLength={12}
               />
-              <div className="flex gap-2">
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={restorePin}
-                  onChange={(e) => setRestorePin(e.target.value.replace(/[^0-9]/g, ''))}
-                  placeholder="6-Digit PIN"
-                  className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:tracking-normal"
-                  maxLength={6}
-                />
-                <button
-                  onClick={handleRestore}
-                  disabled={isRestoring || restoreId.length < 12 || restorePin.length < 6}
-                  className={`px-5 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 ${
-                    isRestoring
-                      ? 'bg-gray-100 text-gray-400'
-                      : 'bg-[#002F45] text-white hover:bg-[#001a26]'
-                  }`}
-                >
-                  {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore'}
-                </button>
-              </div>
+              <input
+                type="password"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={restorePin}
+                onChange={(e) => setRestorePin(e.target.value.replace(/[^0-9]/g, ''))}
+                placeholder="6-Digit PIN"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
+                maxLength={6}
+              />
+              <button
+                onClick={handleRestore}
+                disabled={isRestoring || restoreId.length < 12 || restorePin.length < 6}
+                className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${
+                  isRestoring
+                    ? 'bg-gray-100 text-gray-400'
+                    : 'bg-[#002F45] text-white hover:bg-[#001a26] shadow-md shadow-[#002F45]/10'
+                }`}
+              >
+                {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore Data'}
+              </button>
             </div>
           </div>
         </div>

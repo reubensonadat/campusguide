@@ -312,27 +312,29 @@ const Advertise = () => {
                 <div className="max-w-3xl mx-auto flex items-center gap-4">
                     <button
                         onClick={() => step === 1 ? navigate(-1) : prevStep()}
-                        className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
+                        className="p-2 -ml-2 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors"
                     >
                         <ArrowLeft size={20} />
                     </button>
                     <div>
-                        <h1 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-                            Create Ad Campaign <Sparkles size={18} className="text-amber-500" />
+                        <h1 className="text-xl font-black text-gray-900 tracking-tight">
+                            Create Ad Campaign
                         </h1>
-                        <p className="text-sm font-medium text-gray-500">
-                            {step === 4 ? `Step ${step} of 4: Checkout` : `Step ${step} of 4: ${STEPS[step - 1].title}`}
-                        </p>
                     </div>
                 </div>
             </header>
 
-            {/* Progress Bar */}
-            <div className="h-1.5 w-full bg-gray-100">
-                <div
-                    className="h-full bg-primary-600 transition-all duration-500 ease-out"
-                    style={{ width: `${(step / 4) * 100}%` }}
-                ></div>
+            {/* Segmented Step Progress Bar */}
+            <div className="max-w-2xl mx-auto w-full px-4 sm:px-6 pt-6">
+                <div className="flex gap-2">
+                    {STEPS.map(s => (
+                        <div 
+                            key={s.id} 
+                            className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${s.id <= step ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-800'}`}
+                            title={s.title}
+                        />
+                    ))}
+                </div>
             </div>
 
             <main className="flex-1 max-w-2xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12">

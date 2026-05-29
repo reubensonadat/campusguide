@@ -314,3 +314,102 @@ export const addThriftListing = async (listingData) => {
         return { success: false, error: error.message };
     }
 };
+
+// --- FEATURE SUGGESTIONS & UPVOTE BOARD ---
+
+export const getSuggestions = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('feature_suggestions')
+            .select('*')
+            .order('votes_count', { ascending: false });
+        
+        if (error) throw error;
+        return { success: true, data };
+    } catch (error) {
+        console.error('Error fetching suggestions:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+export const addSuggestion = async (title, description) => {
+    try {
+        const user = await getCurrentUser();
+        if (!user) throw new Error('You must be logged in to submit a suggestion.');
+
+        const { data, error } = await supabase
+            .from('feature_suggestions')
+            .insert([{ 
+                user_id: user.id, 
+                title, 
+                description,
+                votes_count: 1
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        // Auto-add the first vote from the creator
+        await supabase.from('feature_votes').insert([{
+            suggestion_id: data.id,
+            user_id: user.id
+        }]);
+
+        return { success: true, data };
+    } catch (error) {
+        console.error('Error adding suggestion:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+export const voteForSuggestion = async (suggestionId) => {
+    try {
+        const user = await getCurrentUser();
+        if (!user) throw new Error('You must be logged in to vote.');
+
+        const { data: existingVote } = await supabase
+            .from('feature_votes')
+            .select('id')
+            .eq('suggestion_id', suggestionId)
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        if (existingVote) {
+            // Unvote (Delete vote, decrement votes_count)
+            await supabase.from('feature_votes').delete().eq('id', existingVote.id);
+            const { data: current } = await supabase.from('feature_suggestions').select('votes_count').eq('id', suggestionId).single();
+            const nextVotes = Math.max(0, (current?.votes_count || 1) - 1);
+            await supabase.from('feature_suggestions').update({ votes_count: nextVotes }).eq('id', suggestionId);
+            return { success: true, voted: false, votesCount: nextVotes };
+        } else {
+            // Vote (Insert vote, increment votes_count)
+            await supabase.from('feature_votes').insert([{ suggestion_id: suggestionId, user_id: user.id }]);
+            const { data: current } = await supabase.from('feature_suggestions').select('votes_count').eq('id', suggestionId).single();
+            const nextVotes = (current?.votes_count || 0) + 1;
+            await supabase.from('feature_suggestions').update({ votes_count: nextVotes }).eq('id', suggestionId);
+            return { success: true, voted: true, votesCount: nextVotes };
+        }
+    } catch (error) {
+        console.error('Error voting for suggestion:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+export const getUserVotes = async () => {
+    try {
+        const user = await getCurrentUser();
+        if (!user) return { success: true, data: [] };
+
+        const { data, error } = await supabase
+            .from('feature_votes')
+            .select('suggestion_id')
+            .eq('user_id', user.id);
+
+        if (error) throw error;
+        return { success: true, data: (data || []).map(v => v.suggestion_id) };
+    } catch (error) {
+        console.error('Error fetching user votes:', error);
+        return { success: false, error: error.message };
+    }
+};

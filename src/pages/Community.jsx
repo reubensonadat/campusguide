@@ -42,6 +42,17 @@ const Community = () => {
     const tabsRef = React.useRef([]);
 
     React.useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('postId')) {
+            setActiveMainTab('general');
+        } else if (params.has('thriftId')) {
+            setActiveMainTab('thrift');
+        } else if (params.has('whisperId')) {
+            setActiveMainTab('whispers');
+        }
+    }, []);
+
+    React.useEffect(() => {
         const timeoutId = setTimeout(() => {
             const activeIndex = mainTabs.findIndex(tab => activeMainTab === tab.id);
             if (activeIndex !== -1 && tabsRef.current[activeIndex]) {
@@ -101,7 +112,12 @@ const Community = () => {
                 let actionText = 'Message via WhatsApp';
                 let link = '#';
 
-                const cleanPhone = ad.phone_number ? ad.phone_number.replace(/\D/g, '') : '';
+                let cleanPhone = ad.phone_number ? ad.phone_number.toString().replace(/\D/g, '') : '';
+                if (cleanPhone.startsWith('0')) {
+                    cleanPhone = '233' + cleanPhone.slice(1);
+                } else if (!cleanPhone.startsWith('233') && cleanPhone.length === 9) {
+                    cleanPhone = '233' + cleanPhone;
+                }
 
                 if (ad.contact_method === 'link' && ad.contact_url) {
                     actionText = 'Visit Link';
@@ -159,8 +175,15 @@ const Community = () => {
                 }
             });
 
+            const postIdParam = new URLSearchParams(window.location.search).get('postId');
             const combinedFeed = [...formattedAnnouncements, ...formattedAds, ...formattedLostFound]
-                .sort((a, b) => b.createdAt - a.createdAt);
+                .sort((a, b) => {
+                    if (postIdParam) {
+                        if (a.id === postIdParam) return -1;
+                        if (b.id === postIdParam) return 1;
+                    }
+                    return b.createdAt - a.createdAt;
+                });
 
             setFeedData(combinedFeed);
         } catch (error) {
@@ -270,7 +293,7 @@ const Community = () => {
                                 <p className="text-gray-400 font-semibold text-sm">Loading community feed...</p>
                             </div>
                         ) : filteredFeed.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-6 pb-8">
                                 {filteredFeed.map(post => (
                                     <CommunityCard key={post.id} post={post} />
                                 ))}

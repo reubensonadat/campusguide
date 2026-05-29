@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUp, ArrowDown, MessageSquare, Flag, Loader2, Trash2, RefreshCw, Search, X } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageSquare, Flag, Loader2, Trash2, RefreshCw, Search, X, Share2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import NewWhisperModal from './NewWhisperModal';
 import WhisperCommentsModal from './WhisperCommentsModal';
@@ -8,6 +8,16 @@ import { getCurrentUser } from '../../services/authService';
 import { DataLoader } from '../common/CustomLoaders';
 import { Linkify } from '../../utils/linkify';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+
+const handleShareWhisper = (e, id) => {
+    if (e) e.stopPropagation();
+    const shareUrl = `${window.location.origin}/community?whisperId=${id}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        toast.success('Whisper link copied to clipboard!');
+    }).catch(() => {
+        toast.error('Failed to copy link.');
+    });
+};
 
 const WhispersFeed = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,6 +38,13 @@ const WhispersFeed = () => {
         ]);
         if (whispersRes.success) {
             setWhispers(whispersRes.data);
+            const whisperId = new URLSearchParams(window.location.search).get('whisperId');
+            if (whisperId) {
+                const found = whispersRes.data.find(w => w.id.toString() === whisperId);
+                if (found) {
+                    setSelectedWhisper(found);
+                }
+            }
         }
         setCurrentUser(userRes);
 
@@ -212,6 +229,20 @@ const WhispersFeed = () => {
 const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract, onDelete, onComment, getTimeAgo }) => {
     const { ref, isVisible } = useScrollReveal({ threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
     const delay = Math.min(index * 70, 350);
+    const pressTimer = React.useRef(null);
+
+    const startPress = (e) => {
+        pressTimer.current = setTimeout(() => {
+            handleShareWhisper(null, whisper.id);
+        }, 2000);
+    };
+
+    const endPress = () => {
+        if (pressTimer.current) {
+            clearTimeout(pressTimer.current);
+            pressTimer.current = null;
+        }
+    };
 
     return (
         <div
@@ -221,47 +252,80 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
                 transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
                 transition: `opacity 0.45s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.45s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
             }}
+            onMouseDown={startPress}
+            onMouseUp={endPress}
+            onMouseLeave={endPress}
+            onTouchStart={startPress}
+            onTouchEnd={endPress}
+            onTouchMove={endPress}
         >
-            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-                            <div className="flex justify-between items-start mb-3">
-                                <span className="text-xs font-bold text-primary-500 bg-primary-50 px-2 py-1 rounded-md">Anonymous</span>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-xs text-gray-400 font-medium">{getTimeAgo(whisper.created_at)}</span>
-                                    <button onClick={() => onInteract(whisper.id, 'FLAG')} className={`${userInteractions.flags.has(whisper.id) ? 'text-red-500 cursor-default' : 'text-gray-300 hover:text-red-500'} transition-colors`} title={userInteractions.flags.has(whisper.id) ? "You flagged this post" : "Report this post"}>
-                                        <Flag size={14} className={userInteractions.flags.has(whisper.id) ? 'fill-current' : ''} />
-                                    </button>
-                                </div>
-                            </div>
-                            <p className="text-gray-800 text-lg font-medium leading-relaxed mb-4 whitespace-pre-wrap break-words">
-                                <Linkify text={whisper.text} />
-                            </p>
-                            <div className="flex items-center justify-between border-t border-gray-50 pt-3">
-                                <div className="flex items-center gap-1 bg-gray-50 rounded-full px-1 py-1 border border-gray-100">
-                                    <button onClick={() => onInteract(whisper.id, 'UPVOTE')} className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.upvotes.has(whisper.id) ? 'text-green-600 bg-white cursor-default' : 'text-gray-400 hover:text-green-600 hover:bg-white'}`}>
-                                        <ArrowUp size={16} strokeWidth={3} />
-                                    </button>
-                                    <span className="text-sm font-black text-gray-700 min-w-[20px] text-center">
-                                        {whisper.upvotes - whisper.downvotes}
-                                    </span>
-                                    <button onClick={() => onInteract(whisper.id, 'DOWNVOTE')} className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.downvotes.has(whisper.id) ? 'text-red-500 bg-white cursor-default' : 'text-gray-400 hover:text-red-500 hover:bg-white'}`}>
-                                        <ArrowDown size={16} strokeWidth={3} />
-                                    </button>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    {currentUser?.id === whisper.user_id && (
-                                        <button onClick={() => onDelete(whisper.id)} className="p-1.5 text-gray-300 hover:text-red-500 transition-colors rounded-full hover:bg-red-50" title="Delete whisper">
-                                            <Trash2 size={16} />
-                                        </button>
-                                    )}
-                                    <button onClick={() => onComment(whisper)} className="flex items-center gap-1.5 text-gray-400 hover:text-primary-600 transition-colors text-sm font-bold px-3 py-1.5 rounded-full hover:bg-primary-50">
-                                        <MessageSquare size={16} />
-                                        {whisper.comment_count}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+            <div 
+                onClick={() => onComment(whisper)}
+                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm cursor-pointer hover:border-primary-100 transition-colors select-none"
+            >
+                <div className="flex justify-between items-start mb-3">
+                    <span className="text-xs font-bold text-primary-500 bg-primary-50 px-2 py-1 rounded-md">Anonymous</span>
+                    <div className="flex items-center gap-3">
+                        <span className="text-xs text-gray-400 font-medium">{getTimeAgo(whisper.created_at)}</span>
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); onInteract(whisper.id, 'FLAG'); }} 
+                            className={`${userInteractions.flags.has(whisper.id) ? 'text-red-500 cursor-default' : 'text-gray-300 hover:text-red-500'} transition-colors`} 
+                            title={userInteractions.flags.has(whisper.id) ? "You flagged this post" : "Report this post"}
+                        >
+                            <Flag size={14} className={userInteractions.flags.has(whisper.id) ? 'fill-current' : ''} />
+                        </button>
+                    </div>
+                </div>
+                <p className="text-gray-800 text-lg font-medium leading-relaxed mb-4 whitespace-pre-wrap break-words">
+                    <Linkify text={whisper.text} />
+                </p>
+                <div className="flex items-center justify-between border-t border-gray-50 pt-3">
+                    <div className="flex items-center gap-1 bg-gray-50 rounded-full px-1 py-1 border border-gray-100">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); onInteract(whisper.id, 'UPVOTE'); }} 
+                            className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.upvotes.has(whisper.id) ? 'text-green-600 bg-white cursor-default' : 'text-gray-400 hover:text-green-600 hover:bg-white'}`}
+                        >
+                            <ArrowUp size={16} strokeWidth={3} />
+                        </button>
+                        <span className="text-sm font-black text-gray-700 min-w-[20px] text-center">
+                            {whisper.upvotes - whisper.downvotes}
+                        </span>
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); onInteract(whisper.id, 'DOWNVOTE'); }} 
+                            className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.downvotes.has(whisper.id) ? 'text-red-500 bg-white cursor-default' : 'text-gray-400 hover:text-red-500 hover:bg-white'}`}
+                        >
+                            <ArrowDown size={16} strokeWidth={3} />
+                        </button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {currentUser?.id === whisper.user_id && (
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); onDelete(whisper.id); }} 
+                                className="p-1.5 text-gray-300 hover:text-red-500 transition-colors rounded-full hover:bg-red-50" 
+                                title="Delete whisper"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        )}
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); handleShareWhisper(e, whisper.id); }} 
+                            className="p-1.5 text-gray-400 hover:text-primary-600 transition-colors rounded-full hover:bg-primary-50" 
+                            title="Share whisper"
+                        >
+                            <Share2 size={16} />
+                        </button>
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); onComment(whisper); }} 
+                            className="flex items-center gap-1.5 text-gray-400 hover:text-primary-600 transition-colors text-sm font-bold px-3 py-1.5 rounded-full hover:bg-primary-50"
+                        >
+                            <MessageSquare size={16} />
+                            {whisper.comment_count}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        );
+    );
 };
 
 export default WhispersFeed;
