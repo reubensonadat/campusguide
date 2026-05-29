@@ -1,5 +1,6 @@
 // src/App.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
+import { DataLoader } from './components/common/CustomLoaders';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AppProvider } from './context/AppContext';
@@ -27,19 +28,22 @@ import { triggerHaptic } from './utils/haptics';
 import { supabase } from './lib/supabase';
 import AuthBottomSheet from './components/onboarding/AuthModal';
 
-// Page imports
+// Page imports (Statically load Home to render the landing screen instantly)
 import Home from './pages/Home';
-import Guide from './pages/Guide';
-import Tools from './pages/Tools';
-import Support from './pages/Support';
-import Community from './pages/Community';
-import Advertise from './pages/Advertise';
-import Contact from './pages/Contact';
-import Settings from './pages/Settings';
-import Profile from './pages/Profile';
-import AdminDashboard from './pages/AdminDashboard';
-import { PrivacyPolicy, TermsOfService } from './pages/Legal';
-import { LetterGenerator } from './pages/LetterGenerator';
+
+// Lazy loaded page components to keep the main bundle extremely lightweight
+const Guide = lazy(() => import('./pages/Guide'));
+const Tools = lazy(() => import('./pages/Tools'));
+const Support = lazy(() => import('./pages/Support'));
+const Community = lazy(() => import('./pages/Community'));
+const Advertise = lazy(() => import('./pages/Advertise'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Profile = lazy(() => import('./pages/Profile'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const PrivacyPolicy = lazy(() => import('./pages/Legal').then(m => ({ default: m.PrivacyPolicy })));
+const TermsOfService = lazy(() => import('./pages/Legal').then(m => ({ default: m.TermsOfService })));
+const LetterGenerator = lazy(() => import('./pages/LetterGenerator').then(m => ({ default: m.LetterGenerator })));
 
 function NavigationObserver() {
   const location = useLocation();
@@ -106,23 +110,30 @@ function AppContent() {
       <Sidebar onExpandedChange={setIsSidebarExpanded} />
       
       <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/guide" element={<Guide />} />
-          <Route path="/guide/:topic" element={<Guide />} />
-          <Route path="/tools/letter-generator" element={<LetterGenerator />} />
-          <Route path="/tools/*" element={<Tools />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/advertise" element={<Advertise />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/admin/*" element={<AdminDashboard />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Suspense fallback={
+          <div className="flex-1 min-h-[60vh] flex flex-col items-center justify-center gap-4 py-20 bg-gray-50/50 dark:bg-[#0a0a0a]">
+            <DataLoader className="w-10 h-10 text-[#002F45]" />
+            <span className="text-xs font-black tracking-widest text-[#002F45]/60 dark:text-gray-400/60 uppercase animate-pulse">Loading...</span>
+          </div>
+        }>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/guide" element={<Guide />} />
+            <Route path="/guide/:topic" element={<Guide />} />
+            <Route path="/tools/letter-generator" element={<LetterGenerator />} />
+            <Route path="/tools/*" element={<Tools />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/advertise" element={<Advertise />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/admin/*" element={<AdminDashboard />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
 
       <TabBar />
 
