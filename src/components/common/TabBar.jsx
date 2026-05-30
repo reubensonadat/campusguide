@@ -11,7 +11,7 @@ const TabBar = () => {
 
   const tabs = [
     { id: 'home', label: 'Home', icon: CustomHome, path: '/' },
-    { id: 'guide', label: 'Map', icon: CustomGuide, path: '/guide' },
+    { id: 'guide', label: 'Guide', icon: CustomGuide, path: '/guide' },
     { id: 'tools', label: 'Tools', icon: CustomTools, path: '/tools' },
     { id: 'community', label: 'Community', icon: CustomCommunity, path: '/community' },
     { id: 'profile', label: 'Profile', icon: CustomProfile, path: '/profile' }
@@ -31,8 +31,8 @@ const TabBar = () => {
   useEffect(() => {
     // Small timeout to ensure DOM layout is complete before measuring
     const timeoutId = setTimeout(() => {
-      const activeIndex = displayTabs.findIndex(tab => 
-        location.pathname === tab.path || 
+      const activeIndex = displayTabs.findIndex(tab =>
+        location.pathname === tab.path ||
         (tab.path === '/tools' && location.pathname.startsWith('/tools/')) ||
         (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname))
       );
@@ -81,10 +81,10 @@ const TabBar = () => {
     <div className="fixed bottom-0 left-0 w-full px-3 pb-[calc(1rem_+_env(safe-area-inset-bottom,0px))] z-50 md:hidden">
       <div className="bg-white rounded-2xl shadow-strong relative flex items-center justify-between px-2 h-[62px]">
         {/* Sliding Pill */}
-        <div 
+        <div
           className="absolute h-10 bg-[#6EABC6] rounded-xl"
-          style={{ 
-            left: `${pillStyle.left}px`, 
+          style={{
+            left: `${pillStyle.left}px`,
             width: `${pillStyle.width}px`,
             opacity: pillStyle.opacity,
             transition: 'left 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease-in'
@@ -92,7 +92,7 @@ const TabBar = () => {
         />
 
         {displayTabs.map((tab, index) => {
-          const isActive = location.pathname === tab.path || 
+          const isActive = location.pathname === tab.path ||
             (tab.path === '/tools' && location.pathname.startsWith('/tools/')) ||
             (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname));
           const Icon = tab.icon;

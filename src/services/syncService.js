@@ -85,19 +85,20 @@ export async function pullTimetableFromCloud() {
   }
 
   if (data && data.length > 0) {
-    // ★ Cloud rows already have academic_year & semester — store them as-is
+    // ★ Map snake_case DB columns back to camelCase so TimetableBuilder
+    //   (which reads startTime, endTime, creditHours, targetGrade) works correctly.
     const localCourses = data.map(row => ({
       id: row.id,
       name: row.name,
       day: row.day,
-      start_time: row.start_time,
-      end_time: row.end_time,
+      startTime: row.start_time,       // camelCase — TimetableBuilder expects this
+      endTime: row.end_time,           // camelCase — TimetableBuilder expects this
       location: row.location,
       color: row.color,
       lecturer: row.lecturer,
       contact: row.contact,
-      target_grade: row.target_grade,
-      credit_hours: row.credit_hours,
+      targetGrade: row.target_grade,   // camelCase — GPACalculator merge expects this
+      creditHours: row.credit_hours,   // camelCase — TimetableBuilder & GPACalculator expect this
       academic_year: row.academic_year,
       semester: row.semester,
     }));
@@ -190,7 +191,14 @@ export async function pushGPAToCloud() {
     user_id: userId,
     name: c.course_name || c.name || '',
     grade: c.grade || 'E',
-    credit_hours: c.credit_hours || 3,
+    // ★ FIX: push the computed numeric fields so the cloud stores real data
+    score: parseFloat(c.score) || 0,
+    grade_point: parseFloat(c.gradePoint) || 0,
+    credit_hours: parseFloat(c.creditHours || c.credit_hours) || 3,
+    is_detailed: c.isDetailed || false,
+    exam_weight: parseFloat(c.examWeight) || 60,
+    exam_score: c.examScore || '',
+    assessments: c.assessments || [],
     academic_year: c.academic_year || null,
     semester: c.semester || null,
   }));
@@ -224,13 +232,22 @@ export async function pullGPAFromCloud() {
     const localCourses = data.map(row => ({
       id: row.id,
       course_name: row.name,
-      name: row.name,   // keep both for backward compat
+      name: row.name,           // keep both for backward compat
       grade: row.grade,
-      credit_hours: row.credit_hours,
+      // ★ FIX: restore all computed grade fields so semesterStats useMemo
+      //   has real values and does not produce 0.00 GPA
+      score: row.score || 0,
+      gradePoint: row.grade_point || 0,   // camelCase — GPACalculator reads c.gradePoint
+      creditHours: row.credit_hours || 3, // camelCase — GPACalculator reads c.creditHours
+      isDetailed: row.is_detailed || false,
+      examWeight: row.exam_weight || 60,
+      examScore: row.exam_score || '',
+      assessments: row.assessments || [],
       academic_year: row.academic_year,
       semester: row.semester,
     }));
     localStorage.setItem('ucc_gpa', JSON.stringify(localCourses));
+    console.log('[syncService] pullGPA OK:', localCourses.length, 'rows');
   }
 }
 

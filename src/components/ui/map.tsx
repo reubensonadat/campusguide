@@ -293,7 +293,14 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     }
 
     internalUpdateRef.current = true;
-    mapInstance.jumpTo(next);
+    mapInstance.flyTo({
+      center: next.center,
+      zoom: next.zoom,
+      bearing: next.bearing,
+      pitch: next.pitch,
+      duration: 2000,
+      essential: true,
+    });
     internalUpdateRef.current = false;
   }, [mapInstance, isControlled, viewport]);
 
