@@ -25,6 +25,27 @@ export const LetterGenerator = () => {
       toast.error('Please fill in your Name, ID, and Department.');
       return;
     }
+
+    // Rate limiting: 2 per hour
+    const now = Date.now();
+    const oneHourAgo = now - 60 * 60 * 1000;
+    let timestamps = [];
+    try {
+      const stored = localStorage.getItem('ucc_letter_gen_timestamps');
+      if (stored) {
+        timestamps = JSON.parse(stored).filter(t => t > oneHourAgo);
+      }
+    } catch (err) {
+      console.error('Failed to read generation limit', err);
+    }
+
+    if (timestamps.length >= 2) {
+      const oldestRemaining = timestamps[0];
+      const timeRemainingMs = (oldestRemaining + 60 * 60 * 1000) - now;
+      const minutesRemaining = Math.ceil(timeRemainingMs / (60 * 1000));
+      toast.error(`Rate limit reached: You can only generate 2 letters per hour. Please try again in ${minutesRemaining} minutes.`);
+      return;
+    }
     
     setLoading(true);
     setGeneratedLetter('');
@@ -32,6 +53,10 @@ export const LetterGenerator = () => {
       const result = await generateLetter(formData);
       setGeneratedLetter(result);
       toast.success('Letter generated successfully!');
+      
+      // Save new timestamp
+      timestamps.push(now);
+      localStorage.setItem('ucc_letter_gen_timestamps', JSON.stringify(timestamps));
     } catch (err) {
       toast.error('Failed to generate letter. Please try again.');
     } finally {

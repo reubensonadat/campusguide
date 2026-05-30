@@ -592,7 +592,6 @@ const Home = () => {
 
   const quickActions = [
     { title: 'Campus Map',  icon: Map,           action: () => navigate('/guide?topic=campus-map')          },
-    { title: 'Timetable',   icon: CalendarDays,  action: () => navigate('/tools')                           },
     { title: 'Buy Data',    icon: Wifi,          action: () => window.open(AFFILIATE_URL, '_blank', 'noopener,noreferrer'), isAffiliate: true },
     { title: 'Contact Us',  icon: MessageCircle, action: () => navigate('/contact')                         },
     { title: 'Settings',    icon: Settings,      action: () => navigate('/settings')                        },
@@ -1160,7 +1159,6 @@ const Home = () => {
             <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 px-1 -mx-1">
               {quickActions.map((action, i) => {
                 const Icon = action.icon;
-                const isAffiliate = action.isAffiliate;
                 return (
                   <button
                     key={i}
@@ -1168,7 +1166,7 @@ const Home = () => {
                     className="bg-white border border-gray-200 rounded-2xl p-3 flex-none flex items-center gap-3 active:scale-95 transition-transform"
                   >
                     <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
-                      <Icon size={18} className={isAffiliate ? 'text-orange-500' : 'text-[#002F45]'} />
+                      <Icon size={18} className="text-[#002F45]" />
                     </div>
                     <span className="text-[13px] font-bold text-gray-900 leading-tight pr-2 whitespace-nowrap">
                       {action.title}
@@ -1443,25 +1441,18 @@ const Home = () => {
               <div className="flex gap-6 py-2 overflow-x-auto hide-scrollbar">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon;
-                  const isAffiliate = action.isAffiliate;
                   return (
                     <button key={index} onClick={action.action}
-                      className={`group relative overflow-hidden text-left p-5 bg-white border rounded-xl transition-all duration-300 flex items-center justify-between flex-none ${isAffiliate
-                          ? 'border-primary-200 hover:border-primary-300 hover:shadow-[0_8px_30px_rgba(59,130,246,0.1)]'
-                          : 'border-gray-100 hover:border-primary-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]'
-                        }`}
+                      className="group relative overflow-hidden text-left p-5 bg-white border border-gray-100 hover:border-primary-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-xl transition-all duration-300 flex items-center justify-between flex-none"
                       style={{ minWidth: 'min(24rem, calc((100vw - 96px) / 4))' }}>
                       <div className="flex items-center gap-4 relative z-10">
-                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${isAffiliate
-                            ? 'bg-orange-50'
-                            : 'bg-primary-50'
-                          }`}>
-                          <Icon size={24} className={isAffiliate ? 'text-orange-500' : 'text-primary-600'} />
+                        <div className="w-14 h-14 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 bg-primary-50">
+                          <Icon size={24} className="text-primary-600" />
                         </div>
                         <h4 className="font-bold text-gray-900 text-base">{action.title}</h4>
                       </div>
                       <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 relative z-10">
-                        <ArrowRight size={16} className={isAffiliate ? 'text-orange-600' : 'text-primary-600'} />
+                        <ArrowRight size={16} className="text-primary-600" />
                       </div>
                     </button>
                   );

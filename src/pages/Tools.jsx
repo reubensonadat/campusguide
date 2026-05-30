@@ -16,11 +16,11 @@ import { CustomCoach, CustomCalculator, CustomBudget, CustomPlanner, CustomCoolF
 const tabs = [
   { id: 'timetable', label: 'Timetable Builder' },
   { id: 'gpa', label: 'GPA Calculator' },
-  { id: 'assignments', label: 'Assignments' },
-  { id: 'budget', label: 'Budget Tracker' },
+  { id: 'assignments', label: 'Deadlines & Assignments' },
   { id: 'formulas', label: 'Formula Solver' },
-  { id: 'resources', label: 'Cool Finds' },
-  { id: 'plan-day', label: 'Plan Your Day' }
+  { id: 'budget', label: 'Budget Tracker' },
+  { id: 'plan-day', label: 'Plan Your Day' },
+  { id: 'resources', label: 'Cool Finds' }
 ];
 
 const Tools = () => {
@@ -40,6 +40,12 @@ const Tools = () => {
       setIsAuthVerified(true);
     });
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (activeTool && tabs.some(t => t.id === activeTool)) {
+      localStorage.setItem('ucc_active_tool_tab', activeTool);
+    }
+  }, [activeTool]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -104,14 +110,14 @@ const Tools = () => {
         {/* Content Area */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <Routes>
-            <Route path="/" element={<Navigate to="timetable" replace />} />
+            <Route path="/" element={<Navigate to={localStorage.getItem('ucc_active_tool_tab') || 'timetable'} replace />} />
             <Route path="timetable" element={<TimetableBuilder />} />
             <Route path="gpa" element={<GPACalculator />} />
             <Route path="assignments" element={<Assignments />} />
-            <Route path="budget" element={<BudgetTracker />} />
             <Route path="formulas" element={<FormulaCalculator />} />
-            <Route path="resources" element={<CoolFinds />} />
+            <Route path="budget" element={<BudgetTracker />} />
             <Route path="plan-day" element={<PlanYourDay />} />
+            <Route path="resources" element={<CoolFinds />} />
           </Routes>
         </div>
 

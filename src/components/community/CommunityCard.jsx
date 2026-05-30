@@ -51,16 +51,19 @@ const CommunityCard = ({ post }) => {
             onTouchStart={startPress}
             onTouchEnd={endPress}
             onTouchMove={endPress}
-            className={`relative bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 h-full border ${isShared ? 'ring-2 ring-primary-500 border-primary-200 bg-primary-50/10' : 'border-gray-100'}`}
+            onClick={() => setIsExpanded(prev => !prev)}
+            className={`cursor-pointer relative bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 h-full border ${isShared ? 'ring-2 ring-primary-500 border-primary-200 bg-primary-50/10' : 'border-gray-100'}`}
         >
             {/* Absolute share button */}
-            <button
-                onClick={(e) => handleSharePost(e, post.id)}
-                className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white/95 text-gray-500 hover:text-primary-600 flex items-center justify-center shadow-md active:scale-95 transition-all duration-200"
-                title="Share post"
-            >
-                <Share2 size={16} />
-            </button>
+            {isExpanded && (
+                <button
+                    onClick={(e) => handleSharePost(e, post.id)}
+                    className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white/95 text-gray-500 hover:text-primary-600 flex items-center justify-center shadow-md active:scale-95 transition-all duration-200"
+                    title="Share post"
+                >
+                    <Share2 size={16} />
+                </button>
+            )}
 
             {/* Full Image Container (Flyer) */}
             {image && (

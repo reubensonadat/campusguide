@@ -91,6 +91,60 @@ const Settings = () => {
   const [isRestoring, setIsRestoring] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useLocalStorage('ucc_notifications_enabled', true);
 
+  // GPA Vault Lock States
+  const [isGpaLocked, setIsGpaLocked] = useLocalStorage('ucc_gpa_vault_locked', false);
+  const [gpaPin, setGpaPin] = useLocalStorage('ucc_gpa_vault_pin', '');
+  const [showGpaLockModal, setShowGpaLockModal] = useState(false);
+  const [lockModalMode, setLockModalMode] = useState('setup'); // 'setup' | 'confirm' | 'deactivate'
+  const [pinInput, setPinInput] = useState('');
+  const [pinConfirmInput, setPinConfirmInput] = useState('');
+
+  const handleGpaLockToggle = () => {
+    if (isGpaLocked) {
+      setLockModalMode('deactivate');
+      setPinInput('');
+      setShowGpaLockModal(true);
+    } else {
+      setLockModalMode('setup');
+      setPinInput('');
+      setPinConfirmInput('');
+      setShowGpaLockModal(true);
+    }
+  };
+
+  const handleGpaLockSubmit = (e) => {
+    e.preventDefault();
+    if (lockModalMode === 'setup') {
+      if (pinInput.length !== 6) {
+        toast.error('PIN must be exactly 6 digits.');
+        return;
+      }
+      setLockModalMode('confirm');
+      setPinConfirmInput('');
+    } else if (lockModalMode === 'confirm') {
+      if (pinInput !== pinConfirmInput) {
+        toast.error('PINs do not match. Please try again.');
+        setLockModalMode('setup');
+        setPinInput('');
+        setPinConfirmInput('');
+        return;
+      }
+      setGpaPin(pinInput);
+      setIsGpaLocked(true);
+      setShowGpaLockModal(false);
+      toast.success('GPA Vault Lock activated successfully!');
+    } else if (lockModalMode === 'deactivate') {
+      if (pinInput !== gpaPin) {
+        toast.error('Incorrect PIN. Authorization failed.');
+        return;
+      }
+      setIsGpaLocked(false);
+      setGpaPin('');
+      setShowGpaLockModal(false);
+      toast.success('GPA Vault Lock disabled.');
+    }
+  };
+
   // Edit profile states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
@@ -475,6 +529,26 @@ const Settings = () => {
               <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
             </button>
 
+            <div className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0">
+              <div className="flex items-center gap-4">
+                <Lock size={20} className="text-gray-700" strokeWidth={1.5} />
+                <div className="flex flex-col">
+                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">GPA Vault PIN Lock</span>
+                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Keep your GPA forecasts and scores private</span>
+                </div>
+              </div>
+              <button
+                onClick={handleGpaLockToggle}
+                className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${
+                  isGpaLocked ? 'bg-[#002F45]' : 'bg-gray-200'
+                }`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                  isGpaLocked ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
+
             <button
               onClick={handleExportData}
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
@@ -766,6 +840,75 @@ const Settings = () => {
                 }}
               />
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── GPA Lock PIN Modal ─────────────────────────────────────────── */}
+      {showGpaLockModal && (
+        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6 animate-in fade-in duration-200">
+          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 flex flex-col">
+            <div className="flex items-center justify-between p-5 border-b border-gray-100">
+              <h2 className="text-lg font-black text-gray-900 px-2 flex items-center gap-2">
+                <Lock size={18} className="text-[#002F45]" />
+                {lockModalMode === 'setup' && 'Set GPA Vault PIN'}
+                {lockModalMode === 'confirm' && 'Confirm PIN'}
+                {lockModalMode === 'deactivate' && 'Disable GPA Lock'}
+              </h2>
+              <button
+                onClick={() => setShowGpaLockModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleGpaLockSubmit} className="p-6 space-y-4">
+              <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                {lockModalMode === 'setup' && 'Create a 6-digit passcode to secure your private GPA data.'}
+                {lockModalMode === 'confirm' && 'Please re-enter your 6-digit passcode to confirm.'}
+                {lockModalMode === 'deactivate' && 'Enter your current 6-digit passcode to disable the vault lock.'}
+              </p>
+
+              <input
+                type="password"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={lockModalMode === 'confirm' ? pinConfirmInput : pinInput}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, '');
+                  if (lockModalMode === 'confirm') {
+                    setPinConfirmInput(val);
+                  } else {
+                    setPinInput(val);
+                  }
+                }}
+                placeholder="••••••"
+                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-lg font-bold tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
+                maxLength={6}
+                autoFocus
+                required
+              />
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowGpaLockModal(false)}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 rounded-xl font-bold transition-colors active:scale-95 text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={lockModalMode === 'confirm' ? pinConfirmInput.length < 6 : pinInput.length < 6}
+                  className="flex-1 bg-[#002F45] hover:bg-[#001a26] text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-sm"
+                >
+                  {lockModalMode === 'setup' && 'Next'}
+                  {lockModalMode === 'confirm' && 'Confirm & Lock'}
+                  {lockModalMode === 'deactivate' && 'Deactivate'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

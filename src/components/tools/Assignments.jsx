@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   ChevronLeft, Plus, Filter, Calendar as CalendarIcon, List,
   Clock, AlertTriangle, CheckCircle2, Circle, Trash2, Edit3,
-  ChevronRight, X, Search, ChevronDown
+  ChevronRight, X, Search, ChevronDown, Share2
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import {
@@ -225,6 +225,49 @@ const Assignments = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState(null);
+  const [sharedDeadline, setSharedDeadline] = useState(null);
+
+  const handleShareDeadline = (a) => {
+    try {
+      const payload = {
+        title: a.title,
+        course: a.course,
+        dueDate: a.dueDate,
+        dueTime: a.dueTime,
+        priority: a.priority,
+        notes: a.notes,
+        level: activeLevel,
+        semester: activeSemester,
+        senderName: profile?.name || ''
+      };
+      const jsonStr = JSON.stringify(payload);
+      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      const shareUrl = `${window.location.origin}/tools/assignments?shareDeadline=${base64}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        toast.success('Deadline share link copied to clipboard!');
+      }).catch(() => {
+        toast.error('Failed to copy link.');
+      });
+    } catch (e) {
+      toast.error('Error generating share link.');
+    }
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sharedData = params.get('shareDeadline');
+    if (sharedData) {
+      try {
+        const decodedJson = decodeURIComponent(escape(atob(sharedData)));
+        const parsed = JSON.parse(decodedJson);
+        if (parsed && parsed.title) {
+          setSharedDeadline(parsed);
+        }
+      } catch (err) {
+        console.error('Failed to parse shared deadline', err);
+      }
+    }
+  }, []);
 
   // Calendar state
   const [calYear, setCalYear] = useState(new Date().getFullYear());
@@ -400,7 +443,7 @@ const Assignments = () => {
               <ChevronLeft size={18} />
             </button>
             <div>
-              <h1 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">Assignments</h1>
+              <h1 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">Deadlines & Assignments</h1>
               <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Track deadlines. Never miss a submission.</p>
             </div>
           </div>
@@ -562,6 +605,7 @@ const Assignments = () => {
                 onStatusChange={handleStatusChange}
                 onEdit={(a) => { setEditingAssignment(a); setShowAddModal(true); }}
                 onDelete={handleDelete}
+                onShare={handleShareDeadline}
               />
             )}
 
@@ -573,6 +617,7 @@ const Assignments = () => {
                 onStatusChange={handleStatusChange}
                 onEdit={(a) => { setEditingAssignment(a); setShowAddModal(true); }}
                 onDelete={handleDelete}
+                onShare={handleShareDeadline}
               />
             )}
 
@@ -586,6 +631,7 @@ const Assignments = () => {
                         onStatusChange={handleStatusChange}
                         onEdit={(a) => { setEditingAssignment(a); setShowAddModal(true); }}
                         onDelete={handleDelete}
+                        onShare={handleShareDeadline}
                       />
                     ))
                   : [
@@ -598,6 +644,7 @@ const Assignments = () => {
                         onStatusChange={handleStatusChange}
                         onEdit={(a) => { setEditingAssignment(a); setShowAddModal(true); }}
                         onDelete={handleDelete}
+                        onShare={handleShareDeadline}
                       />
                     ] : []),
                     ...(urgencyMap.later.length > 0 ? [
@@ -609,6 +656,7 @@ const Assignments = () => {
                         onStatusChange={handleStatusChange}
                         onEdit={(a) => { setEditingAssignment(a); setShowAddModal(true); }}
                         onDelete={handleDelete}
+                        onShare={handleShareDeadline}
                       />
                     ] : []),
                     ...filteredAssignments.filter(a => a.status !== 'pending').map(a => (
@@ -618,6 +666,7 @@ const Assignments = () => {
                         onStatusChange={handleStatusChange}
                         onEdit={(a) => { setEditingAssignment(a); setShowAddModal(true); }}
                         onDelete={handleDelete}
+                        onShare={handleShareDeadline}
                       />
                     ))
                   ]
@@ -743,6 +792,7 @@ const Assignments = () => {
                           onStatusChange={handleStatusChange}
                           onEdit={(a) => { setEditingAssignment(a); setShowAddModal(true); }}
                           onDelete={handleDelete}
+                          onShare={handleShareDeadline}
                         />
                       ))}
                     </div>
@@ -763,13 +813,72 @@ const Assignments = () => {
           onClose={() => { setShowAddModal(false); setEditingAssignment(null); }}
         />
       )}
+
+      {/* Import Shared Deadline Modal */}
+      {sharedDeadline && (
+        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-lg rounded-t-[2rem] sm:rounded-2xl flex flex-col max-h-[85vh] shadow-2xl animate-in slide-in-from-bottom-8 duration-300">
+            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 bg-white rounded-t-[2rem] sm:rounded-2xl z-10">
+              <h2 className="text-base sm:text-lg font-black text-gray-900">Import Shared Deadline</h2>
+              <button onClick={() => setSharedDeadline(null)} className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="p-4 bg-[#002F45]/5 rounded-xl border border-[#002F45]/10">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                  Shared by {sharedDeadline.senderName || 'Student'}
+                </span>
+                <h3 className="font-extrabold text-[#002F45] text-base">{sharedDeadline.title}</h3>
+                {sharedDeadline.course && <p className="text-xs font-bold text-gray-500 mt-1">{sharedDeadline.course}</p>}
+              </div>
+              
+              <div className="space-y-2 text-sm text-gray-600">
+                <p><strong>Due Date:</strong> {formatDate(sharedDeadline.dueDate)} {sharedDeadline.dueTime && `at ${formatTime12(sharedDeadline.dueTime)}`}</p>
+                <p><strong>Priority:</strong> <span className="capitalize">{sharedDeadline.priority}</span></p>
+                {sharedDeadline.notes && <p><strong>Notes:</strong> {sharedDeadline.notes}</p>}
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setSharedDeadline(null)}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-bold transition-colors active:scale-95"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    const payload = {
+                      title: sharedDeadline.title,
+                      course: sharedDeadline.course,
+                      dueDate: sharedDeadline.dueDate,
+                      dueTime: sharedDeadline.dueTime,
+                      priority: sharedDeadline.priority,
+                      notes: sharedDeadline.notes,
+                      status: 'pending'
+                    };
+                    handleSave(payload);
+                    // Clear URL parameter
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, newUrl);
+                    setSharedDeadline(null);
+                  }}
+                  className="flex-1 bg-[#002F45] hover:bg-[#001a26] text-white py-3 rounded-xl font-bold transition-all shadow-md active:scale-95 text-center"
+                >
+                  Import
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 // ── Sub-components ──────────────────────────────────────────────────────────────
 
-const UrgencySection = ({ title, items, urgencyKey, onStatusChange, onEdit, onDelete }) => {
+const UrgencySection = ({ title, items, urgencyKey, onStatusChange, onEdit, onDelete, onShare }) => {
   const u = URGENCY_LABELS[urgencyKey];
   return (
     <div>
@@ -779,14 +888,14 @@ const UrgencySection = ({ title, items, urgencyKey, onStatusChange, onEdit, onDe
       </div>
       <div className="space-y-1.5 sm:space-y-2">
         {items.map(a => (
-          <AssignmentCard key={a.id} assignment={a} onStatusChange={onStatusChange} onEdit={onEdit} onDelete={onDelete} />
+          <AssignmentCard key={a.id} assignment={a} onStatusChange={onStatusChange} onEdit={onEdit} onDelete={onDelete} onShare={onShare} />
         ))}
       </div>
     </div>
   );
 };
 
-const AssignmentCard = ({ assignment, compact, onStatusChange, onEdit, onDelete }) => {
+const AssignmentCard = ({ assignment, compact, onStatusChange, onEdit, onDelete, onShare }) => {
   const a = assignment;
   const p = PRIORITY_STYLES[a.priority] || PRIORITY_STYLES.medium;
   const s = STATUS_STYLES[a.status] || STATUS_STYLES.pending;
@@ -827,6 +936,11 @@ const AssignmentCard = ({ assignment, compact, onStatusChange, onEdit, onDelete 
               )}
             </div>
             <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
+              {onShare && (
+                <button onClick={() => onShare(a)} className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg hover:bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary-600 transition-colors" title="Share deadline">
+                  <Share2 size={12} />
+                </button>
+              )}
               <button onClick={() => onEdit(a)} className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg hover:bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-700 transition-colors">
                 <Edit3 size={12} />
               </button>

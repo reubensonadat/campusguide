@@ -67,11 +67,12 @@ export const FeaturedContentWidget = ({ featuredContent, isFeaturedExpanded, set
                 }
                 return (
                   <button 
-                    onClick={() => window.open(`https://wa.me/${cleanPhone}`, '_blank')}
+                    onClick={() => window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your listing for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`, '_blank')}
                     className="flex-1 bg-[#25D366] text-white rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
                   >
                     WhatsApp
                   </button>
+
                 );
               })()}
             </div>

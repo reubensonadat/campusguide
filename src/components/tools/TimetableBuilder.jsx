@@ -3,7 +3,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import useProfile from '../../hooks/useProfile';
 import { Button } from '../common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../common/Card';
-import { Plus, Trash2, Calendar, Bell, X, AlertCircle, User, Phone, Target, PartyPopper, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, Calendar, Bell, X, AlertCircle, User, Phone, Target, PartyPopper, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import { CustomMapPin } from '../common/CustomMapPin';
 import { Modal } from '../common/Modal';
 import { DAYS_OF_WEEK } from '../../utils/constants';
@@ -11,6 +11,7 @@ import { requestNotificationPermission, isNotificationSupported } from '../../se
 import { triggerAuthSheet } from '../onboarding/AuthModal';
 import { getTodayHoliday } from '../../services/holidayService';
 import { CustomEyes } from '../common/CustomIcons';
+import { toast } from 'react-hot-toast';
 
 const formatTime12Hour = (time24) => {
   if (!time24) return '';
@@ -29,6 +30,85 @@ const TimetableBuilder = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [conflictError, setConflictError] = useState('');
   const [todayHoliday, setTodayHoliday] = useState(null);
+  const [sharedTimetable, setSharedTimetable] = useState(null);
+  const [selectedImportCourses, setSelectedImportCourses] = useState({});
+
+  const handleShareTimetable = () => {
+    if (displayCourses.length === 0) {
+      toast.error("You don't have any classes to share in this semester!");
+      return;
+    }
+    try {
+      const payload = {
+        senderName: profile?.name || '',
+        senderCourse: profile?.course || '',
+        level: activeLevel,
+        semester: activeSemester,
+        courses: displayCourses
+      };
+      const jsonStr = JSON.stringify(payload);
+      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      const shareUrl = `${window.location.origin}/tools/timetable?shareTimetable=${base64}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        toast.success('Timetable share link copied to clipboard!');
+      }).catch(() => {
+        toast.error('Failed to copy link.');
+      });
+    } catch (e) {
+      toast.error('Error generating share link.');
+    }
+  };
+
+  const handleImportSharedCourses = () => {
+    if (!sharedTimetable) return;
+    const coursesToImport = sharedTimetable.courses.filter((_, idx) => selectedImportCourses[idx]);
+    if (coursesToImport.length === 0) {
+      toast.error('No courses selected to import.');
+      return;
+    }
+
+    const newImported = coursesToImport.map(c => ({
+      ...c,
+      id: Date.now() + Math.random(),
+      academic_year: sharedTimetable.level || activeLevel,
+      semester: sharedTimetable.semester || activeSemester
+    }));
+
+    const existingKeys = new Set(courses.map(c => `${c.name}_${c.day}_${c.startTime}_${c.endTime}_${c.academic_year}_${c.semester}`));
+    const nonDuplicates = newImported.filter(c => !existingKeys.has(`${c.name}_${c.day}_${c.startTime}_${c.endTime}_${c.academic_year}_${c.semester}`));
+
+    if (nonDuplicates.length === 0) {
+      toast.success('All selected courses are already in your timetable.');
+    } else {
+      setCourses(prev => [...prev, ...nonDuplicates]);
+      toast.success(`Successfully imported ${nonDuplicates.length} course(s)!`);
+    }
+
+    const newUrl = window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+    setSharedTimetable(null);
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sharedData = params.get('shareTimetable');
+    if (sharedData) {
+      try {
+        const decodedJson = decodeURIComponent(escape(atob(sharedData)));
+        const parsed = JSON.parse(decodedJson);
+        if (parsed && Array.isArray(parsed.courses)) {
+          setSharedTimetable(parsed);
+          const initialSelected = {};
+          parsed.courses.forEach((c, idx) => {
+            initialSelected[idx] = true;
+          });
+          setSelectedImportCourses(initialSelected);
+        }
+      } catch (err) {
+        console.error('Failed to parse shared timetable', err);
+      }
+    }
+  }, []);
 
   const TERMS = [
       '100_1', '100_2', '200_1', '200_2', '300_1', '300_2',
@@ -221,6 +301,17 @@ const TimetableBuilder = () => {
                 >
                   <Bell size={16} className="mr-2" />
                   Reminders
+                </Button>
+              )}
+              {displayCourses.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShareTimetable}
+                  className="flex-1 sm:flex-none border-[#002F45]/20 text-[#002F45] hover:bg-[#002F45]/5"
+                >
+                  <Share2 size={16} className="mr-2" />
+                  Share
                 </Button>
               )}
               <Button
@@ -632,6 +723,94 @@ const TimetableBuilder = () => {
                   <span>Remove Class</span>
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Import Shared Timetable Modal */}
+      <Modal
+        isOpen={!!sharedTimetable}
+        onClose={() => setSharedTimetable(null)}
+        title="Import Shared Timetable"
+        size="lg"
+      >
+        {sharedTimetable && (
+          <div className="space-y-6">
+            <div className="p-5 bg-gradient-to-r from-[#002F45]/10 to-primary-50 rounded-2xl border border-[#002F45]/10">
+              <h3 className="font-extrabold text-[#002F45] text-lg">
+                {sharedTimetable.senderName ? `${sharedTimetable.senderName}'s Timetable` : 'Shared Timetable'}
+              </h3>
+              {sharedTimetable.senderCourse && (
+                <p className="text-sm font-semibold text-gray-600 mt-1">{sharedTimetable.senderCourse}</p>
+              )}
+              <div className="flex gap-2 mt-3">
+                <span className="text-xs font-bold bg-[#002F45]/10 text-[#002F45] px-3 py-1 rounded-full uppercase tracking-wider">
+                  Level {sharedTimetable.level}
+                </span>
+                <span className="text-xs font-bold bg-[#002F45]/10 text-[#002F45] px-3 py-1 rounded-full uppercase tracking-wider">
+                  Semester {sharedTimetable.semester}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">
+                Select courses to import ({sharedTimetable.courses.length} found):
+              </label>
+              <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                {sharedTimetable.courses.map((course, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setSelectedImportCourses(prev => ({
+                        ...prev,
+                        [idx]: !prev[idx]
+                      }));
+                    }}
+                    className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
+                      selectedImportCourses[idx]
+                        ? 'border-[#002F45] bg-[#002F45]/5 shadow-sm'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={!!selectedImportCourses[idx]}
+                      onChange={() => {}} // handled by parent div click
+                      className="w-4.5 h-4.5 text-[#002F45] border-gray-300 rounded focus:ring-[#002F45]"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-gray-900 truncate">{course.name}</div>
+                      <div className="text-xs font-semibold text-gray-500 mt-0.5">
+                        {course.day}s, {formatTime12Hour(course.startTime)} - {formatTime12Hour(course.endTime)}
+                      </div>
+                      {course.location && (
+                        <div className="text-[11px] font-medium text-gray-400 mt-0.5">
+                          Location: {course.location}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setSharedTimetable(null)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 rounded-xl font-bold transition-colors active:scale-95"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleImportSharedCourses}
+                className="flex-1 bg-[#002F45] hover:bg-[#001a26] text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95"
+              >
+                Import Selected
+              </button>
             </div>
           </div>
         )}

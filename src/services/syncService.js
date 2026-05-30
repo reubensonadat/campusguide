@@ -120,13 +120,16 @@ export async function pushAssignmentsToCloud() {
     id: a.id,
     user_id: userId,
     title: a.title,
-    description: a.description,
+    notes: a.notes || a.description || '',
     course: a.course,
-    due_date: a.due_date,
+    due_date: a.dueDate || a.due_date,
+    due_time: a.dueTime || a.due_time || null,
     status: a.status,
     priority: a.priority,
     academic_year: a.academic_year || null,
     semester: a.semester || null,
+    created_at: a.createdAt || new Date().toISOString(),
+    updated_at: a.updatedAt || new Date().toISOString(),
   }));
 
   const { error } = await supabase
@@ -158,13 +161,16 @@ export async function pullAssignmentsFromCloud() {
     const localAssignments = data.map(row => ({
       id: row.id,
       title: row.title,
-      description: row.description,
-      course: row.course,
-      due_date: row.due_date,
-      status: row.status,
+      notes: row.notes || '',
+      course: row.course || '',
+      dueDate: row.due_date,
+      dueTime: row.due_time || '',
       priority: row.priority,
+      status: row.status,
       academic_year: row.academic_year,
       semester: row.semester,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     }));
     localStorage.setItem('ucc_assignments', JSON.stringify(localAssignments));
   }
@@ -241,9 +247,11 @@ export async function pushTasksToCloud() {
     id: t.id,
     user_id: userId,
     title: t.title,
-    description: t.description || '',
     status: t.completed ? 'COMPLETED' : 'PENDING',
     date: t.date,
+    time: t.time || null,
+    end_time: t.endTime || null,
+    icon: t.icon || 'study',
     academic_year: t.academic_year || null,
     semester: t.semester || null,
   }));
@@ -277,9 +285,11 @@ export async function pullTasksFromCloud() {
     const localTasks = data.map(row => ({
       id: row.id,
       title: row.title,
-      description: row.description || '',
       completed: row.status === 'COMPLETED' || row.status === 'completed',
       date: row.date,
+      time: row.time,
+      endTime: row.end_time,
+      icon: row.icon || 'study',
       academic_year: row.academic_year,
       semester: row.semester,
     }));
