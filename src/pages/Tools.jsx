@@ -7,9 +7,11 @@ import CoolFinds from '../components/tools/CoolFinds';
 import BudgetTracker from '../components/tools/BudgetTracker';
 import PlanYourDay from '../components/tools/PlanYourDay';
 import Assignments from '../components/tools/Assignments';
-import { Library } from 'lucide-react';
+import { Library, Cpu } from 'lucide-react';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import PageHeader from '../components/common/PageHeader';
+import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
+import { CustomCoach, CustomCalculator, CustomBudget, CustomPlanner, CustomCoolFinds } from '../components/common/CustomIcons';
 
 const tabs = [
   { id: 'timetable', label: 'Timetable Builder' },
@@ -134,8 +136,42 @@ const Tools = () => {
         </div>
 
       </div>
+
+      {/* 🧭 Coach Marks Walkthrough */}
+      <CoachMarksOverlay 
+        storageKey="ucc_coach_tools"
+        steps={TOOLS_COACH_STEPS}
+      />
     </div>
   );
 };
+
+const TOOLS_COACH_STEPS = [
+  {
+    icon: <CustomCoach size={24} />,
+    title: 'Manage Timetable',
+    description: 'Build, manage, and track your daily lecture timetable so you never miss a class or venue.'
+  },
+  {
+    icon: <CustomCalculator size={24} />,
+    title: 'Grades & Formulas',
+    description: 'Calculate your semester GPA, forecast targets, and solve complex scientific formulas instantly.'
+  },
+  {
+    icon: <CustomBudget size={24} />,
+    title: 'Budget Tracker',
+    description: 'Track and log your daily expenses to manage your student allowance and pocket money.'
+  },
+  {
+    icon: <CustomPlanner size={24} />,
+    title: 'Daily Planner & Assignments',
+    description: 'Schedule study sessions, track assignments, and plan your day with the interactive calendar.'
+  },
+  {
+    icon: <CustomCoolFinds size={24} />,
+    title: 'Cool Finds & Discounts',
+    description: 'Find student discounts, cool tech, and campus resources, or draft formal letters using the built-in AI letter generator.'
+  }
+];
 
 export default Tools;

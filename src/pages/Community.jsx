@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Megaphone, ChevronRight, Sparkles, Star, X } from 'lucide-react';
+import { Sparkles, Star, X, Megaphone } from 'lucide-react';
+import { CustomCommunity, CustomThriftStore, CustomEyes } from '../components/common/CustomIcons';
 import CommunityCard from '../components/community/CommunityCard';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -7,6 +8,7 @@ import LostFoundModal from '../components/community/LostFoundModal';
 import ThriftFeed from '../components/community/ThriftFeed';
 import WhispersFeed from '../components/community/WhispersFeed';
 import PageHeader from '../components/common/PageHeader';
+import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 
 import { supabase } from '../lib/supabase';
 import { DataLoader } from '../components/common/CustomLoaders';
@@ -333,8 +335,32 @@ const Community = () => {
                 onClose={() => setIsLostFoundModalOpen(false)}
                 onSuccess={() => setRefreshTrigger(prev => prev + 1)}
             />
+
+            {/* 🧭 Coach Marks Walkthrough */}
+            <CoachMarksOverlay 
+              storageKey="ucc_coach_community"
+              steps={COMMUNITY_COACH_STEPS}
+            />
         </div>
     );
 };
+
+const COMMUNITY_COACH_STEPS = [
+  {
+    icon: <CustomCommunity size={24} />,
+    title: 'Community Hub',
+    description: 'Engage with fellow students across the three major community channels: Feed, Thrift, and Whispers.'
+  },
+  {
+    icon: <CustomThriftStore size={24} />,
+    title: 'Thrift Market',
+    description: 'Post used items you want to sell or browse budget deals. You can share items directly using a long press.'
+  },
+  {
+    icon: <CustomEyes size={24} />,
+    title: 'Campus Whispers',
+    description: 'Post and reply to anonymous thoughts and campus buzz completely privately.'
+  }
+];
 
 export default Community;

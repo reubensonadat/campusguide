@@ -5,7 +5,8 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
 import { useNavigate } from 'react-router-dom';
-import { CustomSettings } from '../components/common/CustomIcons';
+import { CustomSettings, CustomProfile, CustomSafetyCheck, CustomCoach, CustomContact } from '../components/common/CustomIcons';
+import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 import { AboutIcon } from '../common/CustomTaskIcons';
 import { useAppContext } from '../context/AppContext';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
@@ -107,6 +108,10 @@ const Profile = () => {
   }, []);
 
   const handleSave = () => {
+    if (!formData.phone || !formData.phone.trim()) {
+      toast.error('Phone number is required.');
+      return;
+    }
     // Save to local state and localStorage immediately, close the modal instantly
     setProfile(formData);
     setIsEditModalOpen(false);
@@ -170,6 +175,16 @@ const Profile = () => {
       localStorage.clear();
       setTimeout(() => window.location.reload(), 800);
     }
+  };
+
+  const handleResetCoach = () => {
+    localStorage.removeItem('ucc_coach_home');
+    localStorage.removeItem('ucc_coach_map');
+    localStorage.removeItem('ucc_coach_tools');
+    localStorage.removeItem('ucc_coach_community');
+    localStorage.removeItem('ucc_coach_profile');
+    toast.success('Welcome Guide overlays reset successfully!');
+    setTimeout(() => window.location.reload(), 1000);
   };
 
   const handleShareApp = async () => {
@@ -607,6 +622,17 @@ const Profile = () => {
             )}
 
             <button
+              onClick={handleResetCoach}
+              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
+            >
+              <div className="flex items-center gap-4">
+                <CustomCoach size={20} className="text-[#002F45]" />
+                <span className="text-[15px] text-gray-900 font-medium">Replay Welcome Guide (Coach)</span>
+              </div>
+              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+            </button>
+
+            <button
               onClick={handleClearData}
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
             >
@@ -671,7 +697,7 @@ const Profile = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Phone Number</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Phone Number <span className="text-red-500">*</span></label>
                     <input
                       type="tel"
                       value={formData.phone || ''}
@@ -804,8 +830,37 @@ const Profile = () => {
         setSelectedListing(null);
       }}
     />
+
+    {/* 🧭 Coach Marks Walkthrough */}
+    <CoachMarksOverlay 
+      storageKey="ucc_coach_profile"
+      steps={PROFILE_COACH_STEPS}
+    />
     </>
   );
 };
+
+const PROFILE_COACH_STEPS = [
+  {
+    icon: <CustomProfile size={24} />,
+    title: 'Your Student ID Card',
+    description: 'This screen functions as a digital ID wallet pass. You can tap the card to edit your student details.'
+  },
+  {
+    icon: <CustomSettings size={24} />,
+    title: 'Manage Widgets',
+    description: 'Decide what appears on your home dashboard by toggling custom widgets on and off.'
+  },
+  {
+    icon: <CustomSafetyCheck size={24} />,
+    title: 'Cloud Sync backups',
+    description: 'Secure your app progress and timetable logs in the cloud using your unique ID and recovery PIN.'
+  },
+  {
+    icon: <CustomContact size={24} />,
+    title: 'Student Help Desk',
+    description: 'Get support, report campus issues, or request guidelines through our student portal contact center.'
+  }
+];
 
 export default Profile;

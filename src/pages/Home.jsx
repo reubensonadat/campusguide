@@ -1,8 +1,9 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '../components/common/Button';
-import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, Circle, Calendar, PartyPopper, Play, BookOpen, Plus, Flame, AlertTriangle, FileText } from 'lucide-react';
+import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, Circle, Calendar, PartyPopper, Play, BookOpen, Plus, Flame, AlertTriangle, FileText, LayoutGrid, ListChecks } from 'lucide-react';
+import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 import { CustomMapPin } from '../components/common/CustomMapPin';
-import { CustomGuide, CustomTools, CustomEyes } from '../components/common/CustomIcons';
+import { CustomGuide, CustomTools, CustomEyes, CustomHome, CustomCoach, CustomSafetyCheck, CustomProfile } from '../components/common/CustomIcons';
 import NotificationDropdown from '../components/common/NotificationDropdown'; // 🛎️ NEW: Import
 import { getIconComponent } from '../components/tools/PlanYourDay';
 import { FocusTimer } from '../components/tools/FocusTimer';
@@ -1529,8 +1530,42 @@ const Home = () => {
           />
       )}
 
+      {/* 🧭 Coach Marks Walkthrough */}
+      <CoachMarksOverlay 
+        storageKey="ucc_coach_home"
+        steps={HOME_COACH_STEPS}
+      />
+
     </div>
   );
 };
+
+const HOME_COACH_STEPS = [
+  {
+    icon: <CustomHome size={24} />,
+    title: 'Welcome to your Hub!',
+    description: 'Your home screen is your main campus cockpit. View class alerts, quick actions, and widget grids.'
+  },
+  {
+    icon: <CustomCoach size={24} />,
+    title: 'Timetable Classes',
+    description: "Instantly view today's lecture schedule and locations, with real-time countdown alerts for your classes."
+  },
+  {
+    icon: <CustomSafetyCheck size={24} />,
+    title: "Today's Tasks & Sync",
+    description: "Manage your daily todo checklist directly on your homepage to stay on top of study sessions and projects."
+  },
+  {
+    icon: <CustomGuide size={24} />,
+    title: "Quick Map Navigation",
+    description: "Jump straight to the UCC Interactive Campus Map, Tools, or Community feeds using the bottom bar tabs."
+  },
+  {
+    icon: <CustomProfile size={24} />,
+    title: "Profile Digital ID",
+    description: "Tap your digital student card to update your credentials, set up cloud backups, and configure widget visibility."
+  }
+];
 
 export default Home;

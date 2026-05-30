@@ -44,10 +44,10 @@ const Advertise = () => {
     const [userCount, setUserCount] = useState(null);
 
     useEffect(() => {
-        // Fetch real user count from user_settings table
+        // Fetch real user count from users table
         supabase
-            .from('user_settings')
-            .select('device_id', { count: 'exact', head: true })
+            .from('users')
+            .select('id', { count: 'exact', head: true })
             .then(({ count }) => {
                 if (count && count > 0) {
                     setUserCount(count.toLocaleString());
@@ -342,8 +342,8 @@ const Advertise = () => {
                 {/* STEP 1: GUIDELINES */}
                 {step === 1 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="w-16 h-16 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center mb-6">
-                            <CheckCircle2 size={32} />
+                        <div className="mb-6">
+                            <img src="/logo.png" alt="Logo" className="w-16 h-16 object-contain rounded-2xl shadow-sm" />
                         </div>
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-4">Quality & Trust Framework</h2>
                         <p className="text-lg text-gray-600 mb-6 font-medium leading-relaxed">
@@ -357,7 +357,7 @@ const Advertise = () => {
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
                             </div>
                             <span className="font-extrabold text-sm text-gray-900 tracking-tight">
-                                Reach <span className="text-rose-600">{userCount ? `${userCount}+` : '5,000+'} Students</span> across campus
+                                Reach <span className="text-rose-600">{userCount || 'active'} Students</span> across campus
                             </span>
                         </div>
 
@@ -609,7 +609,7 @@ const Advertise = () => {
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
                             </div>
                             <span className="font-extrabold text-[13px] sm:text-sm text-gray-900 tracking-tight">
-                                Monopolize student attention on the most visited app pages
+                                Highlight your business on the most visited app pages
                             </span>
                         </div>
 

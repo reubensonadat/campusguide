@@ -11,6 +11,7 @@ import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import { CourseCombobox } from '../components/common/CourseCombobox';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
 import { ArrowLeft } from 'lucide-react';
+import { CustomCoach } from '../components/common/CustomIcons';
 import {
   Trash2,
   Download,
@@ -114,6 +115,10 @@ const Settings = () => {
   }, [theme]);
 
   const handleSaveProfile = () => {
+    if (!formData.phone || !formData.phone.trim()) {
+      toast.error('Phone number is required.');
+      return;
+    }
     setProfile(formData);
     setIsEditModalOpen(false);
     triggerAuthSheet(() => {});
@@ -206,6 +211,16 @@ const Settings = () => {
       toast.success('All data cleared successfully');
       setTimeout(() => window.location.reload(), 800);
     }
+  };
+
+  const handleResetCoach = () => {
+    localStorage.removeItem('ucc_coach_home');
+    localStorage.removeItem('ucc_coach_map');
+    localStorage.removeItem('ucc_coach_tools');
+    localStorage.removeItem('ucc_coach_community');
+    localStorage.removeItem('ucc_coach_profile');
+    toast.success('Welcome Guide overlays reset successfully!');
+    setTimeout(() => window.location.reload(), 1000);
   };
 
   const handleShareApp = async () => {
@@ -475,6 +490,20 @@ const Settings = () => {
             </button>
 
             <button
+              onClick={handleResetCoach}
+              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+            >
+              <div className="flex items-center gap-4">
+                <CustomCoach size={20} className="text-[#002F45]" />
+                <div>
+                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Replay Welcome Guide (Coach)</span>
+                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Resets the fresher onboarding overlays on all tabs</span>
+                </div>
+              </div>
+              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+            </button>
+
+            <button
               onClick={handleClearAllData}
               className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
             >
@@ -641,7 +670,7 @@ const Settings = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Phone Number</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Phone Number <span className="text-red-500">*</span></label>
                     <input
                       type="tel"
                       value={formData.phone || ''}
