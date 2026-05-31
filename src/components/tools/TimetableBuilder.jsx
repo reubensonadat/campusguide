@@ -25,7 +25,7 @@ const formatTime12Hour = (time24) => {
 const TimetableBuilder = () => {
   const [courses, setCourses] = useLocalStorage('ucc_timetable', []);
   const [profile, setProfile] = useProfile(); // FIX C: Using useProfile instead of useLocalStorage
-  
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -112,8 +112,8 @@ const TimetableBuilder = () => {
   }, []);
 
   const TERMS = [
-      '100_1', '100_2', '200_1', '200_2', '300_1', '300_2',
-      '400_1', '400_2', '500_1', '500_2', '600_1', '600_2'
+    '100_1', '100_2', '200_1', '200_2', '300_1', '300_2',
+    '400_1', '400_2', '500_1', '500_2', '600_1', '600_2'
   ];
 
   // Derive active term from profile — profile is the source of truth
@@ -131,12 +131,12 @@ const TimetableBuilder = () => {
     // We use the profile's current level/semester as the "best guess"
     // for orphaned courses. If profile isn't set, default to 100/1.
     const defaultYear = profile?.level || '100';
-    const defaultSem  = profile?.semester || '1';
+    const defaultSem = profile?.semester || '1';
 
     const patched = courses.map(c => ({
       ...c,
       academic_year: c.academic_year || defaultYear,
-      semester:      c.semester || defaultSem,
+      semester: c.semester || defaultSem,
     }));
 
     setCourses(patched);
@@ -145,18 +145,18 @@ const TimetableBuilder = () => {
 
   // Update profile when user navigates semesters via the toggle
   const setActiveTermIndex = (newIndex) => {
-      const term = TERMS[newIndex];
-      if (!term) return;
-      const [level, semester] = term.split('_');
-      setProfile(prev => ({ ...prev, level, semester }));
+    const term = TERMS[newIndex];
+    if (!term) return;
+    const [level, semester] = term.split('_');
+    setProfile(prev => ({ ...prev, level, semester }));
   };
 
   const displayCourses = useMemo(() => {
-      return courses.filter(c => {
-          // Because of backfill, all courses will have academic_year and semester now.
-          const cTerm = `${c.academic_year}_${c.semester}`;
-          return cTerm === activeTerm;
-      });
+    return courses.filter(c => {
+      // Because of backfill, all courses will have academic_year and semester now.
+      const cTerm = `${c.academic_year}_${c.semester}`;
+      return cTerm === activeTerm;
+    });
   }, [courses, activeTerm]);
 
   // Auto-sync to cloud when courses change
@@ -173,7 +173,7 @@ const TimetableBuilder = () => {
     if (isNotificationSupported()) {
       setNotificationsEnabled(Notification.permission === 'granted');
     }
-    getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => {});
+    getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => { });
   }, []);
 
   const handleEnableNotifications = async () => {
@@ -226,7 +226,8 @@ const TimetableBuilder = () => {
       }
 
       // Remove old course if editing to avoid self-conflict
-      const tempCourses = newCourse.id ? courses.filter(c => c.id !== newCourse.id) : courses;
+      // ★ FIX: Only check conflicts against CURRENT semester's courses, not all semesters
+      const tempCourses = newCourse.id ? displayCourses.filter(c => c.id !== newCourse.id) : displayCourses;
 
       // Check conflicts
       const conflict = tempCourses.find(c =>
@@ -262,7 +263,7 @@ const TimetableBuilder = () => {
         academic_year: activeLevel,
         semester: activeSemester
       });
-      
+
       setConflictError('');
       setShowAddForm(false);
     });
@@ -270,7 +271,7 @@ const TimetableBuilder = () => {
 
   const handleDeleteCourse = (id) => {
     setCourses(courses.filter(course => course.id !== id));
-    
+
     // Tombstone for sync
     try {
       const deleted = JSON.parse(localStorage.getItem('ucc_timetable_deleted') || '[]');
@@ -281,7 +282,7 @@ const TimetableBuilder = () => {
     } catch (e) {
       console.error('Error saving timetable tombstone:', e);
     }
-    
+
     setSelectedCourse(null);
   };
 
@@ -363,29 +364,29 @@ const TimetableBuilder = () => {
               </Button>
             </div>
           </div>
-          
+
           {/* Semester Toggle UI */}
           <div className="flex items-center justify-center mt-6 bg-[#002F45]/5 rounded-2xl p-2 max-w-sm mx-auto border border-[#002F45]/10">
-              <button 
-                  onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
-                  disabled={activeTermIndex === 0}
-                  className="p-2 rounded-xl text-[#002F45] hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
-              >
-                  <ChevronLeft size={20} />
-              </button>
-              
-              <div className="flex-1 text-center flex flex-col">
-                  <span className="text-sm font-black text-[#002F45]">Level {activeLevel}</span>
-                  <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Semester {activeSemester}</span>
-              </div>
+            <button
+              onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
+              disabled={activeTermIndex === 0}
+              className="p-2 rounded-xl text-[#002F45] hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+            >
+              <ChevronLeft size={20} />
+            </button>
 
-              <button 
-                  onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
-                  disabled={activeTermIndex === TERMS.length - 1}
-                  className="p-2 rounded-xl text-[#002F45] hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
-              >
-                  <ChevronRight size={20} />
-              </button>
+            <div className="flex-1 text-center flex flex-col">
+              <span className="text-sm font-black text-[#002F45]">Level {activeLevel}</span>
+              <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Semester {activeSemester}</span>
+            </div>
+
+            <button
+              onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
+              disabled={activeTermIndex === TERMS.length - 1}
+              className="p-2 rounded-xl text-[#002F45] hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+            >
+              <ChevronRight size={20} />
+            </button>
           </div>
         </CardHeader>
         <CardContent>
@@ -442,8 +443,8 @@ const TimetableBuilder = () => {
                             </div>
                             <div
                               className="flex-1 p-4 rounded-2xl relative overflow-hidden text-white border border-white/40 shadow-sm backdrop-blur-sm"
-                              style={{ 
-                                background: `linear-gradient(135deg, ${course.color}f2 0%, ${course.color}b3 100%)` 
+                              style={{
+                                background: `linear-gradient(135deg, ${course.color}f2 0%, ${course.color}b3 100%)`
                               }}
                             >
                               <div className="absolute -top-10 -right-10 w-24 h-24 bg-white/20 rounded-full blur-xl pointer-events-none"></div>
@@ -637,14 +638,14 @@ const TimetableBuilder = () => {
           <div className="relative pb-4">
             <div
               className="h-36 w-full rounded-[2rem] flex flex-col items-center justify-center relative overflow-hidden mb-6 shadow-xl"
-              style={{ 
+              style={{
                 background: `linear-gradient(135deg, ${selectedCourse.color || '#002F45'} 0%, ${selectedCourse.color || '#002F45'}dd 100%)`,
               }}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-6 -mb-6 pointer-events-none"></div>
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
-              
+
               <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 z-10 shadow-sm mb-3">
                 <Calendar size={28} className="text-white drop-shadow-md" />
               </div>
@@ -789,16 +790,15 @@ const TimetableBuilder = () => {
                         [idx]: !prev[idx]
                       }));
                     }}
-                    className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
-                      selectedImportCourses[idx]
+                    className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${selectedImportCourses[idx]
                         ? 'border-[#002F45] bg-[#002F45]/5 shadow-sm'
                         : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     <input
                       type="checkbox"
                       checked={!!selectedImportCourses[idx]}
-                      onChange={() => {}} // handled by parent div click
+                      onChange={() => { }} // handled by parent div click
                       className="w-4.5 h-4.5 text-[#002F45] border-gray-300 rounded focus:ring-[#002F45]"
                     />
                     <div className="flex-1 min-w-0">

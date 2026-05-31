@@ -42,7 +42,7 @@ const GPACalculator = () => {
       }
     }
   };
-  
+
   // ─── DERIVE active term from profile (SOURCE OF TRUTH) ───
   const activeTerm = `${profile?.level || '100'}_${profile?.semester || '1'}`;
   const activeTermIndex = TERMS.indexOf(activeTerm) >= 0 ? TERMS.indexOf(activeTerm) : 0;
@@ -67,7 +67,7 @@ const GPACalculator = () => {
   const [targetGPA, setTargetGPA] = useState('');
   const [remainingCredits, setRemainingCredits] = useState('');
   const [targetResult, setTargetResult] = useState(null);
-  
+
   // Semester Forecaster states
   const [coursePrefs, setCoursePrefs] = useState({});
   const [shuffleTrigger, setShuffleTrigger] = useState(0);
@@ -98,19 +98,19 @@ const GPACalculator = () => {
 
     const validCombinations = [];
     const maxAttempts = 5000;
-    
+
     for (let i = 0; i < maxAttempts; i++) {
       const combination = [];
       let totalPoints = 0;
-      
+
       displayCourses.forEach(course => {
         const pref = coursePrefs[course.id] || 'medium';
         const ch = parseFloat(course.creditHours) || 3;
-        
+
         let choices = [...gradeOptions];
         if (pref === 'high') {
-          choices = Math.random() < 0.8 
-            ? gradeOptions.filter(g => g.gp >= 3.0) 
+          choices = Math.random() < 0.8
+            ? gradeOptions.filter(g => g.gp >= 3.0)
             : gradeOptions;
         } else if (pref === 'low') {
           choices = Math.random() < 0.8
@@ -121,9 +121,9 @@ const GPACalculator = () => {
             ? gradeOptions.filter(g => g.gp >= 2.0 && g.gp <= 3.5)
             : gradeOptions;
         }
-        
+
         if (choices.length === 0) choices = gradeOptions;
-        
+
         const chosen = choices[Math.floor(Math.random() * choices.length)];
         combination.push({
           ...course,
@@ -132,7 +132,7 @@ const GPACalculator = () => {
         });
         totalPoints += chosen.gp * ch;
       });
-      
+
       const calculatedGpa = totalPoints / totalCredits;
       if (calculatedGpa >= target && calculatedGpa <= target + 0.3) {
         validCombinations.push({
@@ -140,7 +140,7 @@ const GPACalculator = () => {
           gpa: calculatedGpa
         });
       }
-      
+
       if (validCombinations.length >= 30) break;
     }
 
@@ -150,14 +150,14 @@ const GPACalculator = () => {
         maxPossiblePoints += 4.0 * (parseFloat(course.creditHours) || 3);
       });
       const maxPossibleGpa = maxPossiblePoints / totalCredits;
-      
+
       if (target > maxPossibleGpa) {
-        setTargetResult({ 
-          error: `Target GPA of ${target.toFixed(2)} is mathematically impossible. The maximum GPA you can get is ${maxPossibleGpa.toFixed(2)} (straight A's).` 
+        setTargetResult({
+          error: `Target GPA of ${target.toFixed(2)} is mathematically impossible. The maximum GPA you can get is ${maxPossibleGpa.toFixed(2)} (straight A's).`
         });
         return;
       }
-      
+
       for (let i = 0; i < maxAttempts; i++) {
         const combination = [];
         let totalPoints = 0;
@@ -188,10 +188,10 @@ const GPACalculator = () => {
     }
 
     const selected = validCombinations[Math.floor(Math.random() * validCombinations.length)];
-    
+
     const highCount = displayCourses.filter(c => coursePrefs[c.id] === 'high').length;
     const lowCount = displayCourses.filter(c => coursePrefs[c.id] === 'low').length;
-    
+
     let studyPlan = "Prioritize the courses you marked as 'Aim for A' to maximize your GPA points. Ensure you keep up with weekly assignments and quizzes for these subjects.";
     if (highCount > lowCount) {
       studyPlan = "Since you have high confidence in most courses, focus on maintaining consistent grades. Form study groups and practice past questions to lock in those A's.";
@@ -228,44 +228,102 @@ const GPACalculator = () => {
     if (!needsBackfill) return;
 
     const defaultYear = profile?.level || '100';
-    const defaultSem  = profile?.semester || '1';
+    const defaultSem = profile?.semester || '1';
 
     const patched = courses.map(c => ({
       ...c,
       academic_year: c.academic_year || defaultYear,
-      semester:      c.semester || defaultSem,
+      semester: c.semester || defaultSem,
     }));
 
     setCourses(patched);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run once on mount
 
+  // ─── ONE-TIME DEDUP: Collapse duplicate GPA entries (name + year + semester) ───
+  useEffect(() => {
+    const seen = new Map();
+    const deduped = [];
+    for (const c of courses) {
+      const key = `${(c.name || '').trim().toLowerCase()}_${c.academic_year}_${c.semester}`;
+      if (seen.has(key)) {
+        // Keep the entry with the higher score (more complete data)
+        const existingIdx = seen.get(key);
+        const existing = deduped[existingIdx];
+        if ((parseFloat(c.score) || 0) > (parseFloat(existing.score) || 0)) {
+          deduped[existingIdx] = { ...c, id: existing.id }; // preserve original id
+        }
+      } else {
+        seen.set(key, deduped.length);
+        deduped.push(c);
+      }
+    }
+    if (deduped.length !== courses.length) {
+      setCourses(deduped);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
+
   // ─── AUTO-MERGE TIMETABLE COURSES ───
+  // Reads timetable from localStorage directly (not from React state) to avoid
+  // feedback loops. Deduplicates timetable sessions by (name, year, semester) so
+  // that a course with Mon/Wed/Fri lectures produces exactly ONE GPA entry.
   useEffect(() => {
     const timetableStr = localStorage.getItem('ucc_timetable');
-    if (timetableStr) {
-      try {
-        const timetableCourses = JSON.parse(timetableStr);
-        const defaultYear = profile?.level || '100';
-        const defaultSem  = profile?.semester || '1';
+    if (!timetableStr) return;
+    try {
+      const timetableCourses = JSON.parse(timetableStr);
+      if (!Array.isArray(timetableCourses) || timetableCourses.length === 0) return;
 
-        const newGpaCourses = timetableCourses.map(course => {
-          // Check if we already have this course in GPA by ID or Semantic Identity
-          const existing = courses.find(c => 
-            c.id === course.id || 
-            (c?.name?.trim().toLowerCase() === course?.name?.trim().toLowerCase() && 
-             c.semester === (course.semester || defaultSem) && 
-             c.academic_year === (course.academic_year || defaultYear))
-          );
-          if (existing) return existing;
-          
-          return {
-            id: course.id,
-            name: course.name,
-            creditHours: course.creditHours || course.credit_hours || 3,
-            score: course.targetGrade && GRADE_RANGES[course.targetGrade] ? GRADE_RANGES[course.targetGrade].min : 0,
-            grade: course.targetGrade || 'E',
-            gradePoint: course.targetGrade && GRADE_POINTS[course.targetGrade] ? GRADE_POINTS[course.targetGrade] : 0,
+      const defaultYear = profile?.level || '100';
+      const defaultSem = profile?.semester || '1';
+
+      // ── Step 1: Deduplicate timetable SESSIONS into unique COURSES ──
+      const uniqueTtMap = new Map();
+      for (const session of timetableCourses) {
+        const key = `${(session.name || '').trim().toLowerCase()}_${session.academic_year || defaultYear}_${session.semester || defaultSem}`;
+        if (!uniqueTtMap.has(key)) {
+          uniqueTtMap.set(key, session); // first session wins — they share name/credits
+        }
+      }
+      const uniqueTtCourses = Array.from(uniqueTtMap.values());
+
+      // ── Step 2: Read current GPA courses from localStorage (avoid stale closure) ──
+      let currentGpaCourses = [];
+      try {
+        const raw = localStorage.getItem('ucc_gpa');
+        currentGpaCourses = raw ? JSON.parse(raw) : [];
+      } catch { /* use empty */ }
+
+      // ── Step 3: Merge — keep existing GPA entries, add new timetable courses ──
+      const mergedMap = new Map();
+      for (const c of currentGpaCourses) {
+        mergedMap.set(c.id, c);
+      }
+
+      for (const ttCourse of uniqueTtCourses) {
+        const ttYear = ttCourse.academic_year || defaultYear;
+        const ttSem = ttCourse.semester || defaultSem;
+        const ttNameKey = `${(ttCourse.name || '').trim().toLowerCase()}_${ttYear}_${ttSem}`;
+
+        // Check if a GPA course already exists for this (name, year, semester)
+        let existing = currentGpaCourses.find(c =>
+          c.id === ttCourse.id ||
+          `${(c.name || '').trim().toLowerCase()}_${c.academic_year}_${c.semester}` === ttNameKey
+        );
+
+        if (existing) {
+          // Already tracked — preserve the GPA entry (user may have edited scores)
+          mergedMap.set(existing.id, existing);
+        } else {
+          // New timetable course — create a GPA stub
+          const newEntry = {
+            id: ttCourse.id || Date.now() + Math.random(),
+            name: ttCourse.name,
+            creditHours: ttCourse.creditHours || ttCourse.credit_hours || 3,
+            score: ttCourse.targetGrade && GRADE_RANGES[ttCourse.targetGrade] ? GRADE_RANGES[ttCourse.targetGrade].min : 0,
+            grade: ttCourse.targetGrade || 'E',
+            gradePoint: ttCourse.targetGrade && GRADE_POINTS[ttCourse.targetGrade] ? GRADE_POINTS[ttCourse.targetGrade] : 0,
             isDetailed: false,
             examWeight: 60,
             examScore: '',
@@ -273,24 +331,23 @@ const GPACalculator = () => {
               { id: Date.now() + Math.random(), name: 'Quiz 1', score: '', max: 20 },
               { id: Date.now() + Math.random() + 1, name: 'Assignment 1', score: '', max: 20 }
             ],
-            // Inherit semester fields
-            academic_year: course.academic_year || defaultYear,
-            semester: course.semester || defaultSem
+            academic_year: ttYear,
+            semester: ttSem
           };
-        });
-
-        const newGpaCourseIds = new Set(newGpaCourses.map(c => c.id));
-        const gpaOnlyCourses = courses.filter(c => !newGpaCourseIds.has(c.id));
-        const mergedCourses = [...gpaOnlyCourses, ...newGpaCourses];
-        
-        if (JSON.stringify(mergedCourses) !== JSON.stringify(courses)) {
-          setCourses(mergedCourses);
+          mergedMap.set(newEntry.id, newEntry);
         }
-      } catch (e) {
-        console.error('Error auto-syncing timetable to GPA:', e);
       }
+
+      const mergedCourses = Array.from(mergedMap.values());
+
+      // Only write if something actually changed
+      if (JSON.stringify(mergedCourses) !== JSON.stringify(currentGpaCourses)) {
+        setCourses(mergedCourses);
+      }
+    } catch (e) {
+      console.error('Error auto-syncing timetable to GPA:', e);
     }
-  }, [courses, setCourses, profile?.level, profile?.semester]);
+  }, [setCourses, profile?.level, profile?.semester]); // NO `courses` — reads from localStorage directly
 
   // ─── FILTER: Show only GPA courses for the active term ───
   const displayCourses = useMemo(() => {
@@ -305,7 +362,7 @@ const GPACalculator = () => {
     let credits = 0;
     let points = 0;
     displayCourses.forEach(c => {
-      const ch = parseFloat(c.creditHours) || 0;
+      const ch = parseFloat(c.creditHours) || 3;
       credits += ch;
       points += (parseFloat(c.gradePoint) || 0) * ch;
     });
@@ -320,7 +377,7 @@ const GPACalculator = () => {
     let credits = 0;
     let points = 0;
     courses.forEach(c => {
-      const ch = parseFloat(c.creditHours) || 0;
+      const ch = parseFloat(c.creditHours) || 3;
       credits += ch;
       points += (parseFloat(c.gradePoint) || 0) * ch;
     });
@@ -335,17 +392,17 @@ const GPACalculator = () => {
   const calculateTarget = () => {
     const target = parseFloat(targetGPA);
     const remaining = parseInt(remainingCredits, 10);
-    
+
     if (isNaN(target) || isNaN(remaining) || remaining <= 0) {
       setTargetResult({ error: 'Please enter valid target GPA and remaining credits (>0).' });
       return;
     }
-    
+
     const futureTotalCredits = cumulativeStats.credits + remaining;
     const futureTotalPoints = target * futureTotalCredits;
     const neededPoints = futureTotalPoints - cumulativeStats.points;
     const neededAvgGpa = neededPoints / remaining;
-    
+
     if (neededAvgGpa > 4.0) {
       setTargetResult({ error: `It is mathematically impossible to reach a ${target.toFixed(2)} GPA. You would need an average GPA of ${neededAvgGpa.toFixed(2)} in your remaining classes, but the maximum possible GPA is 4.0.` });
     } else if (neededAvgGpa < 0) {
@@ -366,7 +423,7 @@ const GPACalculator = () => {
   const handleAddCourse = () => {
     triggerAuthSheet(() => {
       let finalScore = 0;
-      
+
       if (newCourse.isDetailed) {
         const examW = parseFloat(newCourse.examWeight) || 60;
         const caW = 100 - examW;
@@ -411,19 +468,19 @@ const GPACalculator = () => {
           setCourses(courses.map(c => c.id === courseObject.id ? courseObject : c));
         } else {
           // Prevent duplicates on manual add by checking semantic identity
-          const existingSemanticCourse = courses.find(c => 
-            c.name.trim().toLowerCase() === courseObject.name.trim().toLowerCase() && 
-            c.semester === courseObject.semester && 
+          const existingSemanticCourse = courses.find(c =>
+            c.name.trim().toLowerCase() === courseObject.name.trim().toLowerCase() &&
+            c.semester === courseObject.semester &&
             c.academic_year === courseObject.academic_year
           );
-          
+
           if (existingSemanticCourse) {
             setCourses(courses.map(c => c.id === existingSemanticCourse.id ? { ...courseObject, id: existingSemanticCourse.id } : c));
           } else {
             setCourses([...courses, courseObject]);
           }
         }
-        
+
         setNewCourse({
           name: '',
           creditHours: 3,
@@ -445,7 +502,7 @@ const GPACalculator = () => {
 
   const handleDeleteCourse = (id) => {
     setCourses(courses.filter(course => course.id !== id));
-    
+
     // Tombstone for sync
     try {
       const deleted = JSON.parse(localStorage.getItem('ucc_gpa_deleted') || '[]');
@@ -472,18 +529,18 @@ const GPACalculator = () => {
     <div className="relative pb-20">
       {/* GPA Lock Screen Overlay */}
       {showLockScreen && (
-        <div 
+        <div
           className="absolute inset-0 z-50 bg-white/70 backdrop-blur-xl flex flex-col items-center justify-start pt-20 px-6 min-h-[500px]"
           onClick={() => pinInputRef.current?.focus()}
         >
-          <div 
+          <div
             className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl max-w-sm w-full text-center space-y-6 animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-16 h-16 rounded-2xl bg-[#002F45]/5 flex items-center justify-center mx-auto text-[#002F45]">
               <Lock size={28} className="animate-pulse" />
             </div>
-            
+
             <div>
               <h2 className="text-xl font-black text-gray-900 tracking-tight">GPA Vault Locked</h2>
               <p className="text-sm text-gray-500 font-medium mt-2 leading-relaxed">
@@ -492,7 +549,7 @@ const GPACalculator = () => {
             </div>
 
             {/* Passcode input bubbles */}
-            <div 
+            <div
               className="relative flex justify-center items-center gap-3 py-2 cursor-pointer"
               onClick={() => pinInputRef.current?.focus()}
             >
@@ -501,11 +558,10 @@ const GPACalculator = () => {
                 return (
                   <div
                     key={idx}
-                    className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all ${
-                      hasValue 
-                        ? 'border-[#002F45] bg-[#002F45]/5' 
+                    className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all ${hasValue
+                        ? 'border-[#002F45] bg-[#002F45]/5'
                         : 'border-gray-200 bg-gray-50'
-                    }`}
+                      }`}
                   >
                     {hasValue && (
                       <div className="w-3.5 h-3.5 rounded-full bg-[#002F45] animate-in zoom-in duration-100" />
@@ -513,7 +569,7 @@ const GPACalculator = () => {
                   </div>
                 );
               })}
-              
+
               <input
                 ref={pinInputRef}
                 type="password"
@@ -534,20 +590,20 @@ const GPACalculator = () => {
       <div className={showLockScreen ? "filter blur-md pointer-events-none select-none" : ""}>
         {/* ── Term Toggle UI ── */}
         <div className="flex items-center justify-center mb-6 bg-white rounded-2xl p-2 max-w-sm mx-auto shadow-sm border border-gray-100">
-          <button 
+          <button
             onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
             disabled={activeTermIndex === 0}
             className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
           >
             <ChevronLeft size={20} />
           </button>
-          
+
           <div className="flex-1 text-center flex flex-col">
             <span className="text-sm font-black text-[#002F45]">Level {activeLevel}</span>
             <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Semester {activeSemester}</span>
           </div>
 
-          <button 
+          <button
             onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
             disabled={activeTermIndex === TERMS.length - 1}
             className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
@@ -622,9 +678,8 @@ const GPACalculator = () => {
                                 key={opt.val}
                                 type="button"
                                 onClick={() => setCoursePrefs(prev => ({ ...prev, [course.id]: opt.val }))}
-                                className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border transition-all ${
-                                  isActive ? opt.color : 'bg-white text-gray-400 border-gray-100 hover:text-gray-600'
-                                }`}
+                                className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border transition-all ${isActive ? opt.color : 'bg-white text-gray-400 border-gray-100 hover:text-gray-600'
+                                  }`}
                               >
                                 {opt.label}
                               </button>
@@ -641,10 +696,10 @@ const GPACalculator = () => {
             <div className="flex flex-col sm:flex-row gap-4 items-end">
               <div className="flex-1 w-full space-y-1">
                 <label className="text-xs font-bold text-gray-550 uppercase tracking-wider">Target GPA</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   step="0.01"
-                  placeholder="e.g. 3.6" 
+                  placeholder="e.g. 3.6"
                   value={targetGPA}
                   onChange={(e) => setTargetGPA(e.target.value)}
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
@@ -655,7 +710,7 @@ const GPACalculator = () => {
                   Forecast Targets
                 </Button>
                 {targetResult && targetResult.success && (
-                  <Button 
+                  <Button
                     onClick={() => {
                       setShuffleTrigger(prev => prev + 1);
                     }}
@@ -667,7 +722,7 @@ const GPACalculator = () => {
                 )}
               </div>
             </div>
-            
+
             {targetResult && targetResult.error && (
               <div className="mt-4 p-4 rounded-xl border bg-red-50 border-red-100 text-red-700 font-medium flex items-center gap-2">
                 <Info size={18} className="flex-shrink-0" />
@@ -749,236 +804,236 @@ const GPACalculator = () => {
               </CardHeader>
               <CardContent>
                 <Modal isOpen={showAddForm} onClose={() => setShowAddForm(false)} title={newCourse.id ? 'Edit Grade' : 'Calculate New Grade'} size="lg">
-                    <div className="flex justify-end mb-4">
-                      <button
-                        className="text-xs font-bold bg-primary-100 text-primary-700 px-3 py-1.5 rounded-full hover:bg-primary-200 transition-colors"
-                        onClick={() => setNewCourse({...newCourse, isDetailed: !newCourse.isDetailed})}
-                      >
-                        {newCourse.isDetailed ? 'Simple Score' : 'Detailed Breakdown'}
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {newCourse.id ? (
-                        <div className="p-3 bg-primary-50 border border-primary-100 rounded-xl font-bold text-primary-700 flex items-center justify-between">
-                          <span>{newCourse.name || 'Unknown Course'}</span>
-                          <span className="text-xs bg-white px-2 py-1 rounded-md border border-primary-100">Editing</span>
-                        </div>
-                      ) : (
-                        <select
-                          value={newCourse.id || ''}
-                          onChange={(e) => {
-                            const selectedId = e.target.value;
-                            if (selectedId === 'new') {
-                               setNewCourse({
-                                name: '',
-                                creditHours: 3,
-                                score: '',
-                                isDetailed: false,
-                                examWeight: 60,
-                                examScore: '',
-                                assessments: [
+                  <div className="flex justify-end mb-4">
+                    <button
+                      className="text-xs font-bold bg-primary-100 text-primary-700 px-3 py-1.5 rounded-full hover:bg-primary-200 transition-colors"
+                      onClick={() => setNewCourse({ ...newCourse, isDetailed: !newCourse.isDetailed })}
+                    >
+                      {newCourse.isDetailed ? 'Simple Score' : 'Detailed Breakdown'}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {newCourse.id ? (
+                      <div className="p-3 bg-primary-50 border border-primary-100 rounded-xl font-bold text-primary-700 flex items-center justify-between">
+                        <span>{newCourse.name || 'Unknown Course'}</span>
+                        <span className="text-xs bg-white px-2 py-1 rounded-md border border-primary-100">Editing</span>
+                      </div>
+                    ) : (
+                      <select
+                        value={newCourse.id || ''}
+                        onChange={(e) => {
+                          const selectedId = e.target.value;
+                          if (selectedId === 'new') {
+                            setNewCourse({
+                              name: '',
+                              creditHours: 3,
+                              score: '',
+                              isDetailed: false,
+                              examWeight: 60,
+                              examScore: '',
+                              assessments: [
+                                { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+                                { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+                              ],
+                              academic_year: activeLevel,
+                              semester: activeSemester
+                            });
+                          } else {
+                            const c = courses.find(course => course.id.toString() === selectedId);
+                            if (c) {
+                              setNewCourse({
+                                ...c,
+                                isDetailed: c.isDetailed || false,
+                                examWeight: c.examWeight || 60,
+                                examScore: c.examScore || '',
+                                assessments: c.assessments || [
                                   { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
                                   { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-                                ],
-                                academic_year: activeLevel,
-                                semester: activeSemester
+                                ]
                               });
-                            } else {
-                              const c = courses.find(course => course.id.toString() === selectedId);
-                              if (c) {
-                                setNewCourse({
-                                  ...c,
-                                  isDetailed: c.isDetailed || false,
-                                  examWeight: c.examWeight || 60,
-                                  examScore: c.examScore || '',
-                                  assessments: c.assessments || [
-                                    { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
-                                    { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-                                  ]
-                                });
-                              }
                             }
-                          }}
-                          className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all cursor-pointer font-medium"
-                        >
-                          <option value="new">+ Add Custom Result</option>
-                          <optgroup label="Select Course">
-                            {courses.map(c => (
-                              <option key={c.id} value={c.id.toString()}>{c.name || 'Untitled Course'}</option>
-                            ))}
-                          </optgroup>
-                        </select>
-                      )}
-
-                      <select
-                        value={newCourse.creditHours}
-                        onChange={(e) => setNewCourse({ ...newCourse, creditHours: parseInt(e.target.value) })}
-                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                          }
+                        }}
+                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all cursor-pointer font-medium"
                       >
-                        <option value={1}>1 Credit Hour</option>
-                        <option value={2}>2 Credit Hours</option>
-                        <option value={3}>3 Credit Hours</option>
-                        <option value={4}>4 Credit Hours</option>
-                        <option value={5}>5 Credit Hours</option>
-                        <option value={6}>6 Credit Hours</option>
+                        <option value="new">+ Add Custom Result</option>
+                        <optgroup label="Select Course">
+                          {courses.map(c => (
+                            <option key={c.id} value={c.id.toString()}>{c.name || 'Untitled Course'}</option>
+                          ))}
+                        </optgroup>
                       </select>
+                    )}
 
-                      {(!newCourse.id || !courses.some(c => c.id === newCourse.id)) && (
-                        <input
-                          type="text"
-                          placeholder="Course Name..."
-                          value={newCourse.name}
-                          onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
-                          className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all md:col-span-2"
-                        />
-                      )}
+                    <select
+                      value={newCourse.creditHours}
+                      onChange={(e) => setNewCourse({ ...newCourse, creditHours: parseInt(e.target.value) })}
+                      className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                    >
+                      <option value={1}>1 Credit Hour</option>
+                      <option value={2}>2 Credit Hours</option>
+                      <option value={3}>3 Credit Hours</option>
+                      <option value={4}>4 Credit Hours</option>
+                      <option value={5}>5 Credit Hours</option>
+                      <option value={6}>6 Credit Hours</option>
+                    </select>
 
-                      {!newCourse.isDetailed ? (
-                        <input
-                          type="number"
-                          placeholder="Total Score (0-100)"
-                          value={newCourse.score}
-                          onChange={(e) => setNewCourse({ ...newCourse, score: e.target.value })}
-                          min="0"
-                          max="100"
-                          className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all md:col-span-2"
-                        />
-                      ) : (
-                        <div className="md:col-span-2 space-y-4 pt-4 pb-4 border-t border-gray-100 mt-2">
-                          <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center bg-[#002F45]/5 p-3 rounded-xl border border-primary-100 gap-3">
-                            <p className="text-xs font-bold text-primary-700 uppercase tracking-widest flex items-center gap-2">
-                              Scheme
-                            </p>
-                            <div className="flex items-center gap-2 w-full sm:w-auto">
-                              <label className="text-xs font-bold text-gray-500 whitespace-nowrap">Exam Weight:</label>
-                              <select 
-                                value={newCourse.examWeight || 60} 
-                                onChange={(e) => setNewCourse({...newCourse, examWeight: Number(e.target.value)})}
-                                className="w-full sm:w-auto p-1.5 rounded-lg bg-white text-xs border border-primary-200 font-bold text-primary-700 outline-none focus:ring-2 focus:ring-primary-500"
-                              >
-                                <option value={40}>40% Exam / 60% CA</option>
-                                <option value={50}>50% Exam / 50% CA</option>
-                                <option value={60}>60% Exam / 40% CA</option>
-                                <option value={70}>70% Exam / 30% CA</option>
-                              </select>
-                            </div>
+                    {(!newCourse.id || !courses.some(c => c.id === newCourse.id)) && (
+                      <input
+                        type="text"
+                        placeholder="Course Name..."
+                        value={newCourse.name}
+                        onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
+                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all md:col-span-2"
+                      />
+                    )}
+
+                    {!newCourse.isDetailed ? (
+                      <input
+                        type="number"
+                        placeholder="Total Score (0-100)"
+                        value={newCourse.score}
+                        onChange={(e) => setNewCourse({ ...newCourse, score: e.target.value })}
+                        min="0"
+                        max="100"
+                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all md:col-span-2"
+                      />
+                    ) : (
+                      <div className="md:col-span-2 space-y-4 pt-4 pb-4 border-t border-gray-100 mt-2">
+                        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center bg-[#002F45]/5 p-3 rounded-xl border border-primary-100 gap-3">
+                          <p className="text-xs font-bold text-primary-700 uppercase tracking-widest flex items-center gap-2">
+                            Scheme
+                          </p>
+                          <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <label className="text-xs font-bold text-gray-500 whitespace-nowrap">Exam Weight:</label>
+                            <select
+                              value={newCourse.examWeight || 60}
+                              onChange={(e) => setNewCourse({ ...newCourse, examWeight: Number(e.target.value) })}
+                              className="w-full sm:w-auto p-1.5 rounded-lg bg-white text-xs border border-primary-200 font-bold text-primary-700 outline-none focus:ring-2 focus:ring-primary-500"
+                            >
+                              <option value={40}>40% Exam / 60% CA</option>
+                              <option value={50}>50% Exam / 50% CA</option>
+                              <option value={60}>60% Exam / 40% CA</option>
+                              <option value={70}>70% Exam / 30% CA</option>
+                            </select>
                           </div>
+                        </div>
 
-                          <div className="space-y-3 mt-4">
-                            <p className="text-xs font-bold text-primary-500 uppercase tracking-widest">Continuous Assessment ({(100 - (parseFloat(newCourse.examWeight) || 60))}%)</p>
-                            {newCourse.assessments.map((ca, index) => (
-                              <div key={ca.id} className="flex flex-wrap sm:flex-nowrap gap-2 bg-gray-50 p-2 rounded-xl border border-gray-100 items-center">
-                                <input 
-                                  type="text" 
-                                  placeholder="Name" 
-                                  value={ca.name}
+                        <div className="space-y-3 mt-4">
+                          <p className="text-xs font-bold text-primary-500 uppercase tracking-widest">Continuous Assessment ({(100 - (parseFloat(newCourse.examWeight) || 60))}%)</p>
+                          {newCourse.assessments.map((ca, index) => (
+                            <div key={ca.id} className="flex flex-wrap sm:flex-nowrap gap-2 bg-gray-50 p-2 rounded-xl border border-gray-100 items-center">
+                              <input
+                                type="text"
+                                placeholder="Name"
+                                value={ca.name}
+                                onChange={(e) => {
+                                  const arr = [...newCourse.assessments];
+                                  arr[index].name = e.target.value;
+                                  setNewCourse({ ...newCourse, assessments: arr });
+                                }}
+                                className="w-full sm:flex-1 p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none border border-gray-200"
+                              />
+                              <div className="flex flex-1 sm:flex-none justify-end sm:justify-center items-center gap-2 w-full sm:w-auto">
+                                <input
+                                  type="number"
+                                  placeholder="Score"
+                                  value={ca.score}
                                   onChange={(e) => {
                                     const arr = [...newCourse.assessments];
-                                    arr[index].name = e.target.value;
-                                    setNewCourse({...newCourse, assessments: arr});
+                                    arr[index].score = e.target.value;
+                                    setNewCourse({ ...newCourse, assessments: arr });
                                   }}
-                                  className="w-full sm:flex-1 p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none border border-gray-200"
-                                />
-                                <div className="flex flex-1 sm:flex-none justify-end sm:justify-center items-center gap-2 w-full sm:w-auto">
-                                  <input 
-                                    type="number" 
-                                    placeholder="Score" 
-                                    value={ca.score}
-                                    onChange={(e) => {
-                                      const arr = [...newCourse.assessments];
-                                      arr[index].score = e.target.value;
-                                      setNewCourse({...newCourse, assessments: arr});
-                                    }}
-                                    className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none border border-gray-200 text-center font-bold"
-                                  />
-                                  <span className="text-gray-400 font-bold text-sm">/</span>
-                                  <input 
-                                    type="number" 
-                                    placeholder="Max" 
-                                    value={ca.max}
-                                    onChange={(e) => {
-                                      const arr = [...newCourse.assessments];
-                                      arr[index].max = e.target.value;
-                                      setNewCourse({...newCourse, assessments: arr});
-                                    }}
-                                    className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none border border-gray-200 text-center text-gray-500"
-                                  />
-                                  <button 
-                                    onClick={() => {
-                                      setNewCourse({...newCourse, assessments: newCourse.assessments.filter((_, i) => i !== index)})
-                                    }}
-                                    className="p-2 ml-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
-                                  >
-                                    <Trash2 size={16} />
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                            
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => {
-                                setNewCourse({
-                                  ...newCourse, 
-                                  assessments: [...newCourse.assessments, { id: Date.now(), name: `Assessment ${newCourse.assessments.length + 1}`, score: '', max: 20 }]
-                                })
-                              }}
-                              className="w-full text-primary-600 border-primary-100 hover:bg-primary-50 py-3 border-dashed"
-                            >
-                              <Plus size={14} className="mr-1" /> Add Component
-                            </Button>
-                          </div>
-
-                          <div className="mt-6 pt-4 border-t border-gray-100">
-                             <p className="text-xs font-bold text-green-600 uppercase tracking-widest mb-3">Final Exam ({newCourse.examWeight}%)</p>
-                            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-green-50 p-2 rounded-xl border border-green-100">
-                              <div className="w-full sm:flex-1 px-2 font-bold text-green-700 text-sm mb-2 sm:mb-0">Exam Score</div>
-                              <div className="flex flex-1 sm:flex-none justify-end sm:justify-center items-center gap-2">
-                                <input 
-                                  type="number" 
-                                  placeholder="Score" 
-                                  value={newCourse.examScore}
-                                  onChange={(e) => setNewCourse({...newCourse, examScore: e.target.value})}
-                                  className="w-[5.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none border border-green-200 text-center font-bold text-green-700"
+                                  className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none border border-gray-200 text-center font-bold"
                                 />
                                 <span className="text-gray-400 font-bold text-sm">/</span>
-                                <div className="w-[4.5rem] p-2 bg-green-100/50 rounded-lg text-sm font-bold text-green-600 text-center flex items-center justify-center border border-green-200/50">
-                                  {newCourse.examWeight}
-                                </div>
-                                <div className="w-[2.2rem] hidden sm:block"></div>
+                                <input
+                                  type="number"
+                                  placeholder="Max"
+                                  value={ca.max}
+                                  onChange={(e) => {
+                                    const arr = [...newCourse.assessments];
+                                    arr[index].max = e.target.value;
+                                    setNewCourse({ ...newCourse, assessments: arr });
+                                  }}
+                                  className="w-[4.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none border border-gray-200 text-center text-gray-500"
+                                />
+                                <button
+                                  onClick={() => {
+                                    setNewCourse({ ...newCourse, assessments: newCourse.assessments.filter((_, i) => i !== index) })
+                                  }}
+                                  className="p-2 ml-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
                               </div>
                             </div>
-                          </div>
+                          ))}
 
-                          <div className="mt-4 p-4 bg-gray-900 text-white rounded-xl flex justify-between items-center shadow-lg">
-                            <div className="text-sm font-medium text-gray-300">Total Expected Score</div>
-                            <div className="text-2xl font-black text-primary-400 flex items-baseline gap-1">
-                              {(() => {
-                                const examW = parseFloat(newCourse.examWeight) || 60;
-                                const caW = 100 - examW;
-                                let tCAScore = 0; let tCAMax = 0;
-                                newCourse.assessments.forEach(a => { tCAScore += (parseFloat(a.score)||0); tCAMax += (parseFloat(a.max)||0); });
-                                let caAchieved = tCAMax > 0 ? (tCAScore / tCAMax) * caW : tCAScore; 
-                                let examAchieved = (parseFloat(newCourse.examScore) || 0);
-                                return (caAchieved + examAchieved).toFixed(1);
-                              })()} <span className="text-sm text-gray-500 font-medium">/ 100</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setNewCourse({
+                                ...newCourse,
+                                assessments: [...newCourse.assessments, { id: Date.now(), name: `Assessment ${newCourse.assessments.length + 1}`, score: '', max: 20 }]
+                              })
+                            }}
+                            className="w-full text-primary-600 border-primary-100 hover:bg-primary-50 py-3 border-dashed"
+                          >
+                            <Plus size={14} className="mr-1" /> Add Component
+                          </Button>
+                        </div>
+
+                        <div className="mt-6 pt-4 border-t border-gray-100">
+                          <p className="text-xs font-bold text-green-600 uppercase tracking-widest mb-3">Final Exam ({newCourse.examWeight}%)</p>
+                          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-green-50 p-2 rounded-xl border border-green-100">
+                            <div className="w-full sm:flex-1 px-2 font-bold text-green-700 text-sm mb-2 sm:mb-0">Exam Score</div>
+                            <div className="flex flex-1 sm:flex-none justify-end sm:justify-center items-center gap-2">
+                              <input
+                                type="number"
+                                placeholder="Score"
+                                value={newCourse.examScore}
+                                onChange={(e) => setNewCourse({ ...newCourse, examScore: e.target.value })}
+                                className="w-[5.5rem] p-2 bg-white rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none border border-green-200 text-center font-bold text-green-700"
+                              />
+                              <span className="text-gray-400 font-bold text-sm">/</span>
+                              <div className="w-[4.5rem] p-2 bg-green-100/50 rounded-lg text-sm font-bold text-green-600 text-center flex items-center justify-center border border-green-200/50">
+                                {newCourse.examWeight}
+                              </div>
+                              <div className="w-[2.2rem] hidden sm:block"></div>
                             </div>
                           </div>
                         </div>
-                      )}
-                    </div>
 
-                    <div className="flex gap-2 mt-4">
-                      <Button onClick={handleAddCourse} className="bg-primary-600 text-white">{newCourse.id ? 'Save Changes' : 'Add Grade'}</Button>
-                      <Button variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
-                    </div>
+                        <div className="mt-4 p-4 bg-gray-900 text-white rounded-xl flex justify-between items-center shadow-lg">
+                          <div className="text-sm font-medium text-gray-300">Total Expected Score</div>
+                          <div className="text-2xl font-black text-primary-400 flex items-baseline gap-1">
+                            {(() => {
+                              const examW = parseFloat(newCourse.examWeight) || 60;
+                              const caW = 100 - examW;
+                              let tCAScore = 0; let tCAMax = 0;
+                              newCourse.assessments.forEach(a => { tCAScore += (parseFloat(a.score) || 0); tCAMax += (parseFloat(a.max) || 0); });
+                              let caAchieved = tCAMax > 0 ? (tCAScore / tCAMax) * caW : tCAScore;
+                              let examAchieved = (parseFloat(newCourse.examScore) || 0);
+                              return (caAchieved + examAchieved).toFixed(1);
+                            })()} <span className="text-sm text-gray-500 font-medium">/ 100</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 mt-4">
+                    <Button onClick={handleAddCourse} className="bg-primary-600 text-white">{newCourse.id ? 'Save Changes' : 'Add Grade'}</Button>
+                    <Button variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
+                  </div>
                 </Modal>
 
                 <div className="space-y-3">
                   {displayCourses.map(course => (
-                    <div 
-                      key={course.id} 
+                    <div
+                      key={course.id}
                       className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-primary-100 transition-colors bg-white group shadow-sm cursor-pointer hover:shadow-md"
                       onClick={() => {
                         setNewCourse({

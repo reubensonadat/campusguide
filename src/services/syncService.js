@@ -66,7 +66,7 @@ export async function pushTimetableToCloud() {
   const rows = courses
     .filter(c => c.name && c.day && (c.start_time || c.startTime) && (c.end_time || c.endTime))
     .map(c => ({
-      id: c.id,
+      id: String(c.id),  // coerce to text — SQL column is `text NOT NULL`
       user_id: userId,
       name: c.name,
       day: c.day,
@@ -77,10 +77,11 @@ export async function pushTimetableToCloud() {
       lecturer: c.lecturer || '',
       contact: c.contact || '',
       target_grade: c.target_grade || c.targetGrade || '',
-      credit_hours: c.credit_hours || c.creditHours || 3,
+      credit_hours: parseInt(c.credit_hours || c.creditHours, 10) || 3,  // integer column
       // ★ NEW — semester scope fields
       academic_year: c.academic_year || null,
       semester: c.semester || null,
+      updated_at: new Date().toISOString(),
     }));
 
   const { error } = await supabase
@@ -268,20 +269,21 @@ export async function pushGPAToCloud() {
   if (!gpaCourses.length) return;
 
   const rows = gpaCourses.map(c => ({
-    id: c.id,
+    id: String(c.id),  // coerce to text — SQL column is `text NOT NULL`
     user_id: userId,
     name: c.course_name || c.name || '',
     grade: c.grade || 'E',
     // ★ FIX: push the computed numeric fields so the cloud stores real data
     score: parseFloat(c.score) || 0,
     grade_point: parseFloat(c.gradePoint) || 0,
-    credit_hours: parseFloat(c.creditHours || c.credit_hours) || 3,
+    credit_hours: parseInt(c.creditHours || c.credit_hours, 10) || 3,  // integer column
     is_detailed: c.isDetailed || false,
     exam_weight: parseFloat(c.examWeight) || 60,
     exam_score: c.examScore || '',
     assessments: c.assessments || [],
     academic_year: c.academic_year || null,
     semester: c.semester || null,
+    updated_at: new Date().toISOString(),
   }));
 
   const { error } = await supabase
@@ -624,13 +626,13 @@ export async function restoreFromCloud() {
 
     const { data: userProfile } = await supabase.from('users').select('*').single();
     if (userProfile) {
-        const existingProfile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
-        const mergedProfile = { ...existingProfile };
-        if (userProfile.name) mergedProfile.name = userProfile.name;
-        if (userProfile.phone_number) mergedProfile.phone = userProfile.phone_number;
-        if (userProfile.course) mergedProfile.course = userProfile.course;
-        if (userProfile.level) mergedProfile.level = userProfile.level;
-        localStorage.setItem('ucc_profile', JSON.stringify(mergedProfile));
+      const existingProfile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
+      const mergedProfile = { ...existingProfile };
+      if (userProfile.name) mergedProfile.name = userProfile.name;
+      if (userProfile.phone_number) mergedProfile.phone = userProfile.phone_number;
+      if (userProfile.course) mergedProfile.course = userProfile.course;
+      if (userProfile.level) mergedProfile.level = userProfile.level;
+      localStorage.setItem('ucc_profile', JSON.stringify(mergedProfile));
     }
 
     // 2. Pull everything else
@@ -679,7 +681,7 @@ export async function syncToCloud() {
           settings: JSON.parse(localStorage.getItem('ucc_settings') || '{}'),
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id' });
-      
+
       await supabase
         .from('users')
         .update({
