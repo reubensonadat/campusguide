@@ -176,7 +176,11 @@ const Settings = () => {
 
   const handleToggleSystemNotifications = async () => {
     if (!OneSignal.initialized) {
-      toast.error('Notification system not initialized yet');
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        toast.error('OneSignal cannot run on localhost without configuration. Please test on your live deployed site.');
+      } else {
+        toast.error('Notification system not initialized yet');
+      }
       return;
     }
     
