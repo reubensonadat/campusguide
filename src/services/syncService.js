@@ -49,18 +49,18 @@ export async function pushTimetableToCloud() {
     console.error('[syncService] pushTimetable tombstones error:', e);
   }
 
-  let courses = JSON.parse(localStorage.getItem('ucc_timetable') || '[]');
-  if (!courses.length) return;
+  const rawCourses = JSON.parse(localStorage.getItem('ucc_timetable') || '[]');
+  if (!rawCourses.length) return;
 
-  // Deduplicate before push
+  // Deduplicate the rows we send to cloud — do NOT overwrite localStorage.
+  // The push function's job is to push, not to mutate local state.
   const seen = new Set();
-  courses = courses.filter(c => {
+  const courses = rawCourses.filter(c => {
     const key = `${c.name}-${c.day}-${c.academic_year}-${c.semester}`.toLowerCase();
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
-  localStorage.setItem('ucc_timetable', JSON.stringify(courses));
 
   // ★ KEY FIX: Include academic_year and semester in each row
   const rows = courses
