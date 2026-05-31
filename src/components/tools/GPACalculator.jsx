@@ -253,7 +253,7 @@ const GPACalculator = () => {
           // Check if we already have this course in GPA by ID or Semantic Identity
           const existing = courses.find(c => 
             c.id === course.id || 
-            (c.name.trim().toLowerCase() === course.name.trim().toLowerCase() && 
+            (c?.name?.trim().toLowerCase() === course?.name?.trim().toLowerCase() && 
              c.semester === (course.semester || defaultSem) && 
              c.academic_year === (course.academic_year || defaultYear))
           );
@@ -279,7 +279,8 @@ const GPACalculator = () => {
           };
         });
 
-        const gpaOnlyCourses = courses.filter(c => !timetableCourses.find(tc => tc.id === c.id));
+        const newGpaCourseIds = new Set(newGpaCourses.map(c => c.id));
+        const gpaOnlyCourses = courses.filter(c => !newGpaCourseIds.has(c.id));
         const mergedCourses = [...gpaOnlyCourses, ...newGpaCourses];
         
         if (JSON.stringify(mergedCourses) !== JSON.stringify(courses)) {

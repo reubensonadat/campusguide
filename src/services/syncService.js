@@ -64,20 +64,20 @@ export async function pushTimetableToCloud() {
 
   // ★ KEY FIX: Include academic_year and semester in each row
   const rows = courses
-    .filter(c => c.name && c.day && c.start_time && c.end_time)
+    .filter(c => c.name && c.day && (c.start_time || c.startTime) && (c.end_time || c.endTime))
     .map(c => ({
       id: c.id,
       user_id: userId,
       name: c.name,
       day: c.day,
-      start_time: c.start_time,
-      end_time: c.end_time,
+      start_time: c.start_time || c.startTime,
+      end_time: c.end_time || c.endTime,
       location: c.location || '',
       color: c.color || '#002F45',
       lecturer: c.lecturer || '',
       contact: c.contact || '',
-      target_grade: c.target_grade || '',
-      credit_hours: c.credit_hours || 3,
+      target_grade: c.target_grade || c.targetGrade || '',
+      credit_hours: c.credit_hours || c.creditHours || 3,
       // ★ NEW — semester scope fields
       academic_year: c.academic_year || null,
       semester: c.semester || null,

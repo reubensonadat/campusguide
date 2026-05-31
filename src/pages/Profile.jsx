@@ -14,6 +14,7 @@ import { restoreFromCloud } from '../services/syncService';
 import { fetchUserThriftListings } from '../services/thriftService';
 import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
+import OneSignal from 'react-onesignal';
 import { CourseCombobox } from '../components/common/CourseCombobox';
 import ListingManageModal from '../components/profile/ListingManageModal';
 
@@ -148,6 +149,36 @@ const Profile = () => {
   const [restorePin, setRestorePin] = useState('');
   const [isRestoring, setIsRestoring] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useLocalStorage('ucc_notifications_enabled', true);
+  const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (window.OneSignal && window.OneSignal.User && window.OneSignal.User.PushSubscription) {
+        setSystemNotificationsEnabled(window.OneSignal.User.PushSubscription.optedIn);
+      }
+    } catch(e) {}
+  }, []);
+
+  const handleToggleSystemNotifications = async () => {
+    try {
+      if (systemNotificationsEnabled) {
+        OneSignal.User.PushSubscription.optOut();
+        setSystemNotificationsEnabled(false);
+        toast.success('System notifications disabled');
+      } else {
+        await OneSignal.Notifications.requestPermission();
+        OneSignal.User.PushSubscription.optIn();
+        setSystemNotificationsEnabled(true);
+        toast.success('System notifications enabled!');
+      }
+    } catch (e) {
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        toast.error('OneSignal cannot run on localhost without configuration.');
+      } else {
+        toast.error('Notification system not initialized yet.');
+      }
+    }
+  };
 
   // GPA Vault Lock States
   const [isGpaLocked, setIsGpaLocked] = useLocalStorage('ucc_gpa_vault_locked', false);
@@ -552,6 +583,28 @@ const Profile = () => {
         </div>
 
         {/* Customize Home */}
+        {/* System Push Notifications Widget */}
+        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden mt-6">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#002F45]/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+          <div className="flex items-center justify-between group relative z-10">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${systemNotificationsEnabled ? 'bg-[#002F45]/5 text-[#002F45]' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'}`}>
+                <Bell size={20} />
+              </div>
+              <div>
+                <h3 className="text-[17px] font-bold text-gray-900">Push Reminders</h3>
+                <p className="text-[13px] text-gray-500 font-medium">Get notified when app is closed</p>
+              </div>
+            </div>
+            <button
+              onClick={handleToggleSystemNotifications}
+              className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002F45] focus-visible:ring-offset-2 ${systemNotificationsEnabled ? 'bg-[#002F45]' : 'bg-gray-200'}`}
+            >
+              <span className={`pointer-events-none inline-block h-[22px] w-[22px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${systemNotificationsEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+            </button>
+          </div>
+        </div>
+
         {/* Core Features */}
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden mt-6">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#6EABC6]/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>

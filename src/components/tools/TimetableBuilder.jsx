@@ -12,6 +12,7 @@ import { triggerAuthSheet } from '../onboarding/AuthModal';
 import { getTodayHoliday } from '../../services/holidayService';
 import { CustomEyes } from '../common/CustomIcons';
 import { toast } from 'react-hot-toast';
+import { pushTimetableToCloud } from '../../services/syncService';
 
 const formatTime12Hour = (time24) => {
   if (!time24) return '';
@@ -157,6 +158,14 @@ const TimetableBuilder = () => {
           return cTerm === activeTerm;
       });
   }, [courses, activeTerm]);
+
+  // Auto-sync to cloud when courses change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      pushTimetableToCloud();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [courses]);
 
   const timetableRef = useRef(null);
 
