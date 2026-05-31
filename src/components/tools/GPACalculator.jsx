@@ -250,8 +250,13 @@ const GPACalculator = () => {
         const defaultSem  = profile?.semester || '1';
 
         const newGpaCourses = timetableCourses.map(course => {
-          // Check if we already have this course in GPA
-          const existing = courses.find(c => c.id === course.id);
+          // Check if we already have this course in GPA by ID or Semantic Identity
+          const existing = courses.find(c => 
+            c.id === course.id || 
+            (c.name.trim().toLowerCase() === course.name.trim().toLowerCase() && 
+             c.semester === (course.semester || defaultSem) && 
+             c.academic_year === (course.academic_year || defaultYear))
+          );
           if (existing) return existing;
           
           return {
@@ -404,7 +409,18 @@ const GPACalculator = () => {
         if (courses.some(c => c.id === courseObject.id)) {
           setCourses(courses.map(c => c.id === courseObject.id ? courseObject : c));
         } else {
-          setCourses([...courses, courseObject]);
+          // Prevent duplicates on manual add by checking semantic identity
+          const existingSemanticCourse = courses.find(c => 
+            c.name.trim().toLowerCase() === courseObject.name.trim().toLowerCase() && 
+            c.semester === courseObject.semester && 
+            c.academic_year === courseObject.academic_year
+          );
+          
+          if (existingSemanticCourse) {
+            setCourses(courses.map(c => c.id === existingSemanticCourse.id ? { ...courseObject, id: existingSemanticCourse.id } : c));
+          } else {
+            setCourses([...courses, courseObject]);
+          }
         }
         
         setNewCourse({
@@ -428,6 +444,17 @@ const GPACalculator = () => {
 
   const handleDeleteCourse = (id) => {
     setCourses(courses.filter(course => course.id !== id));
+    
+    // Tombstone for sync
+    try {
+      const deleted = JSON.parse(localStorage.getItem('ucc_gpa_deleted') || '[]');
+      if (!deleted.includes(id)) {
+        deleted.push(id);
+        localStorage.setItem('ucc_gpa_deleted', JSON.stringify(deleted));
+      }
+    } catch (e) {
+      console.error('Error saving GPA tombstone:', e);
+    }
   };
 
   const getGradeColor = (grade) => {

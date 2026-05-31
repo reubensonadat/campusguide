@@ -35,8 +35,32 @@ export async function pushTimetableToCloud() {
   const userId = getUserId();
   if (!userId) return;
 
-  const courses = JSON.parse(localStorage.getItem('ucc_timetable') || '[]');
+  // Process tombstones
+  try {
+    const deletedIds = JSON.parse(localStorage.getItem('ucc_timetable_deleted') || '[]');
+    if (deletedIds.length > 0) {
+      const { error } = await supabase
+        .from('user_timetable')
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', deletedIds);
+      if (!error) localStorage.removeItem('ucc_timetable_deleted');
+    }
+  } catch (e) {
+    console.error('[syncService] pushTimetable tombstones error:', e);
+  }
+
+  let courses = JSON.parse(localStorage.getItem('ucc_timetable') || '[]');
   if (!courses.length) return;
+
+  // Deduplicate before push
+  const seen = new Set();
+  courses = courses.filter(c => {
+    const key = `${c.name}-${c.day}-${c.academic_year}-${c.semester}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  localStorage.setItem('ucc_timetable', JSON.stringify(courses));
 
   // ★ KEY FIX: Include academic_year and semester in each row
   const rows = courses
@@ -77,7 +101,8 @@ export async function pullTimetableFromCloud() {
   const { data, error } = await supabase
     .from('user_timetable')
     .select('*')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .is('deleted_at', null);
 
   if (error) {
     console.error('[syncService] pullTimetable error:', error.message);
@@ -103,8 +128,17 @@ export async function pullTimetableFromCloud() {
       semester: row.semester,
     }));
 
-    localStorage.setItem('ucc_timetable', JSON.stringify(localCourses));
-    console.log('[syncService] pullTimetable OK:', localCourses.length, 'rows');
+    // Deduplicate
+    const seen = new Set();
+    const deduped = localCourses.filter(c => {
+      const key = `${c.name}-${c.day}-${c.academic_year}-${c.semester}`.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    localStorage.setItem('ucc_timetable', JSON.stringify(deduped));
+    console.log('[syncService] pullTimetable OK:', deduped.length, 'rows');
   }
 }
 
@@ -114,8 +148,32 @@ export async function pushAssignmentsToCloud() {
   const userId = getUserId();
   if (!userId) return;
 
-  const assignments = JSON.parse(localStorage.getItem('ucc_assignments') || '[]');
+  // Process tombstones
+  try {
+    const deletedIds = JSON.parse(localStorage.getItem('ucc_assignments_deleted') || '[]');
+    if (deletedIds.length > 0) {
+      const { error } = await supabase
+        .from('user_assignments')
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', deletedIds);
+      if (!error) localStorage.removeItem('ucc_assignments_deleted');
+    }
+  } catch (e) {
+    console.error('[syncService] pushAssignments tombstones error:', e);
+  }
+
+  let assignments = JSON.parse(localStorage.getItem('ucc_assignments') || '[]');
   if (!assignments.length) return;
+
+  // Deduplicate before push
+  const seen = new Set();
+  assignments = assignments.filter(a => {
+    const key = `${a.title}-${a.course}-${a.academic_year}-${a.semester}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  localStorage.setItem('ucc_assignments', JSON.stringify(assignments));
 
   const rows = assignments.map(a => ({
     id: a.id,
@@ -151,7 +209,8 @@ export async function pullAssignmentsFromCloud() {
   const { data, error } = await supabase
     .from('user_assignments')
     .select('*')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .is('deleted_at', null);
 
   if (error) {
     console.error('[syncService] pullAssignments error:', error.message);
@@ -173,7 +232,15 @@ export async function pullAssignmentsFromCloud() {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }));
-    localStorage.setItem('ucc_assignments', JSON.stringify(localAssignments));
+    // Deduplicate
+    const seen = new Set();
+    const deduped = localAssignments.filter(a => {
+      const key = `${a.title}-${a.course}-${a.academic_year}-${a.semester}`.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    localStorage.setItem('ucc_assignments', JSON.stringify(deduped));
   }
 }
 
@@ -182,6 +249,20 @@ export async function pullAssignmentsFromCloud() {
 export async function pushGPAToCloud() {
   const userId = getUserId();
   if (!userId) return;
+
+  // Process tombstones
+  try {
+    const deletedIds = JSON.parse(localStorage.getItem('ucc_gpa_deleted') || '[]');
+    if (deletedIds.length > 0) {
+      const { error } = await supabase
+        .from('user_gpa_courses')
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', deletedIds);
+      if (!error) localStorage.removeItem('ucc_gpa_deleted');
+    }
+  } catch (e) {
+    console.error('[syncService] pushGPA tombstones error:', e);
+  }
 
   const gpaCourses = JSON.parse(localStorage.getItem('ucc_gpa') || '[]');
   if (!gpaCourses.length) return;
@@ -221,7 +302,8 @@ export async function pullGPAFromCloud() {
   const { data, error } = await supabase
     .from('user_gpa_courses')
     .select('*')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .is('deleted_at', null);
 
   if (error) {
     console.error('[syncService] pullGPA error:', error.message);
@@ -257,8 +339,32 @@ export async function pushTasksToCloud() {
   const userId = getUserId();
   if (!userId) return;
 
-  const tasks = JSON.parse(localStorage.getItem('ucc_daily_tasks') || '[]');
+  // Process tombstones
+  try {
+    const deletedIds = JSON.parse(localStorage.getItem('ucc_daily_tasks_deleted') || '[]');
+    if (deletedIds.length > 0) {
+      const { error } = await supabase
+        .from('user_tasks')
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', deletedIds);
+      if (!error) localStorage.removeItem('ucc_daily_tasks_deleted');
+    }
+  } catch (e) {
+    console.error('[syncService] pushTasks tombstones error:', e);
+  }
+
+  let tasks = JSON.parse(localStorage.getItem('ucc_daily_tasks') || '[]');
   if (!tasks.length) return;
+
+  // Deduplicate before push
+  const seen = new Set();
+  tasks = tasks.filter(t => {
+    const key = `${t.title}-${t.date}-${t.academic_year}-${t.semester}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  localStorage.setItem('ucc_daily_tasks', JSON.stringify(tasks));
 
   const rows = tasks.map(t => ({
     id: t.id,
@@ -291,7 +397,8 @@ export async function pullTasksFromCloud() {
   const { data, error } = await supabase
     .from('user_tasks')
     .select('*')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .is('deleted_at', null);
 
   if (error) {
     console.error('[syncService] pullTasks error:', error.message);
@@ -310,7 +417,15 @@ export async function pullTasksFromCloud() {
       academic_year: row.academic_year,
       semester: row.semester,
     }));
-    localStorage.setItem('ucc_daily_tasks', JSON.stringify(localTasks));
+    // Deduplicate
+    const seen = new Set();
+    const deduped = localTasks.filter(t => {
+      const key = `${t.title}-${t.date}-${t.academic_year}-${t.semester}`.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    localStorage.setItem('ucc_daily_tasks', JSON.stringify(deduped));
   }
 }
 
@@ -320,8 +435,32 @@ export async function pushBudgetToCloud() {
   const userId = getUserId();
   if (!userId) return;
 
-  const transactions = JSON.parse(localStorage.getItem('ucc_budget') || '[]');
+  // Process tombstones
+  try {
+    const deletedIds = JSON.parse(localStorage.getItem('ucc_budget_deleted') || '[]');
+    if (deletedIds.length > 0) {
+      const { error } = await supabase
+        .from('budget_transactions')
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', deletedIds);
+      if (!error) localStorage.removeItem('ucc_budget_deleted');
+    }
+  } catch (e) {
+    console.error('[syncService] pushBudget tombstones error:', e);
+  }
+
+  let transactions = JSON.parse(localStorage.getItem('ucc_budget') || '[]');
   if (!transactions.length) return;
+
+  // Deduplicate before push
+  const seen = new Set();
+  transactions = transactions.filter(t => {
+    const key = `${t.description || t.category}-${t.amount}-${t.date || new Date().toISOString().split('T')[0]}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  localStorage.setItem('ucc_budget', JSON.stringify(transactions));
 
   // budget_transactions table has NO academic_year/semester columns
   const rows = transactions.map(t => ({
@@ -352,7 +491,8 @@ export async function pullBudgetFromCloud() {
   const { data, error } = await supabase
     .from('budget_transactions')
     .select('*')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .is('deleted_at', null);
 
   if (error) {
     console.error('[syncService] pullBudget error:', error.message);
@@ -368,7 +508,15 @@ export async function pullBudgetFromCloud() {
       description: row.description || '',
       date: row.created_at ? row.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
     }));
-    localStorage.setItem('ucc_budget', JSON.stringify(localTxns));
+    // Deduplicate
+    const seen = new Set();
+    const deduped = localTxns.filter(t => {
+      const key = `${t.description || t.category}-${t.amount}-${t.date}`.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    localStorage.setItem('ucc_budget', JSON.stringify(deduped));
   }
 }
 

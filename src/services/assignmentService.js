@@ -142,6 +142,14 @@ export const updateAssignment = (id, updates) => {
 export const deleteAssignment = (id) => {
   const assignments = getAssignments().filter(a => a.id !== id);
   saveAssignments(assignments);
+  
+  // Tombstone for sync
+  const deleted = JSON.parse(localStorage.getItem('ucc_assignments_deleted') || '[]');
+  if (!deleted.includes(id)) {
+    deleted.push(id);
+    localStorage.setItem('ucc_assignments_deleted', JSON.stringify(deleted));
+  }
+  
   return true;
 };
 

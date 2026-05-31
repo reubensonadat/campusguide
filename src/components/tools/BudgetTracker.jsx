@@ -289,6 +289,17 @@ const BudgetTracker = () => {
 
   const handleDeleteTransaction = (id) => {
     setTransactions(transactions.filter(t => t.id !== id));
+    
+    // Tombstone for sync
+    try {
+      const deleted = JSON.parse(localStorage.getItem('ucc_budget_deleted') || '[]');
+      if (!deleted.includes(id)) {
+        deleted.push(id);
+        localStorage.setItem('ucc_budget_deleted', JSON.stringify(deleted));
+      }
+    } catch (e) {
+      console.error('Error saving budget tombstone:', e);
+    }
   };
 
   const categories = newTransaction.type === 'income' ? BUDGET_CATEGORIES.INCOME : BUDGET_CATEGORIES.EXPENSE;

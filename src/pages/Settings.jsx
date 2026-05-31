@@ -244,13 +244,21 @@ const Settings = () => {
   }, [theme]);
 
   const handleSaveProfile = () => {
+    if (!formData.name || !formData.name.trim()) {
+      toast.error('Name is required.');
+      return;
+    }
     if (!formData.phone || !formData.phone.trim()) {
       toast.error('Phone number is required.');
       return;
     }
     setProfile(formData);
     setIsEditModalOpen(false);
-    triggerAuthSheet(() => {});
+    triggerAuthSheet(() => {
+      import('../services/syncService').then(({ triggerBackgroundSync }) => {
+        triggerBackgroundSync();
+      });
+    });
   };
 
   const toggleWidget = (key) => {

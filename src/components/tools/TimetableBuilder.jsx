@@ -261,6 +261,18 @@ const TimetableBuilder = () => {
 
   const handleDeleteCourse = (id) => {
     setCourses(courses.filter(course => course.id !== id));
+    
+    // Tombstone for sync
+    try {
+      const deleted = JSON.parse(localStorage.getItem('ucc_timetable_deleted') || '[]');
+      if (!deleted.includes(id)) {
+        deleted.push(id);
+        localStorage.setItem('ucc_timetable_deleted', JSON.stringify(deleted));
+      }
+    } catch (e) {
+      console.error('Error saving timetable tombstone:', e);
+    }
+    
     setSelectedCourse(null);
   };
 

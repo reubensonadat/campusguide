@@ -320,6 +320,18 @@ const PlanYourDay = () => {
     const deleteTask = () => {
         if (taskToDelete) {
             setTasks(tasks.filter(t => t.id !== taskToDelete));
+            
+            // Tombstone for sync
+            try {
+              const deleted = JSON.parse(localStorage.getItem('ucc_daily_tasks_deleted') || '[]');
+              if (!deleted.includes(taskToDelete)) {
+                deleted.push(taskToDelete);
+                localStorage.setItem('ucc_daily_tasks_deleted', JSON.stringify(deleted));
+              }
+            } catch (e) {
+              console.error('Error saving task tombstone:', e);
+            }
+            
             setTaskToDelete(null);
         }
     };
