@@ -20,10 +20,10 @@ export const formatTime = (time) => {
 export const timeDifference = (startTime, endTime) => {
   const [startHour, startMin] = startTime.split(':').map(Number);
   const [endHour, endMin] = endTime.split(':').map(Number);
-  
+
   const startMinutes = startHour * 60 + startMin;
   const endMinutes = endHour * 60 + endMin;
-  
+
   return endMinutes - startMinutes;
 };
 
@@ -33,12 +33,12 @@ export const isTimeOverlap = (start1, end1, start2, end2) => {
   const [endHour1, endMin1] = end1.split(':').map(Number);
   const [startHour2, startMin2] = start2.split(':').map(Number);
   const [endHour2, endMin2] = end2.split(':').map(Number);
-  
+
   const startMinutes1 = startHour1 * 60 + startMin1;
   const endMinutes1 = endHour1 * 60 + endMin1;
   const startMinutes2 = startHour2 * 60 + startMin2;
   const endMinutes2 = endHour2 * 60 + endMin2;
-  
+
   return (
     (startMinutes1 >= startMinutes2 && startMinutes1 < endMinutes2) ||
     (endMinutes1 > startMinutes2 && endMinutes1 <= endMinutes2) ||
@@ -67,39 +67,39 @@ export const getGradeFromScore = (score) => {
 // Calculate GPA
 export const calculateGPA = (courses) => {
   if (!courses || courses.length === 0) return 0;
-  
+
   let totalPoints = 0;
   let totalCredits = 0;
-  
+
   courses.forEach(course => {
     const gradePoint = course.gradePoint || 0;
     const creditHours = course.creditHours || 0;
-    
+
     totalPoints += gradePoint * creditHours;
     totalCredits += creditHours;
   });
-  
+
   return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
 };
 
 // Export data to CSV
 export const exportToCSV = (data, filename) => {
   if (!data || data.length === 0) return;
-  
+
   const headers = Object.keys(data[0]);
   const csvContent = [
     headers.join(','),
     ...data.map(row => headers.map(header => `"${row[header]}"`).join(','))
   ].join('\n');
-  
+
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  
+
   link.setAttribute('href', url);
   link.setAttribute('download', filename);
   link.style.visibility = 'hidden';
-  
+
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -146,7 +146,41 @@ export const getInitials = (name) => {
   return name.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 2);
 };
 
-// Add this function at the end of the file
+/**
+ * Sanitize a Ghana phone number to local 10-digit format.
+ * Strips non-digits, converts +233 / 233 prefix → 0.
+ * Returns the cleaned number (may be partial while user types).
+ *
+ * Examples:
+ *   "+233541234567" → "0541234567"
+ *   "233541234567"  → "0541234567"
+ *   "0541234567"    → "0541234567"
+ *   "541234567"     → "0541234567" (9 digits → prepend 0)
+ */
+export const sanitizeGhanaPhone = (raw) => {
+  if (!raw) return '';
+  let digits = raw.replace(/\D/g, '');              // strip non-digits
+
+  // Convert international prefix to local
+  if (digits.startsWith('233')) {
+    digits = '0' + digits.slice(3);                  // 233541234567 → 0541234567
+  }
+
+  // If 9 digits starting with a non-zero (e.g. 541234567), prepend 0
+  if (digits.length === 9 && digits[0] !== '0') {
+    digits = '0' + digits;
+  }
+
+  return digits;
+};
+
+/**
+ * Validate that a phone number is a valid Ghana local format:
+ * exactly 10 digits starting with 0.
+ */
+export const isValidGhanaPhone = (phone) => {
+  return /^0\d{9}$/.test(phone);
+};
 export const cn = (...classes) => {
   return classes.filter(Boolean).join(' ');
 };

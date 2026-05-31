@@ -7,6 +7,7 @@ import { updatePin, restoreLifecycle } from '../services/authService';
 import { restoreFromCloud } from '../services/syncService';
 import OneSignal from 'react-onesignal';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
+import { sanitizeGhanaPhone, isValidGhanaPhone } from '../utils/helpers';
 import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import { CourseCombobox } from '../components/common/CourseCombobox';
@@ -279,6 +280,10 @@ const Settings = () => {
     }
     if (!formData.phone || !formData.phone.trim()) {
       toast.error('Phone number is required.');
+      return;
+    }
+    if (!isValidGhanaPhone(formData.phone)) {
+      toast.error('Enter a valid 10-digit Ghana number (e.g. 0541234567).');
       return;
     }
     setProfile(formData);
@@ -709,8 +714,8 @@ const Settings = () => {
                 onClick={handleResync}
                 disabled={isResyncing}
                 className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs transition-all active:scale-95 ${isResyncing
-                    ? 'bg-gray-100 text-gray-400'
-                    : 'bg-indigo-50 border border-indigo-100 text-indigo-700 hover:bg-indigo-100'
+                  ? 'bg-gray-100 text-gray-400'
+                  : 'bg-indigo-50 border border-indigo-100 text-indigo-700 hover:bg-indigo-100'
                   }`}
               >
                 {isResyncing ? <RefreshCw size={14} className="animate-spin" /> : <RefreshCw size={14} />}
@@ -745,8 +750,8 @@ const Settings = () => {
                   onClick={handleRestore}
                   disabled={isRestoring || restoreId.length < 12 || restorePin.length < 6}
                   className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${isRestoring
-                      ? 'bg-gray-100 text-gray-400'
-                      : 'bg-[#002F45] text-white hover:bg-[#001a26] shadow-md shadow-[#002F45]/10'
+                    ? 'bg-gray-100 text-gray-400'
+                    : 'bg-[#002F45] text-white hover:bg-[#001a26] shadow-md shadow-[#002F45]/10'
                     }`}
                 >
                   {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore Data'}
@@ -1005,7 +1010,7 @@ const Settings = () => {
                     <input
                       type="tel"
                       value={formData.phone || ''}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, phone: sanitizeGhanaPhone(e.target.value) })}
                       placeholder="e.g. 054 123 4567"
                       className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
                     />

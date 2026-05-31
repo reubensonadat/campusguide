@@ -4,6 +4,7 @@
 // All other sync logic remains untouched.
 
 import { supabase } from '../lib/supabase';
+import { sanitizeGhanaPhone } from '../utils/helpers';
 
 const SYNC_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 const SYNC_KEY = 'ucc_last_sync';
@@ -694,7 +695,7 @@ export async function restoreFromCloud() {
     if (userProfile) {
       const profile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
       if (userProfile.name) profile.name = userProfile.name;
-      if (userProfile.phone_number) profile.phone = userProfile.phone_number;
+      if (userProfile.phone_number) profile.phone = sanitizeGhanaPhone(userProfile.phone_number);
       if (userProfile.course) profile.course = userProfile.course;
       if (userProfile.level) profile.level = userProfile.level;
       if (userProfile.current_semester) profile.semester = userProfile.current_semester;
@@ -792,7 +793,7 @@ export async function syncToCloud({ force = false } = {}) {
         .from('users')
         .update({
           name: profile.name || null,
-          phone_number: profile.phone || null,
+          phone_number: sanitizeGhanaPhone(profile.phone) || null,
           course: profile.course || null,
           level: profile.level || null
         })
