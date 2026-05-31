@@ -53,13 +53,13 @@ import {
 // Custom SVG icons for widget toggles
 const WeatherSvgIcon = ({ size = 20, className = '' }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}>
-    <path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/>
+    <path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z" />
   </svg>
 );
 
 const LibrarySvgIcon = ({ size = 20, className = '' }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}>
-    <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,88Zm0,32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,120Zm0,32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,152Z"/>
+    <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,88Zm0,32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,120Zm0,32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,152Z" />
   </svg>
 );
 
@@ -294,7 +294,7 @@ const Settings = () => {
     setHomeWidgets(prev => {
       // List of "API widgets" that are subject to the max 3 limit
       const apiWidgetKeys = ['verse', 'forex', 'football', 'crypto', 'news', 'quote', 'joke', 'fact', 'github', 'word'];
-      
+
       // If turning ON an API widget, check the limit
       if (!prev[key] && apiWidgetKeys.includes(key)) {
         const activeApiCount = apiWidgetKeys.filter(k => prev[k]).length;
@@ -342,6 +342,28 @@ const Settings = () => {
     }
   };
 
+  // Re-sync: Pull latest cloud data to this device (requires auth, wipes local first)
+  const [isResyncing, setIsResyncing] = useState(false);
+  const handleResync = () => {
+    triggerAuthSheet(async () => {
+      setIsResyncing(true);
+      const resyncToast = toast.loading('Re-syncing from cloud...');
+      try {
+        const result = await restoreFromCloud();
+        if (result.success) {
+          toast.success('Re-sync complete! Reloading...', { id: resyncToast, duration: 2000 });
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          toast.error(`Re-sync failed: ${result.error || 'No cloud data found.'}`, { id: resyncToast });
+        }
+      } catch (err) {
+        toast.error(`Re-sync failed: ${err.message}`, { id: resyncToast });
+      } finally {
+        setIsResyncing(false);
+      }
+    });
+  };
+
   const handleChangePinClick = () => {
     triggerAuthSheet(() => {
       setIsChangePinOpen(true);
@@ -357,7 +379,7 @@ const Settings = () => {
     setIsPinUpdating(true);
     const res = await updatePin(newPin);
     setIsPinUpdating(false);
-    
+
     if (res.success) {
       toast.success('Security PIN updated successfully!');
       setIsChangePinOpen(false);
@@ -444,10 +466,10 @@ const Settings = () => {
     { key: 'word', label: 'Word of the Day', Icon: WordSvgIcon },
   ];
 
-  return ( 
+  return (
     <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45]">
       <div className="max-w-3xl mx-auto px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
-        
+
         {/* Header matching Profile style */}
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">Settings</h1>
@@ -455,425 +477,437 @@ const Settings = () => {
         </div>
 
         <div className="space-y-8">
-        
-        {/* Category 1: Profile & Appearance */}
-        <div>
-          <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">Profile & Appearance</h2>
-          <div className="space-y-1">
-            <button
-              onClick={() => setIsEditModalOpen(true)}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <User size={20} className="text-gray-700" strokeWidth={1.5} />
-                <div>
-                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Personal Information</span>
-                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Update name, ID, course, level</span>
-                </div>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
-            </button>
 
-            <div className="w-full flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
-              <div className="flex items-center gap-4">
-                <Moon size={20} className="text-gray-700" strokeWidth={1.5} />
-                <div>
-                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Dark Mode</span>
-                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Sleek interface for night use</span>
-                </div>
-              </div>
+          {/* Category 1: Profile & Appearance */}
+          <div>
+            <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">Profile & Appearance</h2>
+            <div className="space-y-1">
               <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${
-                  theme === 'dark' ? 'bg-[#002F45]' : 'bg-gray-200'
-                }`}
+                onClick={() => setIsEditModalOpen(true)}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
               >
-                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
-                  theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
-                }`} />
-              </button>
-            </div>
-
-            <div className="w-full flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
-              <div className="flex items-center gap-4">
-                <Bell size={20} className="text-gray-700" strokeWidth={1.5} />
-                <div>
-                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">App Notifications</span>
-                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Timetable reminders and radar alerts</span>
-                </div>
-              </div>
-              <button
-                onClick={() => setNotificationsEnabled(!notificationsEnabled)}
-                className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${
-                  notificationsEnabled ? 'bg-[#002F45]' : 'bg-gray-200'
-                }`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
-                  notificationsEnabled ? 'translate-x-5' : 'translate-x-0'
-                }`} />
-              </button>
-            </div>
-
-            <div className="w-full flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
-              <div className="flex items-center gap-4">
-                <Smartphone size={20} className="text-gray-700" strokeWidth={1.5} />
-                <div>
-                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">System Push Notifications</span>
-                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Class reminders when app is closed</span>
-                </div>
-              </div>
-              <button
-                onClick={handleToggleSystemNotifications}
-                className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${
-                  systemNotificationsEnabled ? 'bg-[#002F45]' : 'bg-gray-200'
-                }`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
-                  systemNotificationsEnabled ? 'translate-x-5' : 'translate-x-0'
-                }`} />
-              </button>
-            </div>
-
-            <button
-              onClick={handleShareApp}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <Share2 size={20} className="text-gray-700" strokeWidth={1.5} />
-                <div>
-                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Invite Friends</span>
-                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Share UCC Campus Guide app link</span>
-                </div>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
-            </button>
-          </div>
-        </div>
-
-        <hr className="border-gray-100" />
-
-        {/* Core Features */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#6EABC6]/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
-          
-          <div className="flex items-center gap-3 mb-6 relative z-10">
-            <div className="w-10 h-10 rounded-xl bg-[#002F45]/5 text-[#002F45] flex items-center justify-center">
-              <LayoutGrid size={20} />
-            </div>
-            <div>
-              <h3 className="text-[17px] font-bold text-gray-900">Core Features</h3>
-              <p className="text-[13px] text-gray-500 font-medium">Essential campus tools</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {coreWidgetToggles.map(({ key, label, Icon }) => (
-              <div key={key} className="flex items-center justify-between group">
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                    homeWidgets[key] ? 'bg-[#002F45]/5 text-[#002F45]' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
-                  }`}>
-                    <Icon size={16} />
+                <div className="flex items-center gap-4">
+                  <User size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">Personal Information</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Update name, ID, course, level</span>
                   </div>
-                  <span className={`text-[15px] font-medium transition-colors ${
-                    homeWidgets[key] ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-900'
-                  }`}>{label}</span>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+              </button>
+
+              <div className="w-full flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
+                <div className="flex items-center gap-4">
+                  <Moon size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">Dark Mode</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Sleek interface for night use</span>
+                  </div>
                 </div>
                 <button
-                  onClick={() => toggleWidget(key)}
-                  className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002F45] focus-visible:ring-offset-2 ${
-                    homeWidgets[key] ? 'bg-[#002F45]' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-[22px] w-[22px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                      homeWidgets[key] ? 'translate-x-5' : 'translate-x-0'
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${theme === 'dark' ? 'bg-[#002F45]' : 'bg-gray-200'
                     }`}
-                  />
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
+                    }`} />
                 </button>
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* API Marketplace UI */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden mt-6">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#6EABC6]/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
-          
-          <div className="flex items-center gap-3 mb-6 relative z-10">
-            <div className="w-10 h-10 rounded-xl bg-[#002F45]/5 text-[#002F45] flex items-center justify-center">
-              <Store size={20} />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <h3 className="text-[17px] font-bold text-gray-900">API Marketplace</h3>
-                <span className="text-[11px] font-bold text-[#002F45] bg-[#002F45]/5 px-2 py-0.5 rounded-full">
-                  {apiWidgetToggles.filter(w => homeWidgets[w.key]).length} / 3 Active
-                </span>
-              </div>
-              <p className="text-[13px] text-gray-500 font-medium">Select up to 3 live widgets</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {apiWidgetToggles.map(({ key, label, Icon }) => (
-              <div key={key} className="flex items-center justify-between group">
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                    homeWidgets[key] ? 'bg-[#002F45]/5 text-[#002F45]' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
-                  }`}>
-                    <Icon size={16} />
+              <div className="w-full flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
+                <div className="flex items-center gap-4">
+                  <Bell size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">App Notifications</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Timetable reminders and radar alerts</span>
                   </div>
-                  <span className={`text-[15px] font-medium transition-colors ${
-                    homeWidgets[key] ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-900'
-                  }`}>{label}</span>
                 </div>
                 <button
-                  onClick={() => toggleWidget(key)}
-                  className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002F45] focus-visible:ring-offset-2 ${
-                    homeWidgets[key] ? 'bg-[#002F45]' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-[22px] w-[22px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                      homeWidgets[key] ? 'translate-x-5' : 'translate-x-0'
+                  onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${notificationsEnabled ? 'bg-[#002F45]' : 'bg-gray-200'
                     }`}
-                  />
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${notificationsEnabled ? 'translate-x-5' : 'translate-x-0'
+                    }`} />
                 </button>
               </div>
-            ))}
-          </div>
-        </div>
 
-        <hr className="border-gray-100" />
-
-        {/* Category 3: Backup & Cloud Sync */}
-        <div className="space-y-4">
-          <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest px-1">Backup & Cloud Sync</h2>
-          
-          {/* Unique Device ID block */}
-          <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-[#002F45]/10 flex items-center justify-center flex-shrink-0">
-                <Fingerprint size={20} className="text-[#002F45]" />
+              <div className="w-full flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
+                <div className="flex items-center gap-4">
+                  <Smartphone size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">System Push Notifications</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Class reminders when app is closed</span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleToggleSystemNotifications}
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${systemNotificationsEnabled ? 'bg-[#002F45]' : 'bg-gray-200'
+                    }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${systemNotificationsEnabled ? 'translate-x-5' : 'translate-x-0'
+                    }`} />
+                </button>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Your Unique App ID</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <code className="text-sm font-black text-[#002F45] tracking-wider">{deviceId}</code>
+
+              <button
+                onClick={handleShareApp}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+              >
+                <div className="flex items-center gap-4">
+                  <Share2 size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">Invite Friends</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Share UCC Campus Guide app link</span>
+                  </div>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+              </button>
+            </div>
+          </div>
+
+          <hr className="border-gray-100" />
+
+          {/* Core Features */}
+          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#6EABC6]/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+
+            <div className="flex items-center gap-3 mb-6 relative z-10">
+              <div className="w-10 h-10 rounded-xl bg-[#002F45]/5 text-[#002F45] flex items-center justify-center">
+                <LayoutGrid size={20} />
+              </div>
+              <div>
+                <h3 className="text-[17px] font-bold text-gray-900">Core Features</h3>
+                <p className="text-[13px] text-gray-500 font-medium">Essential campus tools</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {coreWidgetToggles.map(({ key, label, Icon }) => (
+                <div key={key} className="flex items-center justify-between group">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-[#002F45]/5 text-[#002F45]' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
+                      }`}>
+                      <Icon size={16} />
+                    </div>
+                    <span className={`text-[15px] font-medium transition-colors ${homeWidgets[key] ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-900'
+                      }`}>{label}</span>
+                  </div>
                   <button
-                    onClick={copyDeviceId}
-                    className="p-1.5 rounded-lg hover:bg-white text-gray-400 hover:text-[#002F45] transition-colors active:scale-95"
-                    title="Copy ID"
+                    onClick={() => toggleWidget(key)}
+                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002F45] focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-[#002F45]' : 'bg-gray-200'
+                      }`}
                   >
-                    {copiedId ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                    <span
+                      className={`pointer-events-none inline-block h-[22px] w-[22px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${homeWidgets[key] ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                    />
                   </button>
                 </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-              <Cloud size={14} className={getTimeSinceLastSync() ? 'text-green-500' : 'text-gray-300'} />
-              <span>
-                {getTimeSinceLastSync()
-                  ? `Last synced ${getTimeSinceLastSync()}`
-                  : 'Not synced yet — will sync automatically'}
-              </span>
+              ))}
             </div>
           </div>
 
-          {/* Restore data inputs */}
-          <div className="bg-white rounded-2xl p-5 border border-gray-100">
-            <p className="text-sm font-bold text-gray-900 mb-3">Restore from another device</p>
-            <p className="text-xs text-gray-500 font-medium mb-3">Enter your old App ID and 6-digit PIN to retrieve your sync history.</p>
-            <div className="flex flex-col gap-2.5">
-              <input
-                type="text"
-                value={restoreId}
-                onChange={(e) => setRestoreId(e.target.value.toUpperCase())}
-                placeholder="UCC-XXXXXXXX"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
-                maxLength={12}
-              />
-              <input
-                type="password"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={restorePin}
-                onChange={(e) => setRestorePin(e.target.value.replace(/[^0-9]/g, ''))}
-                placeholder="6-Digit PIN"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
-                maxLength={6}
-              />
+          {/* API Marketplace UI */}
+          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden mt-6">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#6EABC6]/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+
+            <div className="flex items-center gap-3 mb-6 relative z-10">
+              <div className="w-10 h-10 rounded-xl bg-[#002F45]/5 text-[#002F45] flex items-center justify-center">
+                <Store size={20} />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-[17px] font-bold text-gray-900">API Marketplace</h3>
+                  <span className="text-[11px] font-bold text-[#002F45] bg-[#002F45]/5 px-2 py-0.5 rounded-full">
+                    {apiWidgetToggles.filter(w => homeWidgets[w.key]).length} / 3 Active
+                  </span>
+                </div>
+                <p className="text-[13px] text-gray-500 font-medium">Select up to 3 live widgets</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {apiWidgetToggles.map(({ key, label, Icon }) => (
+                <div key={key} className="flex items-center justify-between group">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-[#002F45]/5 text-[#002F45]' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
+                      }`}>
+                      <Icon size={16} />
+                    </div>
+                    <span className={`text-[15px] font-medium transition-colors ${homeWidgets[key] ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-900'
+                      }`}>{label}</span>
+                  </div>
+                  <button
+                    onClick={() => toggleWidget(key)}
+                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002F45] focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-[#002F45]' : 'bg-gray-200'
+                      }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-[22px] w-[22px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${homeWidgets[key] ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                    />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <hr className="border-gray-100" />
+
+          {/* Category 3: Backup & Cloud Sync */}
+          <div className="space-y-4">
+            <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest px-1">Backup & Cloud Sync</h2>
+
+            {/* Unique Device ID block */}
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-[#002F45]/10 flex items-center justify-center flex-shrink-0">
+                  <Fingerprint size={20} className="text-[#002F45]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Your Unique App ID</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <code className="text-sm font-black text-[#002F45] tracking-wider">{deviceId}</code>
+                    <button
+                      onClick={copyDeviceId}
+                      className="p-1.5 rounded-lg hover:bg-white text-gray-400 hover:text-[#002F45] transition-colors active:scale-95"
+                      title="Copy ID"
+                    >
+                      {copiedId ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+                <Cloud size={14} className={getTimeSinceLastSync() ? 'text-green-500' : 'text-gray-300'} />
+                <span>
+                  {getTimeSinceLastSync()
+                    ? `Last synced ${getTimeSinceLastSync()}`
+                    : 'Not synced yet — will sync automatically'}
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Actions: Backup Now + Re-sync */}
+            <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={handleRestore}
-                disabled={isRestoring || restoreId.length < 12 || restorePin.length < 6}
-                className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${
-                  isRestoring
+                onClick={() => {
+                  triggerAuthSheet(() => {
+                    import('../services/syncService').then(({ triggerBackgroundSync }) => {
+                      triggerBackgroundSync();
+                      toast.success('Backup started! Data will sync in ~5 seconds.');
+                    });
+                  });
+                }}
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#002F45]/5 border border-[#002F45]/10 text-[#002F45] font-bold text-xs hover:bg-[#002F45]/10 transition-all active:scale-95"
+              >
+                <Cloud size={14} />
+                Backup Now
+              </button>
+              <button
+                onClick={handleResync}
+                disabled={isResyncing}
+                className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs transition-all active:scale-95 ${isResyncing
                     ? 'bg-gray-100 text-gray-400'
-                    : 'bg-[#002F45] text-white hover:bg-[#001a26] shadow-md shadow-[#002F45]/10'
-                }`}
+                    : 'bg-indigo-50 border border-indigo-100 text-indigo-700 hover:bg-indigo-100'
+                  }`}
               >
-                {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore Data'}
+                {isResyncing ? <RefreshCw size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                {isResyncing ? 'Syncing...' : 'Re-sync from Cloud'}
               </button>
             </div>
-          </div>
-        </div>
 
-        <hr className="border-gray-100" />
-
-        {/* Category 4: Security & Data */}
-        <div>
-          <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">Security & Data Management</h2>
-          
-          {/* Simple Borderless Stats row */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="text-center bg-gray-50/50 p-4 rounded-2xl border border-gray-100/50">
-              <div className="text-xl font-black text-gray-900 tracking-tight">{timetable.length}</div>
-              <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Timetable Courses</div>
-            </div>
-            <div className="text-center bg-gray-50/50 p-4 rounded-2xl border border-gray-100/50">
-              <div className="text-xl font-black text-gray-900 tracking-tight">{gpa.length}</div>
-              <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">GPA Courses</div>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <button
-              onClick={handleChangePinClick}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <Lock size={20} className="text-gray-700" strokeWidth={1.5} />
-                <div>
-                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Change Recovery PIN</span>
-                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Secure recovery PIN for cloud restore</span>
-                </div>
+            {/* Restore data inputs */}
+            <div className="bg-white rounded-2xl p-5 border border-gray-100">
+              <p className="text-sm font-bold text-gray-900 mb-3">Restore from another device</p>
+              <p className="text-xs text-gray-500 font-medium mb-3">Enter your old App ID and 6-digit PIN to retrieve your sync history.</p>
+              <div className="flex flex-col gap-2.5">
+                <input
+                  type="text"
+                  value={restoreId}
+                  onChange={(e) => setRestoreId(e.target.value.toUpperCase())}
+                  placeholder="UCC-XXXXXXXX"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
+                  maxLength={12}
+                />
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={restorePin}
+                  onChange={(e) => setRestorePin(e.target.value.replace(/[^0-9]/g, ''))}
+                  placeholder="6-Digit PIN"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
+                  maxLength={6}
+                />
+                <button
+                  onClick={handleRestore}
+                  disabled={isRestoring || restoreId.length < 12 || restorePin.length < 6}
+                  className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${isRestoring
+                      ? 'bg-gray-100 text-gray-400'
+                      : 'bg-[#002F45] text-white hover:bg-[#001a26] shadow-md shadow-[#002F45]/10'
+                    }`}
+                >
+                  {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore Data'}
+                </button>
               </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
-            </button>
+            </div>
+          </div>
 
-            <div className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0">
-              <div className="flex items-center gap-4">
-                <Lock size={20} className="text-gray-700" strokeWidth={1.5} />
-                <div className="flex flex-col">
-                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">GPA Vault PIN Lock</span>
-                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Keep your GPA forecasts and scores private</span>
-                </div>
+          <hr className="border-gray-100" />
+
+          {/* Category 4: Security & Data */}
+          <div>
+            <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">Security & Data Management</h2>
+
+            {/* Simple Borderless Stats row */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="text-center bg-gray-50/50 p-4 rounded-2xl border border-gray-100/50">
+                <div className="text-xl font-black text-gray-900 tracking-tight">{timetable.length}</div>
+                <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Timetable Courses</div>
               </div>
+              <div className="text-center bg-gray-50/50 p-4 rounded-2xl border border-gray-100/50">
+                <div className="text-xl font-black text-gray-900 tracking-tight">{gpa.length}</div>
+                <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">GPA Courses</div>
+              </div>
+            </div>
+
+            <div className="space-y-1">
               <button
-                onClick={handleGpaLockToggle}
-                className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${
-                  isGpaLocked ? 'bg-[#002F45]' : 'bg-gray-200'
-                }`}
+                onClick={handleChangePinClick}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
               >
-                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
-                  isGpaLocked ? 'translate-x-5' : 'translate-x-0'
-                }`} />
+                <div className="flex items-center gap-4">
+                  <Lock size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">Change Recovery PIN</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Secure recovery PIN for cloud restore</span>
+                  </div>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+              </button>
+
+              <div className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0">
+                <div className="flex items-center gap-4">
+                  <Lock size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <div className="flex flex-col">
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">GPA Vault PIN Lock</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Keep your GPA forecasts and scores private</span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleGpaLockToggle}
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${isGpaLocked ? 'bg-[#002F45]' : 'bg-gray-200'
+                    }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${isGpaLocked ? 'translate-x-5' : 'translate-x-0'
+                    }`} />
+                </button>
+              </div>
+
+              <button
+                onClick={handleExportData}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+              >
+                <div className="flex items-center gap-4">
+                  <Download size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">Export Data</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Download a JSON file of your courses & grades</span>
+                  </div>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+              </button>
+
+              <button
+                onClick={handleResetCoach}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+              >
+                <div className="flex items-center gap-4">
+                  <CustomCoach size={20} className="text-[#002F45]" />
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">Replay Welcome Guide (Coach)</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Resets the fresher onboarding overlays on all tabs</span>
+                  </div>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+              </button>
+
+              <button
+                onClick={handleClearAllData}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+              >
+                <div className="flex items-center gap-4">
+                  <Trash2 size={20} className="text-red-500" strokeWidth={1.5} />
+                  <div>
+                    <span className="text-[15px] text-red-600 font-bold block leading-tight">Clear All App Data</span>
+                    <span className="text-xs text-red-400/80 font-medium mt-0.5 block leading-none">Wipes local database and settings resets</span>
+                  </div>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-red-600 transition-colors" />
               </button>
             </div>
-
-            <button
-              onClick={handleExportData}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <Download size={20} className="text-gray-700" strokeWidth={1.5} />
-                <div>
-                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Export Data</span>
-                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Download a JSON file of your courses & grades</span>
-                </div>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
-            </button>
-
-            <button
-              onClick={handleResetCoach}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <CustomCoach size={20} className="text-[#002F45]" />
-                <div>
-                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">Replay Welcome Guide (Coach)</span>
-                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Resets the fresher onboarding overlays on all tabs</span>
-                </div>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
-            </button>
-
-            <button
-              onClick={handleClearAllData}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <Trash2 size={20} className="text-red-500" strokeWidth={1.5} />
-                <div>
-                  <span className="text-[15px] text-red-600 font-bold block leading-tight">Clear All App Data</span>
-                  <span className="text-xs text-red-400/80 font-medium mt-0.5 block leading-none">Wipes local database and settings resets</span>
-                </div>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-red-600 transition-colors" />
-            </button>
           </div>
-        </div>
 
-        <hr className="border-gray-100" />
+          <hr className="border-gray-100" />
 
-        {/* Category 5: Legal & Support links */}
-        <div>
-          <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">Legal & Support</h2>
-          <div className="space-y-1">
-            <button
-              onClick={() => navigate('/support')}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <HelpCircle size={20} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[15px] text-gray-900 font-medium">About & Support Project</span>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
-            </button>
+          {/* Category 5: Legal & Support links */}
+          <div>
+            <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">Legal & Support</h2>
+            <div className="space-y-1">
+              <button
+                onClick={() => navigate('/support')}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+              >
+                <div className="flex items-center gap-4">
+                  <HelpCircle size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <span className="text-[15px] text-gray-900 font-medium">About & Support Project</span>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+              </button>
 
-            <button
-              onClick={() => navigate('/contact')}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <Phone size={20} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[15px] text-gray-900 font-medium">UCC Contacts & Help Directories</span>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
-            </button>
+              <button
+                onClick={() => navigate('/contact')}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+              >
+                <div className="flex items-center gap-4">
+                  <Phone size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <span className="text-[15px] text-gray-900 font-medium">UCC Contacts & Help Directories</span>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+              </button>
 
-            <button
-              onClick={() => navigate('/terms')}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <FileText size={20} className="text-gray-700" strokeWidth={1.5} />
-                <span className="text-[15px] text-gray-900 font-medium">Terms of Service</span>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
-            </button>
+              <button
+                onClick={() => navigate('/terms')}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+              >
+                <div className="flex items-center gap-4">
+                  <FileText size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <span className="text-[15px] text-gray-900 font-medium">Terms of Service</span>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+              </button>
 
-            <button
-              onClick={() => navigate('/privacy')}
-              className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
-            >
-              <div className="flex items-center gap-4">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-gray-700"><path d="M14 9V4H5V20H11.0563C11.3838 20.4171 11.7803 20.7847 12.236 21.0848L13.626 22H3.9934C3.44495 22 3 21.556 3 21.0082V2.9918C3 2.45531 3.4487 2 4.00221 2H14.9968L21 8V9H14ZM12 11H21V16.949C21 17.9397 20.4987 18.8648 19.6641 19.4144L16.5 21.4978L13.3359 19.4144C12.5013 18.8648 12 17.9397 12 16.949V11ZM14 16.949C14 17.2652 14.1616 17.5634 14.4358 17.744L16.5 19.1032L18.5642 17.744C18.8384 17.5634 19 17.2652 19 16.949V13H14V16.949Z"></path></svg>
-                <span className="text-[15px] text-gray-900 font-medium">Privacy Policy</span>
-              </div>
-              <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
-            </button>
+              <button
+                onClick={() => navigate('/privacy')}
+                className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
+              >
+                <div className="flex items-center gap-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-gray-700"><path d="M14 9V4H5V20H11.0563C11.3838 20.4171 11.7803 20.7847 12.236 21.0848L13.626 22H3.9934C3.44495 22 3 21.556 3 21.0082V2.9918C3 2.45531 3.4487 2 4.00221 2H14.9968L21 8V9H14ZM12 11H21V16.949C21 17.9397 20.4987 18.8648 19.6641 19.4144L16.5 21.4978L13.3359 19.4144C12.5013 18.8648 12 17.9397 12 16.949V11ZM14 16.949C14 17.2652 14.1616 17.5634 14.4358 17.744L16.5 19.1032L18.5642 17.744C18.8384 17.5634 19 17.2652 19 16.949V13H14V16.949Z"></path></svg>
+                  <span className="text-[15px] text-gray-900 font-medium">Privacy Policy</span>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center justify-center gap-2 pt-8 text-gray-400">
-          <Info size={14} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Version 2.0.0</span>
-        </div>
+          <div className="flex items-center justify-center gap-2 pt-8 text-gray-400">
+            <Info size={14} />
+            <span className="text-[10px] font-black uppercase tracking-widest">Version 2.0.0</span>
+          </div>
 
-      </div></div>
+        </div></div>
 
       {/* Modal - Change Recovery PIN */}
       {isChangePinOpen && (
@@ -1085,7 +1119,7 @@ const Settings = () => {
                 <X size={20} />
               </button>
             </div>
-            
+
             <form onSubmit={handleGpaLockSubmit} className="p-6 space-y-4">
               <p className="text-sm text-gray-500 font-medium leading-relaxed">
                 {lockModalMode === 'setup' && 'Create a 6-digit passcode to secure your private GPA data.'}

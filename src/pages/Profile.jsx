@@ -363,6 +363,28 @@ const Profile = () => {
     }
   };
 
+  // Re-sync: Pull latest cloud data to this device (requires auth, wipes local first)
+  const [isResyncing, setIsResyncing] = useState(false);
+  const handleResync = () => {
+    triggerAuthSheet(async () => {
+      setIsResyncing(true);
+      const resyncToast = toast.loading('Re-syncing from cloud...');
+      try {
+        const result = await restoreFromCloud();
+        if (result.success) {
+          toast.success('Re-sync complete! Reloading...', { id: resyncToast, duration: 2000 });
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          toast.error(`Re-sync failed: ${result.error || 'No cloud data found.'}`, { id: resyncToast });
+        }
+      } catch (err) {
+        toast.error(`Re-sync failed: ${err.message}`, { id: resyncToast });
+      } finally {
+        setIsResyncing(false);
+      }
+    });
+  };
+
   const handleClearData = () => {
     if (window.confirm('Are you sure you want to clear all your app data? This cannot be undone.')) {
       toast.loading('Clearing data...');
@@ -733,6 +755,36 @@ const Profile = () => {
                   : 'Not synced yet — will sync automatically'}
               </span>
             </div>
+          </div>
+
+          {/* Quick Actions: Backup Now + Re-sync */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => {
+                triggerAuthSheet(() => {
+                  import('../services/syncService').then(({ triggerBackgroundSync }) => {
+                    triggerBackgroundSync();
+                    toast.success('Backup started! Data will sync in ~5 seconds.');
+                  });
+                });
+              }}
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#002F45]/5 border border-[#002F45]/10 text-[#002F45] font-bold text-xs hover:bg-[#002F45]/10 transition-all active:scale-95"
+            >
+              <Cloud size={14} />
+              Backup Now
+            </button>
+            <button
+              onClick={handleResync}
+              disabled={isResyncing}
+              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs transition-all active:scale-95 ${
+                isResyncing
+                  ? 'bg-gray-100 text-gray-400'
+                  : 'bg-indigo-50 border border-indigo-100 text-indigo-700 hover:bg-indigo-100'
+              }`}
+            >
+              {isResyncing ? <RefreshCw size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+              {isResyncing ? 'Syncing...' : 'Re-sync from Cloud'}
+            </button>
           </div>
 
           {/* Restore Data */}

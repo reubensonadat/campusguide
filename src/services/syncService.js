@@ -53,7 +53,6 @@ export async function pushTimetableToCloud() {
   if (!rawCourses.length) return;
 
   // Deduplicate the rows we send to cloud — do NOT overwrite localStorage.
-  // The push function's job is to push, not to mutate local state.
   const seen = new Set();
   const courses = rawCourses.filter(c => {
     const key = `${c.name}-${c.day}-${c.academic_year}-${c.semester}`.toLowerCase();
@@ -62,27 +61,50 @@ export async function pushTimetableToCloud() {
     return true;
   });
 
-  // ★ KEY FIX: Include academic_year and semester in each row
+  // ── DUPLICATE GUARD: Query cloud for existing courses ──
+  // If a course with the same (name, day, start_time, end_time, academic_year, semester)
+  // already exists in the cloud, reuse its cloud ID so we UPDATE instead of INSERT.
+  let cloudExisting = [];
+  try {
+    const { data } = await supabase
+      .from('user_timetable')
+      .select('id, name, day, start_time, end_time, academic_year, semester')
+      .eq('user_id', userId)
+      .is('deleted_at', null);
+    cloudExisting = data || [];
+  } catch (e) { /* proceed without guard */ }
+
+  // Build a lookup map: semantic key → cloud ID
+  const cloudMap = new Map();
+  for (const row of cloudExisting) {
+    const key = `${(row.name || '').trim().toLowerCase()}-${row.day}-${row.start_time}-${row.end_time}-${row.academic_year || ''}-${row.semester || ''}`;
+    cloudMap.set(key, row.id);
+  }
+
   const rows = courses
     .filter(c => c.name && c.day && (c.start_time || c.startTime) && (c.end_time || c.endTime))
-    .map(c => ({
-      id: String(c.id),  // coerce to text — SQL column is `text NOT NULL`
-      user_id: userId,
-      name: c.name,
-      day: c.day,
-      start_time: c.start_time || c.startTime,
-      end_time: c.end_time || c.endTime,
-      location: c.location || '',
-      color: c.color || '#002F45',
-      lecturer: c.lecturer || '',
-      contact: c.contact || '',
-      target_grade: c.target_grade || c.targetGrade || '',
-      credit_hours: parseInt(c.credit_hours || c.creditHours, 10) || 3,  // integer column
-      // ★ NEW — semester scope fields
-      academic_year: c.academic_year || null,
-      semester: c.semester || null,
-      updated_at: new Date().toISOString(),
-    }));
+    .map(c => {
+      const semanticKey = `${(c.name || '').trim().toLowerCase()}-${c.day}-${c.start_time || c.startTime}-${c.end_time || c.endTime}-${c.academic_year || ''}-${c.semester || ''}`;
+      const cloudId = cloudMap.get(semanticKey);
+
+      return {
+        id: cloudId || String(c.id),  // reuse cloud ID if match found
+        user_id: userId,
+        name: c.name,
+        day: c.day,
+        start_time: c.start_time || c.startTime,
+        end_time: c.end_time || c.endTime,
+        location: c.location || '',
+        color: c.color || '#002F45',
+        lecturer: c.lecturer || '',
+        contact: c.contact || '',
+        target_grade: c.target_grade || c.targetGrade || '',
+        credit_hours: parseInt(c.credit_hours || c.creditHours, 10) || 3,
+        academic_year: c.academic_year || null,
+        semester: c.semester || null,
+        updated_at: new Date().toISOString(),
+      };
+    });
 
   const { error } = await supabase
     .from('user_timetable')
@@ -268,23 +290,45 @@ export async function pushGPAToCloud() {
   const gpaCourses = JSON.parse(localStorage.getItem('ucc_gpa') || '[]');
   if (!gpaCourses.length) return;
 
-  const rows = gpaCourses.map(c => ({
-    id: String(c.id),  // coerce to text — SQL column is `text NOT NULL`
-    user_id: userId,
-    name: c.course_name || c.name || '',
-    grade: c.grade || 'E',
-    // ★ FIX: push the computed numeric fields so the cloud stores real data
-    score: parseFloat(c.score) || 0,
-    grade_point: parseFloat(c.gradePoint) || 0,
-    credit_hours: parseInt(c.creditHours || c.credit_hours, 10) || 3,  // integer column
-    is_detailed: c.isDetailed || false,
-    exam_weight: parseFloat(c.examWeight) || 60,
-    exam_score: c.examScore || '',
-    assessments: c.assessments || [],
-    academic_year: c.academic_year || null,
-    semester: c.semester || null,
-    updated_at: new Date().toISOString(),
-  }));
+  // ── DUPLICATE GUARD: Query cloud for existing GPA courses ──
+  let cloudGPA = [];
+  try {
+    const { data } = await supabase
+      .from('user_gpa_courses')
+      .select('id, name, academic_year, semester')
+      .eq('user_id', userId)
+      .is('deleted_at', null);
+    cloudGPA = data || [];
+  } catch (e) { /* proceed without guard */ }
+
+  const cloudGPAMap = new Map();
+  for (const row of cloudGPA) {
+    const key = `${(row.name || '').trim().toLowerCase()}-${row.academic_year || ''}-${row.semester || ''}`;
+    cloudGPAMap.set(key, row.id);
+  }
+
+  const rows = gpaCourses.map(c => {
+    const courseName = c.course_name || c.name || '';
+    const semanticKey = `${courseName.trim().toLowerCase()}-${c.academic_year || ''}-${c.semester || ''}`;
+    const cloudId = cloudGPAMap.get(semanticKey);
+
+    return {
+      id: cloudId || String(c.id),  // reuse cloud ID if match found
+      user_id: userId,
+      name: courseName,
+      grade: c.grade || 'E',
+      score: parseFloat(c.score) || 0,
+      grade_point: parseFloat(c.gradePoint) || 0,
+      credit_hours: parseInt(c.creditHours || c.credit_hours, 10) || 3,
+      is_detailed: c.isDetailed || false,
+      exam_weight: parseFloat(c.examWeight) || 60,
+      exam_score: c.examScore || '',
+      assessments: c.assessments || [],
+      academic_year: c.academic_year || null,
+      semester: c.semester || null,
+      updated_at: new Date().toISOString(),
+    };
+  });
 
   const { error } = await supabase
     .from('user_gpa_courses')
@@ -608,18 +652,23 @@ export async function restoreFromCloud() {
   if (authError || !user) return { success: false, error: 'User not authenticated. Please restore lifecycle first.' };
 
   try {
-    // ── STEP 0: NUKE all local ucc_* data before restoring ──
+    // ── STEP 0: NUKE local DATA keys before restoring ──
     // Single-device model: restore = full replacement, not merge.
-    // This prevents zombie data (deleted courses resurrecting from cloud).
+    // PRESERVE identity keys (device_id, user_id, linked_device) so the app
+    // doesn't generate a new identity after restore.
+    const IDENTITY_KEYS = new Set([
+      'ucc_device_id', 'ucc_user_id', 'ucc_is_linked_device',
+      'ucc_last_sync', 'ucc_last_pull_time',
+    ]);
     const keysToWipe = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && key.startsWith('ucc_')) {
+      if (key && key.startsWith('ucc_') && !IDENTITY_KEYS.has(key)) {
         keysToWipe.push(key);
       }
     }
     keysToWipe.forEach(key => localStorage.removeItem(key));
-    console.log('[syncService] Wiped', keysToWipe.length, 'local keys before restore');
+    console.log('[syncService] Wiped', keysToWipe.length, 'data keys (preserved identity keys)');
 
     // ── STEP 1: Restore Settings & Profile ──
     const { data: settings } = await supabase
@@ -674,13 +723,53 @@ export async function restoreFromCloud() {
 
 const LAST_PULL_KEY = 'ucc_last_pull_time';
 
-export async function syncToCloud() {
+// ─── Safety Guard: Prevent empty local state from overwriting cloud ───
+async function getCloudCounts(userId) {
+  try {
+    const [tt, gpa] = await Promise.all([
+      supabase.from('user_timetable').select('id', { count: 'exact', head: true }).eq('user_id', userId).is('deleted_at', null),
+      supabase.from('user_gpa_courses').select('id', { count: 'exact', head: true }).eq('user_id', userId).is('deleted_at', null),
+    ]);
+    return {
+      timetable: tt.count || 0,
+      gpa: gpa.count || 0,
+    };
+  } catch {
+    return { timetable: 0, gpa: 0 };
+  }
+}
+
+export async function syncToCloud({ force = false } = {}) {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return { success: false, error: 'User not authenticated with PIN.' };
 
   const userId = user.id;
 
   try {
+    // ── SAFETY GUARD: Don't nuke cloud backup with empty local state ──
+    if (!force) {
+      const localTimetable = JSON.parse(localStorage.getItem('ucc_timetable') || '[]');
+      const localGPA = JSON.parse(localStorage.getItem('ucc_gpa') || '[]');
+
+      // Guard 1: Both empty → definitely a new device, abort
+      if (localTimetable.length === 0 && localGPA.length === 0) {
+        console.log('[syncService] ABORT: Local data is empty. Won\'t overwrite cloud backup.');
+        return { success: false, error: 'Local data is empty. Restore from cloud first, or add some courses.' };
+      }
+
+      // Guard 2: Local has fewer courses than cloud → possible data loss, abort
+      const cloudCounts = await getCloudCounts(userId);
+      if (cloudCounts.timetable > localTimetable.length) {
+        console.log(`[syncService] ABORT: Local has ${localTimetable.length} timetable courses, cloud has ${cloudCounts.timetable}.`);
+        return {
+          success: false,
+          error: `Your cloud backup has ${cloudCounts.timetable} courses but this device only has ${localTimetable.length}. Restore from cloud first to avoid losing data.`,
+          cloudCounts,
+          localCounts: { timetable: localTimetable.length, gpa: localGPA.length },
+        };
+      }
+    }
+
     // 1. Sync Profile & Settings
     const profile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
     if (profile.name || profile.phone || profile.course) {
@@ -762,10 +851,19 @@ export async function bidirectionalSync() {
 }
 
 let syncTimeout = null;
-export function triggerBackgroundSync() {
+export function triggerBackgroundSync({ force = false } = {}) {
   if (syncTimeout) clearTimeout(syncTimeout);
-  syncTimeout = setTimeout(() => {
-    syncToCloud().catch(err => console.error("Background sync failed:", err));
+  syncTimeout = setTimeout(async () => {
+    try {
+      const result = await syncToCloud({ force });
+      if (!result.success && result.error) {
+        // Show guard warnings to the user via toast
+        const { toast } = await import('react-hot-toast');
+        toast.error(`Sync blocked: ${result.error}`, { duration: 6000 });
+      }
+    } catch (err) {
+      console.error("Background sync failed:", err);
+    }
   }, 5000);
 }
 
