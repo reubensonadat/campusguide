@@ -11,7 +11,7 @@ import { getUpcomingAcademicEvents } from '../data/academicCalendar';
 import { getCurrentSemesterInfo } from '../services/academicCalendarService';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { getTodayHoliday } from '../services/holidayService';
-import { syncToCloud, shouldSyncNow, shouldPullNow, bidirectionalSync } from '../services/syncService';
+import { syncToCloud, shouldSyncNow } from '../services/syncService';
 import { toast } from 'react-hot-toast';
 import { useDeviceId } from '../hooks/useDeviceId';
 
@@ -135,22 +135,22 @@ const renderWeatherSvg = (type, size = 14, className = '') => {
   const props = { width: size, height: size, className, viewBox: '0 0 256 256', fill: 'currentColor' };
   switch (type) {
     case 'sunny':
-      return <svg {...props}><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></svg>;
+      return <svg {...props}><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z" /></svg>;
     case 'cloudy':
-      return <svg {...props}><path d="M160,40A88.09,88.09,0,0,0,81.29,88.67,64,64,0,1,0,72,216h88a88,88,0,0,0,0-176Zm0,160H72a48,48,0,0,1,0-96c1.1,0,2.2,0,3.29.11A88,88,0,0,0,72,128a8,8,0,0,0,16,0,72,72,0,1,1,72,72Z"/></svg>;
+      return <svg {...props}><path d="M160,40A88.09,88.09,0,0,0,81.29,88.67,64,64,0,1,0,72,216h88a88,88,0,0,0,0-176Zm0,160H72a48,48,0,0,1,0-96c1.1,0,2.2,0,3.29.11A88,88,0,0,0,72,128a8,8,0,0,0,16,0,72,72,0,1,1,72,72Z" /></svg>;
     case 'rainy':
-      return <svg {...props}><path d="M158.66,196.44l-32,48a8,8,0,1,1-13.32-8.88l32-48a8,8,0,0,1,13.32,8.88ZM232,92a76.08,76.08,0,0,1-76,76H132.28l-29.62,44.44a8,8,0,1,1-13.32-8.88L113.05,168H76A52,52,0,0,1,76,64a53.26,53.26,0,0,1,8.92.76A76.08,76.08,0,0,1,232,92Zm-16,0A60.06,60.06,0,0,0,96,88.46a8,8,0,0,1-16-.92q.21-3.66.77-7.23A38.11,38.11,0,0,0,76,80a36,36,0,0,0,0,72h80A60.07,60.07,0,0,0,216,92Z"/></svg>;
+      return <svg {...props}><path d="M158.66,196.44l-32,48a8,8,0,1,1-13.32-8.88l32-48a8,8,0,0,1,13.32,8.88ZM232,92a76.08,76.08,0,0,1-76,76H132.28l-29.62,44.44a8,8,0,1,1-13.32-8.88L113.05,168H76A52,52,0,0,1,76,64a53.26,53.26,0,0,1,8.92.76A76.08,76.08,0,0,1,232,92Zm-16,0A60.06,60.06,0,0,0,96,88.46a8,8,0,0,1-16-.92q.21-3.66.77-7.23A38.11,38.11,0,0,0,76,80a36,36,0,0,0,0,72h80A60.07,60.07,0,0,0,216,92Z" /></svg>;
     case 'cloudy-sun':
-      return <svg {...props}><path d="M164,72a76.2,76.2,0,0,0-20.26,2.73,55.63,55.63,0,0,0-9.41-11.54l9.51-13.57a8,8,0,1,0-13.11-9.18L121.22,54A55.9,55.9,0,0,0,96,48c-.58,0-1.16,0-1.74,0L91.37,31.71a8,8,0,1,0-15.75,2.77L78.5,50.82A56.1,56.1,0,0,0,55.23,65.67L41.61,56.14a8,8,0,1,0-9.17,13.11L46,78.77A55.55,55.55,0,0,0,40,104c0,.57,0,1.15,0,1.72L23.71,108.6a8,8,0,0,0,1.38,15.88,8.24,8.24,0,0,0,1.39-.12l16.32-2.88a55.74,55.74,0,0,0,5.86,12.42A52,52,0,0,0,84,224h80a76,76,0,0,0,0-152ZM56,104a40,40,0,0,1,72.54-23.24,76.26,76.26,0,0,0-35.62,40,52.14,52.14,0,0,0-31,4.17A40,40,0,0,1,56,104ZM164,208H84a36,36,0,1,1,4.78-71.69c-.37,2.37-.63,4.79-.77,7.23a8,8,0,0,0,16,.92,58.91,58.91,0,0,1,1.88-11.81c0-.16.09-.32.12-.48A60.06,60.06,0,1,1,164,208Z"/></svg>;
+      return <svg {...props}><path d="M164,72a76.2,76.2,0,0,0-20.26,2.73,55.63,55.63,0,0,0-9.41-11.54l9.51-13.57a8,8,0,1,0-13.11-9.18L121.22,54A55.9,55.9,0,0,0,96,48c-.58,0-1.16,0-1.74,0L91.37,31.71a8,8,0,1,0-15.75,2.77L78.5,50.82A56.1,56.1,0,0,0,55.23,65.67L41.61,56.14a8,8,0,1,0-9.17,13.11L46,78.77A55.55,55.55,0,0,0,40,104c0,.57,0,1.15,0,1.72L23.71,108.6a8,8,0,0,0,1.38,15.88,8.24,8.24,0,0,0,1.39-.12l16.32-2.88a55.74,55.74,0,0,0,5.86,12.42A52,52,0,0,0,84,224h80a76,76,0,0,0,0-152ZM56,104a40,40,0,0,1,72.54-23.24,76.26,76.26,0,0,0-35.62,40,52.14,52.14,0,0,0-31,4.17A40,40,0,0,1,56,104ZM164,208H84a36,36,0,1,1,4.78-71.69c-.37,2.37-.63,4.79-.77,7.23a8,8,0,0,0,16,.92,58.91,58.91,0,0,1,1.88-11.81c0-.16.09-.32.12-.48A60.06,60.06,0,1,1,164,208Z" /></svg>;
     default:
-      return <svg {...props}><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></svg>;
+      return <svg {...props}><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z" /></svg>;
   }
 };
 
 // Custom SVG library icon
 const LibrarySvg = ({ size = 16, className = '' }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}>
-    <path d="M231.65,194.55,198.46,36.75a16,16,0,0,0-19-12.39L132.65,34.42a16.08,16.08,0,0,0-12.3,19l33.19,157.8A16,16,0,0,0,169.16,224a16.25,16.25,0,0,0,3.38-.36l46.81-10.06A16.09,16.09,0,0,0,231.65,194.55ZM136,50.15c0-.06,0-.09,0-.09l46.8-10,3.33,15.87L139.33,66Zm6.62,31.47,46.82-10.05,3.34,15.9L146,97.53Zm6.64,31.57,46.82-10.06,13.3,63.24-46.82,10.06ZM216,197.94l-46.8,10-3.33-15.87L212.67,182,216,197.85C216,197.91,216,197.94,216,197.94ZM104,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32ZM56,48h48V64H56Zm0,32h48v96H56Zm48,128H56V192h48v16Z"/>
+    <path d="M231.65,194.55,198.46,36.75a16,16,0,0,0-19-12.39L132.65,34.42a16.08,16.08,0,0,0-12.3,19l33.19,157.8A16,16,0,0,0,169.16,224a16.25,16.25,0,0,0,3.38-.36l46.81-10.06A16.09,16.09,0,0,0,231.65,194.55ZM136,50.15c0-.06,0-.09,0-.09l46.8-10,3.33,15.87L139.33,66Zm6.62,31.47,46.82-10.05,3.34,15.9L146,97.53Zm6.64,31.57,46.82-10.06,13.3,63.24-46.82,10.06ZM216,197.94l-46.8,10-3.33-15.87L212.67,182,216,197.85C216,197.91,216,197.94,216,197.94ZM104,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32ZM56,48h48V64H56Zm0,32h48v96H56Zm48,128H56V192h48v16Z" />
   </svg>
 );
 
@@ -196,7 +196,7 @@ const Home = () => {
   const navigate = useNavigate();
   const { state, actions } = useAppContext();
   const [timetable] = useLocalStorage('ucc_timetable', []);
-  const [profile]    = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' });
+  const [profile] = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' });
   const [tasks, setTasks] = useLocalStorage('ucc_daily_tasks', []);
   const [reminders, setReminders] = useLocalStorage('ucc_reminders', []);
   const activeReminders = useMemo(() => {
@@ -369,25 +369,16 @@ const Home = () => {
 
   useEffect(() => {
     // Fire-and-forget: fetch today's holiday
-    getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => {});
+    getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => { });
 
     // Fire-and-forget: fetch semester info
-    getCurrentSemesterInfo().then(info => { if (info) setSemesterInfo(info); }).catch(() => {});
+    getCurrentSemesterInfo().then(info => { if (info) setSemesterInfo(info); }).catch(() => { });
 
-    // Fire-and-forget: cloud sync if 24h has passed
+    // Fire-and-forget: PUSH-ONLY cloud backup if 24h has passed
+    // No automatic pull — cross-device sync is manual via Settings "Restore"
     const runSync = async () => {
-      if (shouldPullNow()) {
-        // Linked device: push + pull for bidirectional sync
-        const syncToast = toast.loading('Syncing with your other device...');
-        const result = await bidirectionalSync().catch(() => ({ success: false }));
-        if (result.success) {
-          toast.success('Data synced from your other device!', { id: syncToast });
-        } else {
-          toast.dismiss(syncToast); // Silent fail — don't alarm user
-        }
-      } else if (shouldSyncNow()) {
-        // Normal device: just push local data up
-        syncToCloud(deviceId).catch(() => {});
+      if (shouldSyncNow()) {
+        syncToCloud(deviceId).catch(() => { });
       }
     };
     runSync();
@@ -431,9 +422,9 @@ const Home = () => {
 
   const suggestedClassTasks = useMemo(() => {
     return todaysClassesWithStatus.filter(cls => {
-        const classTitle = cls.courseName || cls.name || 'Class';
-        const expectedTitle = `Revise ${classTitle}`;
-        return !todaysTasks.some(t => t.title === expectedTitle);
+      const classTitle = cls.courseName || cls.name || 'Class';
+      const expectedTitle = `Revise ${classTitle}`;
+      return !todaysTasks.some(t => t.title === expectedTitle);
     });
   }, [todaysClassesWithStatus, todaysTasks]);
 
@@ -442,21 +433,21 @@ const Home = () => {
     const classTimeStr = cls.startTime || cls.time;
 
     if (classTimeStr) {
-        const [h, m] = classTimeStr.split(':').map(Number);
-        const newH = h - 1 < 0 ? 23 : h - 1; // 1 hour before
-        suggestedTime = `${String(newH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      const [h, m] = classTimeStr.split(':').map(Number);
+      const newH = h - 1 < 0 ? 23 : h - 1; // 1 hour before
+      suggestedTime = `${String(newH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
     const d = new Date();
     const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
     const newTask = {
-        id: Date.now().toString(),
-        title: `Revise ${cls.courseName || cls.name || 'Class'}`,
-        time: suggestedTime,
-        endTime: null,
-        icon: 'study',
-        status: 'pending',
-        date: todayStr
+      id: Date.now().toString(),
+      title: `Revise ${cls.courseName || cls.name || 'Class'}`,
+      time: suggestedTime,
+      endTime: null,
+      icon: 'study',
+      status: 'pending',
+      date: todayStr
     };
     setTasks([...tasks, newTask]);
   };
@@ -543,7 +534,7 @@ const Home = () => {
 
   // Derived: unread vs read community items
   const unreadItems = useMemo(() => recentUpdates.filter(item => !seenIds.has(String(item.id))), [recentUpdates, seenIds]);
-  const readItems   = useMemo(() => recentUpdates.filter(item => seenIds.has(String(item.id))), [recentUpdates, seenIds]);
+  const readItems = useMemo(() => recentUpdates.filter(item => seenIds.has(String(item.id))), [recentUpdates, seenIds]);
 
   // In-app notification context (must be before markAllAsRead)
   const { unreadCount, markAllAsRead: markAllInAppRead } = useNotifications();
@@ -824,10 +815,10 @@ const Home = () => {
   const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
 
   const quickActions = [
-    { title: 'Campus Map',  icon: Map,           action: () => navigate('/guide?topic=campus-map')          },
-    { title: 'Buy Data',    icon: Wifi,          action: () => window.open(AFFILIATE_URL, '_blank', 'noopener,noreferrer'), isAffiliate: true },
-    { title: 'Contact Us',  icon: MessageCircle, action: () => navigate('/contact')                         },
-    { title: 'Settings',    icon: Settings,      action: () => navigate('/settings')                        },
+    { title: 'Campus Map', icon: Map, action: () => navigate('/guide?topic=campus-map') },
+    { title: 'Buy Data', icon: Wifi, action: () => window.open(AFFILIATE_URL, '_blank', 'noopener,noreferrer'), isAffiliate: true },
+    { title: 'Contact Us', icon: MessageCircle, action: () => navigate('/contact') },
+    { title: 'Settings', icon: Settings, action: () => navigate('/settings') },
   ];
 
   // ── Streak badge component (reused in mobile + desktop) ────────────────
@@ -835,21 +826,21 @@ const Home = () => {
     if (streakData.count < 1) return null;
 
     const tierStyles = {
-      starting:   { bg: 'bg-white/10', border: 'border-white/10', text: 'text-white/70', flame: 'text-orange-400' },
-      building:   { bg: 'bg-white/10', border: 'border-white/10', text: 'text-white/80', flame: 'text-orange-400' },
-      established:{ bg: 'bg-orange-500/15', border: 'border-orange-500/20', text: 'text-orange-300', flame: 'text-orange-400' },
-      committed:  { bg: 'bg-orange-500/20', border: 'border-orange-500/25', text: 'text-orange-200', flame: 'text-orange-300' },
-      legendary:  { bg: 'bg-amber-500/20', border: 'border-amber-400/30', text: 'text-amber-200', flame: 'text-amber-300' },
+      starting: { bg: 'bg-white/10', border: 'border-white/10', text: 'text-white/70', flame: 'text-orange-400' },
+      building: { bg: 'bg-white/10', border: 'border-white/10', text: 'text-white/80', flame: 'text-orange-400' },
+      established: { bg: 'bg-orange-500/15', border: 'border-orange-500/20', text: 'text-orange-300', flame: 'text-orange-400' },
+      committed: { bg: 'bg-orange-500/20', border: 'border-orange-500/25', text: 'text-orange-200', flame: 'text-orange-300' },
+      legendary: { bg: 'bg-amber-500/20', border: 'border-amber-400/30', text: 'text-amber-200', flame: 'text-amber-300' },
     };
     const s = tierStyles[streakTier] || tierStyles.starting;
 
     if (variant === 'desktop') {
       const desktopStyles = {
-        starting:   { bg: 'bg-gray-100', border: 'border-gray-200', text: 'text-gray-600', flame: 'text-orange-500' },
-        building:   { bg: 'bg-gray-100', border: 'border-gray-200', text: 'text-gray-700', flame: 'text-orange-500' },
-        established:{ bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', flame: 'text-orange-500' },
-        committed:  { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-800', flame: 'text-orange-600' },
-        legendary:  { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-800', flame: 'text-amber-600' },
+        starting: { bg: 'bg-gray-100', border: 'border-gray-200', text: 'text-gray-600', flame: 'text-orange-500' },
+        building: { bg: 'bg-gray-100', border: 'border-gray-200', text: 'text-gray-700', flame: 'text-orange-500' },
+        established: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', flame: 'text-orange-500' },
+        committed: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-800', flame: 'text-orange-600' },
+        legendary: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-800', flame: 'text-amber-600' },
       };
       const ds = desktopStyles[streakTier] || desktopStyles.starting;
       return (
@@ -952,7 +943,7 @@ const Home = () => {
               const WidgetCard = ({ id, icon: Icon, title, shortText, expandedContent }) => {
                 const isExpanded = expandedWidget === id || activeWidgets.length === 1;
                 return (
-                  <div 
+                  <div
                     onClick={() => {
                       if (activeWidgets.length > 1) {
                         setExpandedWidget(isExpanded ? null : id);
@@ -1256,14 +1247,13 @@ const Home = () => {
               <div className="space-y-3">
                 {todaysClassesWithStatus.slice(0, 3).map((cls, i) => (
                   <div key={i} className={`flex items-center gap-4 transition-opacity ${cls.status === 'completed' ? 'opacity-40' : 'opacity-100'}`}>
-                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                        cls.status === 'completed' ? 'bg-gray-100' :
-                        cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' :
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${cls.status === 'completed' ? 'bg-gray-100' :
+                      cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' :
                         'bg-[#002F45]/5'
-                    }`}>
+                      }`}>
                       {cls.status === 'completed' ? <CheckCircle2 size={16} className="text-gray-400" /> :
-                       cls.status === 'ongoing' ? <Loader2 size={16} className="text-blue-600 animate-spin" /> :
-                       <Clock size={16} className="text-[#002F45]" />}
+                        cls.status === 'ongoing' ? <Loader2 size={16} className="text-blue-600 animate-spin" /> :
+                          <Clock size={16} className="text-[#002F45]" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-bold truncate ${cls.status === 'completed' ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
@@ -1271,15 +1261,15 @@ const Home = () => {
                       </p>
                       <p className={`text-xs font-medium mt-0.5 flex flex-wrap items-center gap-1 ${cls.status === 'ongoing' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
                         <span>
-                            {cls.status === 'ongoing' ? 'Happening Now • ' : ''}
-                            {cls.status === 'completed' ? 'Completed • ' : ''}
-                            {cls.status === 'upcoming' && cls.timeUntilStr ? <span className="text-orange-500 font-bold">{cls.timeUntilStr} • </span> : ''}
-                            {cls.startTime && cls.endTime ? `${formatTime12Hour(cls.startTime)} – ${formatTime12Hour(cls.endTime)}` : formatTime12Hour(cls.startTime) || ''}
+                          {cls.status === 'ongoing' ? 'Happening Now • ' : ''}
+                          {cls.status === 'completed' ? 'Completed • ' : ''}
+                          {cls.status === 'upcoming' && cls.timeUntilStr ? <span className="text-orange-500 font-bold">{cls.timeUntilStr} • </span> : ''}
+                          {cls.startTime && cls.endTime ? `${formatTime12Hour(cls.startTime)} – ${formatTime12Hour(cls.endTime)}` : formatTime12Hour(cls.startTime) || ''}
                         </span>
                         {cls.location && (
-                            <span className="flex items-center gap-0.5 font-bold opacity-90">
-                                • <CustomMapPin className="w-2.5 h-2.5" /> {cls.location}
-                            </span>
+                          <span className="flex items-center gap-0.5 font-bold opacity-90">
+                            • <CustomMapPin className="w-2.5 h-2.5" /> {cls.location}
+                          </span>
                         )}
                       </p>
                     </div>
@@ -1341,24 +1331,24 @@ const Home = () => {
             {todaysTasks.length === 0 && urgentDeadlines.length === 0 ? (
               suggestedClassTasks.length > 0 ? (
                 <div className="flex flex-col gap-2">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Suggested Task</p>
-                    <div className="flex items-center justify-between py-2 bg-primary-50 p-4 rounded-xl border border-primary-100">
-                        <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0">
-                              <BookOpen size={16} />
-                           </div>
-                           <div className="min-w-0 pr-2">
-                              <p className="text-sm font-bold text-slate-800 break-words leading-tight">Revise {suggestedClassTasks[0].courseName || suggestedClassTasks[0].name || 'Class'}</p>
-                              <p className="text-xs text-slate-500 mt-0.5 font-medium truncate">Before class</p>
-                           </div>
-                        </div>
-                        <button
-                            onClick={() => handleAddSuggestion(suggestedClassTasks[0])}
-                            className="bg-white border border-primary-200 text-primary-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-primary-50 transition-all flex items-center gap-1 flex-shrink-0"
-                        >
-                            <Plus size={14} /> Add
-                        </button>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Suggested Task</p>
+                  <div className="flex items-center justify-between py-2 bg-primary-50 p-4 rounded-xl border border-primary-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0">
+                        <BookOpen size={16} />
+                      </div>
+                      <div className="min-w-0 pr-2">
+                        <p className="text-sm font-bold text-slate-800 break-words leading-tight">Revise {suggestedClassTasks[0].courseName || suggestedClassTasks[0].name || 'Class'}</p>
+                        <p className="text-xs text-slate-500 mt-0.5 font-medium truncate">Before class</p>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => handleAddSuggestion(suggestedClassTasks[0])}
+                      className="bg-white border border-primary-200 text-primary-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-primary-50 transition-all flex items-center gap-1 flex-shrink-0"
+                    >
+                      <Plus size={14} /> Add
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="flex items-center justify-between py-2 bg-slate-50 p-4 rounded-xl border border-slate-100 border-dashed">
@@ -1383,16 +1373,15 @@ const Home = () => {
                     <div key={task.id} className={`flex items-center gap-3 p-2 -mx-2 rounded-xl transition-all hover:bg-slate-50 ${isCompleted ? 'opacity-60' : 'opacity-100'}`}>
                       {/* Interactive Checkbox */}
                       <button
-                          onClick={() => toggleTaskStatus(task.id)}
-                          className="flex-shrink-0 text-slate-300 hover:text-primary-600 transition-colors p-1"
+                        onClick={() => toggleTaskStatus(task.id)}
+                        className="flex-shrink-0 text-slate-300 hover:text-primary-600 transition-colors p-1"
                       >
-                          {isCompleted ? <CheckCircle2 size={22} className="text-primary-500" /> : <Circle size={22} />}
+                        {isCompleted ? <CheckCircle2 size={22} className="text-primary-500" /> : <Circle size={22} />}
                       </button>
 
                       {/* Icon Block */}
                       <div
-                          className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${
-                              isCompleted ? 'bg-slate-100 text-slate-400' : 'bg-primary-50 text-primary-600 shadow-sm border border-primary-100/50'
+                        className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${isCompleted ? 'bg-slate-100 text-slate-400' : 'bg-primary-50 text-primary-600 shadow-sm border border-primary-100/50'
                           }`}
                       >
                         <IconCmp size={18} />
@@ -1412,20 +1401,20 @@ const Home = () => {
                       {/* Play Button */}
                       {!isCompleted && (
                         <button
-                            onClick={(e) => { e.stopPropagation(); setActiveTask(task); }}
-                            className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-colors ml-auto flex-shrink-0"
-                            title="Start Focus Timer"
+                          onClick={(e) => { e.stopPropagation(); setActiveTask(task); }}
+                          className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-colors ml-auto flex-shrink-0"
+                          title="Start Focus Timer"
                         >
-                            <Play size={18} className="fill-current" />
+                          <Play size={18} className="fill-current" />
                         </button>
                       )}
                     </div>
                   );
                 })}
                 {todaysTasks.length > 3 && (
-                    <button onClick={() => navigate('/tools/plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
-                        +{todaysTasks.length - 3} more tasks
-                    </button>
+                  <button onClick={() => navigate('/tools/plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
+                    +{todaysTasks.length - 3} more tasks
+                  </button>
                 )}
               </div>
             )}
@@ -1444,7 +1433,7 @@ const Home = () => {
                 {thisWeekDeadlines.map(a => {
                   const todayStr = new Date().toISOString().split('T')[0];
                   const d = new Date(a.dueDate + 'T12:00:00');
-                  const today = new Date(); today.setHours(0,0,0,0);
+                  const today = new Date(); today.setHours(0, 0, 0, 0);
                   const diffDays = Math.round((d - today) / 86400000);
                   let dayLabel = '';
                   if (diffDays === 1) dayLabel = 'Tomorrow';
@@ -1452,11 +1441,10 @@ const Home = () => {
 
                   return (
                     <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl bg-amber-50/50 border border-amber-100/60">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        a.priority === 'high' ? 'bg-red-100 text-red-600' :
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${a.priority === 'high' ? 'bg-red-100 text-red-600' :
                         a.priority === 'medium' ? 'bg-amber-100 text-amber-600' :
-                        'bg-blue-100 text-blue-600'
-                      }`}>
+                          'bg-blue-100 text-blue-600'
+                        }`}>
                         <FileText size={14} />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -1489,11 +1477,10 @@ const Home = () => {
                 <span className="text-sm font-black text-gray-900 tracking-tight">Sam Jonah Library</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                  libraryStatus.isOpen
-                    ? 'bg-green-50 text-green-700 border border-green-100'
-                    : 'bg-red-50 text-red-600 border border-red-100'
-                }`}>
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${libraryStatus.isOpen
+                  ? 'bg-green-50 text-green-700 border border-green-100'
+                  : 'bg-red-50 text-red-600 border border-red-100'
+                  }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${libraryStatus.isOpen ? 'bg-green-500 animate-pulse' : 'bg-red-400'}`}></span>
                   {libraryStatus.label}
                 </span>
@@ -1623,26 +1610,26 @@ const Home = () => {
             let link = '';
 
             if (isAd) {
-                let cleanPhone = d.phone_number ? d.phone_number.toString().replace(/\D/g, '') : '';
-                if (cleanPhone.startsWith('0')) {
-                    cleanPhone = '233' + cleanPhone.slice(1);
-                } else if (!cleanPhone.startsWith('233') && cleanPhone.length === 9) {
-                    cleanPhone = '233' + cleanPhone;
-                }
+              let cleanPhone = d.phone_number ? d.phone_number.toString().replace(/\D/g, '') : '';
+              if (cleanPhone.startsWith('0')) {
+                cleanPhone = '233' + cleanPhone.slice(1);
+              } else if (!cleanPhone.startsWith('233') && cleanPhone.length === 9) {
+                cleanPhone = '233' + cleanPhone;
+              }
 
-                if (d.contact_method === 'link' && d.contact_url) {
-                    actionText = d.action_text || 'Visit Link';
-                    link = d.contact_url;
-                } else if (d.contact_method === 'phone' && cleanPhone) {
-                    actionText = d.action_text || 'Call Now';
-                    link = `tel:+${cleanPhone}`;
-                } else if (cleanPhone) {
-                    actionText = d.action_text || 'Message via WhatsApp';
-                    link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
-                }
-            } else {
+              if (d.contact_method === 'link' && d.contact_url) {
                 actionText = d.action_text || 'Visit Link';
-                link = d.action_link || '';
+                link = d.contact_url;
+              } else if (d.contact_method === 'phone' && cleanPhone) {
+                actionText = d.action_text || 'Call Now';
+                link = `tel:+${cleanPhone}`;
+              } else if (cleanPhone) {
+                actionText = d.action_text || 'Message via WhatsApp';
+                link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
+              }
+            } else {
+              actionText = d.action_text || 'Visit Link';
+              link = d.action_link || '';
             }
 
             return (
@@ -1918,32 +1905,32 @@ const Home = () => {
 
       {/* Pomodoro Focus Timer Overlay */}
       {activeTask && (
-          <FocusTimer
-              task={activeTask}
-              onComplete={(id) => {
-                  if (activeTask.isClassStudy) {
-                      const d = new Date();
-                      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                      const newTask = {
-                          id: Date.now().toString(),
-                          title: activeTask.title,
-                          time: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
-                          date: dateStr,
-                          icon: 'study',
-                          status: 'completed'
-                      };
-                      setTasks([...tasks, newTask]);
-                  } else {
-                      toggleTaskStatus(id, true);
-                  }
-                  setActiveTask(null);
-              }}
-              onCancel={() => setActiveTask(null)}
-          />
+        <FocusTimer
+          task={activeTask}
+          onComplete={(id) => {
+            if (activeTask.isClassStudy) {
+              const d = new Date();
+              const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+              const newTask = {
+                id: Date.now().toString(),
+                title: activeTask.title,
+                time: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
+                date: dateStr,
+                icon: 'study',
+                status: 'completed'
+              };
+              setTasks([...tasks, newTask]);
+            } else {
+              toggleTaskStatus(id, true);
+            }
+            setActiveTask(null);
+          }}
+          onCancel={() => setActiveTask(null)}
+        />
       )}
 
       {/* 🧭 Coach Marks Walkthrough */}
-      <CoachMarksOverlay 
+      <CoachMarksOverlay
         storageKey="ucc_coach_home"
         steps={HOME_COACH_STEPS}
       />

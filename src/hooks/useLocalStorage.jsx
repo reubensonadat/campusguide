@@ -22,14 +22,9 @@ export const useLocalStorage = (key, initialValue) => {
       setStoredValue(prev => {
         const valueToStore = value instanceof Function ? value(prev) : value;
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
-        
-        // Trigger non-blocking cloud sync on every local storage update
-        if (key.startsWith('ucc_')) {
-          import('../services/syncService').then(({ triggerBackgroundSync }) => {
-            triggerBackgroundSync();
-          }).catch(console.error);
-        }
-        
+        // NOTE: Cloud sync removed from here. It was causing infinite loops:
+        // setCourses() → triggerBackgroundSync() → syncToCloud() → state updates → loop.
+        // Sync is now MANUAL only — triggered explicitly from Settings/Profile.
         return valueToStore;
       });
     } catch (error) {
@@ -45,4 +40,4 @@ export const useLocalStorage = (key, initialValue) => {
   return [storedValue, setValue];
 };
 
-export default useLocalStorage;
+export default useLocalStorage;

@@ -608,7 +608,20 @@ export async function restoreFromCloud() {
   if (authError || !user) return { success: false, error: 'User not authenticated. Please restore lifecycle first.' };
 
   try {
-    // 1. Restore Settings & Profile
+    // ── STEP 0: NUKE all local ucc_* data before restoring ──
+    // Single-device model: restore = full replacement, not merge.
+    // This prevents zombie data (deleted courses resurrecting from cloud).
+    const keysToWipe = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('ucc_')) {
+        keysToWipe.push(key);
+      }
+    }
+    keysToWipe.forEach(key => localStorage.removeItem(key));
+    console.log('[syncService] Wiped', keysToWipe.length, 'local keys before restore');
+
+    // ── STEP 1: Restore Settings & Profile ──
     const { data: settings } = await supabase
       .from('user_settings')
       .select('*')
@@ -616,8 +629,7 @@ export async function restoreFromCloud() {
 
     if (settings) {
       if (settings.profile && Object.keys(settings.profile).length > 0) {
-        const existingProfile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
-        localStorage.setItem('ucc_profile', JSON.stringify({ ...existingProfile, ...settings.profile }));
+        localStorage.setItem('ucc_profile', JSON.stringify(settings.profile));
       }
       if (settings.home_widgets && Object.keys(settings.home_widgets).length > 0) {
         localStorage.setItem('ucc_home_widgets', JSON.stringify(settings.home_widgets));
@@ -626,23 +638,23 @@ export async function restoreFromCloud() {
 
     const { data: userProfile } = await supabase.from('users').select('*').single();
     if (userProfile) {
-      const existingProfile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
-      const mergedProfile = { ...existingProfile };
-      if (userProfile.name) mergedProfile.name = userProfile.name;
-      if (userProfile.phone_number) mergedProfile.phone = userProfile.phone_number;
-      if (userProfile.course) mergedProfile.course = userProfile.course;
-      if (userProfile.level) mergedProfile.level = userProfile.level;
-      localStorage.setItem('ucc_profile', JSON.stringify(mergedProfile));
+      const profile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
+      if (userProfile.name) profile.name = userProfile.name;
+      if (userProfile.phone_number) profile.phone = userProfile.phone_number;
+      if (userProfile.course) profile.course = userProfile.course;
+      if (userProfile.level) profile.level = userProfile.level;
+      if (userProfile.current_semester) profile.semester = userProfile.current_semester;
+      localStorage.setItem('ucc_profile', JSON.stringify(profile));
     }
 
-    // 2. Pull everything else
+    // ── STEP 2: Pull everything else (clean slate, no merge conflicts) ──
     await pullTimetableFromCloud();
     await pullAssignmentsFromCloud();
     await pullGPAFromCloud();
     await pullTasksFromCloud();
     await pullBudgetFromCloud();
 
-    // 3. Restore Notes
+    // ── STEP 3: Restore Notes ──
     const { data: notes } = await supabase
       .from('user_notes')
       .select('content')
