@@ -72,6 +72,8 @@ function AppContent() {
         notifyButton: {
           enable: false, // We will use our own custom toggle in Settings
         },
+      }).catch(err => {
+        console.warn("OneSignal initialization failed (likely Web Push not configured in dashboard yet):", err);
       });
     }
   }, []);

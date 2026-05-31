@@ -11,7 +11,7 @@ import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import { CourseCombobox } from '../components/common/CourseCombobox';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
-import { ArrowLeft, LayoutGrid, Store } from 'lucide-react';
+import { ArrowLeft, LayoutGrid, Store, RefreshCw } from 'lucide-react';
 import { CustomCoach } from '../components/common/CustomIcons';
 import {
   Trash2,
