@@ -5,7 +5,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
-import { CustomGuide } from '../components/common/CustomIcons';
+import { CustomGuide, CustomNavigation } from '../components/common/CustomIcons';
 
 const AdminDashboard = () => {
     const [isAuthenticated, setIsAuthenticated] = useLocalStorage('ucc_admin_auth', false);
@@ -632,11 +632,11 @@ const AdminDashboard = () => {
                         </div>
 
                         {/* Sub-tabs */}
-                        <div className="flex gap-2 border-b border-gray-200 pb-2">
+                        <div className="flex gap-2 border-b border-gray-200 pb-2 overflow-x-auto custom-scrollbar whitespace-nowrap">
                             {[
-                                { key: 'buildings', label: 'Buildings', icon: MapPin, count: campusBuildings.length },
-                                { key: 'knowledge', label: 'Knowledge', icon: BookOpen, count: campusKnowledge.length },
-                                { key: 'guide-cards', label: 'Guide Cards', icon: FileText, count: campusGuideCards.length },
+                                { key: 'buildings', label: 'Buildings', icon: CustomNavigation, count: campusBuildings.length },
+                                { key: 'knowledge', label: 'Knowledge', icon: CustomGuide, count: campusKnowledge.length },
+                                { key: 'guide-cards', label: 'Guide Cards', icon: CustomGuide, count: campusGuideCards.length },
                             ].map(sub => (
                                 <button key={sub.key} onClick={() => setCampusDataTab(sub.key)} className={`flex items-center gap-2 px-4 py-2 rounded-t-xl font-bold text-sm transition-colors ${campusDataTab === sub.key ? 'bg-primary-50 text-primary-700 border-b-2 border-primary-600' : 'text-gray-500 hover:bg-gray-50'}`}>
                                     <sub.icon size={16} /> {sub.label}
@@ -714,14 +714,14 @@ const AdminDashboard = () => {
                                             <p className="text-xs text-gray-500 truncate">{b.description}</p>
                                             <p className="text-[10px] text-gray-400 font-mono mt-1">{b.latitude}, {b.longitude}</p>
                                         </div>
-                                        <div className="flex gap-2 shrink-0">
-                                            <button onClick={() => handleToggleActive(b.id, b.is_active)} className={`p-2 rounded-lg ${b.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>
+                                        <div className="flex gap-2 shrink-0 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-100 justify-end md:justify-start">
+                                            <button onClick={() => handleToggleActive(b.id, b.is_active)} className={`flex-1 md:flex-none flex justify-center items-center p-2 rounded-lg ${b.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>
                                                 {b.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
                                             </button>
-                                            <button onClick={() => { setEditingItem(b); setEditForm({ ...b }); }} className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg">
+                                            <button onClick={() => { setEditingItem(b); setEditForm({ ...b }); }} className="flex-1 md:flex-none flex justify-center items-center p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg">
                                                 <Edit3 size={16} />
                                             </button>
-                                            <button onClick={() => handleCampusDataDelete(b.id)} className="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg">
+                                            <button onClick={() => handleCampusDataDelete(b.id)} className="flex-1 md:flex-none flex justify-center items-center p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg">
                                                 <Trash2 size={16} />
                                             </button>
                                         </div>
@@ -744,14 +744,14 @@ const AdminDashboard = () => {
                                             <p className="text-xs text-gray-500 line-clamp-2">{k.history || k.architecture || 'No description'}</p>
                                             {k.tags && <div className="flex gap-1 mt-1">{k.tags.map(t => <span key={t} className="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{t}</span>)}</div>}
                                         </div>
-                                        <div className="flex gap-2 shrink-0">
-                                            <button onClick={() => handleToggleActive(k.id, k.is_active)} className={`p-2 rounded-lg ${k.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>
+                                        <div className="flex gap-2 shrink-0 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-100 justify-end md:justify-start">
+                                            <button onClick={() => handleToggleActive(k.id, k.is_active)} className={`flex-1 md:flex-none flex justify-center items-center p-2 rounded-lg ${k.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>
                                                 {k.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
                                             </button>
-                                            <button onClick={() => { setEditingItem(k); setEditForm({ ...k }); }} className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg">
+                                            <button onClick={() => { setEditingItem(k); setEditForm({ ...k }); }} className="flex-1 md:flex-none flex justify-center items-center p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg">
                                                 <Edit3 size={16} />
                                             </button>
-                                            <button onClick={() => handleCampusDataDelete(k.id)} className="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg">
+                                            <button onClick={() => handleCampusDataDelete(k.id)} className="flex-1 md:flex-none flex justify-center items-center p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg">
                                                 <Trash2 size={16} />
                                             </button>
                                         </div>
@@ -774,14 +774,14 @@ const AdminDashboard = () => {
                                             <p className="text-xs text-gray-500 line-clamp-1">{c.subtitle}</p>
                                             <p className="text-[10px] text-gray-400 mt-1">{c.content?.length || 0} sections • Sort: {c.sort_order}</p>
                                         </div>
-                                        <div className="flex gap-2 shrink-0">
-                                            <button onClick={() => handleToggleActive(c.id, c.is_active)} className={`p-2 rounded-lg ${c.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>
+                                        <div className="flex gap-2 shrink-0 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-100 justify-end md:justify-start">
+                                            <button onClick={() => handleToggleActive(c.id, c.is_active)} className={`flex-1 md:flex-none flex justify-center items-center p-2 rounded-lg ${c.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>
                                                 {c.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
                                             </button>
-                                            <button onClick={() => { setEditingItem(c); setEditForm({ ...c }); }} className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg">
+                                            <button onClick={() => { setEditingItem(c); setEditForm({ ...c }); }} className="flex-1 md:flex-none flex justify-center items-center p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg">
                                                 <Edit3 size={16} />
                                             </button>
-                                            <button onClick={() => handleCampusDataDelete(c.id)} className="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg">
+                                            <button onClick={() => handleCampusDataDelete(c.id)} className="flex-1 md:flex-none flex justify-center items-center p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg">
                                                 <Trash2 size={16} />
                                             </button>
                                         </div>

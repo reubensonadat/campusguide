@@ -73,21 +73,6 @@ export const fetchGhanaHolidays = async (year = new Date().getFullYear()) => {
     localStorage.setItem(HOLIDAY_CACHE_KEY, JSON.stringify(holidays));
     localStorage.setItem(HOLIDAY_CACHE_YEAR_KEY, String(year));
 
-    // Cache in Supabase (fire-and-forget)
-    const rows = holidays.map(h => ({
-      id: `${year}-${h.date}`,
-      year: year,
-      date: h.date,
-      name: h.name,
-      local_name: h.localName,
-      type: h.type,
-    }));
-    
-    supabase
-      .from('ghana_holidays')
-      .upsert(rows, { onConflict: 'id' })
-      .then(() => {}) // fire-and-forget
-      .catch(() => {}); // ignore errors
 
     return holidays;
   } catch (error) {

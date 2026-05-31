@@ -30,7 +30,17 @@ export const DEFAULT_HOME_WIDGETS = {
   calendar: false,
   weather: true,
   library: false,
-  quickNote: true
+  quickNote: true,
+  verse: false,
+  forex: false,
+  football: false,
+  crypto: false,
+  news: false,
+  quote: false,
+  joke: false,
+  fact: false,
+  github: false,
+  word: false
 };
 
 // Grade points for GPA calculation
