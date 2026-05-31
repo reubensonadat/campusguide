@@ -659,6 +659,11 @@ export async function restoreFromCloud() {
     const IDENTITY_KEYS = new Set([
       'ucc_device_id', 'ucc_user_id', 'ucc_is_linked_device',
       'ucc_last_sync', 'ucc_last_pull_time',
+      // Coach marks — user already saw the tutorials, don't reset them
+      'ucc_coach_home', 'ucc_coach_map', 'ucc_coach_tools',
+      'ucc_coach_community', 'ucc_coach_profile',
+      // Onboarding state — don't force user through first-visit flow again
+      'ucc_first_visit', 'ucc_guide_completion',
     ]);
     const keysToWipe = [];
     for (let i = 0; i < localStorage.length; i++) {
