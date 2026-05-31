@@ -5,6 +5,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { updatePin, restoreLifecycle } from '../services/authService';
 import { restoreFromCloud } from '../services/syncService';
+import OneSignal from 'react-onesignal';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
@@ -165,6 +166,31 @@ const Settings = () => {
   const [restorePin, setRestorePin] = useState('');
   const [isRestoring, setIsRestoring] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useLocalStorage('ucc_notifications_enabled', true);
+  const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
+
+  useEffect(() => {
+    if (OneSignal.initialized) {
+      setSystemNotificationsEnabled(OneSignal.User.PushSubscription.optedIn);
+    }
+  }, []);
+
+  const handleToggleSystemNotifications = async () => {
+    if (!OneSignal.initialized) {
+      toast.error('Notification system not initialized yet');
+      return;
+    }
+    
+    if (systemNotificationsEnabled) {
+      OneSignal.User.PushSubscription.optOut();
+      setSystemNotificationsEnabled(false);
+      toast.success('System notifications disabled');
+    } else {
+      await OneSignal.Notifications.requestPermission();
+      OneSignal.User.PushSubscription.optIn();
+      setSystemNotificationsEnabled(true);
+      toast.success('System notifications enabled!');
+    }
+  };
 
   // GPA Vault Lock States
   const [isGpaLocked, setIsGpaLocked] = useLocalStorage('ucc_gpa_vault_locked', false);
@@ -481,6 +507,26 @@ const Settings = () => {
               >
                 <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
                   notificationsEnabled ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
+
+            <div className="w-full flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
+              <div className="flex items-center gap-4">
+                <Smartphone size={20} className="text-gray-700" strokeWidth={1.5} />
+                <div>
+                  <span className="text-[15px] text-gray-900 font-bold block leading-tight">System Push Notifications</span>
+                  <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Class reminders when app is closed</span>
+                </div>
+              </div>
+              <button
+                onClick={handleToggleSystemNotifications}
+                className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${
+                  systemNotificationsEnabled ? 'bg-[#002F45]' : 'bg-gray-200'
+                }`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                  systemNotificationsEnabled ? 'translate-x-5' : 'translate-x-0'
                 }`} />
               </button>
             </div>

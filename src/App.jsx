@@ -1,5 +1,5 @@
-// src/App.jsx
 import React, { useEffect, useState, lazy, Suspense } from 'react';
+import OneSignal from 'react-onesignal';
 import { DataLoader } from './components/common/CustomLoaders';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
@@ -58,6 +58,24 @@ function NavigationObserver() {
 
 function AppContent() {
   const { selectedCampusId } = useCampus();
+  
+  // Initialize OneSignal
+  useEffect(() => {
+    // Replace this with your actual OneSignal App ID
+    const ONESIGNAL_APP_ID = "03f1b792-2236-43d1-8df3-dccdfc04b5cd";
+    
+    // Only initialize if we have an ID and it hasn't been initialized yet
+    if (ONESIGNAL_APP_ID !== "YOUR_ONESIGNAL_APP_ID_HERE" && !OneSignal.initialized) {
+      OneSignal.init({
+        appId: ONESIGNAL_APP_ID,
+        allowLocalhostAsSecureOrigin: true, // Needed for local testing
+        notifyButton: {
+          enable: false, // We will use our own custom toggle in Settings
+        },
+      });
+    }
+  }, []);
+
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
   const { resetTimer } = useSupportTimer();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);

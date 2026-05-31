@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import OneSignal from 'react-onesignal';
 
 const DOMAIN = '@campusguide.app';
 
@@ -42,6 +43,11 @@ export const secureDevice = async (deviceId, pin) => {
 
       // Persist the Auth UUID so thrift and other services can query by user_id
       localStorage.setItem('ucc_user_id', data.user.id);
+      
+      // Link this device to the OneSignal user record using Supabase ID
+      if (OneSignal.initialized) {
+        OneSignal.login(data.user.id).catch(console.error);
+      }
     }
 
     return { success: true, user: data.user };
@@ -75,6 +81,11 @@ export const restoreLifecycle = async (oldDeviceId, pin) => {
     localStorage.setItem('ucc_device_id', oldDeviceId.toUpperCase());
     // Persist the Auth UUID so thrift and other services can query by user_id
     localStorage.setItem('ucc_user_id', data.user.id);
+
+    // Link this device to the OneSignal user record using Supabase ID
+    if (OneSignal.initialized) {
+      OneSignal.login(data.user.id).catch(console.error);
+    }
 
     return { success: true, user: data.user };
   } catch (error) {
