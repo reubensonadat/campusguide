@@ -65,7 +65,8 @@ function AppContent() {
     const ONESIGNAL_APP_ID = "03f1b792-2236-43d1-8df3-dccdfc04b5cd";
     
     // Only initialize if we have an ID and it hasn't been initialized yet
-    if (ONESIGNAL_APP_ID !== "YOUR_ONESIGNAL_APP_ID_HERE" && !OneSignal.initialized) {
+    if (ONESIGNAL_APP_ID !== "YOUR_ONESIGNAL_APP_ID_HERE" && !isOneSignalInitialized) {
+      isOneSignalInitialized = true;
       OneSignal.init({
         appId: ONESIGNAL_APP_ID,
         allowLocalhostAsSecureOrigin: true, // Needed for local testing
@@ -184,6 +185,8 @@ function AppContent() {
     </div>
   );
 }
+
+let isOneSignalInitialized = false;
 
 function App() {
   return (

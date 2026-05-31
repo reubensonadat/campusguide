@@ -175,24 +175,23 @@ const Settings = () => {
   }, []);
 
   const handleToggleSystemNotifications = async () => {
-    if (!OneSignal.initialized) {
+    try {
+      if (systemNotificationsEnabled) {
+        OneSignal.User.PushSubscription.optOut();
+        setSystemNotificationsEnabled(false);
+        toast.success('System notifications disabled');
+      } else {
+        await OneSignal.Notifications.requestPermission();
+        OneSignal.User.PushSubscription.optIn();
+        setSystemNotificationsEnabled(true);
+        toast.success('System notifications enabled!');
+      }
+    } catch (e) {
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         toast.error('OneSignal cannot run on localhost without configuration. Please test on your live deployed site.');
       } else {
-        toast.error('Notification system not initialized yet');
+        toast.error('Notification system not initialized yet or blocked by browser.');
       }
-      return;
-    }
-    
-    if (systemNotificationsEnabled) {
-      OneSignal.User.PushSubscription.optOut();
-      setSystemNotificationsEnabled(false);
-      toast.success('System notifications disabled');
-    } else {
-      await OneSignal.Notifications.requestPermission();
-      OneSignal.User.PushSubscription.optIn();
-      setSystemNotificationsEnabled(true);
-      toast.success('System notifications enabled!');
     }
   };
 
