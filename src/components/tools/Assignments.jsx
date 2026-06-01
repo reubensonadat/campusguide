@@ -89,11 +89,12 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setIsOpen(false);
+        setQuery(value || '');
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [value]);
 
   const filteredCourses = useMemo(() => {
     if (!query.trim()) return courses;
@@ -111,7 +112,6 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
   const handleInputChange = (e) => {
     const val = e.target.value;
     setQuery(val);
-    onChange(val);
     setIsOpen(true);
     setHighlightedIndex(0);
   };
@@ -145,9 +145,6 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
       listRef.current.children[highlightedIndex].scrollIntoView({ block: 'nearest' });
     }
   }, [highlightedIndex, isOpen]);
-
-  const showCreateOption = query.trim() && !courses.some(c => c.toLowerCase() === query.trim().toLowerCase());
-
   return (
     <div ref={containerRef} className="relative">
       <div className="relative">
@@ -171,7 +168,7 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
         </button>
       </div>
 
-      {isOpen && (filteredCourses.length > 0 || showCreateOption) && (
+      {isOpen && filteredCourses.length > 0 && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg max-h-48 overflow-y-auto py-1 animate-in fade-in slide-in-from-top-1 duration-150">
           {filteredCourses.map((course, index) => (
             <button
@@ -188,20 +185,11 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
               </span>
             </button>
           ))}
-          {showCreateOption && (
-            <button
-              type="button"
-              onClick={() => handleSelect(query.trim())}
-              className={`w-full text-left px-3 py-2 text-sm font-medium transition-colors ${
-                filteredCourses.length === highlightedIndex ? 'bg-primary-400/10 text-gray-900' : 'text-primary-400 hover:bg-primary-400/5'
-              }`}
-            >
-              <span className="flex items-center gap-2">
-                <Plus size={12} />
-                Use "{query.trim()}"
-              </span>
-            </button>
-          )}
+        </div>
+      )}
+      {isOpen && filteredCourses.length === 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg p-3 text-center text-xs text-gray-500 font-medium">
+          No matching courses. Add them to your Timetable first.
         </div>
       )}
     </div>

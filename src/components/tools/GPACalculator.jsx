@@ -287,7 +287,6 @@ const GPACalculator = () => {
         }
       }
       const uniqueTtCourses = Array.from(uniqueTtMap.values());
-
       // ── Step 2: Read current GPA courses from localStorage (avoid stale closure) ──
       let currentGpaCourses = [];
       try {
@@ -295,44 +294,39 @@ const GPACalculator = () => {
         currentGpaCourses = raw ? JSON.parse(raw) : [];
       } catch { /* use empty */ }
 
-      // ── Step 3: Merge — keep existing GPA entries, add new timetable courses ──
+      // ── Step 3: Strict Sync — ONLY allow timetable courses ──
       const mergedMap = new Map();
-      for (const c of currentGpaCourses) {
-        mergedMap.set(c.id, c);
-      }
 
       for (const ttCourse of uniqueTtCourses) {
-        const ttYear = ttCourse.academic_year || defaultYear;
-        const ttSem = ttCourse.semester || defaultSem;
-        const ttNameKey = `${(ttCourse.name || '').trim().toLowerCase()}_${ttYear}_${ttSem}`;
+        if (!ttCourse.name) continue;
 
-        // Check if a GPA course already exists for this (name, year, semester)
-        let existing = currentGpaCourses.find(c =>
-          c.id === ttCourse.id ||
-          `${(c.name || '').trim().toLowerCase()}_${c.academic_year}_${c.semester}` === ttNameKey
-        );
+        const ttNameKey = `${ttCourse.name.trim().toLowerCase()}-${ttCourse.academic_year || defaultYear}-${ttCourse.semester || defaultSem}`;
+        
+        let existing = currentGpaCourses.find(c => {
+          const cNameKey = `${(c.name || '').trim().toLowerCase()}-${c.academic_year || defaultYear}-${c.semester || defaultSem}`;
+          return cNameKey === ttNameKey;
+        });
 
         if (existing) {
-          // Already tracked — preserve the GPA entry (user may have edited scores)
           mergedMap.set(existing.id, existing);
         } else {
           // New timetable course — create a GPA stub
           const newEntry = {
             id: ttCourse.id || Date.now() + Math.random(),
             name: ttCourse.name,
-            creditHours: ttCourse.creditHours || ttCourse.credit_hours || 3,
-            score: ttCourse.targetGrade && GRADE_RANGES[ttCourse.targetGrade] ? GRADE_RANGES[ttCourse.targetGrade].min : 0,
-            grade: ttCourse.targetGrade || 'E',
-            gradePoint: ttCourse.targetGrade && GRADE_POINTS[ttCourse.targetGrade] ? GRADE_POINTS[ttCourse.targetGrade] : 0,
+            creditHours: ttCourse.creditHours || 3,
+            score: '',
+            grade: 'E',
+            gradePoint: 0.0,
+            academic_year: ttCourse.academic_year || defaultYear,
+            semester: ttCourse.semester || defaultSem,
             isDetailed: false,
             examWeight: 60,
             examScore: '',
             assessments: [
-              { id: Date.now() + Math.random(), name: 'Quiz 1', score: '', max: 20 },
-              { id: Date.now() + Math.random() + 1, name: 'Assignment 1', score: '', max: 20 }
-            ],
-            academic_year: ttYear,
-            semester: ttSem
+              { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+              { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+            ]
           };
           mergedMap.set(newEntry.id, newEntry);
         }
@@ -501,18 +495,7 @@ const GPACalculator = () => {
   };
 
   const handleDeleteCourse = (id) => {
-    setCourses(courses.filter(course => course.id !== id));
-
-    // Tombstone for sync
-    try {
-      const deleted = JSON.parse(localStorage.getItem('ucc_gpa_deleted') || '[]');
-      if (!deleted.includes(id)) {
-        deleted.push(id);
-        localStorage.setItem('ucc_gpa_deleted', JSON.stringify(deleted));
-      }
-    } catch (e) {
-      console.error('Error saving GPA tombstone:', e);
-    }
+    // Disabled in current strict sync mode
   };
 
   const getGradeColor = (grade) => {
@@ -526,7 +509,7 @@ const GPACalculator = () => {
   const pinInputRef = React.useRef(null);
 
   return (
-    <div className="relative pb-20">
+    <div className="relative pb-20 overflow-x-hidden">
       {/* GPA Lock Screen Overlay */}
       {showLockScreen && (
         <div
@@ -773,37 +756,10 @@ const GPACalculator = () => {
                     <Calculator className="w-5 h-5 text-primary-500" />
                     Course List
                   </CardTitle>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => {
-                        setNewCourse({
-                          name: '',
-                          creditHours: 3,
-                          score: '',
-                          isDetailed: false,
-                          examWeight: 60,
-                          examScore: '',
-                          assessments: [
-                            { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
-                            { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-                          ],
-                          academic_year: activeLevel,
-                          semester: activeSemester
-                        });
-                        setShowAddForm(true);
-                      }}
-                      className="bg-primary-600 text-white"
-                    >
-                      <Plus size={16} className="mr-1" />
-                      Add Result
-                    </Button>
-                  </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <Modal isOpen={showAddForm} onClose={() => setShowAddForm(false)} title={newCourse.id ? 'Edit Grade' : 'Calculate New Grade'} size="lg">
+                <Modal isOpen={showAddForm} onClose={() => setShowAddForm(false)} title="Edit Grade" size="lg">
                   <div className="flex justify-end mb-4">
                     <button
                       className="text-xs font-bold bg-primary-100 text-primary-700 px-3 py-1.5 rounded-full hover:bg-primary-200 transition-colors"
@@ -812,81 +768,14 @@ const GPACalculator = () => {
                       {newCourse.isDetailed ? 'Simple Score' : 'Detailed Breakdown'}
                     </button>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {newCourse.id ? (
-                      <div className="p-3 bg-primary-50 border border-primary-100 rounded-xl font-bold text-primary-700 flex items-center justify-between">
-                        <span>{newCourse.name || 'Unknown Course'}</span>
-                        <span className="text-xs bg-white px-2 py-1 rounded-md border border-primary-100">Editing</span>
-                      </div>
-                    ) : (
-                      <select
-                        value={newCourse.id || ''}
-                        onChange={(e) => {
-                          const selectedId = e.target.value;
-                          if (selectedId === 'new') {
-                            setNewCourse({
-                              name: '',
-                              creditHours: 3,
-                              score: '',
-                              isDetailed: false,
-                              examWeight: 60,
-                              examScore: '',
-                              assessments: [
-                                { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
-                                { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-                              ],
-                              academic_year: activeLevel,
-                              semester: activeSemester
-                            });
-                          } else {
-                            const c = courses.find(course => course.id.toString() === selectedId);
-                            if (c) {
-                              setNewCourse({
-                                ...c,
-                                isDetailed: c.isDetailed || false,
-                                examWeight: c.examWeight || 60,
-                                examScore: c.examScore || '',
-                                assessments: c.assessments || [
-                                  { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
-                                  { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-                                ]
-                              });
-                            }
-                          }
-                        }}
-                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all cursor-pointer font-medium"
-                      >
-                        <option value="new">+ Add Custom Result</option>
-                        <optgroup label="Select Course">
-                          {courses.map(c => (
-                            <option key={c.id} value={c.id.toString()}>{c.name || 'Untitled Course'}</option>
-                          ))}
-                        </optgroup>
-                      </select>
-                    )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div className="p-3 border border-gray-100 bg-gray-50 rounded-xl font-bold text-gray-900">
+                      {newCourse.name || 'Untitled Course'}
+                    </div>
 
-                    <select
-                      value={newCourse.creditHours}
-                      onChange={(e) => setNewCourse({ ...newCourse, creditHours: parseInt(e.target.value) })}
-                      className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
-                    >
-                      <option value={1}>1 Credit Hour</option>
-                      <option value={2}>2 Credit Hours</option>
-                      <option value={3}>3 Credit Hours</option>
-                      <option value={4}>4 Credit Hours</option>
-                      <option value={5}>5 Credit Hours</option>
-                      <option value={6}>6 Credit Hours</option>
-                    </select>
-
-                    {(!newCourse.id || !courses.some(c => c.id === newCourse.id)) && (
-                      <input
-                        type="text"
-                        placeholder="Course Name..."
-                        value={newCourse.name}
-                        onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
-                        className="p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all md:col-span-2"
-                      />
-                    )}
+                    <div className="p-3 border border-gray-100 bg-gray-50 rounded-xl font-bold text-gray-900 text-sm flex items-center">
+                      {newCourse.creditHours} Credit Hours
+                    </div>
 
                     {!newCourse.isDetailed ? (
                       <input
@@ -1067,23 +956,14 @@ const GPACalculator = () => {
                           <span className="whitespace-nowrap">{course.gradePoint} Points</span>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => { e.stopPropagation(); handleDeleteCourse(course.id); }}
-                        className="text-gray-300 hover:text-red-500"
-                      >
-                        <Trash2 size={16} />
-                      </Button>
                     </div>
                   ))}
 
                   {displayCourses.length === 0 && (
                     <div className="text-center py-12 rounded-2xl border border-dashed border-gray-200 bg-gray-50/50">
                       <Calculator className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-900 font-bold">No grades for this semester</p>
-                      <p className="text-gray-500 text-sm mt-1">Add your separate course grades to calculate your GPA.</p>
-                      <Button variant="link" onClick={() => setShowAddForm(true)} className="text-primary-600 mt-2">Add First Grade</Button>
+                      <p className="text-gray-900 font-bold">No courses found</p>
+                      <p className="text-gray-500 text-sm mt-1">Add courses to your Timetable first. They will automatically appear here for GPA tracking.</p>
                     </div>
                   )}
                 </div>

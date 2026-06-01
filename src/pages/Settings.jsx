@@ -825,7 +825,10 @@ const Settings = () => {
                   ].map(t => (
                     <button
                       key={t.id}
-                      onClick={() => setAppColorTheme(t.id)}
+                      onClick={() => {
+                        setAppColorTheme(t.id);
+                        toast.success('Theme applied! Please close and reopen the app (or reload) to see the changes.', { duration: 4000 });
+                      }}
                       className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all ${appColorTheme === t.id ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}
                     >
                       <div className={`w-4 h-4 rounded-full ${t.color}`} />

@@ -334,14 +334,39 @@ export async function pushGPAToCloud() {
     };
   });
 
-  const { error } = await supabase
+  const { data: upsertedData, error } = await supabase
     .from('user_gpa_courses')
-    .upsert(rows, { onConflict: 'id' });
+    .upsert(rows, { onConflict: 'id' })
+    .select('id, name, academic_year, semester');
 
   if (error) {
     console.error('[syncService] pushGPA error:', error.message);
   } else {
     console.log('[syncService] pushGPA OK:', rows.length, 'rows');
+    // Update local IDs with cloud IDs so future tombstones use the UUID
+    if (upsertedData && upsertedData.length > 0) {
+      const newCloudGPAMap = new Map();
+      for (const row of upsertedData) {
+        const key = `${(row.name || '').trim().toLowerCase()}-${row.academic_year || ''}-${row.semester || ''}`;
+        newCloudGPAMap.set(key, row.id);
+      }
+      
+      const currentGpaCourses = JSON.parse(localStorage.getItem('ucc_gpa') || '[]');
+      let updated = false;
+      const updatedLocal = currentGpaCourses.map(c => {
+        const courseName = c.course_name || c.name || '';
+        const semanticKey = `${courseName.trim().toLowerCase()}-${c.academic_year || ''}-${c.semester || ''}`;
+        const newId = newCloudGPAMap.get(semanticKey);
+        if (newId && newId !== c.id) {
+          updated = true;
+          return { ...c, id: newId };
+        }
+        return c;
+      });
+      if (updated) {
+        localStorage.setItem('ucc_gpa', JSON.stringify(updatedLocal));
+      }
+    }
   }
 }
 
@@ -578,19 +603,19 @@ export async function fullSync() {
   const lastSync = getLastSync();
   const now = Date.now();
 
-  // Pull latest from cloud first
-  await pullTimetableFromCloud();
-  await pullAssignmentsFromCloud();
-  await pullGPAFromCloud();
-  await pullTasksFromCloud();
-  await pullBudgetFromCloud();
-
-  // Then push local changes
+  // Push local changes first so tombstones are processed
   await pushTimetableToCloud();
   await pushAssignmentsToCloud();
   await pushGPAToCloud();
   await pushTasksToCloud();
   await pushBudgetToCloud();
+
+  // Then pull latest from cloud (which might overwrite local, but after pushing it's safe)
+  await pullTimetableFromCloud();
+  await pullAssignmentsFromCloud();
+  await pullGPAFromCloud();
+  await pullTasksFromCloud();
+  await pullBudgetFromCloud();
 
   setLastSync();
   console.log('[syncService] fullSync complete');
@@ -670,6 +695,8 @@ export async function restoreFromCloud() {
       'ucc_coach_community', 'ucc_coach_profile',
       // Onboarding state — don't force user through first-visit flow again
       'ucc_first_visit', 'ucc_guide_completion',
+      // Notifications — preserve what the user has already seen
+      'ucc_seen_updates', 'ucc_notifications_enabled',
     ]);
     const keysToWipe = [];
     for (let i = 0; i < localStorage.length; i++) {

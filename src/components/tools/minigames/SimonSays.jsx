@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Trophy, RotateCcw, AlertOctagon } from 'lucide-react';
+import { Trophy, RotateCcw, AlertOctagon, Play } from 'lucide-react';
+import { triggerHaptic } from '../../../utils/haptics';
 
 const COLORS = [
-  { name: 'Red', base: 'bg-rose-600', active: 'bg-rose-400 shadow-[0_0_30px_rgba(244,63,94,0.85)] scale-[1.02]', freq: 329.63 },
-  { name: 'Blue', base: 'bg-indigo-600', active: 'bg-indigo-400 shadow-[0_0_30px_rgba(99,102,241,0.85)] scale-[1.02]', freq: 261.63 },
-  { name: 'Green', base: 'bg-emerald-600', active: 'bg-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.85)] scale-[1.02]', freq: 392.00 },
-  { name: 'Yellow', base: 'bg-amber-500', active: 'bg-amber-300 shadow-[0_0_30px_rgba(245,158,11,0.85)] scale-[1.02]', freq: 440.00 },
+  { name: 'Red', base: 'bg-rose-600', active: 'bg-rose-400 shadow-[0_0_40px_rgba(244,63,94,1)] scale-105 z-10', freq: 329.63 },
+  { name: 'Blue', base: 'bg-indigo-600', active: 'bg-indigo-400 shadow-[0_0_40px_rgba(99,102,241,1)] scale-105 z-10', freq: 261.63 },
+  { name: 'Green', base: 'bg-emerald-600', active: 'bg-emerald-400 shadow-[0_0_40px_rgba(16,185,129,1)] scale-105 z-10', freq: 392.00 },
+  { name: 'Yellow', base: 'bg-amber-500', active: 'bg-amber-300 shadow-[0_0_40px_rgba(245,158,11,1)] scale-105 z-10', freq: 440.00 },
 ];
 
 export const SimonSays = () => {
@@ -70,6 +71,7 @@ export const SimonSays = () => {
       await new Promise(resolve => setTimeout(resolve, 400));
       setActiveColor(sequence[i]);
       playTone(COLORS[sequence[i]].freq);
+      triggerHaptic('light');
       await new Promise(resolve => setTimeout(resolve, 350));
       setActiveColor(null);
     }
@@ -81,6 +83,7 @@ export const SimonSays = () => {
 
     setActiveColor(index);
     playTone(COLORS[index].freq);
+    triggerHaptic('medium');
     setTimeout(() => setActiveColor(null), 180);
 
     const newPlayerSeq = [...playerSequence, index];
@@ -89,6 +92,7 @@ export const SimonSays = () => {
     if (newPlayerSeq[newPlayerSeq.length - 1] !== sequence[newPlayerSeq.length - 1]) {
       setMessage('Incorrect sequence!');
       playTone(110, true); // Low game over buzz
+      triggerHaptic('heavy');
       setIsPlaying(false);
       
       if (score > highScore) {
@@ -157,9 +161,9 @@ export const SimonSays = () => {
           {!isPlaying ? (
             <button
               onClick={startGame}
-              className="w-20 h-20 bg-gradient-to-tr from-primary-600 to-primary-400 text-white rounded-full flex flex-col items-center justify-center text-center font-black text-[10px] uppercase tracking-wider shadow-md hover:from-primary-500 hover:to-[#82bad4] active:scale-95 transition-all outline-none border-none cursor-pointer"
+              className="w-20 h-20 bg-gradient-to-tr from-primary-600 to-primary-400 text-white rounded-full flex flex-col items-center justify-center text-center font-black text-[12px] uppercase tracking-wider shadow-[0_0_20px_rgba(0,100,200,0.4)] hover:from-primary-500 hover:to-[#82bad4] active:scale-95 transition-all outline-none border-none cursor-pointer"
             >
-              <Sparkles size={14} className="mb-0.5 animate-pulse" />
+              <Play size={18} className="mb-0.5 fill-current" />
               Start
             </button>
           ) : (

@@ -8,6 +8,7 @@ import { AlertTriangle } from 'lucide-react';
 import { AppProvider } from './context/AppContext';
 import { CampusProvider, useCampus } from './context/CampusContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { FocusTimer } from './components/tools/FocusTimer';
 
 import { useSupportModal } from './hooks/useSupportModal';
 import { useSupportTimer } from './hooks/useSupportTimer';
@@ -196,6 +197,7 @@ function AppContent() {
         }>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/focus" element={<FocusTimer />} />
             <Route path="/guide" element={<Guide />} />
             <Route path="/guide/:topic" element={<Guide />} />
             <Route path="/tools/letter-generator" element={<LetterGenerator />} />

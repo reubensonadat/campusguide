@@ -5,13 +5,18 @@ import { MemoryMatch } from './MemoryMatch';
 import { TicTacToe } from './TicTacToe';
 import { ReactionTester } from './ReactionTester';
 import { SimonSays } from './SimonSays';
+import { Mini2048 } from './Mini2048';
+import { PatternConnect } from './PatternConnect';
+import { WordScramble } from './WordScramble';
 
 const GAMES = [
   { id: 'breathe', name: 'Breathing Timer', component: BreathingCircle },
   { id: 'memory', name: 'Memory Match', component: MemoryMatch },
   { id: 'tictactoe', name: 'Tic-Tac-Toe', component: TicTacToe },
-  { id: 'reaction', name: 'Reaction Test', component: ReactionTester },
-  { id: 'simon', name: 'Simon Says', component: SimonSays }
+  { id: 'simon', name: 'Simon Says', component: SimonSays },
+  { id: '2048', name: 'Mini 2048', component: Mini2048 },
+  { id: 'pattern', name: 'Flow Connect', component: PatternConnect },
+  { id: 'scramble', name: 'Word Scramble', component: WordScramble }
 ];
 
 export const MiniGameHub = ({ onBackToFocus }) => {
@@ -45,7 +50,7 @@ export const MiniGameHub = ({ onBackToFocus }) => {
       </div>
 
       {/* Game Container */}
-      <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-6 w-full max-w-sm backdrop-blur-md min-h-[400px] flex flex-col justify-center shadow-2xl">
+      <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-6 w-full max-w-sm backdrop-blur-md min-h-[400px] flex flex-col justify-center shadow-[0_0_50px_rgba(0,0,0,0.3)]">
         <CurrentGame />
       </div>
 

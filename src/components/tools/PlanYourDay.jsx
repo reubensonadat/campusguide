@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import useProfile from '../../hooks/useProfile';
 import { FocusTimer } from './FocusTimer';
@@ -128,7 +129,8 @@ const PlanYourDay = () => {
     const [timetable] = useLocalStorage('ucc_timetable', []);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(getTodayStr());
-    const [activeTask, setActiveTask] = useState(null);
+    const navigate = useNavigate();
+    // Focus timer is now a separate route
     
     // Form State
     const [editingTaskId, setEditingTaskId] = useState(null);
@@ -669,16 +671,7 @@ const PlanYourDay = () => {
             )}
 
             {/* Pomodoro Focus Timer */}
-            {activeTask && (
-                <FocusTimer 
-                    task={activeTask} 
-                    onComplete={(id) => {
-                        toggleTaskStatus(id, true);
-                        setActiveTask(null);
-                    }}
-                    onCancel={() => setActiveTask(null)}
-                />
-            )}
+            {/* FocusTimer logic moved to /focus route */}
             {/* Delete Confirmation Modal */}
             {taskToDelete && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">

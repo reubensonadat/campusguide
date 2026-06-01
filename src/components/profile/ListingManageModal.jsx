@@ -172,8 +172,8 @@ const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) =>
 const DetailsTab = ({ listing, expiringSoon }) => (
   <div className="space-y-4">
     {listing.image_url && (
-      <div className="w-full h-40 rounded-xl overflow-hidden bg-gray-100">
-        <img src={listing.image_url} alt={listing.item_name} className="w-full h-full object-cover" />
+      <div className="w-full rounded-xl overflow-hidden bg-gray-100 flex justify-center">
+        <img src={listing.image_url} alt={listing.item_name} className="w-full max-h-[60vh] object-contain" />
       </div>
     )}
 

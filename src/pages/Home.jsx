@@ -106,7 +106,9 @@ const WordSvgIcon = ({ size = 20, className = '' }) => (
 );
 
 const getGreeting = () => {
-  const h = new Date().getHours();
+  const d = new Date();
+  if (d.getDate() === 1) return 'Happy New Month';
+  const h = d.getHours();
   if (h < 12) return 'Good morning';
   if (h < 17) return 'Good afternoon';
   return 'Good evening';
@@ -207,7 +209,7 @@ const Home = () => {
   const [quickNotes, setQuickNotes] = useLocalStorage('ucc_quick_notes', '');
   const [homeWidgetsRaw] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
   const homeWidgets = useMemo(() => ({ ...DEFAULT_HOME_WIDGETS, ...homeWidgetsRaw }), [homeWidgetsRaw]);
-  const [activeTask, setActiveTask] = useState(null);
+  // Focus Timer is now a separate route.
 
   // ── Assignments / Deadlines ──────────────────────────────────────────────
   const [homeAssignments, setHomeAssignments] = useState(() => getAssignments());
@@ -949,8 +951,11 @@ const Home = () => {
           {/* Hero Greeting Text & Weather */}
           <div className="relative z-10 flex flex-col items-start gap-4 mt-2">
             <div>
-              <h2 className="text-white text-[1.8rem] font-black leading-tight tracking-tight mb-1">
-                {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'} 👋
+              <h2 className="text-white text-[1.8rem] font-black leading-tight tracking-tight mb-1 flex items-center flex-wrap gap-1">
+                {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'} 
+                {getGreeting() === 'Happy New Month' ? (
+                  <span onClick={triggerConfetti} className="cursor-pointer hover:scale-110 active:scale-95 transition-transform">🎉</span>
+                ) : ' 👋'}
               </h2>
               <p className="text-primary-400 text-sm font-semibold flex items-center gap-2 cursor-pointer active:opacity-70 transition-opacity">
                 {TODAY_LABEL}
@@ -1422,7 +1427,11 @@ const Home = () => {
                       {/* Play Button */}
                       {!isCompleted && (
                         <button
-                          onClick={(e) => { e.stopPropagation(); setActiveTask(task); }}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            localStorage.setItem('ucc_focus_task', JSON.stringify(task));
+                            navigate('/focus');
+                          }}
                           className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-colors ml-auto flex-shrink-0"
                           title="Start Focus Timer"
                         >
@@ -1745,8 +1754,11 @@ const Home = () => {
                       {TODAY_LABEL}
                       <StreakBadge variant="desktop" />
                     </p>
-                    <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight">
-                      {getGreeting()}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''} 👋
+                    <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight flex items-center flex-wrap gap-1">
+                      {getGreeting()}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''}
+                      {getGreeting() === 'Happy New Month' ? (
+                        <span onClick={triggerConfetti} className="cursor-pointer hover:scale-110 active:scale-95 transition-transform">🎉</span>
+                      ) : ' 👋'}
                     </h1>
                   </div>
 
@@ -1924,31 +1936,7 @@ const Home = () => {
       </div>
       {/* end DESKTOP */}
 
-      {/* Pomodoro Focus Timer Overlay */}
-      {activeTask && (
-        <FocusTimer
-          task={activeTask}
-          onComplete={(id) => {
-            if (activeTask.isClassStudy) {
-              const d = new Date();
-              const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-              const newTask = {
-                id: Date.now().toString(),
-                title: activeTask.title,
-                time: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
-                date: dateStr,
-                icon: 'study',
-                status: 'completed'
-              };
-              setTasks([...tasks, newTask]);
-            } else {
-              toggleTaskStatus(id, true);
-            }
-            setActiveTask(null);
-          }}
-          onCancel={() => setActiveTask(null)}
-        />
-      )}
+      {/* Focus Timer logic moved to standalone /focus route */}
 
       {/* 🧭 Coach Marks Walkthrough */}
       <CoachMarksOverlay
