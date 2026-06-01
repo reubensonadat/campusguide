@@ -216,8 +216,8 @@ export const FocusTimer = () => {
               <button
                 onClick={toggleTimer}
                 className={`w-20 h-20 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-all duration-300 active:scale-95 border-2 ${isActive
-                    ? 'bg-rose-500 hover:bg-rose-600 border-rose-400 text-white'
-                    : 'bg-white hover:bg-gray-100 border-white text-slate-900'
+                  ? 'bg-rose-500 hover:bg-rose-600 border-rose-400 text-white'
+                  : 'bg-white hover:bg-gray-100 border-white text-slate-900'
                   }`}
               >
                 {isActive ? <Pause size={32} className="fill-current" /> : <Play size={32} className="ml-1 fill-current" />}
