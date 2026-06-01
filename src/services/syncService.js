@@ -104,6 +104,7 @@ export async function pushTimetableToCloud() {
         academic_year: c.academic_year || null,
         semester: c.semester || null,
         updated_at: new Date().toISOString(),
+        deleted_at: null,
       };
     });
 
@@ -213,6 +214,7 @@ export async function pushAssignmentsToCloud() {
     semester: a.semester || null,
     created_at: a.createdAt || new Date().toISOString(),
     updated_at: a.updatedAt || new Date().toISOString(),
+    deleted_at: null,
   }));
 
   const { error } = await supabase
@@ -328,6 +330,7 @@ export async function pushGPAToCloud() {
       academic_year: c.academic_year || null,
       semester: c.semester || null,
       updated_at: new Date().toISOString(),
+      deleted_at: null,
     };
   });
 
@@ -424,6 +427,7 @@ export async function pushTasksToCloud() {
     icon: t.icon || 'study',
     academic_year: t.academic_year || null,
     semester: t.semester || null,
+    deleted_at: null,
   }));
 
   const { error } = await supabase
@@ -518,6 +522,7 @@ export async function pushBudgetToCloud() {
     category: t.category,
     description: t.description || '',
     created_at: t.date ? new Date(t.date).toISOString() : new Date().toISOString(),
+    deleted_at: null,
   }));
 
   const { error } = await supabase
@@ -805,6 +810,19 @@ export async function syncToCloud({ force = false } = {}) {
         .eq('id', userId);
     }
 
+    if (force) {
+      // ── WIPE-AND-REPLACE SWEEP ──
+      // Soft-delete all courses/items for this user before pushing local state.
+      const now = new Date().toISOString();
+      await Promise.all([
+        supabase.from('user_timetable').update({ deleted_at: now }).eq('user_id', userId),
+        supabase.from('user_assignments').update({ deleted_at: now }).eq('user_id', userId),
+        supabase.from('user_gpa_courses').update({ deleted_at: now }).eq('user_id', userId),
+        supabase.from('user_tasks').update({ deleted_at: now }).eq('user_id', userId),
+        supabase.from('budget_transactions').update({ deleted_at: now }).eq('user_id', userId)
+      ]);
+    }
+
     // 2. Sync everything else using the new push functions
     await pushTimetableToCloud();
     await pushAssignmentsToCloud();
@@ -867,8 +885,11 @@ export function triggerBackgroundSync({ force = false } = {}) {
   syncTimeout = setTimeout(async () => {
     try {
       const result = await syncToCloud({ force });
-      if (!result.success && result.error) {
-        // Show guard warnings to the user via toast
+      if (!result.success && result.error && result.error.includes('Your cloud backup has')) {
+        // Intercept conflict and notify UI for Master Switch
+        window.dispatchEvent(new CustomEvent('SYNC_CONFLICT', { detail: result }));
+      } else if (!result.success && result.error) {
+        // Show general errors
         const { toast } = await import('react-hot-toast');
         toast.error(`Sync blocked: ${result.error}`, { duration: 6000 });
       }

@@ -3,7 +3,8 @@ import OneSignal from 'react-onesignal';
 import { DataLoader } from './components/common/CustomLoaders';
 import { SplashScreen } from './components/common/SplashScreen';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
+import { AlertTriangle } from 'lucide-react';
 import { AppProvider } from './context/AppContext';
 import { CampusProvider, useCampus } from './context/CampusContext';
 import { NotificationProvider } from './context/NotificationContext';
@@ -61,6 +62,44 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 
 function AppContent() {
   const { selectedCampusId } = useCampus();
+  
+  const [syncConflict, setSyncConflict] = useState(null);
+
+  useEffect(() => {
+    const handleSyncConflict = (e) => {
+      setSyncConflict(e.detail);
+    };
+    window.addEventListener('SYNC_CONFLICT', handleSyncConflict);
+    return () => window.removeEventListener('SYNC_CONFLICT', handleSyncConflict);
+  }, []);
+
+  const handleResolveConflict = (action) => {
+    if (action === 'restore') {
+      import('./services/syncService').then(({ restoreFromCloud }) => {
+        const toastId = toast.loading('Restoring from cloud...');
+        restoreFromCloud().then((res) => {
+          if (res.success) {
+            toast.success('Data restored! Reloading...', { id: toastId });
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            toast.error(`Restore failed: ${res.error}`, { id: toastId });
+          }
+        });
+      });
+    } else if (action === 'overwrite') {
+      import('./services/syncService').then(({ syncToCloud }) => {
+        const toastId = toast.loading('Overwriting cloud database...');
+        syncToCloud({ force: true }).then((res) => {
+          if (res.success) {
+            toast.success('Database overwritten! Sync complete.', { id: toastId });
+            setSyncConflict(null);
+          } else {
+            toast.error(`Overwrite failed: ${res.error}`, { id: toastId });
+          }
+        });
+      });
+    }
+  };
   
   const [appColorTheme] = useLocalStorage('ucc_app_color_theme', 'default');
   useEffect(() => {
@@ -199,6 +238,43 @@ function AppContent() {
         />
 
         <AuthBottomSheet />
+
+        {syncConflict && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-[#0a0a0a] rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+              <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+                <AlertTriangle size={24} />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">Sync Conflict Detected</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 font-medium leading-relaxed">
+                {syncConflict.error || "Your cloud backup has more data than your phone. Which version do you want to keep as the single source of truth?"}
+              </p>
+              
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleResolveConflict('restore')}
+                  className="w-full py-3.5 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-black dark:hover:bg-gray-100 transition-all active:scale-95 shadow-md flex justify-between items-center"
+                >
+                  <span>Restore Cloud Data</span>
+                  <span className="text-xs bg-white/20 dark:bg-black/10 px-2 py-0.5 rounded text-white dark:text-gray-900">{syncConflict.cloudCounts?.timetable || 0} items</span>
+                </button>
+                <button
+                  onClick={() => handleResolveConflict('overwrite')}
+                  className="w-full py-3.5 px-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-xl font-bold hover:bg-red-100 dark:hover:bg-red-900/40 transition-all active:scale-95 flex justify-between items-center"
+                >
+                  <span>Overwrite Database</span>
+                  <span className="text-xs bg-red-200/50 dark:bg-red-900/50 px-2 py-0.5 rounded text-red-700 dark:text-red-300">{syncConflict.localCounts?.timetable || 0} items</span>
+                </button>
+                <button
+                  onClick={() => setSyncConflict(null)}
+                  className="w-full py-3 text-sm text-gray-500 font-bold hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
