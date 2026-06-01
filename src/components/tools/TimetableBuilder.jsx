@@ -159,12 +159,9 @@ const TimetableBuilder = () => {
     });
   }, [courses, activeTerm]);
 
-  // Auto-sync to cloud when courses change
+  // Auto-sync to cloud when courses change (INSTANT)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      pushTimetableToCloud();
-    }, 1500);
-    return () => clearTimeout(timer);
+    pushTimetableToCloud();
   }, [courses]);
 
   const timetableRef = useRef(null);

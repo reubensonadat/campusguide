@@ -795,7 +795,8 @@ export async function syncToCloud({ force = false } = {}) {
           name: profile.name || null,
           phone_number: sanitizeGhanaPhone(profile.phone) || null,
           course: profile.course || null,
-          level: profile.level || null
+          level: profile.level || null,
+          current_semester: profile.semester ? parseInt(profile.semester, 10) : null
         })
         .eq('id', userId);
     }
