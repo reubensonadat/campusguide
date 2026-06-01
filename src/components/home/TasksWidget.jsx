@@ -57,7 +57,7 @@ export const TasksWidget = ({ todaysTasks, toggleTaskStatus, navigate }) => {
             toast.dismiss(t.id);
             toast.success('Status reverted!');
           }}
-          className="text-xs font-bold text-[#6EABC6] bg-[#6EABC6]/10 px-3 py-1 rounded-lg hover:bg-[#6EABC6]/20 transition-colors flex-shrink-0"
+          className="text-xs font-bold text-primary-400 bg-primary-400/10 px-3 py-1 rounded-lg hover:bg-primary-400/20 transition-colors flex-shrink-0"
         >
           Undo
         </button>
@@ -102,7 +102,7 @@ export const TasksWidget = ({ todaysTasks, toggleTaskStatus, navigate }) => {
                 <span className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-1">
                   <AlertTriangle size={10} /> Deadlines
                 </span>
-                <button onClick={() => navigate('/tools/assignments')} className="text-[10px] font-bold text-[#6EABC6] hover:underline">
+                <button onClick={() => navigate('/tools/assignments')} className="text-[10px] font-bold text-primary-400 hover:underline">
                   View all
                 </button>
               </div>
@@ -171,7 +171,7 @@ export const TasksWidget = ({ todaysTasks, toggleTaskStatus, navigate }) => {
                 <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 flex items-center gap-1">
                   <Clock size={10} /> Coming Up
                 </span>
-                <button onClick={() => navigate('/tools/assignments')} className="text-[10px] font-bold text-[#6EABC6] hover:underline">
+                <button onClick={() => navigate('/tools/assignments')} className="text-[10px] font-bold text-primary-400 hover:underline">
                   View all
                 </button>
               </div>
@@ -200,7 +200,7 @@ export const TasksWidget = ({ todaysTasks, toggleTaskStatus, navigate }) => {
                     </div>
                     <button
                       onClick={() => navigate('/tools/assignments')}
-                      className="text-[9px] font-bold px-2 py-1 rounded-md bg-white shadow-sm border border-gray-100 text-[#6EABC6] hover:bg-[#6EABC6]/5 active:scale-95 transition-all flex-shrink-0"
+                      className="text-[9px] font-bold px-2 py-1 rounded-md bg-white shadow-sm border border-gray-100 text-primary-400 hover:bg-primary-400/5 active:scale-95 transition-all flex-shrink-0"
                     >
                       Open
                     </button>

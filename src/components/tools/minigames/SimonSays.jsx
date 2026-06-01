@@ -115,7 +115,7 @@ export const SimonSays = () => {
       {/* HUD Info */}
       <div className="flex items-center justify-between w-full px-2 mb-6">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#6EABC6]">STATUS</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-primary-400">STATUS</span>
           <span className={`text-xs font-bold transition-all duration-200 ${
             message === 'Your turn!' ? 'text-green-400 animate-pulse' :
             message === 'Incorrect sequence!' ? 'text-red-400' : 'text-gray-300'
@@ -124,7 +124,7 @@ export const SimonSays = () => {
           </span>
         </div>
         <div className="flex flex-col items-end">
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#6EABC6]">SCORE</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-primary-400">SCORE</span>
           <span className="text-sm font-black text-white">{score}</span>
         </div>
       </div>
@@ -157,7 +157,7 @@ export const SimonSays = () => {
           {!isPlaying ? (
             <button
               onClick={startGame}
-              className="w-20 h-20 bg-gradient-to-tr from-primary-600 to-[#6EABC6] text-white rounded-full flex flex-col items-center justify-center text-center font-black text-[10px] uppercase tracking-wider shadow-md hover:from-primary-500 hover:to-[#82bad4] active:scale-95 transition-all outline-none border-none cursor-pointer"
+              className="w-20 h-20 bg-gradient-to-tr from-primary-600 to-primary-400 text-white rounded-full flex flex-col items-center justify-center text-center font-black text-[10px] uppercase tracking-wider shadow-md hover:from-primary-500 hover:to-[#82bad4] active:scale-95 transition-all outline-none border-none cursor-pointer"
             >
               <Sparkles size={14} className="mb-0.5 animate-pulse" />
               Start
@@ -165,7 +165,7 @@ export const SimonSays = () => {
           ) : (
             <div className="flex flex-col items-center justify-center">
               <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none">Streak</span>
-              <span className="text-lg font-black text-[#6EABC6]">{score}</span>
+              <span className="text-lg font-black text-primary-400">{score}</span>
             </div>
           )}
         </div>

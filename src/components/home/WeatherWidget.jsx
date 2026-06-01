@@ -35,13 +35,13 @@ export const WeatherWidget = ({ weatherData }) => {
   const { svgType, color, bg, advice } = getWeatherIconAndAdvice(weatherData.weathercode, weatherData.temperature);
   
   return (
-    <div className="flex items-center gap-2 bg-[#002F45]/50 backdrop-blur-md border border-[#6EABC6]/20 px-3 py-1.5 rounded-2xl shadow-sm">
+    <div className="flex items-center gap-2 bg-primary-950/50 backdrop-blur-md border border-primary-400/20 px-3 py-1.5 rounded-2xl shadow-sm">
       <div className={`w-7 h-7 rounded-full flex items-center justify-center bg-white/10`}>
-        {renderWeatherSvg(svgType, 14, 'text-[#6EABC6]')}
+        {renderWeatherSvg(svgType, 14, 'text-primary-400')}
       </div>
       <div className="flex flex-col">
         <span className="text-white font-bold text-xs">{weatherData.temperature}°C</span>
-        <span className="text-[#6EABC6] text-[10px] font-medium leading-none">{advice}</span>
+        <span className="text-primary-400 text-[10px] font-medium leading-none">{advice}</span>
       </div>
     </div>
   );

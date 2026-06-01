@@ -10,7 +10,7 @@ import { useNotifications } from '../../context/NotificationContext';
 
 // ─── Type config ─────────────────────────────────────────────────────────────
 const TYPE_CONFIG = {
-  announcement: { label: 'ANNOUNCEMENT', Icon: Megaphone, color: 'text-[#002F45]', bg: 'bg-[#002F45]/10' },
+  announcement: { label: 'ANNOUNCEMENT', Icon: Megaphone, color: 'text-primary-950', bg: 'bg-primary-950/10' },
   whisper: { label: 'WHISPER', Icon: MessageCircle, color: 'text-blue-600', bg: 'bg-blue-50' },
   thrift: { label: 'THRIFT', Icon: ShoppingBag, color: 'text-emerald-600', bg: 'bg-emerald-50' },
 };
@@ -67,7 +67,7 @@ const CommunityCard = ({ item, onMarkRead, onNavigate, isRead }) => {
       </div>
       {/* Unread dot indicator */}
       {!isRead && (
-        <span className="w-2 h-2 bg-[#002F45] dark:bg-[#6EABC6] rounded-full shrink-0 mt-2" />
+        <span className="w-2 h-2 bg-primary-950 dark:bg-primary-400 rounded-full shrink-0 mt-2" />
       )}
     </div>
   );
@@ -123,7 +123,7 @@ const NotificationDropdown = ({
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
             <div className="flex items-center gap-2">
-              <Bell size={16} className="text-[#002F45] dark:text-[#6EABC6]" />
+              <Bell size={16} className="text-primary-950 dark:text-primary-400" />
               <span className="text-sm font-black text-gray-900 dark:text-gray-100">Notifications</span>
             </div>
             <button
@@ -149,7 +149,7 @@ const NotificationDropdown = ({
           <div className="border-t border-gray-100 dark:border-gray-800 px-3 py-2 shrink-0">
             <button
               onClick={() => { onNavigate?.('announcements'); }}
-              className="w-full text-left text-xs font-bold text-[#002F45] dark:text-[#6EABC6] hover:text-[#001a26] dark:hover:text-[#6EABC6]/80 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-between group"
+              className="w-full text-left text-xs font-bold text-primary-950 dark:text-primary-400 hover:text-primary-950 dark:hover:text-primary-400/80 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-between group"
             >
               Go to Community Hub
               <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
@@ -181,14 +181,14 @@ const NotificationDropdown = ({
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
           <div className="flex items-center gap-2">
-            <Bell size={16} className="text-[#002F45] dark:text-[#6EABC6]" />
+            <Bell size={16} className="text-primary-950 dark:text-primary-400" />
             <span className="text-sm font-black text-gray-900 dark:text-gray-100">Notifications</span>
           </div>
           <div className="flex items-center gap-2">
             {hasUnread && unreadItems.length > 1 && (
               <button
                 onClick={() => onMarkAllRead?.()}
-                className="flex items-center gap-1 text-[11px] font-bold text-[#002F45]/70 hover:text-emerald-600 dark:text-[#6EABC6]/70 dark:hover:text-emerald-400 transition-colors px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="flex items-center gap-1 text-[11px] font-bold text-primary-950/70 hover:text-emerald-600 dark:text-primary-400/70 dark:hover:text-emerald-400 transition-colors px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 <CheckCheck size={13} /> Mark all read
               </button>
@@ -232,7 +232,7 @@ const NotificationDropdown = ({
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-black tracking-widest uppercase text-gray-400 dark:text-gray-500">New</span>
-                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#002F45] dark:bg-[#6EABC6] text-white dark:text-[#002F45] text-[9px] font-bold">
+                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary-950 dark:bg-primary-400 text-white dark:text-primary-950 text-[9px] font-bold">
                     {unreadItems.length}
                   </span>
                 </div>
@@ -299,7 +299,7 @@ const NotificationDropdown = ({
                       ? { card: 'bg-red-50 hover:bg-red-100/70 dark:bg-red-900/20 dark:hover:bg-red-900/30', iconBg: 'bg-red-100 dark:bg-red-900/40', iconColor: 'text-red-600 dark:text-red-400' }
                       : notif.type === 'payday'
                         ? { card: 'bg-green-50 hover:bg-green-100/70 dark:bg-green-900/20 dark:hover:bg-green-900/30', iconBg: 'bg-green-100 dark:bg-green-900/40', iconColor: 'text-green-600 dark:text-green-400' }
-                        : { card: 'bg-[#002F45]/5 hover:bg-[#002F45]/10 dark:bg-[#6EABC6]/10 dark:hover:bg-[#6EABC6]/15', iconBg: 'bg-[#002F45]/10 dark:bg-[#6EABC6]/20', iconColor: 'text-[#002F45] dark:text-[#6EABC6]' };
+                        : { card: 'bg-primary-950/5 hover:bg-primary-950/10 dark:bg-primary-400/10 dark:hover:bg-primary-400/15', iconBg: 'bg-primary-950/10 dark:bg-primary-400/20', iconColor: 'text-primary-950 dark:text-primary-400' };
 
                   return (
                     <div
@@ -347,7 +347,7 @@ const NotificationDropdown = ({
         <div className="border-t border-gray-100 dark:border-gray-800 px-3 py-2 shrink-0">
           <button
             onClick={() => { onNavigate?.('announcements'); }}
-            className="w-full text-left text-xs font-bold text-[#002F45] dark:text-[#6EABC6] hover:text-[#001a26] dark:hover:text-[#6EABC6]/80 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-between group"
+            className="w-full text-left text-xs font-bold text-primary-950 dark:text-primary-400 hover:text-primary-950 dark:hover:text-primary-400/80 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-between group"
           >
             Go to Community Hub
             <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />

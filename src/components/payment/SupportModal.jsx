@@ -95,7 +95,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
             <div className="text-center pb-2">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Make a Difference</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed px-4">
-                Help keep the Campus Guide <strong className="text-[#002F45] dark:text-[#6EABC6]">alive</strong> and <strong className="text-[#002F45] dark:text-[#6EABC6]">growing</strong> for every student.
+                Help keep the Campus Guide <strong className="text-primary-950 dark:text-primary-400">alive</strong> and <strong className="text-primary-950 dark:text-primary-400">growing</strong> for every student.
               </p>
             </div>
 
@@ -113,8 +113,8 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                       setCustomAmount('');
                     }}
                     className={`py-3 px-2 rounded-xl font-bold text-sm transition-all border-2 ${selectedAmount === amount && !customAmount
-                      ? 'border-[#002F45] bg-[#002F45]/5 text-[#002F45] dark:border-[#6EABC6] dark:bg-[#6EABC6]/10 dark:text-[#6EABC6] shadow-sm'
-                      : 'border-gray-200 bg-white text-gray-600 dark:border-gray-700 dark:bg-[#111111] dark:text-gray-400 hover:border-[#002F45]/30 hover:bg-[#002F45]/5 dark:hover:border-[#6EABC6]/30 dark:hover:bg-[#6EABC6]/5'
+                      ? 'border-primary-950 bg-primary-950/5 text-primary-950 dark:border-primary-400 dark:bg-primary-400/10 dark:text-primary-400 shadow-sm'
+                      : 'border-gray-200 bg-white text-gray-600 dark:border-gray-700 dark:bg-[#111111] dark:text-gray-400 hover:border-primary-950/30 hover:bg-primary-950/5 dark:hover:border-primary-400/30 dark:hover:bg-primary-400/5'
                       }`}
                   >
                     ₵{amount}
@@ -137,7 +137,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                   min="5"
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
-                  className={`w-full pl-14 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all dark:text-white dark:bg-[#111111] ${customAmount && parseFloat(customAmount) < 5 ? 'border-red-300 bg-red-50 dark:border-red-500/50 dark:bg-red-900/20' : 'border-gray-200 dark:border-gray-800'}`}
+                  className={`w-full pl-14 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all dark:text-white dark:bg-[#111111] ${customAmount && parseFloat(customAmount) < 5 ? 'border-red-300 bg-red-50 dark:border-red-500/50 dark:bg-red-900/20' : 'border-gray-200 dark:border-gray-800'}`}
                   placeholder="Enter amount (Min 5)"
                 />
               </div>
@@ -158,7 +158,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all dark:bg-[#111111] dark:border-gray-800 dark:text-white"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all dark:bg-[#111111] dark:border-gray-800 dark:text-white"
                   placeholder="Your Name"
                 />
               </div>
@@ -172,7 +172,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all dark:bg-[#111111] dark:border-gray-800 dark:text-white"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all dark:bg-[#111111] dark:border-gray-800 dark:text-white"
                     placeholder="020..."
                   />
                 </div>
@@ -184,7 +184,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#002F45] focus:border-transparent transition-all dark:bg-[#111111] dark:border-gray-800 dark:text-white"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all dark:bg-[#111111] dark:border-gray-800 dark:text-white"
                     placeholder="mail@..."
                   />
                 </div>
@@ -207,7 +207,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
               onPaymentSuccess={handlePaymentSuccess}
               onPaymentError={handlePaymentError}
               disabled={!getCurrentAmount() || getCurrentAmount() < 5}
-              className="w-full bg-[#002F45] hover:bg-[#001a26] text-white font-bold py-4 rounded-xl shadow-lg shadow-[#002F45]/20 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-primary-950 hover:bg-primary-950 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary-950/20 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <span className="flex items-center justify-center gap-2">
                 Support with GH₵{getCurrentAmount()}
@@ -218,7 +218,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
             <div className="border-t border-gray-100 pt-4">
               <button
                 onClick={() => setShowWhySupport(!showWhySupport)}
-                className="w-full flex items-center justify-between text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#002F45] dark:hover:text-[#6EABC6] transition-colors"
+                className="w-full flex items-center justify-between text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary-950 dark:hover:text-primary-400 transition-colors"
               >
                 <span>Why support us?</span>
                 {showWhySupport ? (
@@ -231,19 +231,19 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
               {showWhySupport && (
                 <ul className="mt-3 space-y-2 text-xs text-gray-600">
                   <li className="flex gap-2 items-start">
-                    <CheckCircle className="w-4 h-4 text-[#6EABC6] shrink-0 mt-0.5" />
-                    <span>Support the <strong className="text-[#002F45]">continued development</strong> of the app</span>
+                    <CheckCircle className="w-4 h-4 text-primary-400 shrink-0 mt-0.5" />
+                    <span>Support the <strong className="text-primary-950">continued development</strong> of the app</span>
                   </li>
                   <li className="flex gap-2 items-start">
-                    <CheckCircle className="w-4 h-4 text-[#6EABC6] shrink-0 mt-0.5" />
+                    <CheckCircle className="w-4 h-4 text-primary-400 shrink-0 mt-0.5" />
                     <span>Cover server costs and API fees</span>
                   </li>
                   <li className="flex gap-2 items-start">
-                    <CheckCircle className="w-4 h-4 text-[#6EABC6] shrink-0 mt-0.5" />
+                    <CheckCircle className="w-4 h-4 text-primary-400 shrink-0 mt-0.5" />
                     <span>Support development of new features</span>
                   </li>
                   <li className="flex gap-2 items-start">
-                    <CheckCircle className="w-4 h-4 text-[#6EABC6] shrink-0 mt-0.5" />
+                    <CheckCircle className="w-4 h-4 text-primary-400 shrink-0 mt-0.5" />
                     <span>Help other students access campus information</span>
                   </li>
                 </ul>
@@ -295,7 +295,7 @@ const SupportModal = ({ isOpen, onClose, onPaymentSuccess }) => {
               )}
               <Button
                 onClick={closeModal}
-                className="bg-[#002F45] hover:bg-[#001a26]"
+                className="bg-primary-950 hover:bg-primary-950"
               >
                 {paymentResult.success ? 'Done' : 'Close'}
               </Button>

@@ -44,7 +44,7 @@ const Sidebar = ({ onExpandedChange }) => {
           onClick={handleToggle}
           onMouseEnter={() => setIsHoveringLogo(true)}
           onMouseLeave={() => setIsHoveringLogo(false)}
-          className="flex-shrink-0 relative w-10 h-10 rounded-xl overflow-hidden group focus:outline-none focus:ring-2 focus:ring-[#6EABC6] focus:ring-offset-2"
+          className="flex-shrink-0 relative w-10 h-10 rounded-xl overflow-hidden group focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2"
           aria-label={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
         >
           {/* Logo */}
@@ -83,7 +83,7 @@ const Sidebar = ({ onExpandedChange }) => {
               onClick={() => navigate(tab.path)}
               className={`w-full flex items-center px-2.5 h-[44px] rounded-xl transition-all duration-200 group focus:outline-none ${
                 isActive 
-                  ? 'bg-[#6EABC6] text-white shadow-sm' 
+                  ? 'bg-primary-500 text-white shadow-sm' 
                   : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
               }`}
               title={!isExpanded ? tab.label : ''}
@@ -109,7 +109,7 @@ const Sidebar = ({ onExpandedChange }) => {
           onClick={() => navigate('/settings')}
           className={`w-full flex items-center px-2.5 h-[44px] rounded-xl transition-all duration-200 group focus:outline-none ${
             ['/settings', '/privacy', '/terms'].includes(location.pathname)
-              ? 'bg-[#6EABC6] text-white shadow-sm' 
+              ? 'bg-primary-400 text-white shadow-sm' 
               : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
           }`}
           title={!isExpanded ? "Settings" : ""}

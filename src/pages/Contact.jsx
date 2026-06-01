@@ -44,7 +44,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45]">
+    <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-primary-950">
       <div className="max-w-3xl mx-auto px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
         
         {/* Header matching Profile style */}
@@ -146,7 +146,7 @@ const Contact = () => {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full p-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-300 font-semibold text-sm transition-all"
+                  className="w-full p-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 text-gray-900 placeholder:text-gray-300 font-semibold text-sm transition-all"
                   placeholder="Enter your name"
                   required
                 />
@@ -157,7 +157,7 @@ const Contact = () => {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full p-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-300 font-semibold text-sm transition-all"
+                  className="w-full p-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 text-gray-900 placeholder:text-gray-300 font-semibold text-sm transition-all"
                   placeholder="e.g. 054 123 4567"
                   required
                 />
@@ -167,14 +167,14 @@ const Contact = () => {
                 <textarea
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full p-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] text-gray-900 placeholder:text-gray-300 font-semibold text-sm min-h-[100px] resize-none transition-all"
+                  className="w-full p-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 text-gray-900 placeholder:text-gray-300 font-semibold text-sm min-h-[100px] resize-none transition-all"
                   placeholder="Explain the feature idea and why it is useful..."
                   required
                 />
               </div>
               <button
                 type="submit"
-                className="w-full py-4 bg-[#002F45] hover:bg-[#001a26] text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md active:scale-[0.98] flex justify-center items-center gap-2 border-none cursor-pointer"
+                className="w-full py-4 bg-primary-950 hover:bg-primary-950 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md active:scale-[0.98] flex justify-center items-center gap-2 border-none cursor-pointer"
               >
                 <Send size={14} /> Submit Suggestion
               </button>

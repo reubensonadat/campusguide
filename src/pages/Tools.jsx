@@ -80,7 +80,7 @@ const Tools = () => {
             <div className="relative inline-flex items-center gap-1  bg-white overflow-auto p-1 rounded-xl  w-full sm:w-auto z-0 shadow-sm">
               {/* Sliding Pill */}
               <div 
-                className="absolute h-[calc(100%-8px)] bg-[#002F45] rounded-lg z-0"
+                className="absolute h-[calc(100%-8px)] bg-primary-950 rounded-lg z-0"
                 style={{ 
                   left: `${pillStyle.left}px`, 
                   width: `${pillStyle.width}px`,
@@ -125,7 +125,7 @@ const Tools = () => {
         <div className="mt-8 mb-6">
           <button 
             onClick={() => navigate('/tools/letter-generator')}
-            className="w-full bg-[#002F45] text-white rounded-3xl p-6 shadow-md hover:bg-[#001a26] hover:-translate-y-0.5 transition-all active:scale-95 text-left relative overflow-hidden group"
+            className="w-full bg-primary-950 text-white rounded-3xl p-6 shadow-md hover:bg-primary-950 hover:-translate-y-0.5 transition-all active:scale-95 text-left relative overflow-hidden group"
           >
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-1">

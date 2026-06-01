@@ -124,7 +124,7 @@ const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) =>
             onClick={() => setActiveTab('details')}
             className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${
               activeTab === 'details'
-                ? 'bg-[#002F45] text-white shadow-sm'
+                ? 'bg-primary-950 text-white shadow-sm'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -134,7 +134,7 @@ const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) =>
             onClick={() => setActiveTab('visibility')}
             className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${
               activeTab === 'visibility'
-                ? 'bg-[#002F45] text-white shadow-sm'
+                ? 'bg-primary-950 text-white shadow-sm'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -179,7 +179,7 @@ const DetailsTab = ({ listing, expiringSoon }) => (
 
     <div>
       <h3 className="font-black text-gray-900 text-lg">{listing.item_name}</h3>
-      <p className="text-2xl font-black text-[#002F45] mt-1">GH₵{listing.price}</p>
+      <p className="text-2xl font-black text-primary-950 mt-1">GH₵{listing.price}</p>
     </div>
 
     {listing.description && (
@@ -236,10 +236,10 @@ const VisibilityTab = ({
   <div className="space-y-5">
     {/* Boost Section */}
     {!listing.is_sold && (
-      <div className="rounded-xl p-4 border border-[#002F45]/10 bg-[#002F45]/[0.03]">
+      <div className="rounded-xl p-4 border border-primary-950/10 bg-primary-950/[0.03]">
         <div className="flex items-center gap-2 mb-1">
           
-          <h4 className="font-bold text-[#002F45]">Boost Visibility</h4>
+          <h4 className="font-bold text-primary-950">Boost Visibility</h4>
         </div>
         <p className="text-xs text-gray-500 mb-3">Featured listings appear at the top and get more views.</p>
 
@@ -250,7 +250,7 @@ const VisibilityTab = ({
               onClick={() => setSelectedBoost(option.id)}
               className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-bold transition-all border ${
                 selectedBoost === option.id
-                  ? 'bg-[#002F45] text-white border-[#002F45]'
+                  ? 'bg-primary-950 text-white border-primary-950'
                   : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
               }`}
             >
@@ -273,7 +273,7 @@ const VisibilityTab = ({
           }}
           onPaymentSuccess={onBoostSuccess}
           onPaymentError={onPaymentError}
-          className="w-full py-3 rounded-xl font-bold text-sm bg-[#002F45] text-white hover:bg-[#001a26] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl font-bold text-sm bg-primary-950 text-white hover:bg-primary-950 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
         >
           Boost for GH₵{selectedBoostOption.price}
         </PaymentButton>

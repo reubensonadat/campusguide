@@ -168,6 +168,7 @@ const Settings = () => {
   const [isRestoring, setIsRestoring] = useState(false);
   
   const [appSettings, setAppSettings] = useLocalStorage('ucc_settings', { push_classes: true, push_whispers: true });
+  const [appColorTheme, setAppColorTheme] = useLocalStorage('ucc_app_color_theme', 'default');
   
   const handleToggleSetting = (key) => {
     setAppSettings(prev => {
@@ -495,7 +496,7 @@ const Settings = () => {
   ];
 
   return (
-    <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-[#002F45]">
+    <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-primary-950">
       <div className="max-w-3xl mx-auto px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
 
         {/* Header matching Profile style */}
@@ -534,7 +535,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${theme === 'dark' ? 'bg-[#002F45]' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${theme === 'dark' ? 'bg-primary-950' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
@@ -552,7 +553,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={() => handleToggleSetting('push_classes')}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${appSettings.push_classes !== false ? 'bg-[#002F45]' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${appSettings.push_classes !== false ? 'bg-primary-950' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${appSettings.push_classes !== false ? 'translate-x-5' : 'translate-x-0'
@@ -570,7 +571,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={() => handleToggleSetting('push_whispers')}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${appSettings.push_whispers !== false ? 'bg-[#002F45]' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${appSettings.push_whispers !== false ? 'bg-primary-950' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${appSettings.push_whispers !== false ? 'translate-x-5' : 'translate-x-0'
@@ -588,7 +589,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={handleToggleSystemNotifications}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${systemNotificationsEnabled ? 'bg-[#002F45]' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${systemNotificationsEnabled ? 'bg-primary-950' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${systemNotificationsEnabled ? 'translate-x-5' : 'translate-x-0'
@@ -616,10 +617,10 @@ const Settings = () => {
 
           {/* Core Features */}
           <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#6EABC6]/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-400/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
 
             <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-[#002F45]/5 text-[#002F45] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary-950/5 text-primary-950 flex items-center justify-center">
                 <LayoutGrid size={20} />
               </div>
               <div>
@@ -632,7 +633,7 @@ const Settings = () => {
               {coreWidgetToggles.map(({ key, label, Icon }) => (
                 <div key={key} className="flex items-center justify-between group">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-[#002F45]/5 text-[#002F45]' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-primary-950/5 text-primary-950' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
                       }`}>
                       <Icon size={16} />
                     </div>
@@ -641,7 +642,7 @@ const Settings = () => {
                   </div>
                   <button
                     onClick={() => toggleWidget(key)}
-                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002F45] focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-[#002F45]' : 'bg-gray-200'
+                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-950 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-primary-950' : 'bg-gray-200'
                       }`}
                   >
                     <span
@@ -656,16 +657,16 @@ const Settings = () => {
 
           {/* API Marketplace UI */}
           <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden mt-6">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#6EABC6]/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-400/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
 
             <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-[#002F45]/5 text-[#002F45] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary-950/5 text-primary-950 flex items-center justify-center">
                 <Store size={20} />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <h3 className="text-[17px] font-bold text-gray-900">API Marketplace</h3>
-                  <span className="text-[11px] font-bold text-[#002F45] bg-[#002F45]/5 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-bold text-primary-950 bg-primary-950/5 px-2 py-0.5 rounded-full">
                     {apiWidgetToggles.filter(w => homeWidgets[w.key]).length} / 3 Active
                   </span>
                 </div>
@@ -677,7 +678,7 @@ const Settings = () => {
               {apiWidgetToggles.map(({ key, label, Icon }) => (
                 <div key={key} className="flex items-center justify-between group">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-[#002F45]/5 text-[#002F45]' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-primary-950/5 text-primary-950' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
                       }`}>
                       <Icon size={16} />
                     </div>
@@ -686,7 +687,7 @@ const Settings = () => {
                   </div>
                   <button
                     onClick={() => toggleWidget(key)}
-                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002F45] focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-[#002F45]' : 'bg-gray-200'
+                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-950 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-primary-950' : 'bg-gray-200'
                       }`}
                   >
                     <span
@@ -708,16 +709,16 @@ const Settings = () => {
             {/* Unique Device ID block */}
             <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-[#002F45]/10 flex items-center justify-center flex-shrink-0">
-                  <Fingerprint size={20} className="text-[#002F45]" />
+                <div className="w-10 h-10 rounded-xl bg-primary-950/10 flex items-center justify-center flex-shrink-0">
+                  <Fingerprint size={20} className="text-primary-950" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Your Unique App ID</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <code className="text-sm font-black text-[#002F45] tracking-wider">{deviceId}</code>
+                    <code className="text-sm font-black text-primary-950 tracking-wider">{deviceId}</code>
                     <button
                       onClick={copyDeviceId}
-                      className="p-1.5 rounded-lg hover:bg-white text-gray-400 hover:text-[#002F45] transition-colors active:scale-95"
+                      className="p-1.5 rounded-lg hover:bg-white text-gray-400 hover:text-primary-950 transition-colors active:scale-95"
                       title="Copy ID"
                     >
                       {copiedId ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
@@ -746,7 +747,7 @@ const Settings = () => {
                     });
                   });
                 }}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#002F45]/5 border border-[#002F45]/10 text-[#002F45] font-bold text-xs hover:bg-[#002F45]/10 transition-all active:scale-95"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary-950/5 border border-primary-950/10 text-primary-950 font-bold text-xs hover:bg-primary-950/10 transition-all active:scale-95"
               >
                 <Cloud size={14} />
                 Backup Now
@@ -774,7 +775,7 @@ const Settings = () => {
                   value={restoreId}
                   onChange={(e) => setRestoreId(e.target.value.toUpperCase())}
                   placeholder="UCC-XXXXXXXX"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-primary-950/20 focus:border-primary-950 transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
                   maxLength={12}
                 />
                 <input
@@ -784,7 +785,7 @@ const Settings = () => {
                   value={restorePin}
                   onChange={(e) => setRestorePin(e.target.value.replace(/[^0-9]/g, ''))}
                   placeholder="6-Digit PIN"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-primary-950/20 focus:border-primary-950 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
                   maxLength={6}
                 />
                 <button
@@ -792,11 +793,46 @@ const Settings = () => {
                   disabled={isRestoring || restoreId.length < 12 || restorePin.length < 6}
                   className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${isRestoring
                     ? 'bg-gray-100 text-gray-400'
-                    : 'bg-[#002F45] text-white hover:bg-[#001a26] shadow-md shadow-[#002F45]/10'
+                    : 'bg-primary-950 text-white hover:bg-primary-950 shadow-md shadow-primary-950/10'
                     }`}
                 >
                   {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore Data'}
                 </button>
+              </div>
+            </div>
+          </div>
+
+          <hr className="border-gray-100" />
+
+          {/* Category 3.5: Personalization */}
+          <div>
+            <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">App Personalization</h2>
+            <div className="space-y-4">
+              <div className="w-full flex flex-col py-2 group">
+                <div className="flex items-center gap-4 mb-3">
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">App Accent Theme</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Choose your flavor of Campus Guide</span>
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap gap-3">
+                  {[
+                    { id: 'default', name: 'Campus Blue', color: 'bg-primary-500' },
+                    { id: 'emerald', name: 'Emerald', color: 'bg-[#10b981]' },
+                    { id: 'sunset', name: 'Sunset', color: 'bg-[#f97316]' },
+                    { id: 'rose', name: 'Rose', color: 'bg-[#f43f5e]' },
+                  ].map(t => (
+                    <button
+                      key={t.id}
+                      onClick={() => setAppColorTheme(t.id)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all ${appColorTheme === t.id ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}
+                    >
+                      <div className={`w-4 h-4 rounded-full ${t.color}`} />
+                      <span className={`text-xs font-bold ${appColorTheme === t.id ? 'text-primary-700' : 'text-gray-500'}`}>{t.name}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -844,7 +880,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={handleGpaLockToggle}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${isGpaLocked ? 'bg-[#002F45]' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${isGpaLocked ? 'bg-primary-950' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${isGpaLocked ? 'translate-x-5' : 'translate-x-0'
@@ -871,7 +907,7 @@ const Settings = () => {
                 className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
               >
                 <div className="flex items-center gap-4">
-                  <CustomCoach size={20} className="text-[#002F45]" />
+                  <CustomCoach size={20} className="text-primary-950" />
                   <div>
                     <span className="text-[15px] text-gray-900 font-bold block leading-tight">Replay Welcome Guide (Coach)</span>
                     <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Resets the fresher onboarding overlays on all tabs</span>
@@ -985,13 +1021,13 @@ const Settings = () => {
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value.replace(/[^0-9]/g, ''))}
                   placeholder="••••••"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-2xl tracking-[0.5em] text-center font-bold focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-2xl tracking-[0.5em] text-center font-bold focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
                 />
               </div>
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full py-4 text-base font-bold bg-[#002F45] text-white hover:bg-[#001a26] rounded-xl active:scale-95 transition-all disabled:bg-gray-100 disabled:text-gray-400"
+                  className="w-full py-4 text-base font-bold bg-primary-950 text-white hover:bg-primary-950 rounded-xl active:scale-95 transition-all disabled:bg-gray-100 disabled:text-gray-400"
                   disabled={isPinUpdating || newPin.length < 6}
                 >
                   {isPinUpdating ? 'Updating...' : 'Update PIN'}
@@ -1010,7 +1046,7 @@ const Settings = () => {
               <h2 className="text-lg font-black text-gray-900 tracking-tight pl-2">Edit Profile</h2>
               <button
                 onClick={handleSaveProfile}
-                className="text-white bg-[#002F45] font-bold px-4 py-1.5 hover:bg-[#001a26] rounded-lg transition-colors active:scale-95"
+                className="text-white bg-primary-950 font-bold px-4 py-1.5 hover:bg-primary-950 rounded-lg transition-colors active:scale-95"
               >
                 Save
               </button>
@@ -1026,7 +1062,7 @@ const Settings = () => {
                       <Edit3 size={24} className="text-white" />
                     </div>
                   </div>
-                  <div className="absolute -bottom-3 -right-3 bg-white text-[#002F45] w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-gray-100">
+                  <div className="absolute -bottom-3 -right-3 bg-white text-primary-950 w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-gray-100">
                     <Edit3 size={18} />
                   </div>
                 </div>
@@ -1053,7 +1089,7 @@ const Settings = () => {
                       value={formData.phone || ''}
                       onChange={(e) => setFormData({ ...formData, phone: sanitizeGhanaPhone(e.target.value) })}
                       placeholder="e.g. 054 123 4567"
-                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
                     />
                   </div>
                   <div className="space-y-2">
@@ -1063,7 +1099,7 @@ const Settings = () => {
                       value={formData.student_id || ''}
                       onChange={(e) => setFormData({ ...formData, student_id: e.target.value.toUpperCase() })}
                       placeholder="e.g. PS/ITC/20/0000"
-                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
                     />
                   </div>
                 </div>
@@ -1082,7 +1118,7 @@ const Settings = () => {
                     <select
                       value={formData.level || ''}
                       onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
                     >
                       <option value="">Select Level</option>
                       <option value="100">100</option>
@@ -1098,7 +1134,7 @@ const Settings = () => {
                     <select
                       value={formData.semester || '1'}
                       onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
-                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-[#002F45] focus:ring-1 focus:ring-[#002F45] transition-all"
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
                     >
                       <option value="1">Sem 1</option>
                       <option value="2">Sem 2</option>
@@ -1153,7 +1189,7 @@ const Settings = () => {
           <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 flex flex-col">
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
               <h2 className="text-lg font-black text-gray-900 px-2 flex items-center gap-2">
-                <Lock size={18} className="text-[#002F45]" />
+                <Lock size={18} className="text-primary-950" />
                 {lockModalMode === 'setup' && 'Set GPA Vault PIN'}
                 {lockModalMode === 'confirm' && 'Confirm PIN'}
                 {lockModalMode === 'deactivate' && 'Disable GPA Lock'}
@@ -1187,7 +1223,7 @@ const Settings = () => {
                   }
                 }}
                 placeholder="••••••"
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-lg font-bold tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-[#002F45]/20 focus:border-[#002F45] transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
+                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-lg font-bold tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-primary-950/20 focus:border-primary-950 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
                 maxLength={6}
                 autoFocus
                 required
@@ -1204,7 +1240,7 @@ const Settings = () => {
                 <button
                   type="submit"
                   disabled={lockModalMode === 'confirm' ? pinConfirmInput.length < 6 : pinInput.length < 6}
-                  className="flex-1 bg-[#002F45] hover:bg-[#001a26] text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-sm"
+                  className="flex-1 bg-primary-950 hover:bg-primary-950 text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-sm"
                 >
                   {lockModalMode === 'setup' && 'Next'}
                   {lockModalMode === 'confirm' && 'Confirm & Lock'}

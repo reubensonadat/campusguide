@@ -537,7 +537,7 @@ const GPACalculator = () => {
             className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl max-w-sm w-full text-center space-y-6 animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-16 h-16 rounded-2xl bg-[#002F45]/5 flex items-center justify-center mx-auto text-[#002F45]">
+            <div className="w-16 h-16 rounded-2xl bg-primary-950/5 flex items-center justify-center mx-auto text-primary-950">
               <Lock size={28} className="animate-pulse" />
             </div>
 
@@ -559,12 +559,12 @@ const GPACalculator = () => {
                   <div
                     key={idx}
                     className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all ${hasValue
-                        ? 'border-[#002F45] bg-[#002F45]/5'
+                        ? 'border-primary-950 bg-primary-950/5'
                         : 'border-gray-200 bg-gray-50'
                       }`}
                   >
                     {hasValue && (
-                      <div className="w-3.5 h-3.5 rounded-full bg-[#002F45] animate-in zoom-in duration-100" />
+                      <div className="w-3.5 h-3.5 rounded-full bg-primary-950 animate-in zoom-in duration-100" />
                     )}
                   </div>
                 );
@@ -593,20 +593,20 @@ const GPACalculator = () => {
           <button
             onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
             disabled={activeTermIndex === 0}
-            className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+            className="p-2 rounded-xl text-primary-950 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
           >
             <ChevronLeft size={20} />
           </button>
 
           <div className="flex-1 text-center flex flex-col">
-            <span className="text-sm font-black text-[#002F45]">Level {activeLevel}</span>
-            <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Semester {activeSemester}</span>
+            <span className="text-sm font-black text-primary-950">Level {activeLevel}</span>
+            <span className="text-[10px] font-bold text-primary-950/60 uppercase tracking-widest">Semester {activeSemester}</span>
           </div>
 
           <button
             onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
             disabled={activeTermIndex === TERMS.length - 1}
-            className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+            className="p-2 rounded-xl text-primary-950 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
           >
             <ChevronRight size={20} />
           </button>
@@ -614,7 +614,7 @@ const GPACalculator = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="border-primary-100 bg-[#002F45]/5">
+          <Card className="border-primary-100 bg-primary-950/5">
             <CardContent className="pt-6">
               <div className="text-center">
                 <p className="text-sm font-bold text-primary-400 uppercase tracking-widest mb-2">Semester GPA</p>
@@ -647,9 +647,9 @@ const GPACalculator = () => {
 
         {/* Target GPA Solver Card */}
         <Card padding="none" className="mb-6 bg-white border-gray-100 shadow-sm overflow-hidden">
-          <CardHeader className="p-5 mb-0 border-b border-gray-100 bg-[#002F45]/5">
+          <CardHeader className="p-5 mb-0 border-b border-gray-100 bg-primary-950/5">
             <CardTitle className="text-gray-900 text-lg flex items-center gap-2 mb-1">
-              <Target className="w-5 h-5 text-[#002F45]" />
+              <Target className="w-5 h-5 text-primary-950" />
               Active Semester GPA Forecaster
             </CardTitle>
             <p className="text-sm text-gray-500 font-medium">Set your target GPA for this semester. The app will calculate the exact target grades required for each of your current courses to meet your goal.</p>
@@ -702,11 +702,11 @@ const GPACalculator = () => {
                   placeholder="e.g. 3.6"
                   value={targetGPA}
                   onChange={(e) => setTargetGPA(e.target.value)}
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-950 focus:border-primary-950 outline-none transition-all font-medium"
                 />
               </div>
               <div className="flex gap-2 w-full sm:w-auto flex-wrap">
-                <Button onClick={simulateSemesterTarget} className="flex-1 sm:flex-none bg-[#002F45] hover:bg-[#001a26] text-white py-3 rounded-xl shadow-sm">
+                <Button onClick={simulateSemesterTarget} className="flex-1 sm:flex-none bg-primary-950 hover:bg-primary-950 text-white py-3 rounded-xl shadow-sm">
                   Forecast Targets
                 </Button>
                 {targetResult && targetResult.success && (
@@ -715,7 +715,7 @@ const GPACalculator = () => {
                       setShuffleTrigger(prev => prev + 1);
                     }}
                     variant="outline"
-                    className="flex-1 sm:flex-none border-[#002F45]/20 text-[#002F45] hover:bg-[#002F45]/5 py-3 rounded-xl flex items-center justify-center gap-1.5"
+                    className="flex-1 sm:flex-none border-primary-950/20 text-primary-950 hover:bg-primary-950/5 py-3 rounded-xl flex items-center justify-center gap-1.5"
                   >
                     🎲 Shuffle Paths
                   </Button>
@@ -754,8 +754,8 @@ const GPACalculator = () => {
                   </div>
                 </div>
 
-                <div className="p-4 bg-[#002F45]/5 rounded-xl border border-[#002F45]/10">
-                  <p className="text-xs font-bold text-[#002F45] uppercase tracking-wider mb-1">AI Recommendation & Study Strategy:</p>
+                <div className="p-4 bg-primary-950/5 rounded-xl border border-primary-950/10">
+                  <p className="text-xs font-bold text-primary-950 uppercase tracking-wider mb-1">AI Recommendation & Study Strategy:</p>
                   <p className="text-sm text-gray-700 font-medium leading-relaxed">{targetResult.studyPlan}</p>
                 </div>
               </div>
@@ -900,7 +900,7 @@ const GPACalculator = () => {
                       />
                     ) : (
                       <div className="md:col-span-2 space-y-4 pt-4 pb-4 border-t border-gray-100 mt-2">
-                        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center bg-[#002F45]/5 p-3 rounded-xl border border-primary-100 gap-3">
+                        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center bg-primary-950/5 p-3 rounded-xl border border-primary-100 gap-3">
                           <p className="text-xs font-bold text-primary-700 uppercase tracking-widest flex items-center gap-2">
                             Scheme
                           </p>

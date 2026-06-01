@@ -15,7 +15,7 @@ export const QuickActionsWidget = ({ quickActions }) => {
               className="bg-white border border-gray-200 rounded-2xl p-3 flex-none flex items-center gap-3 active:scale-95 transition-transform"
             >
               <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
-                <Icon size={18} className={isAffiliate ? 'text-orange-500' : 'text-[#002F45]'} />
+                <Icon size={18} className={isAffiliate ? 'text-orange-500' : 'text-primary-950'} />
               </div>
               <span className="text-[13px] font-bold text-gray-900 leading-tight pr-2 whitespace-nowrap">
                 {action.title}

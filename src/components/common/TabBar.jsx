@@ -82,7 +82,7 @@ const TabBar = () => {
       <div className="bg-white rounded-2xl shadow-strong relative flex items-center justify-between px-2 h-[62px]">
         {/* Sliding Pill */}
         <div
-          className="absolute h-10 bg-[#6EABC6] rounded-xl"
+          className="absolute h-10 bg-primary-400 rounded-xl"
           style={{
             left: `${pillStyle.left}px`,
             width: `${pillStyle.width}px`,

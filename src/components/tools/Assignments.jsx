@@ -160,7 +160,7 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full pl-9 pr-8 p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#6EABC6] focus:ring-4 focus:ring-[#6EABC6]/10 rounded-xl text-sm font-medium transition-all outline-none placeholder:text-gray-400"
+          className="w-full pl-9 pr-8 p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 rounded-xl text-sm font-medium transition-all outline-none placeholder:text-gray-400"
         />
         <button
           type="button"
@@ -179,11 +179,11 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
               type="button"
               onClick={() => handleSelect(course)}
               className={`w-full text-left px-3 py-2 text-sm font-medium transition-colors ${
-                index === highlightedIndex ? 'bg-[#6EABC6]/10 text-[#002F45]' : 'text-gray-700 hover:bg-gray-50'
-              } ${course === value ? 'bg-[#6EABC6]/5 font-bold' : ''}`}
+                index === highlightedIndex ? 'bg-primary-400/10 text-primary-950' : 'text-gray-700 hover:bg-gray-50'
+              } ${course === value ? 'bg-primary-400/5 font-bold' : ''}`}
             >
               <span className="flex items-center gap-2">
-                {course === value && <CheckCircle2 size={12} className="text-[#6EABC6]" />}
+                {course === value && <CheckCircle2 size={12} className="text-primary-400" />}
                 {course}
               </span>
             </button>
@@ -193,7 +193,7 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
               type="button"
               onClick={() => handleSelect(query.trim())}
               className={`w-full text-left px-3 py-2 text-sm font-medium transition-colors ${
-                filteredCourses.length === highlightedIndex ? 'bg-[#6EABC6]/10 text-[#002F45]' : 'text-[#6EABC6] hover:bg-[#6EABC6]/5'
+                filteredCourses.length === highlightedIndex ? 'bg-primary-400/10 text-primary-950' : 'text-primary-400 hover:bg-primary-400/5'
               }`}
             >
               <span className="flex items-center gap-2">
@@ -350,7 +350,7 @@ const Assignments = () => {
             toast.dismiss(t.id);
             toast.success('Assignment restored!');
           }}
-          className="text-xs font-bold text-[#6EABC6] bg-[#6EABC6]/10 px-3 py-1 rounded-lg hover:bg-[#6EABC6]/20 transition-colors flex-shrink-0"
+          className="text-xs font-bold text-primary-400 bg-primary-400/10 px-3 py-1 rounded-lg hover:bg-primary-400/20 transition-colors flex-shrink-0"
         >
           Undo
         </button>
@@ -381,7 +381,7 @@ const Assignments = () => {
             toast.dismiss(t.id);
             toast.success('Status reverted!');
           }}
-          className="text-xs font-bold text-[#6EABC6] bg-[#6EABC6]/10 px-3 py-1 rounded-lg hover:bg-[#6EABC6]/20 transition-colors flex-shrink-0"
+          className="text-xs font-bold text-primary-400 bg-primary-400/10 px-3 py-1 rounded-lg hover:bg-primary-400/20 transition-colors flex-shrink-0"
         >
           Undo
         </button>
@@ -449,7 +449,7 @@ const Assignments = () => {
           </div>
           <button
             onClick={() => { setEditingAssignment(null); setShowAddModal(true); }}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#002F45] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary-950 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
           >
             <Plus size={20} />
           </button>
@@ -460,20 +460,20 @@ const Assignments = () => {
           <button
             onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
             disabled={activeTermIndex === 0}
-            className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+            className="p-2 rounded-xl text-primary-950 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
           >
             <ChevronLeft size={20} />
           </button>
 
           <div className="flex-1 text-center flex flex-col">
-            <span className="text-sm font-black text-[#002F45]">Level {activeLevel}</span>
-            <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Semester {activeSemester}</span>
+            <span className="text-sm font-black text-primary-950">Level {activeLevel}</span>
+            <span className="text-[10px] font-bold text-primary-950/60 uppercase tracking-widest">Semester {activeSemester}</span>
           </div>
 
           <button
             onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
             disabled={activeTermIndex === TERMS.length - 1}
-            className="p-2 rounded-xl text-[#002F45] hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+            className="p-2 rounded-xl text-primary-950 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
           >
             <ChevronRight size={20} />
           </button>
@@ -522,16 +522,16 @@ const Assignments = () => {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 sm:py-2.5 bg-white border border-gray-100 rounded-xl text-sm font-medium focus:outline-none focus:border-[#6EABC6] focus:ring-2 focus:ring-[#6EABC6]/10 transition-all placeholder:text-gray-400"
+                className="w-full pl-9 pr-3 py-2 sm:py-2.5 bg-white border border-gray-100 rounded-xl text-sm font-medium focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-400/10 transition-all placeholder:text-gray-400"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-all active:scale-95 ${showFilters ? 'bg-[#002F45] text-white border-[#002F45]' : 'bg-white border-gray-100 text-gray-500'}`}
+              className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-all active:scale-95 ${showFilters ? 'bg-primary-950 text-white border-primary-950' : 'bg-white border-gray-100 text-gray-500'}`}
             >
               <Filter size={16} />
               {activeFilterCount > 0 && !showFilters && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#6EABC6] text-white text-[8px] font-bold flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary-400 text-white text-[8px] font-bold flex items-center justify-center">
                   {activeFilterCount}
                 </span>
               )}
@@ -539,13 +539,13 @@ const Assignments = () => {
             <div className="flex bg-white border border-gray-100 rounded-xl overflow-hidden">
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'list' ? 'bg-[#002F45] text-white' : 'text-gray-500'}`}
+                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'list' ? 'bg-primary-950 text-white' : 'text-gray-500'}`}
               >
                 <List size={16} />
               </button>
               <button
                 onClick={() => setViewMode('calendar')}
-                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'calendar' ? 'bg-[#002F45] text-white' : 'text-gray-500'}`}
+                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'calendar' ? 'bg-primary-950 text-white' : 'text-gray-500'}`}
               >
                 <CalendarIcon size={16} />
               </button>
@@ -557,7 +557,7 @@ const Assignments = () => {
               <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                 <div>
                   <label className="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Status</label>
-                  <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full p-1.5 sm:p-2 bg-gray-50 border border-gray-100 rounded-lg text-[10px] sm:text-xs font-bold focus:outline-none focus:border-[#6EABC6]">
+                  <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full p-1.5 sm:p-2 bg-gray-50 border border-gray-100 rounded-lg text-[10px] sm:text-xs font-bold focus:outline-none focus:border-primary-400">
                     <option value="all">All</option>
                     <option value="pending">Pending</option>
                     <option value="submitted">Submitted</option>
@@ -567,14 +567,14 @@ const Assignments = () => {
                 </div>
                 <div>
                   <label className="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Course</label>
-                  <select value={filterCourse} onChange={(e) => setFilterCourse(e.target.value)} className="w-full p-1.5 sm:p-2 bg-gray-50 border border-gray-100 rounded-lg text-[10px] sm:text-xs font-bold focus:outline-none focus:border-[#6EABC6]">
+                  <select value={filterCourse} onChange={(e) => setFilterCourse(e.target.value)} className="w-full p-1.5 sm:p-2 bg-gray-50 border border-gray-100 rounded-lg text-[10px] sm:text-xs font-bold focus:outline-none focus:border-primary-400">
                     <option value="all">All</option>
                     {courses.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Priority</label>
-                  <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="w-full p-1.5 sm:p-2 bg-gray-50 border border-gray-100 rounded-lg text-[10px] sm:text-xs font-bold focus:outline-none focus:border-[#6EABC6]">
+                  <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="w-full p-1.5 sm:p-2 bg-gray-50 border border-gray-100 rounded-lg text-[10px] sm:text-xs font-bold focus:outline-none focus:border-primary-400">
                     <option value="all">All</option>
                     <option value="high">High</option>
                     <option value="medium">Medium</option>
@@ -585,7 +585,7 @@ const Assignments = () => {
               {(filterStatus !== 'all' || filterCourse !== 'all' || filterPriority !== 'all') && (
                 <button
                   onClick={() => { setFilterStatus('all'); setFilterCourse('all'); setFilterPriority('all'); }}
-                  className="text-[10px] sm:text-xs font-bold text-[#6EABC6] hover:underline"
+                  className="text-[10px] sm:text-xs font-bold text-primary-400 hover:underline"
                 >
                   Clear all filters
                 </button>
@@ -689,7 +689,7 @@ const Assignments = () => {
                 </p>
                 <button
                   onClick={() => { setEditingAssignment(null); setShowAddModal(true); }}
-                  className="bg-[#002F45] text-white text-xs font-bold px-5 py-2.5 rounded-xl active:scale-95 transition-transform"
+                  className="bg-primary-950 text-white text-xs font-bold px-5 py-2.5 rounded-xl active:scale-95 transition-transform"
                 >
                   Add Assignment
                 </button>
@@ -739,11 +739,11 @@ const Assignments = () => {
                     key={day}
                     onClick={() => setSelectedCalDate(isSelected ? null : dateStr)}
                     className={`p-0.5 sm:p-1 min-h-[44px] sm:min-h-[64px] border-t border-gray-50 text-left transition-colors ${
-                      isSelected ? 'bg-[#002F45]/5' : 'hover:bg-gray-50'
+                      isSelected ? 'bg-primary-950/5' : 'hover:bg-gray-50'
                     }`}
                   >
                     <span className={`inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-[10px] sm:text-xs font-bold ${
-                      isToday ? 'bg-[#002F45] text-white' : 'text-gray-700'
+                      isToday ? 'bg-primary-950 text-white' : 'text-gray-700'
                     }`}>
                       {day}
                     </span>
@@ -825,11 +825,11 @@ const Assignments = () => {
               </button>
             </div>
             <div className="p-5 space-y-4">
-              <div className="p-4 bg-[#002F45]/5 rounded-xl border border-[#002F45]/10">
+              <div className="p-4 bg-primary-950/5 rounded-xl border border-primary-950/10">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
                   Shared by {sharedDeadline.senderName || 'Student'}
                 </span>
-                <h3 className="font-extrabold text-[#002F45] text-base">{sharedDeadline.title}</h3>
+                <h3 className="font-extrabold text-primary-950 text-base">{sharedDeadline.title}</h3>
                 {sharedDeadline.course && <p className="text-xs font-bold text-gray-500 mt-1">{sharedDeadline.course}</p>}
               </div>
               
@@ -863,7 +863,7 @@ const Assignments = () => {
                     window.history.replaceState({}, document.title, newUrl);
                     setSharedDeadline(null);
                   }}
-                  className="flex-1 bg-[#002F45] hover:bg-[#001a26] text-white py-3 rounded-xl font-bold transition-all shadow-md active:scale-95 text-center"
+                  className="flex-1 bg-primary-950 hover:bg-primary-950 text-white py-3 rounded-xl font-bold transition-all shadow-md active:scale-95 text-center"
                 >
                   Import
                 </button>
@@ -998,7 +998,7 @@ const AssignmentCard = ({ assignment, compact, onStatusChange, onEdit, onDelete,
           {a.status !== 'pending' && (
             <button
               onClick={() => onStatusChange(a.id, 'pending')}
-              className="text-[9px] sm:text-[10px] font-bold text-[#6EABC6] mt-2 sm:mt-3 hover:underline flex items-center gap-1"
+              className="text-[9px] sm:text-[10px] font-bold text-primary-400 mt-2 sm:mt-3 hover:underline flex items-center gap-1"
             >
               <Circle size={8} /> Revert to Pending
             </button>
@@ -1050,7 +1050,7 @@ const AssignmentModal = ({ assignment, courses, onSave, onClose }) => {
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               placeholder="e.g. Statistics Problem Set 4"
-              className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#6EABC6] focus:ring-4 focus:ring-[#6EABC6]/10 rounded-xl text-sm font-medium transition-all outline-none placeholder:text-gray-400"
+              className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 rounded-xl text-sm font-medium transition-all outline-none placeholder:text-gray-400"
               autoFocus
             />
           </div>
@@ -1058,7 +1058,7 @@ const AssignmentModal = ({ assignment, courses, onSave, onClose }) => {
           {/* Course — Searchable Combobox */}
           <div>
             <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-              <StudyIcon size={12} className="text-[#6EABC6]" />
+              <StudyIcon size={12} className="text-primary-400" />
               Course
             </label>
             <CourseCombobox
@@ -1077,7 +1077,7 @@ const AssignmentModal = ({ assignment, courses, onSave, onClose }) => {
                 type="date"
                 value={form.dueDate}
                 onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#6EABC6] focus:ring-4 focus:ring-[#6EABC6]/10 rounded-xl text-sm font-medium transition-all outline-none"
+                className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 rounded-xl text-sm font-medium transition-all outline-none"
               />
             </div>
             <div>
@@ -1086,7 +1086,7 @@ const AssignmentModal = ({ assignment, courses, onSave, onClose }) => {
                 type="time"
                 value={form.dueTime}
                 onChange={(e) => setForm({ ...form, dueTime: e.target.value })}
-                className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#6EABC6] focus:ring-4 focus:ring-[#6EABC6]/10 rounded-xl text-sm font-medium transition-all outline-none"
+                className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 rounded-xl text-sm font-medium transition-all outline-none"
               />
             </div>
           </div>
@@ -1123,7 +1123,7 @@ const AssignmentModal = ({ assignment, courses, onSave, onClose }) => {
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
               placeholder="Submission link, instructions, etc."
-              className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#6EABC6] focus:ring-4 focus:ring-[#6EABC6]/10 rounded-xl text-sm font-medium transition-all outline-none h-20 resize-none placeholder:text-gray-400"
+              className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-100 focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 rounded-xl text-sm font-medium transition-all outline-none h-20 resize-none placeholder:text-gray-400"
             />
           </div>
 
@@ -1131,7 +1131,7 @@ const AssignmentModal = ({ assignment, courses, onSave, onClose }) => {
           <div className="pt-2 pb-4">
             <button
               type="submit"
-              className="w-full py-3 sm:py-3.5 bg-[#002F45] hover:bg-[#001a26] text-white font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95"
+              className="w-full py-3 sm:py-3.5 bg-primary-950 hover:bg-primary-950 text-white font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95"
             >
               {isEditing ? 'Save Changes' : 'Add Assignment'}
             </button>

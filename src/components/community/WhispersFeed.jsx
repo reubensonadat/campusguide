@@ -8,15 +8,89 @@ import { getCurrentUser } from '../../services/authService';
 import { DataLoader } from '../common/CustomLoaders';
 import { Linkify } from '../../utils/linkify';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { toBlob } from 'html-to-image';
+import { triggerHaptic } from '../../utils/haptics';
 
-const handleShareWhisper = (e, id) => {
+const downloadFallback = (blob, id, toastId) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `campus-whisper-${id}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Image downloaded! You can now post it to your status.', { id: toastId, duration: 4000 });
+};
+
+const handleShareWhisper = async (e, whisper) => {
     if (e) e.stopPropagation();
-    const shareUrl = `${window.location.origin}/community?whisperId=${id}`;
-    navigator.clipboard.writeText(shareUrl).then(() => {
-        toast.success('Whisper link copied to clipboard!');
-    }).catch(() => {
-        toast.error('Failed to copy link.');
-    });
+    
+    triggerHaptic(); // Premium physical feedback
+    const toastId = toast.loading('Generating shareable image...');
+    
+    try {
+        const element = document.getElementById(`whisper-card-${whisper.id}`);
+        if (!element) throw new Error("Card not found");
+
+        // Add a temporary watermark
+        const watermark = document.createElement('div');
+        watermark.className = 'whisper-watermark';
+        watermark.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; padding-top:12px; margin-top:8px; border-top:1px solid #f3f4f6;">
+                <span style="font-size:12px; font-weight:900; color:#002F45; letter-spacing:0.5px;">CAMPUS GUIDE</span>
+                <span style="font-size:10px; font-weight:600; color:#9ca3af;">•</span>
+                <span style="font-size:10px; font-weight:600; color:#6b7280;">Anonymous Whispers</span>
+            </div>
+        `;
+        element.appendChild(watermark);
+
+        // html-to-image uses SVG foreignObject, perfectly handling modern CSS like oklch
+        const canvasBlob = await toBlob(element, {
+            pixelRatio: 3, // Very high quality for mobile screens
+            backgroundColor: '#ffffff',
+            filter: (node) => {
+                // Filter out the action row (upvote/downvote buttons) so they don't appear in the image
+                if (node.classList && node.classList.contains('whisper-action-row')) return false;
+                return true;
+            }
+        });
+
+        // Restore UI
+        element.removeChild(watermark);
+
+        if (!canvasBlob) {
+            toast.error('Failed to generate image', { id: toastId });
+            return;
+        }
+
+        const file = new File([canvasBlob], `campus-whisper-${whisper.id}.png`, { type: 'image/png' });
+        
+        // Check if Native Web Share API supports files (mobile devices)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    title: 'Campus Whisper',
+                    text: 'Read this juicy whisper on the Campus Guide app! 👀',
+                    files: [file],
+                });
+                toast.success('Shared successfully!', { id: toastId });
+            } catch (shareErr) {
+                if (shareErr.name !== 'AbortError') {
+                    downloadFallback(canvasBlob, whisper.id, toastId);
+                } else {
+                    toast.dismiss(toastId);
+                }
+            }
+        } else {
+            // Fallback to direct download for desktop/unsupported browsers
+            downloadFallback(canvasBlob, whisper.id, toastId);
+        }
+
+    } catch (error) {
+        console.error("Error capturing whisper:", error);
+        toast.error('Failed to capture image', { id: toastId });
+    }
 };
 
 const WhispersFeed = () => {
@@ -28,6 +102,24 @@ const WhispersFeed = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [userInteractions, setUserInteractions] = useState({ upvotes: new Set(), downvotes: new Set(), flags: new Set() });
     const [searchQuery, setSearchQuery] = useState('');
+
+    // Simulated online users count (Scales up based on base traffic, caps at 50 to look realistic)
+    // Kept stable during the user's session using useMemo
+    const simulatedOnlineCount = React.useMemo(() => {
+        const base = Math.floor(Math.random() * (42 - 12 + 1)) + 12; // Base between 12 and 42
+        
+        let boost = 0;
+        if (base <= 20) {
+            boost = Math.floor(Math.random() * 3) + 2; // Add ~2 for lower traffic
+        } else if (base <= 35) {
+            boost = Math.floor(Math.random() * 5) + 4; // Add ~4 for medium traffic
+        } else {
+            boost = Math.floor(Math.random() * 6) + 5; // Add ~5 for high traffic
+        }
+
+        const finalCount = base + boost;
+        return finalCount > 50 ? 50 : finalCount;
+    }, []);
 
     const loadWhispers = async () => {
         setLoading(true);
@@ -68,6 +160,7 @@ const WhispersFeed = () => {
     }, []);
 
     const handleInteract = async (id, type) => {
+        triggerHaptic();
         if (type === 'UPVOTE' && userInteractions.upvotes.has(id)) return;
         if (type === 'DOWNVOTE' && userInteractions.downvotes.has(id)) return;
         if (type === 'FLAG' && userInteractions.flags.has(id)) return;
@@ -123,9 +216,20 @@ const WhispersFeed = () => {
 
     const sortedWhispers = [...whispers]
         .sort((a, b) => {
+            const netA = a.upvotes - a.downvotes;
+            const netB = b.upvotes - b.downvotes;
+            const isHotA = netA >= 15;
+            const isHotB = netB >= 15;
+
             if (sortBy === 'top') {
-                return (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes);
+                return netB - netA;
             }
+            
+            // If sorting by New, pin HOT ones to the top
+            if (isHotA && !isHotB) return -1;
+            if (!isHotA && isHotB) return 1;
+            
+            // Then sort by date
             return new Date(b.created_at) - new Date(a.created_at);
         })
         .filter(w => {
@@ -137,7 +241,15 @@ const WhispersFeed = () => {
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto">
             <div className="flex justify-between items-end mb-4">
                 <div>
-                    <h2 className="text-xl font-black text-gray-900">Campus Whispers</h2>
+                    <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                        Campus Whispers
+                        <div className="flex items-center gap-1.5 bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                            <span className="text-[10px] font-black text-green-700 uppercase tracking-wider">
+                                {simulatedOnlineCount} Online
+                            </span>
+                        </div>
+                    </h2>
                     <p className="text-sm text-gray-500 font-medium mb-3">100% Anonymous. Spill the tea.</p>
                     <div className="flex gap-2">
                         <button 
@@ -187,7 +299,7 @@ const WhispersFeed = () => {
             <div className="space-y-4">
                 {loading ? (
                     <div className="py-12 flex flex-col items-center justify-center text-gray-400">
-                        <DataLoader className="w-8 h-8 text-[#002F45] mb-4" />
+                        <DataLoader className="w-8 h-8 text-primary-950 mb-4" />
                         <p className="text-sm font-medium">Loading whispers...</p>
                     </div>
                 ) : sortedWhispers.length === 0 ? (
@@ -233,7 +345,7 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
 
     const startPress = (e) => {
         pressTimer.current = setTimeout(() => {
-            handleShareWhisper(null, whisper.id);
+            handleShareWhisper(null, whisper);
         }, 2000);
     };
 
@@ -243,6 +355,9 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
             pressTimer.current = null;
         }
     };
+
+    const netScore = whisper.upvotes - whisper.downvotes;
+    const isTrending = netScore >= 15;
 
     return (
         <div
@@ -260,11 +375,30 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
             onTouchMove={endPress}
         >
             <div 
+                id={`whisper-card-${whisper.id}`}
                 onClick={() => onComment(whisper)}
-                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm cursor-pointer hover:border-primary-100 transition-colors select-none"
+                className={`rounded-2xl p-5 border shadow-sm cursor-pointer transition-colors select-none relative ${
+                    isTrending 
+                        ? 'border-orange-200 hover:border-orange-300 bg-[#fffcf5]' 
+                        : 'bg-white border-gray-100 hover:border-primary-100'
+                }`}
             >
                 <div className="flex justify-between items-start mb-3">
-                    <span className="text-xs font-bold text-primary-500 bg-primary-50 px-2 py-1 rounded-md">Anonymous</span>
+                    <div className="flex items-center gap-2">
+                        <span className={`text-xs font-bold px-2 py-1 rounded-md ${isTrending ? 'text-orange-600 bg-orange-100/50' : 'text-primary-500 bg-primary-50'}`}>
+                            Anonymous
+                        </span>
+                        {isTrending && (
+                            <div className="flex items-center gap-1 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-100/50 px-2 py-0.5 rounded-md animate-in fade-in zoom-in duration-500">
+                                <span className="text-[10px] font-black text-orange-600 uppercase tracking-wider flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-orange-500 animate-pulse">
+                                      <path fillRule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248z" clipRule="evenodd" />
+                                    </svg>
+                                    HOT
+                                </span>
+                            </div>
+                        )}
+                    </div>
                     <div className="flex items-center gap-3">
                         <span className="text-xs text-gray-400 font-medium">{getTimeAgo(whisper.created_at)}</span>
                         <button 
@@ -279,7 +413,7 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
                 <p className="text-gray-800 text-lg font-medium leading-relaxed mb-4 whitespace-pre-wrap break-words">
                     <Linkify text={whisper.text} />
                 </p>
-                <div className="flex items-center justify-between border-t border-gray-50 pt-3">
+                <div className="whisper-action-row flex items-center justify-between border-t border-gray-50 pt-3">
                     <div className="flex items-center gap-1 bg-gray-50 rounded-full px-1 py-1 border border-gray-100">
                         <button 
                             onClick={(e) => { e.stopPropagation(); onInteract(whisper.id, 'UPVOTE'); }} 
@@ -308,7 +442,7 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
                             </button>
                         )}
                         <button 
-                            onClick={(e) => { e.stopPropagation(); handleShareWhisper(e, whisper.id); }} 
+                            onClick={(e) => { e.stopPropagation(); handleShareWhisper(e, whisper); }} 
                             className="p-1.5 text-gray-400 hover:text-primary-600 transition-colors rounded-full hover:bg-primary-50" 
                             title="Share whisper"
                         >

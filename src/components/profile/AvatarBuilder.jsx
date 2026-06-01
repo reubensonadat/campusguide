@@ -36,9 +36,9 @@ export function AvatarBuilder({ onSelect, initialUrl }) {
     <div className="flex flex-col items-center gap-6 py-4 animate-avatar-pop">
       {/* Live Preview */}
       <div className="relative group">
-        <div className="absolute inset-0 bg-[#002F45]/20 blur-2xl rounded-full scale-75 group-hover:scale-90 transition-transform duration-500" />
+        <div className="absolute inset-0 bg-primary-950/20 blur-2xl rounded-full scale-75 group-hover:scale-90 transition-transform duration-500" />
         
-        <div className={`w-40 h-40 rounded-[32px] bg-white border-4 border-[#002F45]/20 shadow-xl overflow-hidden relative z-10 transition-transform duration-200 ${isAnimating ? 'scale-75' : 'scale-100'}`}>
+        <div className={`w-40 h-40 rounded-[32px] bg-white border-4 border-primary-950/20 shadow-xl overflow-hidden relative z-10 transition-transform duration-200 ${isAnimating ? 'scale-75' : 'scale-100'}`}>
           <img 
             src={avatarUrl} 
             alt="Avatar Preview" 
@@ -49,7 +49,7 @@ export function AvatarBuilder({ onSelect, initialUrl }) {
         <button
           type="button"
           onClick={handleRandomize}
-          className="absolute -right-2 -bottom-2 w-12 h-12 bg-[#002F45] text-white rounded-2xl flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 z-20"
+          className="absolute -right-2 -bottom-2 w-12 h-12 bg-primary-950 text-white rounded-2xl flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 z-20"
           aria-label="Randomize Avatar"
         >
           <Dices size={20} />
@@ -72,8 +72,8 @@ export function AvatarBuilder({ onSelect, initialUrl }) {
                 onClick={(e) => { e.preventDefault(); setStyle(s.id); }}
                 className={`px-4 py-2 rounded-xl text-[12px] font-bold transition-all ${
                   style === s.id
-                    ? 'bg-[#002F45] text-white shadow-md'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:border-[#002F45]/40'
+                    ? 'bg-primary-950 text-white shadow-md'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:border-primary-950/40'
                 }`}
               >
                 {s.label}
@@ -89,7 +89,7 @@ export function AvatarBuilder({ onSelect, initialUrl }) {
             onClick={(e) => { e.preventDefault(); setFlip(!flip); }}
             className={`flex items-center justify-center gap-2 py-3 rounded-xl border transition-all ${
               flip 
-                ? 'bg-[#002F45]/10 border-[#002F45] text-[#002F45] font-bold' 
+                ? 'bg-primary-950/10 border-primary-950 text-primary-950 font-bold' 
                 : 'bg-white border-gray-200 text-gray-500'
             }`}
           >
@@ -102,7 +102,7 @@ export function AvatarBuilder({ onSelect, initialUrl }) {
             onClick={(e) => { e.preventDefault(); setHasBackground(!hasBackground); }}
             className={`flex items-center justify-center gap-2 py-3 rounded-xl border transition-all ${
               hasBackground 
-                ? 'bg-[#002F45]/10 border-[#002F45] text-[#002F45] font-bold' 
+                ? 'bg-primary-950/10 border-primary-950 text-primary-950 font-bold' 
                 : 'bg-white border-gray-200 text-gray-500'
             }`}
           >
@@ -125,7 +125,7 @@ export function AvatarBuilder({ onSelect, initialUrl }) {
               value={seed}
               onChange={(e) => setSeed(e.target.value)}
               placeholder="Type anything..."
-              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-[#002F45] transition-all shadow-sm text-gray-900"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-primary-950 transition-all shadow-sm text-gray-900"
             />
           </div>
         </div>
@@ -135,7 +135,7 @@ export function AvatarBuilder({ onSelect, initialUrl }) {
       <button
         type="button"
         onClick={(e) => { e.preventDefault(); onSelect(avatarUrl); }}
-        className="w-full h-[56px] bg-[#002F45] text-white rounded-2xl font-black uppercase tracking-[0.15em] text-[14px] shadow-lg hover:bg-[#001f2e] active:scale-[0.98] transition-all"
+        className="w-full h-[56px] bg-primary-950 text-white rounded-2xl font-black uppercase tracking-[0.15em] text-[14px] shadow-lg hover:bg-[#001f2e] active:scale-[0.98] transition-all"
       >
         Set as My Character
       </button>

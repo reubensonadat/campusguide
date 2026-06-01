@@ -24,7 +24,7 @@ export const TodayClassesWidget = ({ todaysClassesWithStatus, allCompleted, toda
       {todaysClassesWithStatus.length === 0 ? (
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#002F45]/5 flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-primary-950/5 flex items-center justify-center flex-shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#002F45" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"></path></svg>
             </div>
             <div>
@@ -60,11 +60,11 @@ export const TodayClassesWidget = ({ todaysClassesWithStatus, allCompleted, toda
               <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
                   cls.status === 'completed' ? 'bg-gray-100' :
                   cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' : 
-                  'bg-[#002F45]/5'
+                  'bg-primary-950/5'
               }`}>
                 {cls.status === 'completed' ? <CheckCircle2 size={16} className="text-gray-400" /> :
                  cls.status === 'ongoing' ? <Loader2 size={16} className="text-blue-600 animate-spin" /> :
-                 <Clock size={16} className="text-[#002F45]" />}
+                 <Clock size={16} className="text-primary-950" />}
               </div>
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-bold truncate ${cls.status === 'completed' ? 'text-gray-500 line-through' : 'text-gray-900'}`}>

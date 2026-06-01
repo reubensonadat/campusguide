@@ -303,8 +303,8 @@ const TimetableBuilder = () => {
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <CardTitle className="text-[#002F45] text-xl flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#002F45]" />
+              <CardTitle className="text-primary-950 text-xl flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-primary-950" />
                 My Timetable
               </CardTitle>
               <p className="text-sm text-gray-500 mt-1">Simple, unified schedule view.</p>
@@ -316,7 +316,7 @@ const TimetableBuilder = () => {
                   variant="outline"
                   size="sm"
                   onClick={handleEnableNotifications}
-                  className="flex-1 sm:flex-none border-[#002F45]/20 text-[#002F45] hover:bg-[#002F45]/5"
+                  className="flex-1 sm:flex-none border-primary-950/20 text-primary-950 hover:bg-primary-950/5"
                 >
                   <Bell size={16} className="mr-2" />
                   Reminders
@@ -327,7 +327,7 @@ const TimetableBuilder = () => {
                   variant="outline"
                   size="sm"
                   onClick={handleShareTimetable}
-                  className="flex-1 sm:flex-none border-[#002F45]/20 text-[#002F45] hover:bg-[#002F45]/5"
+                  className="flex-1 sm:flex-none border-primary-950/20 text-primary-950 hover:bg-primary-950/5"
                 >
                   <Share2 size={16} className="mr-2" />
                   Share
@@ -354,7 +354,7 @@ const TimetableBuilder = () => {
                   });
                   setShowAddForm(true);
                 }}
-                className="flex-1 sm:flex-none bg-[#002F45] hover:bg-[#001a26] text-white shadow-md hover:shadow-lg transition-all"
+                className="flex-1 sm:flex-none bg-primary-950 hover:bg-primary-950 text-white shadow-md hover:shadow-lg transition-all"
               >
                 <Plus size={16} className="mr-2" />
                 Add
@@ -363,24 +363,24 @@ const TimetableBuilder = () => {
           </div>
 
           {/* Semester Toggle UI */}
-          <div className="flex items-center justify-center mt-6 bg-[#002F45]/5 rounded-2xl p-2 max-w-sm mx-auto border border-[#002F45]/10">
+          <div className="flex items-center justify-center mt-6 bg-primary-950/5 rounded-2xl p-2 max-w-sm mx-auto border border-primary-950/10">
             <button
               onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
               disabled={activeTermIndex === 0}
-              className="p-2 rounded-xl text-[#002F45] hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+              className="p-2 rounded-xl text-primary-950 hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
             >
               <ChevronLeft size={20} />
             </button>
 
             <div className="flex-1 text-center flex flex-col">
-              <span className="text-sm font-black text-[#002F45]">Level {activeLevel}</span>
-              <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Semester {activeSemester}</span>
+              <span className="text-sm font-black text-primary-950">Level {activeLevel}</span>
+              <span className="text-[10px] font-bold text-primary-950/60 uppercase tracking-widest">Semester {activeSemester}</span>
             </div>
 
             <button
               onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
               disabled={activeTermIndex === TERMS.length - 1}
-              className="p-2 rounded-xl text-[#002F45] hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+              className="p-2 rounded-xl text-primary-950 hover:bg-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
             >
               <ChevronRight size={20} />
             </button>
@@ -404,12 +404,12 @@ const TimetableBuilder = () => {
           <div ref={timetableRef} className="px-1 py-4 md:p-6 bg-slate-50/50 rounded-2xl">
             {displayCourses.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-3xl border border-dashed border-gray-200">
-                <div className="w-16 h-16 bg-[#002F45]/5 text-[#002F45] rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-primary-950/5 text-primary-950 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Calendar size={32} />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">Your schedule is empty</h3>
                 <p className="text-gray-500 max-w-sm mx-auto mb-6">Add your classes to stay organized and get reminders before they start.</p>
-                <Button onClick={() => setShowAddForm(true)} className="bg-[#002F45] text-white hover:bg-[#001a26] shadow-md">
+                <Button onClick={() => setShowAddForm(true)} className="bg-primary-950 text-white hover:bg-primary-950 shadow-md">
                   <Plus size={18} className="mr-2" /> Add First Class
                 </Button>
               </div>
@@ -486,7 +486,7 @@ const TimetableBuilder = () => {
                 placeholder="e.g. INF 101"
                 value={newCourse.name}
                 onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
-                className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-950 focus:border-primary-950 outline-none transition-all font-medium"
                 required
               />
             </div>
@@ -497,7 +497,7 @@ const TimetableBuilder = () => {
                 placeholder="e.g. ALTB 1 or CODE Building"
                 value={newCourse.location}
                 onChange={(e) => setNewCourse({ ...newCourse, location: e.target.value })}
-                className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-950 focus:border-primary-950 outline-none transition-all font-medium"
                 required
               />
             </div>
@@ -510,7 +510,7 @@ const TimetableBuilder = () => {
                   placeholder="e.g. Dr. Mensah"
                   value={newCourse.lecturer || ''}
                   onChange={(e) => setNewCourse({ ...newCourse, lecturer: e.target.value })}
-                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-950 focus:border-primary-950 outline-none transition-all font-medium"
                 />
               </div>
               <div>
@@ -520,7 +520,7 @@ const TimetableBuilder = () => {
                   placeholder="e.g. 054... or email"
                   value={newCourse.contact || ''}
                   onChange={(e) => setNewCourse({ ...newCourse, contact: e.target.value })}
-                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-950 focus:border-primary-950 outline-none transition-all font-medium"
                 />
               </div>
             </div>
@@ -531,7 +531,7 @@ const TimetableBuilder = () => {
                 <select
                   value={newCourse.creditHours}
                   onChange={(e) => setNewCourse({ ...newCourse, creditHours: parseInt(e.target.value, 10) })}
-                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-950 focus:border-primary-950 outline-none transition-all font-medium"
                 >
                   {[1, 2, 3, 4].map(credit => (
                     <option key={credit} value={credit}>{credit} Credits</option>
@@ -546,7 +546,7 @@ const TimetableBuilder = () => {
                 <select
                   value={newCourse.day}
                   onChange={(e) => setNewCourse({ ...newCourse, day: e.target.value })}
-                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-950 focus:border-primary-950 outline-none transition-all font-medium"
                 >
                   {DAYS_OF_WEEK.map(day => (
                     <option key={day} value={day}>{day}</option>
@@ -570,7 +570,7 @@ const TimetableBuilder = () => {
                       const newEnd = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
                       setNewCourse({ ...newCourse, startTime: newStart, endTime: newEnd });
                     }}
-                    className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                    className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-950 focus:border-primary-950 outline-none transition-all font-medium"
                     required
                   />
                 </div>
@@ -580,7 +580,7 @@ const TimetableBuilder = () => {
                     type="time"
                     value={newCourse.endTime}
                     onChange={(e) => setNewCourse({ ...newCourse, endTime: e.target.value })}
-                    className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#002F45] focus:border-[#002F45] outline-none transition-all font-medium"
+                    className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-950 focus:border-primary-950 outline-none transition-all font-medium"
                     required
                   />
                 </div>
@@ -617,7 +617,7 @@ const TimetableBuilder = () => {
             </div>
           </div>
           <div className="pt-2 pb-6">
-            <Button type="submit" className="w-full bg-[#002F45] hover:bg-[#001a26] text-white py-3.5 rounded-2xl font-bold text-lg shadow-md transition-all">
+            <Button type="submit" className="w-full bg-primary-950 hover:bg-primary-950 text-white py-3.5 rounded-2xl font-bold text-lg shadow-md transition-all">
               {newCourse.id ? 'Save Changes' : 'Add to Timetable'}
             </Button>
           </div>
@@ -655,7 +655,7 @@ const TimetableBuilder = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-4 bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 hover:bg-gray-100 transition-colors group">
                   <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm border border-gray-100 group-hover:scale-105 transition-transform">
-                    <Calendar size={18} className="text-[#002F45]" />
+                    <Calendar size={18} className="text-primary-950" />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Day of week</span>
@@ -708,13 +708,13 @@ const TimetableBuilder = () => {
                 )}
 
                 {selectedCourse.creditHours && (
-                  <div className="flex items-center gap-4 bg-[#002F45]/5 p-3.5 rounded-2xl border border-[#002F45]/10 hover:bg-[#002F45]/10 transition-colors group">
-                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm border border-[#002F45]/10 group-hover:scale-105 transition-transform">
-                      <Target size={18} className="text-[#002F45]" />
+                  <div className="flex items-center gap-4 bg-primary-950/5 p-3.5 rounded-2xl border border-primary-950/10 hover:bg-primary-950/10 transition-colors group">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm border border-primary-950/10 group-hover:scale-105 transition-transform">
+                      <Target size={18} className="text-primary-950" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-bold text-[#002F45]/60 uppercase tracking-widest">Weight</span>
-                      <span className="font-black text-[#002F45]">{selectedCourse.creditHours} Credit Hours</span>
+                      <span className="text-[10px] font-bold text-primary-950/60 uppercase tracking-widest">Weight</span>
+                      <span className="font-black text-primary-950">{selectedCourse.creditHours} Credit Hours</span>
                     </div>
                   </div>
                 )}
@@ -756,18 +756,18 @@ const TimetableBuilder = () => {
       >
         {sharedTimetable && (
           <div className="space-y-6">
-            <div className="p-5 bg-gradient-to-r from-[#002F45]/10 to-primary-50 rounded-2xl border border-[#002F45]/10">
-              <h3 className="font-extrabold text-[#002F45] text-lg">
+            <div className="p-5 bg-gradient-to-r from-primary-950/10 to-primary-50 rounded-2xl border border-primary-950/10">
+              <h3 className="font-extrabold text-primary-950 text-lg">
                 {sharedTimetable.senderName ? `${sharedTimetable.senderName}'s Timetable` : 'Shared Timetable'}
               </h3>
               {sharedTimetable.senderCourse && (
                 <p className="text-sm font-semibold text-gray-600 mt-1">{sharedTimetable.senderCourse}</p>
               )}
               <div className="flex gap-2 mt-3">
-                <span className="text-xs font-bold bg-[#002F45]/10 text-[#002F45] px-3 py-1 rounded-full uppercase tracking-wider">
+                <span className="text-xs font-bold bg-primary-950/10 text-primary-950 px-3 py-1 rounded-full uppercase tracking-wider">
                   Level {sharedTimetable.level}
                 </span>
-                <span className="text-xs font-bold bg-[#002F45]/10 text-[#002F45] px-3 py-1 rounded-full uppercase tracking-wider">
+                <span className="text-xs font-bold bg-primary-950/10 text-primary-950 px-3 py-1 rounded-full uppercase tracking-wider">
                   Semester {sharedTimetable.semester}
                 </span>
               </div>
@@ -788,7 +788,7 @@ const TimetableBuilder = () => {
                       }));
                     }}
                     className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${selectedImportCourses[idx]
-                        ? 'border-[#002F45] bg-[#002F45]/5 shadow-sm'
+                        ? 'border-primary-950 bg-primary-950/5 shadow-sm'
                         : 'border-gray-200 hover:border-gray-300'
                       }`}
                   >
@@ -796,7 +796,7 @@ const TimetableBuilder = () => {
                       type="checkbox"
                       checked={!!selectedImportCourses[idx]}
                       onChange={() => { }} // handled by parent div click
-                      className="w-4.5 h-4.5 text-[#002F45] border-gray-300 rounded focus:ring-[#002F45]"
+                      className="w-4.5 h-4.5 text-primary-950 border-gray-300 rounded focus:ring-primary-950"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-gray-900 truncate">{course.name}</div>
@@ -825,7 +825,7 @@ const TimetableBuilder = () => {
               <button
                 type="button"
                 onClick={handleImportSharedCourses}
-                className="flex-1 bg-[#002F45] hover:bg-[#001a26] text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95"
+                className="flex-1 bg-primary-950 hover:bg-primary-950 text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95"
               >
                 Import Selected
               </button>

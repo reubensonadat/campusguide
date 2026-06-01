@@ -256,14 +256,14 @@ const FormulaCalculator = () => {
   // Get icon/color for category (No color party)
   const getCategoryStyle = (cat) => {
     const styles = {
-      'Mechanics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomTools },
-      'Electricity & Magnetism': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomSettings },
-      'Thermodynamics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomCommunity },
-      'Waves & Optics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomProfile },
-      'Modern Physics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomGuide },
-      'Mathematics': { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomTools }
+      'Mechanics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomTools },
+      'Electricity & Magnetism': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomSettings },
+      'Thermodynamics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomCommunity },
+      'Waves & Optics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomProfile },
+      'Modern Physics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomGuide },
+      'Mathematics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomTools }
     };
-    return styles[cat] || { bg: 'bg-[#002F45]/5', text: 'text-[#002F45]', icon: CustomGuide };
+    return styles[cat] || { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomGuide };
   };
 
   return (
@@ -324,7 +324,7 @@ const FormulaCalculator = () => {
             <button
               key={formula.id}
               onClick={() => handleOpenFormula(formula)}
-              className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-[#002F45]/20 p-5 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+              className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary-950/20 p-5 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
             >
               {/* Category badge */}
               <div className="flex items-center justify-between mb-3">

@@ -228,7 +228,7 @@ const Community = () => {
                         
                         <button
                             onClick={() => navigate('/advertise')}
-                            className="whitespace-nowrap px-3.5 py-1.5 bg-[#002F45] text-white text-[11px] font-black uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-1.5"
+                            className="whitespace-nowrap px-3.5 py-1.5 bg-primary-950 text-white text-[11px] font-black uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-1.5"
                             aria-label="Showcase to the world"
                         >
                             <Megaphone size={12} />
@@ -244,7 +244,7 @@ const Community = () => {
                 <div className="w-full mb-4 relative">
                     <div className="relative flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-100/80 w-full z-0 shadow-sm">
                         <div 
-                            className="absolute h-[calc(100%-8px)] bg-[#002F45] rounded-lg z-0"
+                            className="absolute h-[calc(100%-8px)] bg-primary-950 rounded-lg z-0"
                             style={{ 
                                 left: `${pillStyle.left}px`, 
                                 width: `${pillStyle.width}px`,

@@ -63,9 +63,9 @@ export function CoachMarksOverlay({ steps, storageKey, condition = true, forceSh
                             <div
                                 key={i}
                                 className={`h-1 rounded-full transition-all duration-300 ${i === currentStep
-                                    ? 'w-8 bg-[#002F45]'
+                                    ? 'w-8 bg-primary-950'
                                     : i < currentStep
-                                        ? 'w-4 bg-[#002F45]/40'
+                                        ? 'w-4 bg-primary-950/40'
                                         : 'w-4 bg-gray-200'
                                     }`}
                             />
@@ -73,7 +73,7 @@ export function CoachMarksOverlay({ steps, storageKey, condition = true, forceSh
                     </div>
 
                     {/* Icon */}
-                    <div className="w-16 h-16 rounded-2xl bg-[#002F45]/10 text-[#002F45] flex items-center justify-center mb-6 border border-[#002F45]/10 animate-in zoom-in-90 duration-200">
+                    <div className="w-16 h-16 rounded-2xl bg-primary-950/10 text-primary-950 flex items-center justify-center mb-6 border border-primary-950/10 animate-in zoom-in-90 duration-200">
                         {step.icon}
                     </div>
 
@@ -91,7 +91,7 @@ export function CoachMarksOverlay({ steps, storageKey, condition = true, forceSh
                     <div className="mt-8 flex items-center gap-3">
                         <button
                             onClick={handleNext}
-                            className="flex-1 py-4 bg-[#002F45] text-white font-bold rounded-2xl text-[14px] uppercase tracking-wider shadow-md hover:bg-[#001a26] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                            className="flex-1 py-4 bg-primary-950 text-white font-bold rounded-2xl text-[14px] uppercase tracking-wider shadow-md hover:bg-primary-950 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                         >
                             {isLastStep ? 'Got it' : 'Next'}
                             <ChevronRight className="w-4 h-4" />
