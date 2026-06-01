@@ -140,7 +140,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50/50">
+    <div className="min-h-screen flex bg-gray-50/50 overflow-x-hidden">
       <Toaster
         position="top-center"
         containerStyle={{ top: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}
@@ -151,8 +151,8 @@ function AppContent() {
       <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>
         <Suspense fallback={
           <div className="flex-1 min-h-[60vh] flex flex-col items-center justify-center gap-4 py-20 bg-gray-50/50 dark:bg-[#0a0a0a]">
-            <DataLoader className="w-10 h-10 text-primary-950" />
-            <span className="text-xs font-black tracking-widest text-primary-950/60 dark:text-gray-400/60 uppercase animate-pulse">Loading...</span>
+            <DataLoader className="w-10 h-10 text-gray-900" />
+            <span className="text-xs font-black tracking-widest text-gray-900/60 dark:text-gray-400/60 uppercase animate-pulse">Loading...</span>
           </div>
         }>
           <Routes>

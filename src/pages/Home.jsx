@@ -890,9 +890,9 @@ const Home = () => {
       <div className="lg:hidden">
 
         {/* ── Chime-Style Hero ────────────────────────────────────────── */}
-        <div className="relative overflow-hidden bg-gradient-to-b from-primary-950 to-primary-950 px-6 pt-[calc(2.5rem_+_env(safe-area-inset-top,0px))] pb-16">
+        <div className="relative overflow-hidden bg-gradient-to-b from-gray-900 to-gray-900 px-6 pt-[calc(2.5rem_+_env(safe-area-inset-top,0px))] pb-16">
 
-          <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[150%] h-[100px] bg-primary-950 rounded-[100%] blur-xl opacity-40 pointer-events-none"></div>
+          <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[150%] h-[100px] bg-gray-900 rounded-[100%] blur-xl opacity-40 pointer-events-none"></div>
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary-400 rounded-full mix-blend-screen filter blur-[80px] opacity-10 pointer-events-none"></div>
 
           {/* Top Bar */}
@@ -912,7 +912,7 @@ const Home = () => {
                 >
                   <Bell size={18} />
                   {showRedDot && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-primary-950"></span>
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"></span>
                   )}
                 </button>
 
@@ -970,7 +970,7 @@ const Home = () => {
                         setExpandedWidget(isExpanded ? null : id);
                       }
                     }}
-                    className={`flex flex-col gap-2 bg-primary-950/50 backdrop-blur-md border border-primary-400/20 px-3 py-2 rounded-2xl shadow-sm self-start transition-all ${isExpanded ? 'w-full max-w-[280px]' : ''} ${activeWidgets.length > 1 ? 'cursor-pointer hover:bg-primary-950/70' : ''}`}
+                    className={`flex flex-col gap-2 bg-gray-900/50 backdrop-blur-md border border-primary-400/20 px-3 py-2 rounded-2xl shadow-sm self-start transition-all ${isExpanded ? 'w-full max-w-[280px]' : ''} ${activeWidgets.length > 1 ? 'cursor-pointer hover:bg-gray-900/70' : ''}`}
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 shrink-0">
@@ -1163,7 +1163,7 @@ const Home = () => {
 
             {/* Semester Status */}
             {homeWidgets.calendar && semesterInfo && (
-              <div className="flex items-center gap-3 bg-primary-950/60 backdrop-blur-md border border-primary-400/30 px-4 py-3 rounded-2xl shadow-sm w-full">
+              <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-md border border-primary-400/30 px-4 py-3 rounded-2xl shadow-sm w-full">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10">
                   <Calendar size={18} className="text-primary-400" />
                 </div>
@@ -1235,7 +1235,7 @@ const Home = () => {
             {todaysClassesWithStatus.length === 0 ? (
               <div className="flex items-center justify-between py-2">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-primary-950/5 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-gray-900/5 flex items-center justify-center flex-shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#002F45" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"></path></svg>
                   </div>
                   <div>
@@ -1270,11 +1270,11 @@ const Home = () => {
                   <div key={i} className={`flex items-center gap-4 transition-opacity ${cls.status === 'completed' ? 'opacity-40' : 'opacity-100'}`}>
                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${cls.status === 'completed' ? 'bg-gray-100' :
                       cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' :
-                        'bg-primary-950/5'
+                        'bg-gray-900/5'
                       }`}>
                       {cls.status === 'completed' ? <CheckCircle2 size={16} className="text-gray-400" /> :
                         cls.status === 'ongoing' ? <Loader2 size={16} className="text-blue-600 animate-spin" /> :
-                          <Clock size={16} className="text-primary-950" />}
+                          <Clock size={16} className="text-gray-900" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-bold truncate ${cls.status === 'completed' ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
@@ -1555,7 +1555,7 @@ const Home = () => {
 
           {/* 1.6 Upcoming Academic Events */}
           {homeWidgets.calendar && upcomingAcademicEvents.length > 0 && (
-            <div className="bg-primary-950 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1)] p-6 border border-primary-950/90 flex flex-col justify-center mt-2 relative overflow-hidden">
+            <div className="bg-gray-900 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1)] p-6 border border-gray-900/90 flex flex-col justify-center mt-2 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mt-12 -mr-12 pointer-events-none blur-2xl" />
 
               <div className="flex items-center gap-2 mb-4 relative z-10">
@@ -1595,7 +1595,7 @@ const Home = () => {
                     className="bg-white border border-gray-200 rounded-2xl p-3 flex-none flex items-center gap-3 active:scale-95 transition-transform"
                   >
                     <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
-                      <Icon size={18} className="text-primary-950" />
+                      <Icon size={18} className="text-gray-900" />
                     </div>
                     <span className="text-[13px] font-bold text-gray-900 leading-tight pr-2 whitespace-nowrap">
                       {action.title}
@@ -1663,7 +1663,7 @@ const Home = () => {
                     <img src={imgSrc} alt={d.title} className="w-full h-auto object-contain max-h-[600px] bg-gray-50/50" />
                   )}
                   <div className="p-5">
-                    <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-primary-950 bg-primary-950/10">
+                    <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-gray-900 bg-gray-900/10">
                       {isAd ? 'SPONSORED' : 'OFFICIAL'}
                     </span>
                     <h4 className="text-base font-bold text-gray-900 mb-1">{d.title}</h4>
@@ -1673,7 +1673,7 @@ const Home = () => {
                     <div className="flex items-center justify-between">
                       <button
                         onClick={() => setIsFeaturedExpanded(!isFeaturedExpanded)}
-                        className="text-[13px] font-bold text-primary-950 flex items-center gap-1 active:opacity-70"
+                        className="text-[13px] font-bold text-gray-900 flex items-center gap-1 active:opacity-70"
                       >
                         {isFeaturedExpanded ? 'Show less' : 'Read more'} <ChevronRight size={14} className={isFeaturedExpanded ? 'rotate-90 transition-transform' : 'transition-transform'} />
                       </button>
@@ -1681,7 +1681,7 @@ const Home = () => {
                       {link && (
                         <button
                           onClick={() => window.open(link, '_blank')}
-                          className="bg-primary-950 hover:bg-primary-950 text-white text-xs font-bold px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
+                          className="bg-gray-900 hover:bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
                         >
                           {actionText}
                         </button>
@@ -1703,7 +1703,7 @@ const Home = () => {
               <p className="text-sm text-gray-500 max-w-[200px] leading-relaxed mb-3">
                 Help us keep this app free and growing for all students.
               </p>
-              <span className="inline-block bg-primary-950 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm">
+              <span className="inline-block bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm">
                 Support Now
               </span>
             </div>

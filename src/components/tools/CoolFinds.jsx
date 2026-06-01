@@ -73,7 +73,7 @@ const CoolFinds = () => {
             placeholder="Search resources..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-950/20 transition-all placeholder:text-gray-400"
+            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-900/20 transition-all placeholder:text-gray-400"
           />
         </div>
 
@@ -84,7 +84,7 @@ const CoolFinds = () => {
               onClick={() => setActiveCategory(cat.id)}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 activeCategory === cat.id
-                  ? 'bg-primary-950 text-white shadow-md'
+                  ? 'bg-gray-900 text-white shadow-md'
                   : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
               }`}
             >
@@ -111,21 +111,21 @@ const CoolFinds = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   key={resource.id || idx} 
-                  className="group bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-primary-950/20 transition-all cursor-pointer flex flex-col h-full active:scale-[0.98]"
+                  className="group bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-gray-900/20 transition-all cursor-pointer flex flex-col h-full active:scale-[0.98]"
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-primary-950/5 text-primary-950 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-2xl bg-gray-900/5 text-gray-900 flex items-center justify-center">
                       <Icon size={24} />
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-950 group-hover:text-white transition-colors text-gray-400">
+                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors text-gray-400">
                       <ArrowRight size={14} className="-rotate-45" />
                     </div>
                   </div>
                   
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-950 transition-colors line-clamp-1">{resource.title}</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-gray-900 transition-colors line-clamp-1">{resource.title}</h3>
                   <p className="text-sm text-gray-500 font-medium leading-relaxed flex-1">{resource.description}</p>
                   
-                  <div className="mt-6 flex items-center gap-2 text-xs font-bold text-gray-400 group-hover:text-primary-950/60 transition-colors">
+                  <div className="mt-6 flex items-center gap-2 text-xs font-bold text-gray-400 group-hover:text-gray-900/60 transition-colors">
                     <ExternalLink size={12} />
                     <span className="truncate">
                       {resource.url.startsWith('tel:') 

@@ -435,7 +435,7 @@ const MapView = () => {
                     <button
                         onClick={() => setSidebarView(sidebarView === 'guide_cards' ? 'locations' : 'guide_cards')}
                         className={`shrink-0 p-2 rounded-xl transition-all flex items-center gap-1.5 ${sidebarView === 'guide_cards'
-                            ? 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-800 shadow-sm'
+                            ? 'bg-primary-50 dark:bg-gray-900/30 text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-800 shadow-sm'
                             : 'bg-slate-50 dark:bg-[#1e1e1e] text-slate-500 dark:text-gray-400 border border-slate-200 dark:border-gray-700 hover:bg-slate-100 dark:hover:bg-gray-800'
                             }`}
                         title="Toggle Guide Cards"
@@ -514,7 +514,7 @@ const MapView = () => {
                                             guideCardContent: card.content,
                                             _type: 'guide_card'
                                         })}
-                                        className="w-full text-left bg-primary-50/70 dark:bg-primary-950/20 p-3 hover:bg-primary-100/70 dark:hover:bg-primary-900/30 border border-primary-200/60 dark:border-primary-800/50 rounded-xl group transition-all flex justify-between items-center shadow-sm"
+                                        className="w-full text-left bg-primary-50/70 dark:bg-gray-900/20 p-3 hover:bg-primary-100/70 dark:hover:bg-primary-900/30 border border-primary-200/60 dark:border-primary-800/50 rounded-xl group transition-all flex justify-between items-center shadow-sm"
                                     >
                                         <div className="flex items-start gap-3">
                                             <div className="p-1.5 bg-primary-100 dark:bg-primary-900/50 rounded-lg text-primary-600 dark:text-primary-400 shrink-0">
@@ -577,7 +577,7 @@ const MapView = () => {
                                 <div className="space-y-4">
                                     {/* Subtitle Banner */}
                                     {knowledgeModalData.subtitle && (
-                                        <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-950/40 dark:to-blue-950/30 border border-primary-100 dark:border-primary-900 rounded-xl p-3 mb-2">
+                                        <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-gray-900/40 dark:to-blue-950/30 border border-primary-100 dark:border-primary-900 rounded-xl p-3 mb-2">
                                             <p className="text-sm text-primary-700 dark:text-primary-300 leading-relaxed font-medium">{knowledgeModalData.subtitle}</p>
                                         </div>
                                     )}

@@ -5,7 +5,7 @@ export const AcademicCalendarWidget = ({ upcomingAcademicEvents }) => {
   if (!upcomingAcademicEvents || upcomingAcademicEvents.length === 0) return null;
 
   return (
-    <div className="bg-primary-950 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1)] p-6 border border-primary-950/90 flex flex-col justify-center mt-2 relative overflow-hidden">
+    <div className="bg-gray-900 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1)] p-6 border border-gray-900/90 flex flex-col justify-center mt-2 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mt-12 -mr-12 pointer-events-none blur-2xl" />
       
       <div className="flex items-center gap-2 mb-4 relative z-10">

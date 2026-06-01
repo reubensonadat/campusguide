@@ -342,7 +342,7 @@ const ThriftFeed = () => {
     const renderContent = () => {
         if (loading) return (
             <div className="py-12 flex flex-col items-center justify-center text-gray-400">
-                <DataLoader className="w-8 h-8 text-primary-950 mb-3" />
+                <DataLoader className="w-8 h-8 text-gray-900 mb-3" />
                 <p className="text-sm font-medium">Loading listings...</p>
             </div>
         );

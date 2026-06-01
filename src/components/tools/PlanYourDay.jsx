@@ -366,18 +366,18 @@ const PlanYourDay = () => {
                     <button 
                         onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
                         disabled={activeTermIndex === 0}
-                        className="p-2 rounded-xl text-primary-950 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+                        className="p-2 rounded-xl text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
                     >
                         <ChevronLeft size={20} />
                     </button>
                     <div className="flex-1 text-center flex flex-col">
-                        <span className="text-sm font-black text-primary-950">Level {activeLevel}</span>
-                        <span className="text-[10px] font-bold text-primary-950/60 uppercase tracking-widest">Semester {activeSemester}</span>
+                        <span className="text-sm font-black text-gray-900">Level {activeLevel}</span>
+                        <span className="text-[10px] font-bold text-gray-900/60 uppercase tracking-widest">Semester {activeSemester}</span>
                     </div>
                     <button 
                         onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
                         disabled={activeTermIndex === TERMS.length - 1}
-                        className="p-2 rounded-xl text-primary-950 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+                        className="p-2 rounded-xl text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
                     >
                         <ChevronRight size={20} />
                     </button>

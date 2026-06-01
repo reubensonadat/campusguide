@@ -496,7 +496,7 @@ const Settings = () => {
   ];
 
   return (
-    <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-primary-950">
+    <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-gray-900">
       <div className="max-w-3xl mx-auto px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
 
         {/* Header matching Profile style */}
@@ -535,7 +535,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${theme === 'dark' ? 'bg-primary-950' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
@@ -553,7 +553,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={() => handleToggleSetting('push_classes')}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${appSettings.push_classes !== false ? 'bg-primary-950' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${appSettings.push_classes !== false ? 'bg-gray-900' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${appSettings.push_classes !== false ? 'translate-x-5' : 'translate-x-0'
@@ -571,7 +571,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={() => handleToggleSetting('push_whispers')}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${appSettings.push_whispers !== false ? 'bg-primary-950' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${appSettings.push_whispers !== false ? 'bg-gray-900' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${appSettings.push_whispers !== false ? 'translate-x-5' : 'translate-x-0'
@@ -589,7 +589,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={handleToggleSystemNotifications}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${systemNotificationsEnabled ? 'bg-primary-950' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${systemNotificationsEnabled ? 'bg-gray-900' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${systemNotificationsEnabled ? 'translate-x-5' : 'translate-x-0'
@@ -620,7 +620,7 @@ const Settings = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-400/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
 
             <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-primary-950/5 text-primary-950 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gray-900/5 text-gray-900 flex items-center justify-center">
                 <LayoutGrid size={20} />
               </div>
               <div>
@@ -633,7 +633,7 @@ const Settings = () => {
               {coreWidgetToggles.map(({ key, label, Icon }) => (
                 <div key={key} className="flex items-center justify-between group">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-primary-950/5 text-primary-950' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-gray-900/5 text-gray-900' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
                       }`}>
                       <Icon size={16} />
                     </div>
@@ -642,7 +642,7 @@ const Settings = () => {
                   </div>
                   <button
                     onClick={() => toggleWidget(key)}
-                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-950 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-primary-950' : 'bg-gray-200'
+                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-gray-900' : 'bg-gray-200'
                       }`}
                   >
                     <span
@@ -660,13 +660,13 @@ const Settings = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-400/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
 
             <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-primary-950/5 text-primary-950 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gray-900/5 text-gray-900 flex items-center justify-center">
                 <Store size={20} />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <h3 className="text-[17px] font-bold text-gray-900">API Marketplace</h3>
-                  <span className="text-[11px] font-bold text-primary-950 bg-primary-950/5 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-bold text-gray-900 bg-gray-900/5 px-2 py-0.5 rounded-full">
                     {apiWidgetToggles.filter(w => homeWidgets[w.key]).length} / 3 Active
                   </span>
                 </div>
@@ -678,7 +678,7 @@ const Settings = () => {
               {apiWidgetToggles.map(({ key, label, Icon }) => (
                 <div key={key} className="flex items-center justify-between group">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-primary-950/5 text-primary-950' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-gray-900/5 text-gray-900' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
                       }`}>
                       <Icon size={16} />
                     </div>
@@ -687,7 +687,7 @@ const Settings = () => {
                   </div>
                   <button
                     onClick={() => toggleWidget(key)}
-                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-950 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-primary-950' : 'bg-gray-200'
+                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-gray-900' : 'bg-gray-200'
                       }`}
                   >
                     <span
@@ -709,16 +709,16 @@ const Settings = () => {
             {/* Unique Device ID block */}
             <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-primary-950/10 flex items-center justify-center flex-shrink-0">
-                  <Fingerprint size={20} className="text-primary-950" />
+                <div className="w-10 h-10 rounded-xl bg-gray-900/10 flex items-center justify-center flex-shrink-0">
+                  <Fingerprint size={20} className="text-gray-900" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Your Unique App ID</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <code className="text-sm font-black text-primary-950 tracking-wider">{deviceId}</code>
+                    <code className="text-sm font-black text-gray-900 tracking-wider">{deviceId}</code>
                     <button
                       onClick={copyDeviceId}
-                      className="p-1.5 rounded-lg hover:bg-white text-gray-400 hover:text-primary-950 transition-colors active:scale-95"
+                      className="p-1.5 rounded-lg hover:bg-white text-gray-400 hover:text-gray-900 transition-colors active:scale-95"
                       title="Copy ID"
                     >
                       {copiedId ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
@@ -747,7 +747,7 @@ const Settings = () => {
                     });
                   });
                 }}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary-950/5 border border-primary-950/10 text-primary-950 font-bold text-xs hover:bg-primary-950/10 transition-all active:scale-95"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gray-900/5 border border-gray-900/10 text-gray-900 font-bold text-xs hover:bg-gray-900/10 transition-all active:scale-95"
               >
                 <Cloud size={14} />
                 Backup Now
@@ -775,7 +775,7 @@ const Settings = () => {
                   value={restoreId}
                   onChange={(e) => setRestoreId(e.target.value.toUpperCase())}
                   placeholder="UCC-XXXXXXXX"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-primary-950/20 focus:border-primary-950 transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
                   maxLength={12}
                 />
                 <input
@@ -785,7 +785,7 @@ const Settings = () => {
                   value={restorePin}
                   onChange={(e) => setRestorePin(e.target.value.replace(/[^0-9]/g, ''))}
                   placeholder="6-Digit PIN"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-primary-950/20 focus:border-primary-950 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
                   maxLength={6}
                 />
                 <button
@@ -793,7 +793,7 @@ const Settings = () => {
                   disabled={isRestoring || restoreId.length < 12 || restorePin.length < 6}
                   className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${isRestoring
                     ? 'bg-gray-100 text-gray-400'
-                    : 'bg-primary-950 text-white hover:bg-primary-950 shadow-md shadow-primary-950/10'
+                    : 'bg-gray-900 text-white hover:bg-gray-900 shadow-md shadow-gray-900/10'
                     }`}
                 >
                   {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore Data'}
@@ -880,7 +880,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={handleGpaLockToggle}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${isGpaLocked ? 'bg-primary-950' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${isGpaLocked ? 'bg-gray-900' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${isGpaLocked ? 'translate-x-5' : 'translate-x-0'
@@ -907,7 +907,7 @@ const Settings = () => {
                 className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0 text-left focus:outline-none"
               >
                 <div className="flex items-center gap-4">
-                  <CustomCoach size={20} className="text-primary-950" />
+                  <CustomCoach size={20} className="text-gray-900" />
                   <div>
                     <span className="text-[15px] text-gray-900 font-bold block leading-tight">Replay Welcome Guide (Coach)</span>
                     <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Resets the fresher onboarding overlays on all tabs</span>
@@ -1021,13 +1021,13 @@ const Settings = () => {
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value.replace(/[^0-9]/g, ''))}
                   placeholder="••••••"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-2xl tracking-[0.5em] text-center font-bold focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-2xl tracking-[0.5em] text-center font-bold focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
                 />
               </div>
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full py-4 text-base font-bold bg-primary-950 text-white hover:bg-primary-950 rounded-xl active:scale-95 transition-all disabled:bg-gray-100 disabled:text-gray-400"
+                  className="w-full py-4 text-base font-bold bg-gray-900 text-white hover:bg-gray-900 rounded-xl active:scale-95 transition-all disabled:bg-gray-100 disabled:text-gray-400"
                   disabled={isPinUpdating || newPin.length < 6}
                 >
                   {isPinUpdating ? 'Updating...' : 'Update PIN'}
@@ -1046,7 +1046,7 @@ const Settings = () => {
               <h2 className="text-lg font-black text-gray-900 tracking-tight pl-2">Edit Profile</h2>
               <button
                 onClick={handleSaveProfile}
-                className="text-white bg-primary-950 font-bold px-4 py-1.5 hover:bg-primary-950 rounded-lg transition-colors active:scale-95"
+                className="text-white bg-gray-900 font-bold px-4 py-1.5 hover:bg-gray-900 rounded-lg transition-colors active:scale-95"
               >
                 Save
               </button>
@@ -1062,7 +1062,7 @@ const Settings = () => {
                       <Edit3 size={24} className="text-white" />
                     </div>
                   </div>
-                  <div className="absolute -bottom-3 -right-3 bg-white text-primary-950 w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-gray-100">
+                  <div className="absolute -bottom-3 -right-3 bg-white text-gray-900 w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-gray-100">
                     <Edit3 size={18} />
                   </div>
                 </div>
@@ -1089,7 +1089,7 @@ const Settings = () => {
                       value={formData.phone || ''}
                       onChange={(e) => setFormData({ ...formData, phone: sanitizeGhanaPhone(e.target.value) })}
                       placeholder="e.g. 054 123 4567"
-                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
                     />
                   </div>
                   <div className="space-y-2">
@@ -1099,7 +1099,7 @@ const Settings = () => {
                       value={formData.student_id || ''}
                       onChange={(e) => setFormData({ ...formData, student_id: e.target.value.toUpperCase() })}
                       placeholder="e.g. PS/ITC/20/0000"
-                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
                     />
                   </div>
                 </div>
@@ -1118,7 +1118,7 @@ const Settings = () => {
                     <select
                       value={formData.level || ''}
                       onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
                     >
                       <option value="">Select Level</option>
                       <option value="100">100</option>
@@ -1134,7 +1134,7 @@ const Settings = () => {
                     <select
                       value={formData.semester || '1'}
                       onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
-                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
+                      className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
                     >
                       <option value="1">Sem 1</option>
                       <option value="2">Sem 2</option>
@@ -1189,7 +1189,7 @@ const Settings = () => {
           <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 flex flex-col">
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
               <h2 className="text-lg font-black text-gray-900 px-2 flex items-center gap-2">
-                <Lock size={18} className="text-primary-950" />
+                <Lock size={18} className="text-gray-900" />
                 {lockModalMode === 'setup' && 'Set GPA Vault PIN'}
                 {lockModalMode === 'confirm' && 'Confirm PIN'}
                 {lockModalMode === 'deactivate' && 'Disable GPA Lock'}
@@ -1223,7 +1223,7 @@ const Settings = () => {
                   }
                 }}
                 placeholder="••••••"
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-lg font-bold tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-primary-950/20 focus:border-primary-950 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
+                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-lg font-bold tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
                 maxLength={6}
                 autoFocus
                 required
@@ -1240,7 +1240,7 @@ const Settings = () => {
                 <button
                   type="submit"
                   disabled={lockModalMode === 'confirm' ? pinConfirmInput.length < 6 : pinInput.length < 6}
-                  className="flex-1 bg-primary-950 hover:bg-primary-950 text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-sm"
+                  className="flex-1 bg-gray-900 hover:bg-gray-900 text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-sm"
                 >
                   {lockModalMode === 'setup' && 'Next'}
                   {lockModalMode === 'confirm' && 'Confirm & Lock'}

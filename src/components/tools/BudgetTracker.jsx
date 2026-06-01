@@ -70,7 +70,7 @@ const DescriptionCombobox = ({ value, onChange, type }) => {
         value={searchTerm}
         onChange={handleInputChange}
         onFocus={() => setIsOpen(true)}
-        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all"
+        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
         placeholder="What was this for? (e.g. Lunch)"
         autoComplete="off"
       />
@@ -144,7 +144,7 @@ const CategoryCombobox = ({ value, onChange, categories }) => {
         value={searchTerm}
         onChange={handleInputChange}
         onFocus={() => setIsOpen(true)}
-        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all"
+        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-bold focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
         placeholder="Search or enter category..."
         autoComplete="off"
       />
@@ -156,7 +156,7 @@ const CategoryCombobox = ({ value, onChange, categories }) => {
                 <li
                   key={idx}
                   onClick={() => handleSelect(cat)}
-                  className="px-4 py-3 hover:bg-gray-50 cursor-pointer text-primary-950 font-bold text-sm transition-colors border-b border-gray-50 last:border-0"
+                  className="px-4 py-3 hover:bg-gray-50 cursor-pointer text-gray-900 font-bold text-sm transition-colors border-b border-gray-50 last:border-0"
                 >
                   {cat}
                 </li>
@@ -408,7 +408,7 @@ const BudgetTracker = () => {
           <div className="flex flex-col gap-2 mb-auto">
             <div className="flex items-center gap-2">
               <span className="text-gray-500 font-medium">Monthly:</span>
-              <span className="text-primary-950 font-bold bg-primary-950/10 px-2 py-0.5 rounded-md text-sm">
+              <span className="text-gray-900 font-bold bg-gray-900/10 px-2 py-0.5 rounded-md text-sm">
                 +{totalIncome.toFixed(2)}
               </span>
               <span className="text-gray-400">•</span>
@@ -426,7 +426,7 @@ const BudgetTracker = () => {
           <div className="grid grid-cols-3 gap-3 mt-8">
             <button 
               onClick={() => { setNewTransaction({...newTransaction, type: 'expense'}); setShowAddForm(true); }}
-              className="bg-primary-950 text-white rounded-2xl py-4 flex flex-col items-center justify-center gap-2 transition-transform active:scale-95 hover:bg-primary-950 shadow-md"
+              className="bg-gray-900 text-white rounded-2xl py-4 flex flex-col items-center justify-center gap-2 transition-transform active:scale-95 hover:bg-gray-900 shadow-md"
             >
               <ArrowUpRight size={20} />
               <span className="text-sm font-bold">Expense</span>
@@ -434,7 +434,7 @@ const BudgetTracker = () => {
             
             <button 
               onClick={() => { setNewTransaction({...newTransaction, type: 'income'}); setShowAddForm(true); }}
-              className="bg-white border border-gray-200 text-primary-950 rounded-2xl py-4 flex flex-col items-center justify-center gap-2 transition-transform active:scale-95 hover:bg-gray-50 shadow-sm"
+              className="bg-white border border-gray-200 text-gray-900 rounded-2xl py-4 flex flex-col items-center justify-center gap-2 transition-transform active:scale-95 hover:bg-gray-50 shadow-sm"
             >
               <ArrowDownRight size={20} />
               <span className="text-sm font-bold">Income</span>
@@ -557,9 +557,9 @@ const BudgetTracker = () => {
           <div className="grid grid-cols-3 gap-2">
             <button 
               onClick={() => handleQuickAdd('Food', 20, 'Lunch')}
-              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-primary-950/30 transition-all flex flex-col items-center justify-center gap-1 group"
+              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-900/30 transition-all flex flex-col items-center justify-center gap-1 group"
             >
-              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-primary-950 group-hover:text-white transition-colors">
+              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
                 <Coffee size={16} />
               </div>
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Food</span>
@@ -568,9 +568,9 @@ const BudgetTracker = () => {
 
             <button 
               onClick={() => handleQuickAdd('Transport', 10, 'Bus')}
-              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-primary-950/30 transition-all flex flex-col items-center justify-center gap-1 group"
+              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-900/30 transition-all flex flex-col items-center justify-center gap-1 group"
             >
-              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-primary-950 group-hover:text-white transition-colors">
+              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
                 <Bus size={16} />
               </div>
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Ride</span>
@@ -579,9 +579,9 @@ const BudgetTracker = () => {
 
             <button 
               onClick={() => handleQuickAdd('Academics', 5, 'Printing')}
-              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-primary-950/30 transition-all flex flex-col items-center justify-center gap-1 group"
+              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-900/30 transition-all flex flex-col items-center justify-center gap-1 group"
             >
-              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-primary-950 group-hover:text-white transition-colors">
+              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
                 <Printer size={16} />
               </div>
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Print</span>
@@ -590,9 +590,9 @@ const BudgetTracker = () => {
 
             <button 
               onClick={() => handleQuickAdd('Airtime', 10, 'Data Bundle')}
-              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-primary-950/30 transition-all flex flex-col items-center justify-center gap-1 group"
+              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-900/30 transition-all flex flex-col items-center justify-center gap-1 group"
             >
-              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-primary-950 group-hover:text-white transition-colors">
+              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
                 <Wifi size={16} />
               </div>
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Data</span>
@@ -601,9 +601,9 @@ const BudgetTracker = () => {
 
             <button 
               onClick={() => handleQuickAdd('Academics', 50, 'Books/Handout')}
-              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-primary-950/30 transition-all flex flex-col items-center justify-center gap-1 group"
+              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-900/30 transition-all flex flex-col items-center justify-center gap-1 group"
             >
-              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-primary-950 group-hover:text-white transition-colors">
+              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
                 <Book size={16} />
               </div>
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Books</span>
@@ -612,9 +612,9 @@ const BudgetTracker = () => {
 
             <button 
               onClick={() => handleQuickAdd('Shopping', 100, 'Groceries')}
-              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-primary-950/30 transition-all flex flex-col items-center justify-center gap-1 group"
+              className="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-900/30 transition-all flex flex-col items-center justify-center gap-1 group"
             >
-              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-primary-950 group-hover:text-white transition-colors">
+              <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
                 <ShoppingBag size={16} />
               </div>
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Snacks</span>
@@ -705,7 +705,7 @@ const BudgetTracker = () => {
                 <button
                   type="button"
                   onClick={() => setNewTransaction({...newTransaction, type: 'income', category: ''})}
-                  className={`py-2 rounded-lg font-bold text-sm transition-colors ${newTransaction.type === 'income' ? 'bg-white shadow-sm text-primary-950' : 'text-gray-500'}`}
+                  className={`py-2 rounded-lg font-bold text-sm transition-colors ${newTransaction.type === 'income' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}
                 >
                   Income
                 </button>
@@ -720,7 +720,7 @@ const BudgetTracker = () => {
                   required
                   value={newTransaction.amount}
                   onChange={(e) => setNewTransaction({ ...newTransaction, amount: e.target.value })}
-                  className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl text-2xl font-black focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all"
+                  className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl text-2xl font-black focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
                   placeholder="0.00"
                 />
               </div>
@@ -750,7 +750,7 @@ const BudgetTracker = () => {
                   required
                   value={newTransaction.date}
                   onChange={(e) => setNewTransaction({ ...newTransaction, date: e.target.value })}
-                  className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all"
+                  className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
                 />
               </div>
 

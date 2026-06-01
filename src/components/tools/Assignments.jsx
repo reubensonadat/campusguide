@@ -179,7 +179,7 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
               type="button"
               onClick={() => handleSelect(course)}
               className={`w-full text-left px-3 py-2 text-sm font-medium transition-colors ${
-                index === highlightedIndex ? 'bg-primary-400/10 text-primary-950' : 'text-gray-700 hover:bg-gray-50'
+                index === highlightedIndex ? 'bg-primary-400/10 text-gray-900' : 'text-gray-700 hover:bg-gray-50'
               } ${course === value ? 'bg-primary-400/5 font-bold' : ''}`}
             >
               <span className="flex items-center gap-2">
@@ -193,7 +193,7 @@ const CourseCombobox = ({ value, onChange, courses = [], placeholder = 'Search o
               type="button"
               onClick={() => handleSelect(query.trim())}
               className={`w-full text-left px-3 py-2 text-sm font-medium transition-colors ${
-                filteredCourses.length === highlightedIndex ? 'bg-primary-400/10 text-primary-950' : 'text-primary-400 hover:bg-primary-400/5'
+                filteredCourses.length === highlightedIndex ? 'bg-primary-400/10 text-gray-900' : 'text-primary-400 hover:bg-primary-400/5'
               }`}
             >
               <span className="flex items-center gap-2">
@@ -449,7 +449,7 @@ const Assignments = () => {
           </div>
           <button
             onClick={() => { setEditingAssignment(null); setShowAddModal(true); }}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary-950 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
           >
             <Plus size={20} />
           </button>
@@ -460,20 +460,20 @@ const Assignments = () => {
           <button
             onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
             disabled={activeTermIndex === 0}
-            className="p-2 rounded-xl text-primary-950 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+            className="p-2 rounded-xl text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
           >
             <ChevronLeft size={20} />
           </button>
 
           <div className="flex-1 text-center flex flex-col">
-            <span className="text-sm font-black text-primary-950">Level {activeLevel}</span>
-            <span className="text-[10px] font-bold text-primary-950/60 uppercase tracking-widest">Semester {activeSemester}</span>
+            <span className="text-sm font-black text-gray-900">Level {activeLevel}</span>
+            <span className="text-[10px] font-bold text-gray-900/60 uppercase tracking-widest">Semester {activeSemester}</span>
           </div>
 
           <button
             onClick={() => setActiveTermIndex(Math.min(TERMS.length - 1, activeTermIndex + 1))}
             disabled={activeTermIndex === TERMS.length - 1}
-            className="p-2 rounded-xl text-primary-950 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+            className="p-2 rounded-xl text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
           >
             <ChevronRight size={20} />
           </button>
@@ -527,7 +527,7 @@ const Assignments = () => {
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-all active:scale-95 ${showFilters ? 'bg-primary-950 text-white border-primary-950' : 'bg-white border-gray-100 text-gray-500'}`}
+              className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-all active:scale-95 ${showFilters ? 'bg-gray-900 text-white border-gray-900' : 'bg-white border-gray-100 text-gray-500'}`}
             >
               <Filter size={16} />
               {activeFilterCount > 0 && !showFilters && (
@@ -539,13 +539,13 @@ const Assignments = () => {
             <div className="flex bg-white border border-gray-100 rounded-xl overflow-hidden">
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'list' ? 'bg-primary-950 text-white' : 'text-gray-500'}`}
+                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'list' ? 'bg-gray-900 text-white' : 'text-gray-500'}`}
               >
                 <List size={16} />
               </button>
               <button
                 onClick={() => setViewMode('calendar')}
-                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'calendar' ? 'bg-primary-950 text-white' : 'text-gray-500'}`}
+                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'calendar' ? 'bg-gray-900 text-white' : 'text-gray-500'}`}
               >
                 <CalendarIcon size={16} />
               </button>
@@ -689,7 +689,7 @@ const Assignments = () => {
                 </p>
                 <button
                   onClick={() => { setEditingAssignment(null); setShowAddModal(true); }}
-                  className="bg-primary-950 text-white text-xs font-bold px-5 py-2.5 rounded-xl active:scale-95 transition-transform"
+                  className="bg-gray-900 text-white text-xs font-bold px-5 py-2.5 rounded-xl active:scale-95 transition-transform"
                 >
                   Add Assignment
                 </button>
@@ -739,11 +739,11 @@ const Assignments = () => {
                     key={day}
                     onClick={() => setSelectedCalDate(isSelected ? null : dateStr)}
                     className={`p-0.5 sm:p-1 min-h-[44px] sm:min-h-[64px] border-t border-gray-50 text-left transition-colors ${
-                      isSelected ? 'bg-primary-950/5' : 'hover:bg-gray-50'
+                      isSelected ? 'bg-gray-900/5' : 'hover:bg-gray-50'
                     }`}
                   >
                     <span className={`inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-[10px] sm:text-xs font-bold ${
-                      isToday ? 'bg-primary-950 text-white' : 'text-gray-700'
+                      isToday ? 'bg-gray-900 text-white' : 'text-gray-700'
                     }`}>
                       {day}
                     </span>
@@ -825,11 +825,11 @@ const Assignments = () => {
               </button>
             </div>
             <div className="p-5 space-y-4">
-              <div className="p-4 bg-primary-950/5 rounded-xl border border-primary-950/10">
+              <div className="p-4 bg-gray-900/5 rounded-xl border border-gray-900/10">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
                   Shared by {sharedDeadline.senderName || 'Student'}
                 </span>
-                <h3 className="font-extrabold text-primary-950 text-base">{sharedDeadline.title}</h3>
+                <h3 className="font-extrabold text-gray-900 text-base">{sharedDeadline.title}</h3>
                 {sharedDeadline.course && <p className="text-xs font-bold text-gray-500 mt-1">{sharedDeadline.course}</p>}
               </div>
               
@@ -863,7 +863,7 @@ const Assignments = () => {
                     window.history.replaceState({}, document.title, newUrl);
                     setSharedDeadline(null);
                   }}
-                  className="flex-1 bg-primary-950 hover:bg-primary-950 text-white py-3 rounded-xl font-bold transition-all shadow-md active:scale-95 text-center"
+                  className="flex-1 bg-gray-900 hover:bg-gray-900 text-white py-3 rounded-xl font-bold transition-all shadow-md active:scale-95 text-center"
                 >
                   Import
                 </button>
@@ -1131,7 +1131,7 @@ const AssignmentModal = ({ assignment, courses, onSave, onClose }) => {
           <div className="pt-2 pb-4">
             <button
               type="submit"
-              className="w-full py-3 sm:py-3.5 bg-primary-950 hover:bg-primary-950 text-white font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95"
+              className="w-full py-3 sm:py-3.5 bg-gray-900 hover:bg-gray-900 text-white font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95"
             >
               {isEditing ? 'Save Changes' : 'Add Assignment'}
             </button>

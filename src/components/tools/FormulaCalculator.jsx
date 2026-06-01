@@ -256,14 +256,14 @@ const FormulaCalculator = () => {
   // Get icon/color for category (No color party)
   const getCategoryStyle = (cat) => {
     const styles = {
-      'Mechanics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomTools },
-      'Electricity & Magnetism': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomSettings },
-      'Thermodynamics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomCommunity },
-      'Waves & Optics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomProfile },
-      'Modern Physics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomGuide },
-      'Mathematics': { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomTools }
+      'Mechanics': { bg: 'bg-gray-900/5', text: 'text-gray-900', icon: CustomTools },
+      'Electricity & Magnetism': { bg: 'bg-gray-900/5', text: 'text-gray-900', icon: CustomSettings },
+      'Thermodynamics': { bg: 'bg-gray-900/5', text: 'text-gray-900', icon: CustomCommunity },
+      'Waves & Optics': { bg: 'bg-gray-900/5', text: 'text-gray-900', icon: CustomProfile },
+      'Modern Physics': { bg: 'bg-gray-900/5', text: 'text-gray-900', icon: CustomGuide },
+      'Mathematics': { bg: 'bg-gray-900/5', text: 'text-gray-900', icon: CustomTools }
     };
-    return styles[cat] || { bg: 'bg-primary-950/5', text: 'text-primary-950', icon: CustomGuide };
+    return styles[cat] || { bg: 'bg-gray-900/5', text: 'text-gray-900', icon: CustomGuide };
   };
 
   return (
@@ -324,7 +324,7 @@ const FormulaCalculator = () => {
             <button
               key={formula.id}
               onClick={() => handleOpenFormula(formula)}
-              className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary-950/20 p-5 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+              className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-900/20 p-5 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
             >
               {/* Category badge */}
               <div className="flex items-center justify-between mb-3">

@@ -37,7 +37,7 @@ export const FocusTimer = ({ task, onComplete, onCancel }) => {
   const seconds = timeSpent % 60;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-primary-950 flex flex-col items-center justify-start p-6 text-white overflow-y-auto w-full h-full">
+    <div className="fixed inset-0 z-[100] bg-gray-900 flex flex-col items-center justify-start p-6 text-white overflow-y-auto w-full h-full">
       {/* Top Bar */}
       <div className="w-full flex justify-between items-center mb-8 max-w-lg">
         <button 
@@ -124,7 +124,7 @@ export const FocusTimer = ({ task, onComplete, onCancel }) => {
               <button 
                 onClick={toggleTimer}
                 className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-2xl transition-all active:scale-95 ${
-                  isActive ? 'bg-red-500 hover:bg-red-600' : 'bg-white text-primary-950 hover:bg-gray-100'
+                  isActive ? 'bg-red-500 hover:bg-red-600' : 'bg-white text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 {isActive ? <Pause size={28} className="sm:w-8 sm:h-8" /> : <Play size={28} className="ml-1 sm:w-8 sm:h-8" />}

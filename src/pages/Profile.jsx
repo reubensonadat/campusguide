@@ -499,7 +499,7 @@ const Profile = () => {
                     <div className="mt-1.5 flex items-center gap-1.5 opacity-80">
                       <Fingerprint size={12} className="text-white/70" />
                       <span className="text-white font-mono font-bold text-[9px] uppercase tracking-[0.2em] drop-shadow-sm">
-                        App ID: {deviceId || 'UNKNOWN'}
+                        App ID: {deviceId ? `UCC-••••${deviceId.slice(-4)}` : 'UNKNOWN'}
                       </span>
                     </div>
                   </div>
@@ -516,7 +516,7 @@ const Profile = () => {
           {/* ── User's Thrift Listings ──────────────────────────────────────── */}
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-primary-950 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-gray-900 flex items-center justify-center">
                 <CreditCard size={17} className="text-white" />
               </div>
               <div>
@@ -564,7 +564,7 @@ const Profile = () => {
                 {thriftListings.length > 3 && (
                   <button
                     onClick={() => setShowAllListings(!showAllListings)}
-                    className="w-full text-center text-xs font-bold text-primary-950 hover:underline py-2"
+                    className="w-full text-center text-xs font-bold text-gray-900 hover:underline py-2"
                   >
                     {showAllListings ? 'Show Less' : `Show ${thriftListings.length - 3} More`}
                   </button>
@@ -582,7 +582,7 @@ const Profile = () => {
                 <p className="text-sm text-gray-400 font-medium">No listings yet</p>
                 <button
                   onClick={() => navigate('/community?tab=thrift')}
-                  className="mt-2 text-xs font-bold text-primary-950 hover:underline"
+                  className="mt-2 text-xs font-bold text-gray-900 hover:underline"
                 >
                   Browse thrift items →
                 </button>
@@ -600,7 +600,7 @@ const Profile = () => {
               <p className="text-sm text-gray-500 max-w-[200px] leading-relaxed mb-3">
                 Help us keep this app free and growing for all students.
               </p>
-              <span className="inline-block bg-primary-950 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm">
+              <span className="inline-block bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm">
                 Read Our Story
               </span>
             </div>
@@ -612,10 +612,10 @@ const Profile = () => {
           {/* Customize Home */}
           {/* System Push Notifications Widget */}
           <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden mt-6">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-950/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gray-900/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
             <div className="flex items-center justify-between group relative z-10">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${systemNotificationsEnabled ? 'bg-primary-950/5 text-primary-950' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${systemNotificationsEnabled ? 'bg-gray-900/5 text-gray-900' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'}`}>
                   <Bell size={20} />
                 </div>
                 <div>
@@ -625,7 +625,7 @@ const Profile = () => {
               </div>
               <button
                 onClick={handleToggleSystemNotifications}
-                className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-950 focus-visible:ring-offset-2 ${systemNotificationsEnabled ? 'bg-primary-950' : 'bg-gray-200'}`}
+                className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 ${systemNotificationsEnabled ? 'bg-gray-900' : 'bg-gray-200'}`}
               >
                 <span className={`pointer-events-none inline-block h-[22px] w-[22px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${systemNotificationsEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
@@ -637,7 +637,7 @@ const Profile = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-400/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
 
             <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-primary-950/5 text-primary-950 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gray-900/5 text-gray-900 flex items-center justify-center">
                 <LayoutGrid size={20} />
               </div>
               <div>
@@ -650,7 +650,7 @@ const Profile = () => {
               {coreWidgetToggles.map(({ key, label, Icon }) => (
                 <div key={key} className="flex items-center justify-between group">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-primary-950/5 text-primary-950' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-gray-900/5 text-gray-900' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
                       }`}>
                       <Icon size={16} />
                     </div>
@@ -659,7 +659,7 @@ const Profile = () => {
                   </div>
                   <button
                     onClick={() => toggleWidget(key)}
-                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-950 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-primary-950' : 'bg-gray-200'
+                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-gray-900' : 'bg-gray-200'
                       }`}
                   >
                     <span
@@ -677,13 +677,13 @@ const Profile = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary-400/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
 
             <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-primary-950/5 text-primary-950 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gray-900/5 text-gray-900 flex items-center justify-center">
                 <Store size={20} />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <h3 className="text-[17px] font-bold text-gray-900">API Marketplace</h3>
-                  <span className="text-[11px] font-bold text-primary-950 bg-primary-950/5 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-bold text-gray-900 bg-gray-900/5 px-2 py-0.5 rounded-full">
                     {apiWidgetToggles.filter(w => homeWidgets[w.key]).length} / 3 Active
                   </span>
                 </div>
@@ -695,7 +695,7 @@ const Profile = () => {
               {apiWidgetToggles.map(({ key, label, Icon }) => (
                 <div key={key} className="flex items-center justify-between group">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-primary-950/5 text-primary-950' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${homeWidgets[key] ? 'bg-gray-900/5 text-gray-900' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600'
                       }`}>
                       <Icon size={16} />
                     </div>
@@ -704,7 +704,7 @@ const Profile = () => {
                   </div>
                   <button
                     onClick={() => toggleWidget(key)}
-                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-950 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-primary-950' : 'bg-gray-200'
+                    className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 ${homeWidgets[key] ? 'bg-gray-900' : 'bg-gray-200'
                       }`}
                   >
                     <span
@@ -726,16 +726,16 @@ const Profile = () => {
             {/* Device ID Card */}
             <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-primary-950/10 flex items-center justify-center flex-shrink-0">
-                  <Fingerprint size={20} className="text-primary-950" />
+                <div className="w-10 h-10 rounded-xl bg-gray-900/10 flex items-center justify-center flex-shrink-0">
+                  <Fingerprint size={20} className="text-gray-900" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Your Unique ID</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <code className="text-sm font-black text-primary-950 tracking-wider">{deviceId}</code>
+                    <code className="text-sm font-black text-gray-900 tracking-wider">{deviceId}</code>
                     <button
                       onClick={copyDeviceId}
-                      className="p-1.5 rounded-lg hover:bg-white text-gray-400 hover:text-primary-950 transition-colors active:scale-95"
+                      className="p-1.5 rounded-lg hover:bg-white text-gray-400 hover:text-gray-900 transition-colors active:scale-95"
                       title="Copy ID"
                     >
                       {copiedId ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
@@ -765,7 +765,7 @@ const Profile = () => {
                     });
                   });
                 }}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary-950/5 border border-primary-950/10 text-primary-950 font-bold text-xs hover:bg-primary-950/10 transition-all active:scale-95"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gray-900/5 border border-gray-900/10 text-gray-900 font-bold text-xs hover:bg-gray-900/10 transition-all active:scale-95"
               >
                 <Cloud size={14} />
                 Backup Now
@@ -793,7 +793,7 @@ const Profile = () => {
                   value={restoreId}
                   onChange={(e) => setRestoreId(e.target.value.toUpperCase())}
                   placeholder="UCC-XXXXXXXX"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-primary-950/20 focus:border-primary-950 transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono font-bold tracking-wider focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all placeholder:text-gray-300 placeholder:font-sans placeholder:tracking-normal"
                   maxLength={12}
                 />
                 <input
@@ -803,7 +803,7 @@ const Profile = () => {
                   value={restorePin}
                   onChange={(e) => setRestorePin(e.target.value.replace(/[^0-9]/g, ''))}
                   placeholder="6-Digit PIN"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-primary-950/20 focus:border-primary-950 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
                   maxLength={6}
                 />
                 <button
@@ -811,7 +811,7 @@ const Profile = () => {
                   disabled={isRestoring || restoreId.length < 12 || restorePin.length < 6}
                   className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${isRestoring
                       ? 'bg-gray-100 text-gray-400'
-                      : 'bg-primary-950 text-white hover:bg-primary-950 shadow-md shadow-primary-950/10'
+                      : 'bg-gray-900 text-white hover:bg-gray-900 shadow-md shadow-gray-900/10'
                     }`}
                 >
                   {isRestoring ? <RefreshCw size={16} className="animate-spin" /> : 'Restore Data'}
@@ -834,7 +834,7 @@ const Profile = () => {
                 </div>
                 <button
                   onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${theme === 'dark' ? 'bg-primary-950' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
@@ -870,7 +870,7 @@ const Profile = () => {
                 </div>
                 <button
                   onClick={() => setNotificationsEnabled(!notificationsEnabled)}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${notificationsEnabled ? 'bg-primary-950' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${notificationsEnabled ? 'bg-gray-900' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${notificationsEnabled ? 'translate-x-5' : 'translate-x-0'
@@ -888,7 +888,7 @@ const Profile = () => {
                 </div>
                 <button
                   onClick={handleGpaLockToggle}
-                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${isGpaLocked ? 'bg-primary-950' : 'bg-gray-200'
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${isGpaLocked ? 'bg-gray-900' : 'bg-gray-200'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${isGpaLocked ? 'translate-x-5' : 'translate-x-0'
@@ -957,7 +957,7 @@ const Profile = () => {
                   className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
                 >
                   <div className="flex items-center gap-4">
-                    <CheckCircle size={20} className="text-primary-950" strokeWidth={1.5} />
+                    <CheckCircle size={20} className="text-gray-900" strokeWidth={1.5} />
                     <span className="text-[15px] text-gray-900 font-medium">Take Survey Test</span>
                   </div>
                   <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
@@ -969,7 +969,7 @@ const Profile = () => {
                 className="w-full flex items-center justify-between py-4 group border-b border-gray-100 last:border-0"
               >
                 <div className="flex items-center gap-4">
-                  <CustomCoach size={20} className="text-primary-950" />
+                  <CustomCoach size={20} className="text-gray-900" />
                   <span className="text-[15px] text-gray-900 font-medium">Replay Welcome Guide (Coach)</span>
                 </div>
                 <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
@@ -1002,7 +1002,7 @@ const Profile = () => {
                 <h2 className="text-lg font-black text-gray-900 tracking-tight pl-2">Edit Profile</h2>
                 <button
                   onClick={handleSave}
-                  className="text-white bg-primary-950 font-bold px-4 py-1.5 hover:bg-primary-950 rounded-lg transition-colors active:scale-95"
+                  className="text-white bg-gray-900 font-bold px-4 py-1.5 hover:bg-gray-900 rounded-lg transition-colors active:scale-95"
                 >
                   Save
                 </button>
@@ -1019,7 +1019,7 @@ const Profile = () => {
                         <Edit3 size={24} className="text-white drop-shadow-md" />
                       </div>
                     </div>
-                    <div className="absolute -bottom-3 -right-3 bg-white text-primary-950 w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-gray-100">
+                    <div className="absolute -bottom-3 -right-3 bg-white text-gray-900 w-10 h-10 rounded-full flex items-center justify-center shadow-lg border border-gray-100">
                       <Edit3 size={18} />
                     </div>
                   </div>
@@ -1046,7 +1046,7 @@ const Profile = () => {
                         value={formData.phone || ''}
                         onChange={(e) => setFormData({ ...formData, phone: sanitizeGhanaPhone(e.target.value) })}
                         placeholder="e.g. 054 123 4567"
-                        className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all placeholder:text-gray-300"
+                        className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all placeholder:text-gray-300"
                       />
                     </div>
                     <div className="space-y-2">
@@ -1056,7 +1056,7 @@ const Profile = () => {
                         value={formData.student_id || ''}
                         onChange={(e) => setFormData({ ...formData, student_id: e.target.value.toUpperCase() })}
                         placeholder="e.g. PS/ITC/20/0000"
-                        className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all placeholder:text-gray-300 uppercase"
+                        className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all placeholder:text-gray-300 uppercase"
                       />
                     </div>
                   </div>
@@ -1075,7 +1075,7 @@ const Profile = () => {
                       <select
                         value={formData.level || ''}
                         onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                        className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
+                        className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
                       >
                         <option value="">Select Level</option>
                         <option value="100">100</option>
@@ -1091,7 +1091,7 @@ const Profile = () => {
                       <select
                         value={formData.semester || '1'}
                         onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
-                        className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 transition-all"
+                        className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
                       >
                         <option value="1">Sem 1</option>
                         <option value="2">Sem 2</option>
@@ -1131,7 +1131,7 @@ const Profile = () => {
             <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 flex flex-col">
               <div className="flex items-center justify-between p-5 border-b border-gray-100">
                 <h2 className="text-lg font-black text-gray-900 px-2 flex items-center gap-2">
-                  <Lock size={18} className="text-primary-950" />
+                  <Lock size={18} className="text-gray-900" />
                   {lockModalMode === 'setup' && 'Set GPA Vault PIN'}
                   {lockModalMode === 'confirm' && 'Confirm PIN'}
                   {lockModalMode === 'deactivate' && 'Disable GPA Lock'}
@@ -1165,7 +1165,7 @@ const Profile = () => {
                     }
                   }}
                   placeholder="••••••"
-                  className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-lg font-bold tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-primary-950/20 focus:border-primary-950 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
+                  className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-lg font-bold tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all placeholder:text-gray-300 placeholder:tracking-normal text-center"
                   maxLength={6}
                   autoFocus
                   required
@@ -1182,7 +1182,7 @@ const Profile = () => {
                   <button
                     type="submit"
                     disabled={lockModalMode === 'confirm' ? pinConfirmInput.length < 6 : pinInput.length < 6}
-                    className="flex-1 bg-primary-950 hover:bg-primary-950 text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-sm"
+                    className="flex-1 bg-gray-900 hover:bg-gray-900 text-white py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-sm"
                   >
                     {lockModalMode === 'setup' && 'Next'}
                     {lockModalMode === 'confirm' && 'Confirm & Lock'}

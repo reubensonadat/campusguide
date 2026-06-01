@@ -124,7 +124,7 @@ export async function pullTimetableFromCloud() {
 
   const { data, error } = await supabase
     .from('user_timetable')
-    .select('*')
+    .select('id, name, day, start_time, end_time, location, color, lecturer, contact, target_grade, credit_hours, academic_year, semester')
     .eq('user_id', userId)
     .is('deleted_at', null);
 
@@ -232,7 +232,7 @@ export async function pullAssignmentsFromCloud() {
 
   const { data, error } = await supabase
     .from('user_assignments')
-    .select('*')
+    .select('id, title, notes, course, due_date, due_time, priority, status, academic_year, semester, created_at, updated_at')
     .eq('user_id', userId)
     .is('deleted_at', null);
 
@@ -348,7 +348,7 @@ export async function pullGPAFromCloud() {
 
   const { data, error } = await supabase
     .from('user_gpa_courses')
-    .select('*')
+    .select('id, name, grade, score, grade_point, credit_hours, is_detailed, exam_weight, exam_score, assessments, academic_year, semester')
     .eq('user_id', userId)
     .is('deleted_at', null);
 
@@ -443,7 +443,7 @@ export async function pullTasksFromCloud() {
 
   const { data, error } = await supabase
     .from('user_tasks')
-    .select('*')
+    .select('id, title, status, date, time, end_time, icon, academic_year, semester')
     .eq('user_id', userId)
     .is('deleted_at', null);
 
@@ -537,7 +537,7 @@ export async function pullBudgetFromCloud() {
 
   const { data, error } = await supabase
     .from('budget_transactions')
-    .select('*')
+    .select('id, type, amount, category, description, created_at')
     .eq('user_id', userId)
     .is('deleted_at', null);
 
@@ -679,7 +679,7 @@ export async function restoreFromCloud() {
     // ── STEP 1: Restore Settings & Profile ──
     const { data: settings } = await supabase
       .from('user_settings')
-      .select('*')
+      .select('profile, home_widgets, settings')
       .single();
 
     if (settings) {
@@ -691,7 +691,7 @@ export async function restoreFromCloud() {
       }
     }
 
-    const { data: userProfile } = await supabase.from('users').select('*').single();
+    const { data: userProfile } = await supabase.from('users').select('name, phone_number, course, level, current_semester, avatar_url, student_id').single();
     if (userProfile) {
       const profile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
       if (userProfile.name) profile.name = userProfile.name;
@@ -699,6 +699,8 @@ export async function restoreFromCloud() {
       if (userProfile.course) profile.course = userProfile.course;
       if (userProfile.level) profile.level = userProfile.level;
       if (userProfile.current_semester) profile.semester = userProfile.current_semester;
+      if (userProfile.avatar_url) profile.avatarUrl = userProfile.avatar_url;
+      if (userProfile.student_id) profile.student_id = userProfile.student_id;
       localStorage.setItem('ucc_profile', JSON.stringify(profile));
     }
 
@@ -796,7 +798,9 @@ export async function syncToCloud({ force = false } = {}) {
           phone_number: sanitizeGhanaPhone(profile.phone) || null,
           course: profile.course || null,
           level: profile.level || null,
-          current_semester: profile.semester ? parseInt(profile.semester, 10) : null
+          current_semester: profile.semester ? parseInt(profile.semester, 10) : null,
+          avatar_url: profile.avatarUrl || null,
+          student_id: profile.student_id || null
         })
         .eq('id', userId);
     }

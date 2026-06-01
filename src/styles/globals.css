@@ -340,8 +340,52 @@ p, h1, h2, h3, h4, h5, h6, article, input, textarea {
 /* Glass effect */
 .glass {
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Floating Emoji Animations */
+@keyframes floatUpAndFade {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5) rotate(0deg);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(-10vh) scale(1.2) rotate(10deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-35vh) scale(1) rotate(-15deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-70vh) scale(0.8) rotate(20deg);
+  }
+}
+
+.floating-emoji {
+  position: fixed; /* Fixed so it floats across the whole screen */
+  bottom: 0; /* Start at the bottom of the screen */
+  pointer-events: none;
+  animation: floatUpAndFade 5s ease-out forwards;
+  z-index: 9999;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  will-change: transform, opacity;
+}
+
+.emoji-reaction-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.emoji-reaction-btn:active:not(:disabled) {
+  transform: scale(0.85);
+}
+
+.emoji-reaction-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
 }
 
 /* Modal backgrounds */

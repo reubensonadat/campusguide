@@ -10,7 +10,7 @@ export const getWhispers = async () => {
             .select('*')
             .order('created_at', { ascending: false })
             .limit(50);
-        
+
         if (error) throw error;
         return { success: true, data };
     } catch (error) {
@@ -167,7 +167,7 @@ export const getUserInteractions = async () => {
             .from('whisper_interactions')
             .select('whisper_id, interaction_type')
             .eq('user_id', user.id);
-            
+
         if (error) throw error;
         return { success: true, data };
     } catch (error) {
@@ -185,12 +185,12 @@ export const interactWithWhisper = async (whisperId, type) => {
         const { error: intError } = await supabase
             .from('whisper_interactions')
             .insert([{ whisper_id: whisperId, user_id: user.id, interaction_type: type }]);
-            
+
         if (intError) {
-             if (intError.code === '23505') {
-                 return { success: false, error: 'You already interacted with this.' };
-             }
-             throw intError;
+            if (intError.code === '23505') {
+                return { success: false, error: 'You already interacted with this.' };
+            }
+            throw intError;
         }
 
         // Fetch current to increment
@@ -215,6 +215,25 @@ export const interactWithWhisper = async (whisperId, type) => {
     }
 };
 
+export const toggleWhisperReaction = async (whisperId, emoji) => {
+    try {
+        const user = await getCurrentUser();
+        if (!user) throw new Error('You must be logged in to interact.');
+
+        const { error } = await supabase.rpc('toggle_whisper_reaction', {
+            p_whisper_id: whisperId,
+            p_user_id: user.id,
+            p_emoji: emoji
+        });
+
+        if (error) throw error;
+        return { success: true };
+    } catch (error) {
+        console.error('Error toggling whisper reaction:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 // --- WHISPER COMMENTS ---
 
 export const getWhisperComments = async (whisperId) => {
@@ -224,7 +243,7 @@ export const getWhisperComments = async (whisperId) => {
             .select('*')
             .eq('whisper_id', whisperId)
             .order('created_at', { ascending: true });
-        
+
         if (error) throw error;
         return { success: true, data };
     } catch (error) {
@@ -276,7 +295,7 @@ export const getThriftListings = async () => {
             .eq('status', 'ACTIVE')
             .order('created_at', { ascending: false })
             .limit(50);
-        
+
         if (error) throw error;
         return { success: true, data };
     } catch (error) {
@@ -295,8 +314,8 @@ export const addThriftListing = async (listingData) => {
 
         const { data, error } = await supabase
             .from('thrift_listings')
-            .insert([{ 
-                user_id: user.id, 
+            .insert([{
+                user_id: user.id,
                 item_name: listingData.title,
                 price: parseFloat(listingData.price) || 0,
                 description: description,
@@ -323,7 +342,7 @@ export const getSuggestions = async () => {
             .from('feature_suggestions')
             .select('*')
             .order('votes_count', { ascending: false });
-        
+
         if (error) throw error;
         return { success: true, data };
     } catch (error) {
@@ -339,9 +358,9 @@ export const addSuggestion = async (title, description) => {
 
         const { data, error } = await supabase
             .from('feature_suggestions')
-            .insert([{ 
-                user_id: user.id, 
-                title, 
+            .insert([{
+                user_id: user.id,
+                title,
                 description,
                 votes_count: 1
             }])

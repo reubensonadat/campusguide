@@ -204,7 +204,7 @@ const Support = () => {
   };
 
   return (
-    <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-primary-950">
+    <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-gray-900">
       <div className="max-w-3xl mx-auto px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
         
         {/* Header matching Profile style */}
@@ -304,7 +304,7 @@ const Support = () => {
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. GPA Graph Tracker"
-                  className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 text-sm font-bold"
+                  className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 text-sm font-bold"
                   required
                 />
               </div>
@@ -314,13 +314,13 @@ const Support = () => {
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Explain why this feature is useful for students..."
-                  className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-primary-950 focus:ring-1 focus:ring-primary-950 text-sm font-semibold h-16 resize-none"
+                  className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 text-sm font-semibold h-16 resize-none"
                   required
                 />
               </div>
               <button
                 type="submit"
-                className="w-full py-3 bg-primary-950 hover:bg-primary-950 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-sm border-none cursor-pointer"
+                className="w-full py-3 bg-gray-900 hover:bg-gray-900 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-sm border-none cursor-pointer"
               >
                 Submit Suggestion
               </button>
@@ -392,7 +392,7 @@ const Support = () => {
                     onClick={() => handleAmountSelect(val)}
                     className={`py-3.5 rounded-xl font-bold text-sm transition-all border ${
                       amount === val && !customAmount
-                        ? 'border-primary-950 bg-primary-950 text-white shadow-lg scale-105'
+                        ? 'border-gray-900 bg-gray-900 text-white shadow-lg scale-105'
                         : 'border-gray-100 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
@@ -455,7 +455,7 @@ const Support = () => {
                 }}
                 onPaymentSuccess={handlePaymentSuccess}
                 onPaymentError={handlePaymentError}
-                className="w-full py-3.5 text-xs bg-primary-950 hover:bg-primary-950 text-white font-bold rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-none"
+                className="w-full py-3.5 text-xs bg-gray-900 hover:bg-gray-900 text-white font-bold rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-none"
               >
                 <span>Donate GH₵{amount}</span>
               </PaymentButton>

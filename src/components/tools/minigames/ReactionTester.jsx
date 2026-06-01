@@ -39,10 +39,10 @@ export const ReactionTester = () => {
       <div 
         onClick={handleClick}
         className={`w-full max-w-[280px] aspect-square rounded-[2rem] flex flex-col items-center justify-center cursor-pointer transition-colors shadow-lg ${
-          state === 'waiting' ? 'bg-primary-950 hover:bg-[#004A6B]' :
+          state === 'waiting' ? 'bg-gray-900 hover:bg-[#004A6B]' :
           state === 'ready' ? 'bg-red-500' :
           state === 'playing' ? 'bg-green-500' :
-          'bg-primary-950'
+          'bg-gray-900'
         }`}
       >
         <span className="text-white font-black text-2xl text-center px-4">

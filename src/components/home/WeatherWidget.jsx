@@ -35,7 +35,7 @@ export const WeatherWidget = ({ weatherData }) => {
   const { svgType, color, bg, advice } = getWeatherIconAndAdvice(weatherData.weathercode, weatherData.temperature);
   
   return (
-    <div className="flex items-center gap-2 bg-primary-950/50 backdrop-blur-md border border-primary-400/20 px-3 py-1.5 rounded-2xl shadow-sm">
+    <div className="flex items-center gap-2 bg-gray-900/50 backdrop-blur-md border border-primary-400/20 px-3 py-1.5 rounded-2xl shadow-sm">
       <div className={`w-7 h-7 rounded-full flex items-center justify-center bg-white/10`}>
         {renderWeatherSvg(svgType, 14, 'text-primary-400')}
       </div>

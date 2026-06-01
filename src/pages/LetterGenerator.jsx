@@ -70,7 +70,7 @@ export const LetterGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-24 font-sans selection:bg-primary-950/20 selection:text-primary-950">
+    <div className="min-h-screen bg-gray-50/50 pb-24 font-sans selection:bg-gray-900/20 selection:text-gray-900">
       {/* Header */}
       <div className="max-w-5xl mx-auto px-4 md:px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))]">
         <PageHeader
@@ -94,7 +94,7 @@ export const LetterGenerator = () => {
                   <select 
                     value={formData.letterType}
                     onChange={(e) => setFormData({...formData, letterType: e.target.value})}
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all appearance-none"
+                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all appearance-none"
                   >
                     <option>Missing Grade Request</option>
                     <option>Excuse of Absence</option>
@@ -114,7 +114,7 @@ export const LetterGenerator = () => {
                       placeholder="e.g. John Doe"
                       value={formData.studentName}
                       onChange={(e) => setFormData({...formData, studentName: e.target.value})}
-                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all"
+                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
                     />
                   </div>
                   <div>
@@ -125,7 +125,7 @@ export const LetterGenerator = () => {
                       placeholder="e.g. PS/CSC/20/0001"
                       value={formData.studentId}
                       onChange={(e) => setFormData({...formData, studentId: e.target.value})}
-                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all"
+                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
                     />
                   </div>
                 </div>
@@ -138,7 +138,7 @@ export const LetterGenerator = () => {
                     placeholder="e.g. Computer Science"
                     value={formData.department}
                     onChange={(e) => setFormData({...formData, department: e.target.value})}
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all"
+                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
                   />
                 </div>
 
@@ -149,7 +149,7 @@ export const LetterGenerator = () => {
                     placeholder="e.g. CSC301 - Data Structures"
                     value={formData.courseInfo}
                     onChange={(e) => setFormData({...formData, courseInfo: e.target.value})}
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all"
+                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
                   />
                 </div>
 
@@ -161,7 +161,7 @@ export const LetterGenerator = () => {
                     placeholder="e.g. I was sick with malaria on the day of the exam and have a medical report."
                     value={formData.reason}
                     onChange={(e) => setFormData({...formData, reason: e.target.value})}
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-primary-950 focus:bg-white transition-all resize-none"
+                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all resize-none"
                   />
                 </div>
 
@@ -169,7 +169,7 @@ export const LetterGenerator = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 bg-primary-950 text-white font-bold rounded-2xl hover:bg-primary-950 transition-colors active:scale-95 shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100"
+                    className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-gray-900 transition-colors active:scale-95 shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100"
                   >
                     {loading ? 'Generating...' : 'Generate Letter'}
                   </button>
@@ -187,7 +187,7 @@ export const LetterGenerator = () => {
                 {generatedLetter && (
                   <button 
                     onClick={handleCopy}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-primary-950 border border-gray-200 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors active:scale-95"
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-900 border border-gray-200 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors active:scale-95"
                   >
                     <Copy size={16} /> Copy Text
                   </button>

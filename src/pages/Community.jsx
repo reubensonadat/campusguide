@@ -7,6 +7,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import LostFoundModal from '../components/community/LostFoundModal';
 import ThriftFeed from '../components/community/ThriftFeed';
 import WhispersFeed from '../components/community/WhispersFeed';
+import Leaderboards from '../components/community/Leaderboards';
 import PageHeader from '../components/common/PageHeader';
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 
@@ -28,7 +29,8 @@ const CATEGORIES = [
 const mainTabs = [
     { id: 'general', label: 'General Feed' },
     { id: 'thrift', label: 'Student Thrift' },
-    { id: 'whispers', label: 'Campus Whispers' }
+    { id: 'whispers', label: 'Campus Whispers' },
+    { id: 'leaderboard', label: 'Leaderboards' }
 ];
 
 const Community = () => {
@@ -228,11 +230,10 @@ const Community = () => {
                         
                         <button
                             onClick={() => navigate('/advertise')}
-                            className="whitespace-nowrap px-3.5 py-1.5 bg-primary-950 text-white text-[11px] font-black uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-1.5"
-                            aria-label="Showcase to the world"
+                            className="whitespace-nowrap px-3.5 py-1.5 bg-primary-600 text-white text-[11px] font-black uppercase tracking-wider rounded-xl shadow-sm hover:bg-primary-700 transition-colors"
                         >
-                            <Megaphone size={12} />
-                            <span>Showcase</span>
+                            <Megaphone size={14} className="inline mr-1" />
+                            Showcase
                         </button>
                     </div>
                 </div>
@@ -241,10 +242,10 @@ const Community = () => {
             <div className="w-[90%] md:w-[95%] max-w-[1600px] mx-auto pt-4">
 
                 {/* Main Tabs */}
-                <div className="w-full mb-4 relative">
-                    <div className="relative flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-100/80 w-full z-0 shadow-sm">
+                <div className="w-full mb-4 relative overflow-x-auto pb-2 scrollbar-none scroll-smooth">
+                    <div className="relative inline-flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-100/80 w-max z-0 shadow-sm">
                         <div 
-                            className="absolute h-[calc(100%-8px)] bg-primary-950 rounded-lg z-0"
+                            className="absolute h-[calc(100%-8px)] bg-gray-900 rounded-lg z-0"
                             style={{ 
                                 left: `${pillStyle.left}px`, 
                                 width: `${pillStyle.width}px`,
@@ -259,7 +260,7 @@ const Community = () => {
                                     key={tab.id}
                                     ref={el => tabsRef.current[index] = el}
                                     onClick={() => setActiveMainTab(tab.id)}
-                                    className={`relative z-10 py-2 rounded-lg text-xs font-bold text-center flex-1 transition-colors duration-200 ${
+                                    className={`relative z-10 py-2 px-4 whitespace-nowrap rounded-lg text-xs font-bold text-center flex-1 sm:flex-initial transition-colors duration-200 ${
                                         isActive ? 'text-white' : 'text-gray-500 hover:text-gray-900'
                                     }`}
                                 >
@@ -333,6 +334,7 @@ const Community = () => {
 
                 {activeMainTab === 'thrift' && <ThriftFeed />}
                 {activeMainTab === 'whispers' && <WhispersFeed />}
+                {activeMainTab === 'leaderboard' && <Leaderboards />}
             </div>
 
             <LostFoundModal

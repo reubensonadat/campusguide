@@ -49,7 +49,7 @@ export const MemoryMatch = () => {
           <div 
             key={idx} 
             onClick={() => handleCardClick(idx)}
-            className={`aspect-square flex items-center justify-center text-3xl sm:text-4xl rounded-xl cursor-pointer transition-all duration-300 transform perspective-1000 ${card.isFlipped || card.isMatched ? 'bg-white/20 rotate-y-180' : 'bg-primary-950 hover:bg-[#004A6B]'}`}
+            className={`aspect-square flex items-center justify-center text-3xl sm:text-4xl rounded-xl cursor-pointer transition-all duration-300 transform perspective-1000 ${card.isFlipped || card.isMatched ? 'bg-white/20 rotate-y-180' : 'bg-gray-900 hover:bg-[#004A6B]'}`}
           >
             {(card.isFlipped || card.isMatched) ? <span className="animate-in fade-in zoom-in">{card.icon}</span> : <span className="opacity-0">{card.icon}</span>}
           </div>

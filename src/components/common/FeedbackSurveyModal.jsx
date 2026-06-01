@@ -21,15 +21,15 @@ const Question = ({ label, children }) => (
 const RadioGroup = ({ options, value, onChange }) => (
     <div className="grid gap-2">
         {options.map(opt => (
-            <label key={opt} className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${value === opt ? 'border-primary-950 bg-primary-950/5 shadow-sm' : 'border-white bg-white hover:border-primary-950/20'}`}>
+            <label key={opt} className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${value === opt ? 'border-gray-900 bg-gray-900/5 shadow-sm' : 'border-white bg-white hover:border-gray-900/20'}`}>
                 <input
                     type="radio"
                     value={opt}
                     checked={value === opt}
                     onChange={(e) => onChange(e.target.value)}
-                    className="w-4 h-4 text-primary-950 focus:ring-primary-950 accent-primary-950"
+                    className="w-4 h-4 text-gray-900 focus:ring-gray-900 accent-gray-900"
                 />
-                <span className={`ml-3 text-sm font-medium ${value === opt ? 'text-primary-950' : 'text-gray-600'}`}>{opt}</span>
+                <span className={`ml-3 text-sm font-medium ${value === opt ? 'text-gray-900' : 'text-gray-600'}`}>{opt}</span>
             </label>
         ))}
     </div>
@@ -40,7 +40,7 @@ const TextInput = ({ value, onChange, placeholder }) => (
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-3 border-2 border-white focus:border-primary-950 bg-white rounded-lg text-sm outline-none transition-all placeholder:text-gray-400"
+        className="w-full p-3 border-2 border-white focus:border-gray-900 bg-white rounded-lg text-sm outline-none transition-all placeholder:text-gray-400"
         placeholder={placeholder}
     />
 );
@@ -128,8 +128,8 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     const renderIntro = () => (
         <div className="text-center space-y-8 py-8 px-4">
             <div className="relative mx-auto w-20 h-20">
-                <div className="absolute inset-0 bg-primary-950 opacity-20 blur-xl rounded-full"></div>
-                <div className="relative w-full h-full bg-gradient-to-br from-primary-950 to-[#004a6b] rounded-2xl flex items-center justify-center shadow-xl rotate-3">
+                <div className="absolute inset-0 bg-gray-900 opacity-20 blur-xl rounded-full"></div>
+                <div className="relative w-full h-full bg-gradient-to-br from-gray-900 to-[#004a6b] rounded-2xl flex items-center justify-center shadow-xl rotate-3">
                     <Star className="w-10 h-10 text-white" fill="white" />
                 </div>
             </div>
@@ -137,10 +137,10 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                 <h3 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Help Shape Version 2.0</h3>
                 <p className="text-gray-600 text-lg leading-relaxed max-w-sm mx-auto">
                     We're building the ultimate student super-app. <br />
-                    Answer <span className="font-bold text-primary-950 bg-primary-950/10 px-2 rounded">20 questions</span> to help us prioritize features.
+                    Answer <span className="font-bold text-gray-900 bg-gray-900/10 px-2 rounded">20 questions</span> to help us prioritize features.
                 </p>
             </div>
-            <Button onClick={() => setPage(1)} className="w-3/4 py-4 text-lg font-bold bg-primary-950 hover:bg-primary-950 text-white shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-2xl">
+            <Button onClick={() => setPage(1)} className="w-3/4 py-4 text-lg font-bold bg-gray-900 hover:bg-gray-900 text-white shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-2xl">
                 Start Survey →
             </Button>
             <p className="text-xs font-medium text-gray-400 tracking-wide uppercase">Time to complete: ~2 mins</p>
@@ -179,7 +179,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                 <TextInput value={answers.finance_pain} onChange={(val) => updateAnswer('finance_pain', val)} placeholder="e.g. Overspending on food..." />
             </Question>
 
-            <Button onClick={() => setPage(2)} className="w-full py-4 rounded-xl font-bold bg-primary-950 text-white hover:bg-primary-950 shadow-lg mt-4">Next Step: Academics →</Button>
+            <Button onClick={() => setPage(2)} className="w-full py-4 rounded-xl font-bold bg-gray-900 text-white hover:bg-gray-900 shadow-lg mt-4">Next Step: Academics →</Button>
         </div>
     );
 
@@ -216,8 +216,8 @@ const FeedbackModal = ({ isOpen, onClose }) => {
             </Question>
 
             <div className="flex gap-4 mt-6">
-                <Button variant="outline" onClick={() => setPage(1)} className="flex-1 py-3 rounded-xl font-bold border-primary-950/20 text-gray-700">Back</Button>
-                <Button onClick={() => setPage(3)} className="flex-[2] py-3 rounded-xl font-bold bg-primary-950 hover:bg-primary-950 text-white shadow-lg">Next: Campus Life →</Button>
+                <Button variant="outline" onClick={() => setPage(1)} className="flex-1 py-3 rounded-xl font-bold border-gray-900/20 text-gray-700">Back</Button>
+                <Button onClick={() => setPage(3)} className="flex-[2] py-3 rounded-xl font-bold bg-gray-900 hover:bg-gray-900 text-white shadow-lg">Next: Campus Life →</Button>
             </div>
         </div>
     );
@@ -255,8 +255,8 @@ const FeedbackModal = ({ isOpen, onClose }) => {
             </Question>
 
             <div className="flex gap-4 mt-6">
-                <Button variant="outline" onClick={() => setPage(2)} className="flex-1 py-3 rounded-xl font-bold border-primary-950/20 text-gray-700">Back</Button>
-                <Button onClick={() => setPage(4)} className="flex-[2] py-3 rounded-xl font-bold bg-primary-950 hover:bg-primary-950 text-white shadow-lg">Next: The App →</Button>
+                <Button variant="outline" onClick={() => setPage(2)} className="flex-1 py-3 rounded-xl font-bold border-gray-900/20 text-gray-700">Back</Button>
+                <Button onClick={() => setPage(4)} className="flex-[2] py-3 rounded-xl font-bold bg-gray-900 hover:bg-gray-900 text-white shadow-lg">Next: The App →</Button>
             </div>
         </div>
     );
@@ -301,14 +301,14 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                     type="email"
                     value={answers.email}
                     onChange={(e) => updateAnswer('email', e.target.value)}
-                    className="w-full p-3 border-2 border-gray-200 focus:border-primary-950 rounded-xl text-sm outline-none transition-all"
+                    className="w-full p-3 border-2 border-gray-200 focus:border-gray-900 rounded-xl text-sm outline-none transition-all"
                     placeholder="you@student.ucc.edu.gh"
                 />
             </div>
 
             <div className="flex gap-4 mt-6">
-                <Button variant="outline" onClick={() => setPage(3)} className="flex-1 py-3 rounded-xl font-bold border-primary-950/20 text-gray-700">Back</Button>
-                <Button onClick={handleSubmit} className="flex-[2] py-3 rounded-xl font-bold bg-primary-950 hover:bg-primary-950 text-white shadow-xl shadow-gray-200">
+                <Button variant="outline" onClick={() => setPage(3)} className="flex-1 py-3 rounded-xl font-bold border-gray-900/20 text-gray-700">Back</Button>
+                <Button onClick={handleSubmit} className="flex-[2] py-3 rounded-xl font-bold bg-gray-900 hover:bg-gray-900 text-white shadow-xl shadow-gray-200">
                     {isSubmitting ? 'Submitting...' : 'Submit Survey'}
                 </Button>
             </div>
