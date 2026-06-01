@@ -47,6 +47,7 @@ export const secureDevice = async (deviceId, pin) => {
       // Link this device to the OneSignal user record using Supabase ID
       if (OneSignal.initialized) {
         OneSignal.login(data.user.id).catch(console.error);
+        OneSignal.User.addTag("user_id", data.user.id);
       }
     }
 

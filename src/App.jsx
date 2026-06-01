@@ -58,12 +58,12 @@ function NavigationObserver() {
 
 function AppContent() {
   const { selectedCampusId } = useCampus();
-  
+
   // Initialize OneSignal
   useEffect(() => {
     // Replace this with your actual OneSignal App ID
     const ONESIGNAL_APP_ID = "03f1b792-2236-43d1-8df3-dccdfc04b5cd";
-    
+
     // Only initialize if we have an ID and it hasn't been initialized yet
     if (ONESIGNAL_APP_ID !== "YOUR_ONESIGNAL_APP_ID_HERE" && !isOneSignalInitialized) {
       isOneSignalInitialized = true;
@@ -73,6 +73,12 @@ function AppContent() {
         notifyButton: {
           enable: false, // We will use our own custom toggle in Settings
         },
+      }).then(() => {
+        const localUserId = localStorage.getItem('ucc_user_id');
+        if (localUserId && window.OneSignal && window.OneSignal.User) {
+          window.OneSignal.login(localUserId).catch(console.error);
+          window.OneSignal.User.addTag("user_id", localUserId);
+        }
       }).catch(err => {
         console.warn("OneSignal initialization failed (likely Web Push not configured in dashboard yet):", err);
       });
@@ -89,7 +95,7 @@ function AppContent() {
 
   // Class Reminders Logic
   useClassReminders();
-  
+
   // New In-App Notifications Background Worker
   useAppNotifications();
 
@@ -123,13 +129,13 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex bg-gray-50/50">
-      <Toaster 
-        position="top-center" 
+      <Toaster
+        position="top-center"
         containerStyle={{ top: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}
-        toastOptions={{ duration: 3000, style: { fontWeight: 'bold' } }} 
+        toastOptions={{ duration: 3000, style: { fontWeight: 'bold' } }}
       />
       <Sidebar onExpandedChange={setIsSidebarExpanded} />
-      
+
       <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>
         <Suspense fallback={
           <div className="flex-1 min-h-[60vh] flex flex-col items-center justify-center gap-4 py-20 bg-gray-50/50 dark:bg-[#0a0a0a]">
@@ -156,21 +162,21 @@ function AppContent() {
           </Routes>
         </Suspense>
 
-      <TabBar />
+        <TabBar />
 
-      {/* PWA Install Button - Fixed Position */}
-      <PWAInstallButton />
+        {/* PWA Install Button - Fixed Position */}
+        <PWAInstallButton />
 
-      <SupportModal
-        isOpen={showModal}
-        onClose={handleCloseModal}
-        onPaymentSuccess={handlePaymentSuccess}
-      />
+        <SupportModal
+          isOpen={showModal}
+          onClose={handleCloseModal}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
 
-      <FeedbackModal
-        isOpen={showFeedback}
-        onClose={closeFeedback}
-      />
+        <FeedbackModal
+          isOpen={showFeedback}
+          onClose={closeFeedback}
+        />
 
         <Onboarding
           isOpen={showOnboarding}
@@ -179,7 +185,7 @@ function AppContent() {
           onPrev={prevStep}
           onClose={closeOnboarding}
         />
-        
+
         <AuthBottomSheet />
       </div>
     </div>
