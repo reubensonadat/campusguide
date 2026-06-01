@@ -1,6 +1,7 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import OneSignal from 'react-onesignal';
 import { DataLoader } from './components/common/CustomLoaders';
+import { SplashScreen } from './components/common/SplashScreen';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AppProvider } from './context/AppContext';
@@ -195,10 +196,24 @@ function AppContent() {
 let isOneSignalInitialized = false;
 
 function App() {
+  const [showSplash, setShowSplash] = useState(false);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const lastOpened = localStorage.getItem('ucc_last_opened_date');
+    
+    // Only show splash screen if it's the first time opening the app today
+    if (lastOpened !== today) {
+      setShowSplash(true);
+      localStorage.setItem('ucc_last_opened_date', today);
+    }
+  }, []);
+
   return (
     <AppProvider>
       <NotificationProvider>
         <CampusProvider>
+          {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
           <Router>
             <NavigationObserver />
             <AppContent />
