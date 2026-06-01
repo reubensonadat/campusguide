@@ -11,7 +11,7 @@ import { useNotifications } from '../../context/NotificationContext';
 // ─── Type config ─────────────────────────────────────────────────────────────
 const TYPE_CONFIG = {
   announcement: { label: 'ANNOUNCEMENT', Icon: Megaphone, color: 'text-[#002F45]', bg: 'bg-[#002F45]/10' },
-  whisper: { label: 'WHISPER', Icon: MessageCircle, color: 'text-purple-600', bg: 'bg-purple-50' },
+  whisper: { label: 'WHISPER', Icon: MessageCircle, color: 'text-blue-600', bg: 'bg-blue-50' },
   thrift: { label: 'THRIFT', Icon: ShoppingBag, color: 'text-emerald-600', bg: 'bg-emerald-50' },
 };
 

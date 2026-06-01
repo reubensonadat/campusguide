@@ -388,7 +388,13 @@ const Home = () => {
   const todaysClassesWithStatus = useMemo(() => {
     if (!Array.isArray(timetable)) return [];
     return timetable
-      .filter(c => c.day && c.day.toLowerCase() === TODAY_NAME.toLowerCase())
+      .filter(c => {
+        if (!c.day || c.day.toLowerCase() !== TODAY_NAME.toLowerCase()) return false;
+        // Strict filter based on active profile level (academic_year) & semester
+        if (profile.level && c.academic_year && String(c.academic_year) !== String(profile.level)) return false;
+        if (profile.semester && c.semester && String(c.semester) !== String(profile.semester)) return false;
+        return true;
+      })
       .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
       .map(c => {
         const startMins = getTimeMinutes(c.startTime);
@@ -408,7 +414,7 @@ const Home = () => {
         }
         return { ...c, status, startMins, endMins, timeUntilStr };
       });
-  }, [timetable, currentTimeMinutes]);
+  }, [timetable, currentTimeMinutes, profile.level, profile.semester]);
 
   const upcomingOrOngoingClasses = todaysClassesWithStatus.filter(c => c.status !== 'completed');
   const allCompleted = todaysClassesWithStatus.length > 0 && upcomingOrOngoingClasses.length === 0;
@@ -417,8 +423,14 @@ const Home = () => {
   const todaysTasks = useMemo(() => {
     const d = new Date();
     const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    return tasks.filter(t => t.date === todayStr).sort((a, b) => a.time.localeCompare(b.time));
-  }, [tasks]);
+    return tasks.filter(t => {
+      if (t.date !== todayStr) return false;
+      // Strict filter based on active profile level (academic_year) & semester
+      if (profile.level && t.academic_year && String(t.academic_year) !== String(profile.level)) return false;
+      if (profile.semester && t.semester && String(t.semester) !== String(profile.semester)) return false;
+      return true;
+    }).sort((a, b) => a.time.localeCompare(b.time));
+  }, [tasks, profile.level, profile.semester]);
 
   const suggestedClassTasks = useMemo(() => {
     return todaysClassesWithStatus.filter(cls => {

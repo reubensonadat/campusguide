@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Sparkles, Star, X, Megaphone } from 'lucide-react';
 import { CustomCommunity, CustomThriftStore, CustomEyes } from '../components/common/CustomIcons';
 import CommunityCard from '../components/community/CommunityCard';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import LostFoundModal from '../components/community/LostFoundModal';
 import ThriftFeed from '../components/community/ThriftFeed';
@@ -43,16 +43,21 @@ const Community = () => {
     const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
     const tabsRef = React.useRef([]);
 
+    const location = useLocation();
+
     React.useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.has('postId')) {
+        const params = new URLSearchParams(location.search);
+        if (params.has('tab')) {
+            const tab = params.get('tab');
+            if (['general', 'thrift', 'whispers'].includes(tab)) setActiveMainTab(tab);
+        } else if (params.has('postId')) {
             setActiveMainTab('general');
         } else if (params.has('thriftId')) {
             setActiveMainTab('thrift');
         } else if (params.has('whisperId')) {
             setActiveMainTab('whispers');
         }
-    }, []);
+    }, [location.search]);
 
     React.useEffect(() => {
         const timeoutId = setTimeout(() => {
