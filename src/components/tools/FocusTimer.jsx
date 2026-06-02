@@ -43,7 +43,21 @@ export const FocusTimer = () => {
         const timerState = JSON.parse(localStorage.getItem('ucc_focus_timer_state') || 'null');
         if (timerState && timerState.isActive) {
           const elapsed = Math.floor((Date.now() - timerState.startTime) / 1000);
-          setTimeSpent(timerState.accumulated + elapsed);
+          const totalAccumulated = timerState.accumulated + elapsed;
+          
+          // Idle Cap: If the timer runs for more than 12 hours (43200 seconds), auto-pause it.
+          if (totalAccumulated >= 43200) {
+            setTimeSpent(43200);
+            setIsActive(false);
+            localStorage.setItem('ucc_focus_timer_state', JSON.stringify({
+              isActive: false,
+              startTime: null,
+              accumulated: 43200
+            }));
+            clearInterval(interval);
+          } else {
+            setTimeSpent(totalAccumulated);
+          }
         }
       }, 1000);
     }
@@ -115,11 +129,12 @@ export const FocusTimer = () => {
     navigate('/');
   };
 
-  const minutes = Math.floor(timeSpent / 60);
+  const hours = Math.floor(timeSpent / 3600);
+  const minutes = Math.floor((timeSpent % 3600) / 60);
   const seconds = timeSpent % 60;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-start p-6 text-white overflow-y-auto w-full h-full bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
+    <div className="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-start p-6 text-white overflow-y-auto overflow-x-hidden w-full h-full bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
 
       {/* Dynamic Background Glow */}
       <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vh] h-[80vh] bg-primary-500/20 rounded-full blur-[120px] pointer-events-none transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-30'}`} />
@@ -185,8 +200,8 @@ export const FocusTimer = () => {
 
               {/* Inner Glowing Orb */}
               <div className="absolute inset-4 rounded-full bg-slate-900/50 backdrop-blur-sm border border-white/10 shadow-inner flex flex-col items-center justify-center">
-                <span className="text-[5.5rem] font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                  {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
+                <span className={`font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70 ${hours > 0 ? 'text-[4.5rem]' : 'text-[5.5rem]'}`} style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {hours > 0 && `${hours}:`}{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
                 </span>
                 <span className="text-white/40 font-bold mt-4 text-[10px] uppercase tracking-[0.25em]">
                   Time Elapsed

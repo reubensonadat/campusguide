@@ -8,6 +8,11 @@ import { SimonSays } from './SimonSays';
 import { Mini2048 } from './Mini2048';
 import { PatternConnect } from './PatternConnect';
 import { WordScramble } from './WordScramble';
+import { QuickMath } from './QuickMath';
+import { StroopTest } from './StroopTest';
+import { ZenSand } from './ZenSand';
+import { HueSort } from './HueSort';
+import { triggerHaptic } from '../../../utils/haptics';
 
 const GAMES = [
   { id: 'breathe', name: 'Breathing Timer', component: BreathingCircle },
@@ -16,14 +21,25 @@ const GAMES = [
   { id: 'simon', name: 'Simon Says', component: SimonSays },
   { id: '2048', name: 'Mini 2048', component: Mini2048 },
   { id: 'pattern', name: 'Flow Connect', component: PatternConnect },
-  { id: 'scramble', name: 'Word Scramble', component: WordScramble }
+  { id: 'scramble', name: 'Word Scramble', component: WordScramble },
+  { id: 'quickmath', name: 'Quick Math', component: QuickMath },
+  { id: 'stroop', name: 'Color Match', component: StroopTest },
+  { id: 'zensand', name: 'Zen Sand', component: ZenSand },
+  { id: 'huesort', name: 'Hue Sort', component: HueSort }
 ];
 
 export const MiniGameHub = ({ onBackToFocus }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const nextGame = () => setCurrentIndex((i) => (i + 1) % GAMES.length);
-  const prevGame = () => setCurrentIndex((i) => (i - 1 + GAMES.length) % GAMES.length);
+  const nextGame = () => {
+    triggerHaptic(30);
+    setCurrentIndex((i) => (i + 1) % GAMES.length);
+  };
+  
+  const prevGame = () => {
+    triggerHaptic(30);
+    setCurrentIndex((i) => (i - 1 + GAMES.length) % GAMES.length);
+  };
 
   const CurrentGame = GAMES[currentIndex].component;
 
@@ -56,7 +72,10 @@ export const MiniGameHub = ({ onBackToFocus }) => {
 
       <div className="mt-8 flex justify-center">
         <button 
-          onClick={onBackToFocus}
+          onClick={() => {
+            triggerHaptic(50);
+            onBackToFocus();
+          }}
           className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full transition-all active:scale-95"
         >
           Back to Focus Timer

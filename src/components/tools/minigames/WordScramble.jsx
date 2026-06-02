@@ -32,14 +32,14 @@ export const WordScramble = () => {
 
   const handleGuess = (e) => {
     e.preventDefault();
-    if (guess.toLowerCase() === currentWord.toLowerCase()) {
+    if (guess.trim().toUpperCase() === currentWord.toUpperCase()) {
       setIsWon(true);
       setScore(s => s + 1);
-      triggerHaptic('heavy');
+      triggerHaptic(100);
       setTimeout(pickWord, 1500);
     } else {
       setError(true);
-      triggerHaptic('light');
+      triggerHaptic(1500);
       setTimeout(() => setError(false), 500);
     }
   };
@@ -74,8 +74,8 @@ export const WordScramble = () => {
         <input 
           type="text"
           value={guess}
-          onChange={(e) => setGuess(e.target.value)}
-          placeholder="Type your guess..."
+          onChange={(e) => setGuess(e.target.value.toUpperCase())}
+          placeholder="TYPE YOUR GUESS..."
           disabled={isWon}
           className={`w-full bg-black/20 border-2 rounded-2xl p-4 text-center text-xl font-bold text-white placeholder:text-white/30 focus:outline-none focus:bg-black/30 transition-all ${error ? 'border-rose-500 animate-pulse' : 'border-white/10 focus:border-primary-500/50'}`}
         />

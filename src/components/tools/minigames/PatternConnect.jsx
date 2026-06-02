@@ -11,16 +11,67 @@ const COLORS = [
   'bg-purple-500'
 ];
 
-// Helper to generate a solvable puzzle
-const generatePuzzle = () => {
-  // Hardcoded for a 5x5 simple flow puzzle
-  const pairs = [
+// A collection of solvable 5x5 flow free puzzles
+const PUZZLES = [
+  // Puzzle 1 (The classic)
+  [
     { color: 0, points: [{r: 0, c: 0}, {r: 4, c: 4}] },
-    { color: 1, points: [{r: 0, c: 4}, {r: 3, c: 0}] },
-    { color: 2, points: [{r: 1, c: 1}, {r: 4, c: 2}] },
-    { color: 3, points: [{r: 2, c: 3}, {r: 4, c: 0}] },
-  ];
-  return pairs;
+    { color: 1, points: [{r: 0, c: 1}, {r: 3, c: 4}] },
+    { color: 2, points: [{r: 1, c: 1}, {r: 2, c: 1}] },
+    { color: 3, points: [{r: 1, c: 3}, {r: 3, c: 1}] },
+  ],
+  // Puzzle 2
+  [
+    { color: 0, points: [{r: 0, c: 1}, {r: 3, c: 2}] },
+    { color: 1, points: [{r: 0, c: 2}, {r: 4, c: 4}] },
+    { color: 2, points: [{r: 1, c: 1}, {r: 2, c: 1}] },
+    { color: 3, points: [{r: 1, c: 3}, {r: 3, c: 3}] },
+    { color: 4, points: [{r: 4, c: 0}, {r: 4, c: 3}] },
+  ],
+  // Puzzle 3
+  [
+    { color: 0, points: [{r: 0, c: 0}, {r: 4, c: 4}] },
+    { color: 1, points: [{r: 0, c: 1}, {r: 3, c: 3}] },
+    { color: 2, points: [{r: 0, c: 2}, {r: 3, c: 4}] },
+    { color: 3, points: [{r: 1, c: 2}, {r: 1, c: 3}] },
+    { color: 4, points: [{r: 2, c: 2}, {r: 2, c: 3}] },
+  ]
+];
+
+const generatePuzzle = () => {
+  const basePuzzle = PUZZLES[Math.floor(Math.random() * PUZZLES.length)];
+  
+  // Transform flags for D4 symmetry group
+  const flipH = Math.random() > 0.5;
+  const flipV = Math.random() > 0.5;
+  const transpose = Math.random() > 0.5;
+  
+  // Shuffle color assignments to create completely new visual states
+  const availableColors = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
+
+  const transformed = basePuzzle.map((pair, idx) => {
+    const newPoints = pair.points.map(pt => {
+      let r = pt.r;
+      let c = pt.c;
+      
+      if (transpose) {
+        const temp = r;
+        r = c;
+        c = temp;
+      }
+      if (flipH) c = 4 - c;
+      if (flipV) r = 4 - r;
+      
+      return { r, c };
+    });
+
+    return {
+      color: availableColors[idx % availableColors.length],
+      points: newPoints
+    };
+  });
+
+  return transformed;
 };
 
 export const PatternConnect = () => {
@@ -62,7 +113,7 @@ export const PatternConnect = () => {
     // Check if we clicked on an endpoint
     const pair = pairs.find(p => p.points.some(pt => pt.r === r && pt.c === c));
     if (pair) {
-      triggerHaptic('light');
+      triggerHaptic(30);
       setActiveColor(pair.color);
       setPaths(prev => ({
         ...prev,
@@ -75,7 +126,7 @@ export const PatternConnect = () => {
         const path = paths[color];
         const idx = path.findIndex(pt => pt.r === r && pt.c === c);
         if (idx !== -1) {
-          triggerHaptic('light');
+          triggerHaptic(30);
           setActiveColor(color);
           setPaths(prev => ({
             ...prev,
@@ -111,7 +162,7 @@ export const PatternConnect = () => {
       // If we move backward on our own path, truncate
       const prevIdx = currentPath.findIndex(pt => pt.r === cell.r && pt.c === cell.c);
       if (prevIdx !== -1) {
-        triggerHaptic('light');
+        triggerHaptic(30);
         return {
           ...prev,
           [activeColor]: currentPath.slice(0, prevIdx + 1)
@@ -123,7 +174,7 @@ export const PatternConnect = () => {
       const isMyEndpoint = myPair.points.some(pt => pt.r === cell.r && pt.c === cell.c);
       
       const newPath = [...currentPath, cell];
-      triggerHaptic('light');
+      triggerHaptic(30);
 
       // Clear other paths if we cross them
       const nextPaths = { ...prev };
@@ -172,7 +223,7 @@ export const PatternConnect = () => {
 
     if (allConnected && gridFilled === SIZE * SIZE) {
       setIsWon(true);
-      triggerHaptic('heavy');
+      triggerHaptic(100);
     }
   };
 
