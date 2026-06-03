@@ -12,6 +12,7 @@ import { getCurrentSemesterInfo } from '../services/academicCalendarService';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { getTodayHoliday } from '../services/holidayService';
 import { syncToCloud, shouldSyncNow } from '../services/syncService';
+import { getProductivityStats } from '../services/productivityService';
 import { toast } from 'react-hot-toast';
 import { useDeviceId } from '../hooks/useDeviceId';
 
@@ -277,73 +278,17 @@ const Home = () => {
     });
   };
 
-  // ── Daily Streak System ──────────────────────────────────────────────────
-  const [streakData, setStreakData] = useLocalStorage('ucc_streak', {
-    count: 0,
-    lastActiveDate: null,
-    bestStreak: 0,
-    freezeUsedWeek: null,
-  });
-  const streakUpdatedRef = useRef(false);
+  // ── Focus Productivity Streak ─────────────────────────────────────────────
+  const [prodStats, setProdStats] = useState(null);
 
   useEffect(() => {
-    if (streakUpdatedRef.current) return;
-    streakUpdatedRef.current = true;
-
-    const today = getISODate(new Date());
-    const yesterday = getISODate(new Date(Date.now() - 86400000));
-
-    // Already logged today — nothing to do
-    if (streakData.lastActiveDate === today) return;
-
-    let newCount = 1;
-    let newBest = streakData.bestStreak;
-    let newFreezeWeek = streakData.freezeUsedWeek;
-
-    if (streakData.lastActiveDate === yesterday) {
-      // Consecutive day — increment
-      newCount = streakData.count + 1;
-    } else if (streakData.lastActiveDate) {
-      // Gap detected — check if streak freeze can save it
-      const currentWeek = getWeekId(new Date());
-      const canUseFreeze = streakData.freezeUsedWeek !== currentWeek;
-
-      const lastDate = new Date(streakData.lastActiveDate + 'T12:00:00');
-      const todayDate = new Date(today + 'T12:00:00');
-      const diffDays = Math.round((todayDate - lastDate) / 86400000);
-
-      if (diffDays === 2 && canUseFreeze) {
-        // Freeze saves a 1-day gap (once per week)
-        newCount = streakData.count + 1;
-        newFreezeWeek = currentWeek;
-      }
-      // Otherwise: reset to 1 (default)
+    async function loadStats() {
+      const data = await getProductivityStats();
+      setProdStats(data);
     }
-
-    newBest = Math.max(newBest, newCount);
-
-    // Milestone toasts
-    if (newCount === 7) toast.success('7-day streak! Keep going!', { icon: '🔥' });
-    else if (newCount === 14) toast.success('2-week streak! You\'re on fire!', { icon: '🔥' });
-    else if (newCount === 30) toast.success('30-day streak! Legendary dedication!', { icon: '🏆' });
-    else if (newCount === 100) toast.success('100-day streak! You\'re a Campus Guide legend!', { icon: '💎' });
-
-    setStreakData({
-      count: newCount,
-      lastActiveDate: today,
-      bestStreak: newBest,
-      freezeUsedWeek: newFreezeWeek,
-    });
+    loadStats();
   }, []);
 
-  // Streak tier for visual styling
-  const streakTier = useMemo(() => {
-    if (streakData.count >= 100) return 'legendary';
-    if (streakData.count >= 30) return 'committed';
-    if (streakData.count >= 7) return 'established';
-    if (streakData.count >= 3) return 'building';
-    return 'starting';
-  }, [streakData.count]);
 
   // 🛎️ NOTIFICATION LOGIC STATES
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -844,43 +789,7 @@ const Home = () => {
     { title: 'Settings', icon: Settings, action: () => navigate('/settings') },
   ];
 
-  // ── Streak badge component (reused in mobile + desktop) ────────────────
-  const StreakBadge = ({ variant = 'hero' }) => {
-    if (streakData.count < 1) return null;
 
-    const tierStyles = {
-      starting: { bg: 'bg-white/10', border: 'border-white/10', text: 'text-white/70', flame: 'text-orange-400' },
-      building: { bg: 'bg-white/10', border: 'border-white/10', text: 'text-white/80', flame: 'text-orange-400' },
-      established: { bg: 'bg-orange-500/15', border: 'border-orange-500/20', text: 'text-orange-300', flame: 'text-orange-400' },
-      committed: { bg: 'bg-orange-500/20', border: 'border-orange-500/25', text: 'text-orange-200', flame: 'text-orange-300' },
-      legendary: { bg: 'bg-amber-500/20', border: 'border-amber-400/30', text: 'text-amber-200', flame: 'text-amber-300' },
-    };
-    const s = tierStyles[streakTier] || tierStyles.starting;
-
-    if (variant === 'desktop') {
-      const desktopStyles = {
-        starting: { bg: 'bg-gray-100', border: 'border-gray-200', text: 'text-gray-600', flame: 'text-orange-500' },
-        building: { bg: 'bg-gray-100', border: 'border-gray-200', text: 'text-gray-700', flame: 'text-orange-500' },
-        established: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', flame: 'text-orange-500' },
-        committed: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-800', flame: 'text-orange-600' },
-        legendary: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-800', flame: 'text-amber-600' },
-      };
-      const ds = desktopStyles[streakTier] || desktopStyles.starting;
-      return (
-        <span className={`inline-flex items-center gap-1 ${ds.bg} ${ds.text} px-2 py-0.5 rounded-full text-[11px] font-bold ${ds.border} border`}>
-          <Flame size={11} className={ds.flame} />
-          {streakData.count}
-        </span>
-      );
-    }
-
-    return (
-      <span className={`inline-flex items-center gap-1 ${s.bg} ${s.text} px-2 py-0.5 rounded-full text-[11px] font-bold ${s.border} border`}>
-        <Flame size={11} className={s.flame} />
-        {streakData.count}
-      </span>
-    );
-  };
 
   // ── render ────────────────────────────────────────────────────────────────
   return (
@@ -959,7 +868,6 @@ const Home = () => {
               </h2>
               <p className="text-primary-400 text-sm font-semibold flex items-center gap-2 cursor-pointer active:opacity-70 transition-opacity">
                 {TODAY_LABEL}
-                <StreakBadge />
               </p>
             </div>
 
@@ -1183,6 +1091,17 @@ const Home = () => {
                 </div>
               </div>
             )}
+
+            {/* Streak Badge (Productivity Graph) */}
+            {prodStats && prodStats.currentStreak > 0 && (
+              <div className="w-full flex items-center justify-center mt-2">
+                <div className="inline-flex items-center gap-1.5 bg-primary-900/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary-400/30 shadow-sm cursor-pointer hover:bg-primary-900/60 transition-colors" onClick={() => navigate('/profile')}>
+                  <span className="text-[13px]">{prodStats.title.icon}</span>
+                  <span className="text-primary-300 font-bold text-[11px] uppercase tracking-widest">{prodStats.title.label}</span>
+                  <span className="text-white font-black text-[11px] ml-1">{prodStats.currentStreak} Days</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1361,7 +1280,7 @@ const Home = () => {
                   <div className="flex items-center justify-between py-2 bg-primary-50 p-4 rounded-xl border border-primary-100">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0">
-                        <BookOpen size={16} />
+                        <CustomGuide size={16} />
                       </div>
                       <div className="min-w-0 pr-2">
                         <p className="text-sm font-bold text-slate-800 break-words leading-tight">Revise {suggestedClassTasks[0].courseName || suggestedClassTasks[0].name || 'Class'}</p>
@@ -1752,7 +1671,6 @@ const Home = () => {
                   <div>
                     <p className="text-primary-600 text-sm font-semibold tracking-widest uppercase mb-1 flex items-center gap-2">
                       {TODAY_LABEL}
-                      <StreakBadge variant="desktop" />
                     </p>
                     <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight flex items-center flex-wrap gap-1">
                       {getGreeting()}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''}

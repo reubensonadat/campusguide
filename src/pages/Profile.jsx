@@ -18,6 +18,8 @@ import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import OneSignal from 'react-onesignal';
 import { CourseCombobox } from '../components/common/CourseCombobox';
 import ListingManageModal from '../components/profile/ListingManageModal';
+import { getProductivityStats } from '../services/productivityService';
+import { ProductivityGraph } from '../components/common/ProductivityGraph';
 
 // Custom SVG icons for widget toggles
 const WeatherSvgIcon = ({ size = 20, className = '' }) => (
@@ -199,9 +201,20 @@ const Profile = () => {
   const [selectedListing, setSelectedListing] = useState(null);
   const [showAllListings, setShowAllListings] = useState(false);
 
+  // Productivity Stats state
+  const [prodStats, setProdStats] = useState(null);
+
   useEffect(() => {
     setFormData(profile);
   }, [profile]);
+
+  useEffect(() => {
+    async function loadStats() {
+      const data = await getProductivityStats();
+      setProdStats(data);
+    }
+    loadStats();
+  }, []);
 
   useEffect(() => {
     const loadThriftListings = async () => {
@@ -470,6 +483,15 @@ const Profile = () => {
                         {profile.student_id || 'PS/ITC/20/0000'}
                       </p>
                     </div>
+
+                    {prodStats && prodStats.currentStreak > 0 && (
+                      <div className="mt-3 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 w-max">
+                        <span className="text-sm drop-shadow-sm">{prodStats.title.icon}</span>
+                        <span className="text-white font-black text-[10px] tracking-widest uppercase drop-shadow-sm">
+                          {prodStats.title.label} ({prodStats.currentStreak}d)
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* QR Code */}
@@ -510,6 +532,8 @@ const Profile = () => {
               <span className="text-xs font-bold text-gray-400">Tap card to edit details</span>
             </div>
           </div>
+
+          <ProductivityGraph />
 
           <hr className="border-gray-100" />
 

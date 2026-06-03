@@ -16,19 +16,16 @@ export const SplashScreen = ({ onComplete }) => {
 
   return (
     <div 
-      className={`fixed inset-0 z-[9999] bg-gray-900 flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out ${
+      className={`fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out ${
         isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
     >
       <img 
         src="/logo.png" 
         alt="Campus Guide Logo" 
-        className="w-[90px] h-[90px] mb-8 animate-pulse drop-shadow-xl"
+        className="w-[90px] h-[90px] mb-8 animate-pulse drop-shadow-sm"
       />
-      <DataLoader className="w-12 h-12 text-white/90" />
-      <div className="mt-8 text-white/90 text-sm font-bold tracking-wide animate-pulse">
-        Launching Campus Guide...
-      </div>
+      <DataLoader className="w-12 h-12 text-gray-900" />
     </div>
   );
 };

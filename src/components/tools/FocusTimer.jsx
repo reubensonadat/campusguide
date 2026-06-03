@@ -3,6 +3,7 @@ import { Play, Pause, Square, Coffee, CheckCircle2, RotateCcw, ChevronLeft } fro
 import { MiniGameHub } from './minigames/MiniGameHub';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { logStudySession } from '../../services/productivityService';
 
 export const FocusTimer = () => {
   const navigate = useNavigate();
@@ -89,10 +90,17 @@ export const FocusTimer = () => {
     localStorage.removeItem('ucc_focus_timer_state');
   };
 
-  const handleFinishTask = () => {
+  const handleFinishTask = async () => {
     if (!task) return;
 
     try {
+      if (timeSpent >= 900) {
+        const logged = await logStudySession(Math.floor(timeSpent / 60));
+        if (logged) {
+          toast.success(`Logged ${Math.floor(timeSpent / 60)} minutes to your productivity graph! 📈`, { icon: '🔥' });
+        }
+      }
+
       const tasksStr = localStorage.getItem('ucc_daily_tasks');
       let currentTasks = tasksStr ? JSON.parse(tasksStr) : [];
 
@@ -125,7 +133,14 @@ export const FocusTimer = () => {
     }
   };
 
-  const handleExit = () => {
+  const handleExit = async () => {
+    if (timeSpent >= 900) {
+      const logged = await logStudySession(Math.floor(timeSpent / 60));
+      if (logged) {
+        toast.success(`Logged ${Math.floor(timeSpent / 60)} minutes to your productivity graph! 📈`, { icon: '🔥' });
+      }
+    }
+    resetTimer(); // Also reset timer when manually exiting if they've banked the time
     navigate('/');
   };
 
