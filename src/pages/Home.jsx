@@ -790,6 +790,38 @@ const Home = () => {
   ];
 
 
+  const StreakBadge = ({ variant = 'hero' }) => {
+    if (!prodStats || prodStats.currentStreak < 1) return null;
+
+    const count = prodStats.currentStreak;
+    const title = prodStats.title.label;
+    
+    if (variant === 'desktop') {
+      return (
+        <span className="inline-flex items-center gap-1.5 ml-2">
+          <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full text-[11px] font-bold border border-orange-200">
+            <Flame size={11} className="text-orange-500" />
+            {count}
+          </span>
+          <span className="inline-flex items-center bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary-200">
+            {title}
+          </span>
+        </span>
+      );
+    }
+
+    return (
+      <span className="inline-flex items-center gap-1.5 ml-2">
+        <span className="inline-flex items-center gap-1 bg-white/10 text-white/90 px-2 py-0.5 rounded-full text-[11px] font-bold border border-white/10">
+          <Flame size={11} className="text-orange-400" />
+          {count}
+        </span>
+        <span className="inline-flex items-center bg-primary-500/30 text-primary-200 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-primary-400/30 shadow-sm">
+          {title}
+        </span>
+      </span>
+    );
+  };
 
   // ── render ────────────────────────────────────────────────────────────────
   return (
@@ -866,8 +898,9 @@ const Home = () => {
                   <span onClick={triggerConfetti} className="cursor-pointer hover:scale-110 active:scale-95 transition-transform">🎉</span>
                 ) : ' 👋'}
               </h2>
-              <p className="text-primary-400 text-sm font-semibold flex items-center gap-2 cursor-pointer active:opacity-70 transition-opacity">
+              <p className="text-primary-400 text-sm font-semibold flex items-center cursor-pointer active:opacity-70 transition-opacity">
                 {TODAY_LABEL}
+                <StreakBadge />
               </p>
             </div>
 
@@ -1092,16 +1125,7 @@ const Home = () => {
               </div>
             )}
 
-            {/* Streak Badge (Productivity Graph) */}
-            {prodStats && prodStats.currentStreak > 0 && (
-              <div className="w-full flex items-center justify-center mt-2">
-                <div className="inline-flex items-center gap-1.5 bg-primary-900/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary-400/30 shadow-sm cursor-pointer hover:bg-primary-900/60 transition-colors" onClick={() => navigate('/profile')}>
-                  <span className="text-[13px]">{prodStats.title.icon}</span>
-                  <span className="text-primary-300 font-bold text-[11px] uppercase tracking-widest">{prodStats.title.label}</span>
-                  <span className="text-white font-black text-[11px] ml-1">{prodStats.currentStreak} Days</span>
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
 
@@ -1669,8 +1693,9 @@ const Home = () => {
                 )}
                 <div className="flex-1 flex items-center justify-between">
                   <div>
-                    <p className="text-primary-600 text-sm font-semibold tracking-widest uppercase mb-1 flex items-center gap-2">
+                    <p className="text-primary-600 text-sm font-semibold tracking-widest uppercase mb-1 flex items-center">
                       {TODAY_LABEL}
+                      <StreakBadge variant="desktop" />
                     </p>
                     <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight flex items-center flex-wrap gap-1">
                       {getGreeting()}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''}
