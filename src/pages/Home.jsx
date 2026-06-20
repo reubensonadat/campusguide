@@ -340,9 +340,12 @@ const Home = () => {
     return timetable
       .filter(c => {
         if (!c.day || c.day.toLowerCase() !== TODAY_NAME.toLowerCase()) return false;
-        // Strict filter based on active profile level (academic_year) & semester
-        if (profile.level && c.academic_year && String(c.academic_year) !== String(profile.level)) return false;
-        if (profile.semester && c.semester && String(c.semester) !== String(profile.semester)) return false;
+        const cLevel = c.academic_year || '100';
+        const cSem = c.semester || '1';
+        const pLevel = profile.level || '100';
+        const pSem = profile.semester || '1';
+        if (String(cLevel) !== String(pLevel)) return false;
+        if (String(cSem) !== String(pSem)) return false;
         return true;
       })
       .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
@@ -381,9 +384,12 @@ const Home = () => {
     const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     return tasks.filter(t => {
       if (t.date !== todayStr) return false;
-      // Strict filter based on active profile level (academic_year) & semester
-      if (profile.level && t.academic_year && String(t.academic_year) !== String(profile.level)) return false;
-      if (profile.semester && t.semester && String(t.semester) !== String(profile.semester)) return false;
+      const tLevel = t.academic_year || '100';
+      const tSem = t.semester || '1';
+      const pLevel = profile.level || '100';
+      const pSem = profile.semester || '1';
+      if (String(tLevel) !== String(pLevel)) return false;
+      if (String(tSem) !== String(pSem)) return false;
       return true;
     }).sort((a, b) => a.time.localeCompare(b.time));
   }, [tasks, profile.level, profile.semester]);

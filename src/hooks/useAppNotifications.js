@@ -41,11 +41,16 @@ export const useAppNotifications = () => {
 
       // 1. CLASS NOTIFICATIONS (30 MINS AHEAD)
       if (Array.isArray(courses)) {
-        const todaysCourses = courses.filter(course => 
-          course.day === currentDay &&
-          course.academic_year === profile.level &&
-          course.semester === profile.semester
-        );
+        const todaysCourses = courses.filter(course => {
+          const cLevel = course.academic_year || '100';
+          const cSem = course.semester || '1';
+          const pLevel = profile.level || '100';
+          const pSem = profile.semester || '1';
+
+          return course.day === currentDay &&
+              String(cLevel) === String(pLevel) &&
+              String(cSem) === String(pSem);
+        });
         
         todaysCourses.forEach(course => {
           const classStartMinutes = timeToMinutes(course.startTime);

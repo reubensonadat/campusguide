@@ -31,13 +31,16 @@ export const useClassReminders = () => {
             const currentDay = getCurrentDayName();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-            // Filter courses for today — MUST match current academic year AND semester
-            // Using String() coercion to safely handle number/string mismatches from localStorage
-            const todaysCourses = courses.filter(course =>
-                course.day === currentDay &&
-                String(course.academic_year) === String(profile.level) &&
-                String(course.semester) === String(profile.semester)
-            );
+            const todaysCourses = courses.filter(course => {
+                const cLevel = course.academic_year || '100';
+                const cSem = course.semester || '1';
+                const pLevel = profile.level || '100';
+                const pSem = profile.semester || '1';
+
+                return course.day === currentDay &&
+                    String(cLevel) === String(pLevel) &&
+                    String(cSem) === String(pSem);
+            });
 
             todaysCourses.forEach(course => {
                 const classStartMinutes = timeToMinutes(course.startTime);
@@ -71,7 +74,7 @@ export const useClassReminders = () => {
         const intervalId = setInterval(checkClasses, 60000);
 
         return () => clearInterval(intervalId);
-    }, [courses]);
+    }, [courses, profile.level, profile.semester]);
 
     return null; // This hook doesn't render anything
 };
