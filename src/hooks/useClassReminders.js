@@ -19,6 +19,8 @@ export const useClassReminders = () => {
     // Read directly from localStorage to avoid context complexity if not needed, 
     // or use the same key as TimetableBuilder: 'ucc_timetable'
     const [courses] = useLocalStorage('ucc_timetable', []);
+    // Read profile to filter by current academic year + semester
+    const [profile] = useLocalStorage('ucc_profile', { level: '100', semester: '1' });
     const notifiedClassesRef = useRef(new Set()); // To track classes we've already notified about this session
 
     useEffect(() => {
@@ -29,8 +31,13 @@ export const useClassReminders = () => {
             const currentDay = getCurrentDayName();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-            // Filter courses for today
-            const todaysCourses = courses.filter(course => course.day === currentDay);
+            // Filter courses for today — MUST match current academic year AND semester
+            // Using String() coercion to safely handle number/string mismatches from localStorage
+            const todaysCourses = courses.filter(course =>
+                course.day === currentDay &&
+                String(course.academic_year) === String(profile.level) &&
+                String(course.semester) === String(profile.semester)
+            );
 
             todaysCourses.forEach(course => {
                 const classStartMinutes = timeToMinutes(course.startTime);

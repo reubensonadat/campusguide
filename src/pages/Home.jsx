@@ -672,21 +672,41 @@ const Home = () => {
 
     const fetchFootball = async () => {
       try {
-        // Free tier endpoint showing last result for Liverpool (team ID 133602)
-        const res = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=133602');
-        const data = await res.json();
-        if (data && data.results && data.results.length > 0) {
-          const match = data.results[0];
+        // 1. Try to get genuinely live matches from any league first
+        const liveRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslive.php');
+        const liveData = await liveRes.json();
+
+        if (liveData && liveData.events && liveData.events.length > 0) {
+          // Pick the first live match
+          const match = liveData.events[0];
+          setFootballData({
+            home: match.strHomeTeam,
+            away: match.strAwayTeam,
+            homeScore: match.intHomeScore ?? '?',
+            awayScore: match.intAwayScore ?? '?',
+            status: match.strProgress || 'LIVE',
+            isLive: true
+          });
+          return;
+        }
+
+        // 2. No live match right now — fall back to Liverpool's last result
+        const lastRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=133602');
+        const lastData = await lastRes.json();
+        if (lastData && lastData.results && lastData.results.length > 0) {
+          const match = lastData.results[0];
           setFootballData({
             home: match.strHomeTeam,
             away: match.strAwayTeam,
             homeScore: match.intHomeScore,
             awayScore: match.intAwayScore,
-            status: match.strStatus
+            status: 'FT',
+            isLive: false
           });
         }
       } catch (err) {
         console.error("Failed to fetch football", err);
+        // Do NOT wipe footballData on error — preserve stale data
       }
     };
 
@@ -771,13 +791,23 @@ const Home = () => {
     if (homeWidgets.verse && !verseData) fetchVerse();
     if (homeWidgets.forex && !forexData) fetchForex();
     if (homeWidgets.crypto && !cryptoData) fetchCrypto();
-    if (homeWidgets.football && !footballData) fetchFootball();
+    if (homeWidgets.football) fetchFootball();
     if (homeWidgets.news && !newsData) fetchNews();
     if (homeWidgets.quote && !quoteData) fetchQuote();
     if (homeWidgets.joke && !jokeData) fetchJoke();
     if (homeWidgets.fact && !factData) fetchFact();
     if (homeWidgets.github && !githubData) fetchGithub();
     if (homeWidgets.word && !wordData) fetchWord();
+
+    // Football polls every 60 seconds so live scores actually update
+    let footballInterval = null;
+    if (homeWidgets.football) {
+      footballInterval = setInterval(fetchFootball, 60000);
+    }
+
+    return () => {
+      if (footballInterval) clearInterval(footballInterval);
+    };
   }, [homeWidgets]);
 
   const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
@@ -1038,7 +1068,7 @@ const Home = () => {
               if (homeWidgets.football && footballData) {
                 addWidget('football', 'medium', {
                   icon: <FootballSvgIcon size={14} className="text-primary-400" />,
-                  title: 'Live Score',
+                  title: footballData.isLive ? '🔴 Live Score' : 'Latest Result',
                   shortText: `${footballData.homeScore} - ${footballData.awayScore}`,
                   expandedContent: (
                     <>
