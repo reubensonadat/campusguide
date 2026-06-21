@@ -33,20 +33,23 @@ export const secureDevice = async (deviceId, pin) => {
           id: data.user.id,
           device_id: deviceId,
         });
-      
+
       // If user exists, it might just mean they signed up before. 
       // We ignore duplicate key errors for the users table if necessary, 
       // but optimally it shouldn't happen on fresh device generation.
-           if (insertError && insertError.code !== '23505') {
+      if (insertError && insertError.code !== '23505') {
         console.error('Failed to create public user record:', insertError);
       }
 
       // Persist the Auth UUID so thrift and other services can query by user_id
       localStorage.setItem('ucc_user_id', data.user.id);
-      
-      // Link this device to the OneSignal user record using Supabase ID
-      if (OneSignal.initialized) {
-        OneSignal.login(data.user.id).catch(console.error);
+
+      // Tag the anonymous OneSignal subscription with the Supabase user ID.
+      // We intentionally skip OneSignal.login() — it triggers a 409 Conflict
+      // when the external ID is already linked to another OneSignal user,
+      // which cascades and breaks ALL tag operations. The user_id TAG alone
+      // is enough for segment-based blast targeting.
+      if (OneSignal.initialized && OneSignal.User) {
         OneSignal.User.addTag("user_id", data.user.id);
       }
     }
@@ -77,15 +80,15 @@ export const restoreLifecycle = async (oldDeviceId, pin) => {
     });
 
     if (error) throw error;
-    
-        // Save the old device ID locally so the app adopts it
+
+    // Save the old device ID locally so the app adopts it
     localStorage.setItem('ucc_device_id', oldDeviceId.toUpperCase());
     // Persist the Auth UUID so thrift and other services can query by user_id
     localStorage.setItem('ucc_user_id', data.user.id);
 
-    // Link this device to the OneSignal user record using Supabase ID
-    if (OneSignal.initialized) {
-      OneSignal.login(data.user.id).catch(console.error);
+    // Tag the anonymous OneSignal subscription (skip login — see note above).
+    if (OneSignal.initialized && OneSignal.User) {
+      OneSignal.User.addTag("user_id", data.user.id);
     }
 
     return { success: true, user: data.user };
@@ -104,10 +107,10 @@ export const getCurrentUser = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) return session.user;
-    } catch (_) {}
+    } catch (_) { }
     return { id: localUserId, synthetic: true };
   }
-  
+
   try {
     const { data: { user }, error } = await supabase.auth.getUser();
     if (error) return null;
@@ -124,7 +127,7 @@ export const updatePin = async (newPin) => {
   if (!newPin || newPin.length < 6) {
     return { success: false, error: 'PIN must be at least 6 digits.' };
   }
-  
+
   try {
     const { data, error } = await supabase.auth.updateUser({ password: newPin });
     if (error) throw error;

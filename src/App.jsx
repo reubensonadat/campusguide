@@ -126,38 +126,31 @@ function AppContent() {
           enable: false, // We will use our own custom toggle in Settings
         },
       }).then(() => {
+        // ───────────────────────────────────────────────────────────────────
+        // We intentionally SKIP OneSignal.login(). Calling login() triggers a
+        // 409 Conflict when the external ID is already linked to a different
+        // OneSignal user on the server — and once that user record is tainted,
+        // EVERY subsequent operation (including addTag) fails with
+        // "Op failed (no retry)". login() is only needed for cross-device
+        // identity merging, which we don't use. Blasts target tags + the
+        // "Subscribed Users" segment, both of which work on ANONYMOUS users.
+        // So: set tags directly, never touch the identity API.
+        // ───────────────────────────────────────────────────────────────────
+        if (!window.OneSignal || !window.OneSignal.User) return;
+
         const localUserId = localStorage.getItem('ucc_user_id');
+        if (localUserId) window.OneSignal.User.addTag("user_id", localUserId);
 
-        // Centralised tag setter — called ONLY after identity is established,
-        // so tags never fire against a half-built user (which causes "Op failed").
-        const setAllTags = () => {
-          if (!window.OneSignal || !window.OneSignal.User) return;
-          if (localUserId) window.OneSignal.User.addTag("user_id", localUserId);
-          try {
-            const rawProfile = localStorage.getItem('ucc_profile');
-            if (rawProfile) {
-              const p = JSON.parse(rawProfile);
-              if (p.level) window.OneSignal.User.addTag("level", String(p.level));
-              if (p.course) window.OneSignal.User.addTag("course", String(p.course));
-              if (p.semester) window.OneSignal.User.addTag("semester", String(p.semester));
-            }
-          } catch (e) {
-            console.warn("OneSignal profile tagging skipped:", e);
+        try {
+          const rawProfile = localStorage.getItem('ucc_profile');
+          if (rawProfile) {
+            const p = JSON.parse(rawProfile);
+            if (p.level) window.OneSignal.User.addTag("level", String(p.level));
+            if (p.course) window.OneSignal.User.addTag("course", String(p.course));
+            if (p.semester) window.OneSignal.User.addTag("semester", String(p.semester));
           }
-        };
-
-        if (localUserId && window.OneSignal) {
-          // Logout first to clear any stale identity association that triggers
-          // a 409 Conflict on login, THEN login + set tags in sequence.
-          window.OneSignal.logout()
-            .catch(() => { /* not logged in yet — safe to ignore */ })
-            .finally(() => {
-              window.OneSignal.login(localUserId)
-                .then(setAllTags)
-                .catch(console.error);
-            });
-        } else {
-          setAllTags();
+        } catch (e) {
+          console.warn("OneSignal profile tagging skipped:", e);
         }
       }).catch(err => {
         console.warn("OneSignal initialization failed (likely Web Push not configured in dashboard yet):", err);
