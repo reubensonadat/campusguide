@@ -679,8 +679,11 @@ const Home = () => {
     const fetchFootball = async () => {
       try {
         // 1. Try to get genuinely live matches from any league first
-        const liveRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslive.php');
-        const liveData = await liveRes.json();
+        let liveData = null;
+        try {
+          const liveRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslive.php');
+          if (liveRes.ok) liveData = await liveRes.json();
+        } catch (e) { console.warn("Live events fetch failed or 404", e); }
 
         if (liveData && liveData.events && liveData.events.length > 0) {
           // Pick the first live match
@@ -696,20 +699,25 @@ const Home = () => {
           return;
         }
 
-        // 2. No live match right now — fall back to Liverpool's last result
-        const lastRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=133602');
-        const lastData = await lastRes.json();
+        // 2. No live match right now — fall back to Ghana's last result
+        let lastData = null;
+        try {
+          const lastRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=134513');
+          if (lastRes.ok) lastData = await lastRes.json();
+        } catch (e) { console.warn("Fallback events fetch failed", e); }
+        
         if (lastData && lastData.results && lastData.results.length > 0) {
           const match = lastData.results[0];
           
-          const matchDate = new Date(match.dateEvent);
+          const matchDateStr = match.strTimestamp || `${match.dateEvent}T${match.strTime || '00:00:00'}Z`;
+          const matchDate = new Date(matchDateStr);
           const now = new Date();
-          const diffDays = (now - matchDate) / (1000 * 60 * 60 * 24);
+          const diffHours = (now - matchDate) / (1000 * 60 * 60);
 
-          if (diffDays > 7) {
+          if (diffHours > 48) {
             setFootballData({
-              home: "No Live Matches",
-              away: "Right now",
+              home: "No Active Matches",
+              away: "",
               homeScore: "",
               awayScore: "",
               status: "OFF",
@@ -1092,11 +1100,11 @@ const Home = () => {
               if (homeWidgets.football && footballData) {
                 addWidget('football', 'medium', {
                   icon: <FootballSvgIcon size={14} className="text-primary-400" />,
-                  title: footballData.isLive ? '🔴 Live Score' : (footballData.isOffSeason ? 'No Live Games' : 'Latest Result'),
-                  shortText: footballData.isOffSeason ? 'Off-Season' : `${footballData.homeScore} - ${footballData.awayScore}`,
+                  title: footballData.isLive ? '🔴 Live Score' : (footballData.isOffSeason ? 'Football Updates' : 'Latest Result'),
+                  shortText: footballData.isOffSeason ? 'No Active Matches' : `${footballData.homeScore} - ${footballData.awayScore}`,
                   expandedContent: (
                     <>
-                      <span className="text-white font-bold text-sm tracking-wide truncate">{footballData.isOffSeason ? 'No games found' : `${footballData.home} vs ${footballData.away}`}</span>
+                      <span className="text-white font-bold text-sm tracking-wide truncate">{footballData.isOffSeason ? 'No Active Matches' : `${footballData.home} vs ${footballData.away}`}</span>
                       <span className="text-primary-400 text-[11px] font-bold leading-none mt-1">
                         {footballData.isOffSeason ? 'Check back later' : `${footballData.homeScore} - ${footballData.awayScore}`} 
                         {!footballData.isOffSeason && <span className="font-medium opacity-80"> ({footballData.status})</span>}
