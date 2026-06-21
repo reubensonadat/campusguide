@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ExternalLink, Tag, Share2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import SmartImage from '../common/SmartImage';
 
 const handleSharePost = (e, id) => {
     if (e) e.stopPropagation();
@@ -44,7 +45,7 @@ const CommunityCard = ({ post }) => {
     const buttonStyle = "bg-primary-600 text-white hover:bg-primary-700 hover:shadow-primary-200";
 
     return (
-        <div 
+        <div
             onMouseDown={startPress}
             onMouseUp={endPress}
             onMouseLeave={endPress}
@@ -68,7 +69,7 @@ const CommunityCard = ({ post }) => {
             {/* Full Image Container (Flyer) */}
             {image && (
                 <div className="relative w-full bg-gray-100 flex items-center justify-center shrink-0 lg:h-64">
-                    <img
+                    <SmartImage
                         src={image}
                         alt={title}
                         className="w-full h-auto max-h-[500px] object-contain lg:h-full lg:object-cover transition-transform duration-500 group-hover:scale-105 block"
@@ -120,7 +121,7 @@ const CommunityCard = ({ post }) => {
                                 {buttonText} {isAd && <ExternalLink size={16} />}
                             </a>
                         ) : (
-                            <button 
+                            <button
                                 onClick={(e) => e.stopPropagation()}
                                 className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[16px] transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}
                             >

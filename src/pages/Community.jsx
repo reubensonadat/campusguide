@@ -12,6 +12,7 @@ import PageHeader from '../components/common/PageHeader';
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 
 import { supabase } from '../lib/supabase';
+import { withCache, cacheInvalidate, cacheAge, CACHE_KEYS, DEFAULT_TTL, SHORT_TTL } from '../services/cacheService';
 import { DataLoader } from '../components/common/CustomLoaders';
 
 // Categories matching Advertise.jsx options
@@ -37,6 +38,7 @@ const Community = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [feedData, setFeedData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [feedError, setFeedError] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isLostFoundModalOpen, setIsLostFoundModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -89,33 +91,52 @@ const Community = () => {
         fetchCommunityData();
     }, [refreshTrigger]);
 
-    const fetchCommunityData = async () => {
+    const fetchCommunityData = async (forceRefresh = false) => {
         setIsLoading(true);
+        // On manual refresh: bust the cache so we actually hit the DB
+        if (forceRefresh) {
+            cacheInvalidate(CACHE_KEYS.COMMUNITY_ADS);
+            cacheInvalidate(CACHE_KEYS.COMMUNITY_ANNOUNCEMENTS);
+            cacheInvalidate(CACHE_KEYS.COMMUNITY_LOST_FOUND);
+        }
         try {
-            const { data: adsData, error: adsError } = await supabase
-                .from('advertisements')
-                .select('*')
-                .ilike('status', 'active')
-                .gte('expires_at', new Date().toISOString());
-
-            if (adsError) throw adsError;
-
-            const { data: announcementsData, error: annError } = await supabase
-                .from('announcements')
-                .select('*');
-
-            if (annError) throw annError;
-
+            // ── Cached fetches — each cached for 24h independently ──────────
             const threeDaysAgo = new Date();
             threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
-            const { data: lostFoundData, error: lfError } = await supabase
-                .from('lost_and_found')
-                .select('*')
-                .gte('created_at', threeDaysAgo.toISOString())
-                .order('created_at', { ascending: false });
+            const [adsData, announcementsData, lostFoundData] = await Promise.all([
+                withCache(CACHE_KEYS.COMMUNITY_ADS, async () => {
+                    const { data, error } = await supabase
+                        .from('advertisements')
+                        .select('*')
+                        .ilike('status', 'active')
+                        .gte('expires_at', new Date().toISOString());
+                    if (error) throw error;
+                    return data || [];
+                }, DEFAULT_TTL),
 
-            if (lfError) throw lfError;
+                withCache(CACHE_KEYS.COMMUNITY_ANNOUNCEMENTS, async () => {
+                    const { data, error } = await supabase
+                        .from('announcements')
+                        .select('*');
+                    if (error) throw error;
+                    return data || [];
+                }, DEFAULT_TTL),
+
+                withCache(CACHE_KEYS.COMMUNITY_LOST_FOUND, async () => {
+                    const { data, error } = await supabase
+                        .from('lost_and_found')
+                        .select('*')
+                        .gte('created_at', threeDaysAgo.toISOString())
+                        .order('created_at', { ascending: false });
+                    if (error) throw error;
+                    return data || [];
+                }, SHORT_TTL), // Lost & found is time-sensitive — 2h cache
+            ]);
+
+            const adsError = null;
+            const annError = null;
+            const lfError  = null;
 
             const formattedAds = (adsData || []).map(ad => {
                 let actionText = 'Message via WhatsApp';
@@ -194,9 +215,13 @@ const Community = () => {
                     return b.createdAt - a.createdAt;
                 });
 
+            // ✅ Success — update data and clear any previous error
             setFeedData(combinedFeed);
+            setFeedError(null);
         } catch (error) {
             console.error("Error fetching community feed:", JSON.stringify(error, null, 2));
+            // ✅ Set error state — do NOT wipe existing feedData (3-State Rule)
+            setFeedError('Could not load the feed. Check your connection and try again.');
         } finally {
             setIsLoading(false);
         }
@@ -299,6 +324,22 @@ const Community = () => {
                             <div className="py-20 flex flex-col items-center justify-center text-center gap-4">
                                 <DataLoader />
                                 <p className="text-gray-400 font-semibold text-sm">Loading community feed...</p>
+                            </div>
+                        ) : feedError ? (
+                            <div className="py-20 flex flex-col items-center justify-center text-center bg-white rounded-xl border border-red-100 shadow-sm mb-8">
+                                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                                    <Megaphone className="text-red-400" size={28} />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Feed Unavailable</h3>
+                                <p className="text-gray-500 font-medium max-w-sm">
+                                    {feedError}
+                                </p>
+                                <button
+                                    onClick={() => setRefreshTrigger(prev => prev + 1)}
+                                    className="mt-6 px-6 py-2.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition-colors active:scale-95"
+                                >
+                                    Try Again
+                                </button>
                             </div>
                         ) : filteredFeed.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-6 pb-8">

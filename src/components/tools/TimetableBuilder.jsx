@@ -13,6 +13,7 @@ import { getTodayHoliday } from '../../services/holidayService';
 import { CustomEyes } from '../common/CustomIcons';
 import { toast } from 'react-hot-toast';
 import { pushTimetableToCloud } from '../../services/syncService';
+import VenueConflictAdvisor from './VenueConflictAdvisor';
 
 const formatTime12Hour = (time24) => {
   if (!time24) return '';
@@ -400,6 +401,10 @@ const TimetableBuilder = () => {
             </div>
           )}
 
+          {/* Venue Conflict Advisor — outside the exportable container so it
+              never appears in shared timetable screenshots */}
+          <VenueConflictAdvisor courses={displayCourses} />
+
           {/* Exportable Container */}
           <div ref={timetableRef} className="px-1 py-4 md:p-6 bg-slate-50/50 rounded-2xl">
             {displayCourses.length === 0 ? (
@@ -500,6 +505,18 @@ const TimetableBuilder = () => {
                 className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all font-medium"
                 required
               />
+              <div className="flex flex-wrap gap-2 mt-2.5">
+                {['NLT', 'SWLT', 'LT', 'Jurassic', 'CELT', 'ALTB', 'CODE'].map(venue => (
+                  <button
+                    key={venue}
+                    type="button"
+                    onClick={() => setNewCourse({ ...newCourse, location: newCourse.location ? `${newCourse.location} ${venue}`.trim() : venue })}
+                    className="px-3 py-1.5 bg-gray-900/5 hover:bg-gray-900/10 text-gray-700 text-xs font-bold rounded-lg transition-colors border border-transparent hover:border-gray-900/20 active:scale-95"
+                  >
+                    {venue}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -788,8 +805,8 @@ const TimetableBuilder = () => {
                       }));
                     }}
                     className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${selectedImportCourses[idx]
-                        ? 'border-gray-900 bg-gray-900/5 shadow-sm'
-                        : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-gray-900 bg-gray-900/5 shadow-sm'
+                      : 'border-gray-200 hover:border-gray-300'
                       }`}
                   >
                     <input

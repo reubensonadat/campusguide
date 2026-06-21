@@ -701,14 +701,32 @@ const Home = () => {
         const lastData = await lastRes.json();
         if (lastData && lastData.results && lastData.results.length > 0) {
           const match = lastData.results[0];
-          setFootballData({
-            home: match.strHomeTeam,
-            away: match.strAwayTeam,
-            homeScore: match.intHomeScore,
-            awayScore: match.intAwayScore,
-            status: 'FT',
-            isLive: false
-          });
+          
+          const matchDate = new Date(match.dateEvent);
+          const now = new Date();
+          const diffDays = (now - matchDate) / (1000 * 60 * 60 * 24);
+
+          if (diffDays > 7) {
+            setFootballData({
+              home: "No Live Matches",
+              away: "Right now",
+              homeScore: "",
+              awayScore: "",
+              status: "OFF",
+              isLive: false,
+              isOffSeason: true
+            });
+          } else {
+            setFootballData({
+              home: match.strHomeTeam,
+              away: match.strAwayTeam,
+              homeScore: match.intHomeScore,
+              awayScore: match.intAwayScore,
+              status: 'FT',
+              isLive: false,
+              isOffSeason: false
+            });
+          }
         }
       } catch (err) {
         console.error("Failed to fetch football", err);
@@ -1074,12 +1092,15 @@ const Home = () => {
               if (homeWidgets.football && footballData) {
                 addWidget('football', 'medium', {
                   icon: <FootballSvgIcon size={14} className="text-primary-400" />,
-                  title: footballData.isLive ? '🔴 Live Score' : 'Latest Result',
-                  shortText: `${footballData.homeScore} - ${footballData.awayScore}`,
+                  title: footballData.isLive ? '🔴 Live Score' : (footballData.isOffSeason ? 'No Live Games' : 'Latest Result'),
+                  shortText: footballData.isOffSeason ? 'Off-Season' : `${footballData.homeScore} - ${footballData.awayScore}`,
                   expandedContent: (
                     <>
-                      <span className="text-white font-bold text-sm tracking-wide truncate">{footballData.home} vs {footballData.away}</span>
-                      <span className="text-primary-400 text-[11px] font-bold leading-none mt-1">{footballData.homeScore} - {footballData.awayScore} <span className="font-medium opacity-80">({footballData.status})</span></span>
+                      <span className="text-white font-bold text-sm tracking-wide truncate">{footballData.isOffSeason ? 'No games found' : `${footballData.home} vs ${footballData.away}`}</span>
+                      <span className="text-primary-400 text-[11px] font-bold leading-none mt-1">
+                        {footballData.isOffSeason ? 'Check back later' : `${footballData.homeScore} - ${footballData.awayScore}`} 
+                        {!footballData.isOffSeason && <span className="font-medium opacity-80"> ({footballData.status})</span>}
+                      </span>
                     </>
                   )
                 });

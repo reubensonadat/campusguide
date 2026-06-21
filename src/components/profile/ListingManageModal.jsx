@@ -22,12 +22,16 @@ const getPaymentPhone = () => {
   }
 };
 
-const isExpiringSoon = (expiresAt) => {
-  if (!expiresAt) return false;
+const checkExpiryStatus = (expiresAt) => {
+  if (!expiresAt) return { isExpired: false, isExpiringSoon: false };
   const expiry = new Date(expiresAt);
+  const now = new Date();
   const inTwoDays = new Date();
   inTwoDays.setDate(inTwoDays.getDate() + 2);
-  return expiry <= inTwoDays;
+  
+  const isExpired = expiry <= now;
+  const isExpiringSoon = !isExpired && expiry <= inTwoDays;
+  return { isExpired, isExpiringSoon };
 };
 
 const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) => {
@@ -145,7 +149,7 @@ const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) =>
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-5">
           {activeTab === 'details' ? (
-            <DetailsTab listing={listing} expiringSoon={isExpiringSoon(listing.expires_at)} />
+            <DetailsTab listing={listing} expiryStatus={checkExpiryStatus(listing.expires_at)} />
           ) : (
             <VisibilityTab
               listing={listing}
@@ -169,7 +173,7 @@ const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) =>
 };
 
 /* ── Details Tab ──────────────────────────────────────────────────── */
-const DetailsTab = ({ listing, expiringSoon }) => (
+const DetailsTab = ({ listing, expiryStatus }) => (
   <div className="space-y-4">
     {listing.image_url && (
       <div className="w-full rounded-xl overflow-hidden bg-gray-100 flex justify-center">
@@ -199,10 +203,18 @@ const DetailsTab = ({ listing, expiringSoon }) => (
           <Zap size={12} /> Featured until {new Date(listing.featured_until).toLocaleDateString()}
         </span>
       )}
-      {!listing.is_sold && expiringSoon && (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-full text-xs font-bold">
-          <AlertCircle size={12} /> Expiring Soon
-        </span>
+      {!listing.is_sold && !listing.is_featured && (
+        <>
+          {expiryStatus?.isExpired ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-500 rounded-full text-xs font-bold">
+              <AlertCircle size={12} /> Expired
+            </span>
+          ) : expiryStatus?.isExpiringSoon ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-full text-xs font-bold">
+              <AlertCircle size={12} /> Expiring Soon
+            </span>
+          ) : null}
+        </>
       )}
     </div>
 

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Lock, LogOut, CheckCircle, XCircle, Trash2, UploadCloud, Eye, EyeOff, LayoutDashboard, Megaphone, HelpCircle, MapPin, BookOpen, FileText, Plus, Save, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
+import { Lock, LogOut, CheckCircle, XCircle, Trash2, UploadCloud, Eye, EyeOff, LayoutDashboard, Megaphone, HelpCircle, MapPin, BookOpen, FileText, Plus, Save, Edit3, ChevronDown, ChevronUp, Send, Radio } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 import { CustomGuide, CustomNavigation } from '../components/common/CustomIcons';
+import { sendBlast, BLAST_SEGMENTS } from '../services/blastService';
 
 const AdminDashboard = () => {
     const [isAuthenticated, setIsAuthenticated] = useLocalStorage('ucc_admin_auth', false);
@@ -35,6 +36,7 @@ const AdminDashboard = () => {
         else if (location.pathname.includes('upload')) setActiveTab('upload');
         else if (location.pathname.includes('thrift')) setActiveTab('thrift');
         else if (location.pathname.includes('campus-data')) setActiveTab('campus-data');
+        else if (location.pathname.includes('blast')) setActiveTab('blast');
         else setActiveTab('moderation');
     }, [location.pathname]);
 
@@ -52,6 +54,11 @@ const AdminDashboard = () => {
         imagePreview: null
     });
     const [isUploading, setIsUploading] = useState(false);
+    const [isPurging, setIsPurging] = useState(false);
+
+    // Push Blast states
+    const [blastForm, setBlastForm] = useState({ headline: '', message: '', segment: 'all', url: '' });
+    const [isBlasting, setIsBlasting] = useState(false);
 
     const checkPassword = (e) => {
         e.preventDefault();
@@ -357,6 +364,41 @@ const AdminDashboard = () => {
     }
 
     // Render Dashboard
+    const handleSendBlast = async (e) => {
+        e.preventDefault();
+        if (!blastForm.headline.trim() || !blastForm.message.trim()) {
+            toast.error('Headline and message are required.');
+            return;
+        }
+        const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+        if (!adminPassword) {
+            toast.error('Admin password not configured (VITE_ADMIN_PASSWORD).');
+            return;
+        }
+        setIsBlasting(true);
+        try {
+            const result = await sendBlast({
+                adminPassword,
+                headline: blastForm.headline.trim(),
+                message: blastForm.message.trim(),
+                segment: blastForm.segment,
+                url: blastForm.url.trim() || undefined,
+            });
+            if (!result.success) {
+                toast.error(result.error || 'Failed to send blast.');
+            } else {
+                toast.success(result.recipients != null
+                    ? `Blast sent to ${result.recipients} recipient(s).`
+                    : 'Blast sent successfully!');
+                setBlastForm({ headline: '', message: '', segment: 'all', url: '' });
+            }
+        } catch (err) {
+            toast.error(err.message || 'Failed to send blast.');
+        } finally {
+            setIsBlasting(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row mb-24 md:mb-0">
             {/* Admin Sidebar */}
@@ -384,6 +426,9 @@ const AdminDashboard = () => {
                     </button>
                     <button onClick={() => navigate('/admin/upload')} className={`flex items-center gap-3 p-3 rounded-xl font-bold whitespace-nowrap transition-colors ${activeTab === 'upload' ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-100'}`}>
                         <Megaphone size={20} /> Post Update / Ad
+                    </button>
+                    <button onClick={() => navigate('/admin/blast')} className={`flex items-center gap-3 p-3 rounded-xl font-bold whitespace-nowrap transition-colors ${activeTab === 'blast' ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-100'}`}>
+                        <Radio size={20} /> Push Blast
                     </button>
                 </div>
                 <div className="p-4 mt-auto border-t border-gray-200 hidden md:block">
@@ -441,7 +486,33 @@ const AdminDashboard = () => {
                 {/* THRIFT MODERATION TAB */}
                 {!isLoading && activeTab === 'thrift' && (
                     <div className="space-y-4 max-w-5xl mx-auto">
-                        <h2 className="text-2xl font-black mb-6">Verify Student Thrift Items</h2>
+                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                            <h2 className="text-2xl font-black">Verify Student Thrift Items</h2>
+                            <button 
+                                onClick={async () => {
+                                    if (!window.confirm("Are you sure you want to permanently delete all thrift listings that expired more than 14 days ago, INCLUDING their images from R2 storage? This cannot be undone.")) return;
+                                    setIsPurging(true);
+                                    try {
+                                        const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+                                        const { data, error } = await supabase.functions.invoke('purge-expired-thrift', {
+                                            body: { adminPassword }
+                                        });
+                                        if (error) throw error;
+                                        if (data?.error) throw new Error(data.error);
+                                        toast.success(data?.message || 'Purged successfully');
+                                        fetchThrift();
+                                    } catch (err) {
+                                        toast.error(err.message || 'Failed to purge data');
+                                    } finally {
+                                        setIsPurging(false);
+                                    }
+                                }}
+                                disabled={isPurging}
+                                className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-4 rounded-xl transition-colors disabled:opacity-50"
+                            >
+                                <Trash2 size={18} /> {isPurging ? 'Purging...' : 'Purge Old Data (>14d)'}
+                            </button>
+                        </div>
                         <div className="grid gap-4">
                             {thriftItems.map(item => (
                                 <div key={item.id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 flex flex-col md:flex-row gap-4 items-start md:items-center">
@@ -790,6 +861,73 @@ const AdminDashboard = () => {
                                 {campusGuideCards.length === 0 && <p className="text-gray-500 text-center py-10">No guide cards found.</p>}
                             </div>
                         )}
+                    </div>
+                )}
+
+                {/* PUSH BLAST TAB */}
+                {activeTab === 'blast' && (
+                    <div className="space-y-6 max-w-3xl mx-auto">
+                        <div>
+                            <h2 className="text-2xl font-black flex items-center gap-2"><Radio className="text-primary-600" /> Push Blast</h2>
+                            <p className="text-sm text-gray-500 mt-1">Send an instant push notification to a segment of users via OneSignal. The REST API key stays server-side.</p>
+                        </div>
+
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+                            <strong className="font-black">Heads up:</strong> This fires a real push to every subscribed device in the chosen segment. Double-check your message before sending — there is no undo.
+                        </div>
+
+                        <form onSubmit={handleSendBlast} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-600 mb-1">Headline *</label>
+                                <input
+                                    value={blastForm.headline}
+                                    onChange={e => setBlastForm(p => ({ ...p, headline: e.target.value }))}
+                                    maxLength={100}
+                                    placeholder="e.g. Exam timetable released"
+                                    className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-600 mb-1">Message *</label>
+                                <textarea
+                                    rows={4}
+                                    value={blastForm.message}
+                                    onChange={e => setBlastForm(p => ({ ...p, message: e.target.value }))}
+                                    maxLength={500}
+                                    placeholder="The body of the notification..."
+                                    className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm resize-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-600 mb-1">Send To (segment)</label>
+                                <select
+                                    value={blastForm.segment}
+                                    onChange={e => setBlastForm(p => ({ ...p, segment: e.target.value }))}
+                                    className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm"
+                                >
+                                    {BLAST_SEGMENTS.map(seg => (
+                                        <option key={seg.key} value={seg.key}>{seg.label}</option>
+                                    ))}
+                                </select>
+                                <p className="text-[11px] text-gray-400 mt-1">Year groups target users who set their <strong>Level</strong> in their profile. Behaviour groups target users who enabled that toggle in Settings.</p>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-600 mb-1">Tap-to-open URL (optional)</label>
+                                <input
+                                    value={blastForm.url}
+                                    onChange={e => setBlastForm(p => ({ ...p, url: e.target.value }))}
+                                    placeholder="e.g. /community or https://..."
+                                    className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm"
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={isBlasting}
+                                className="w-full py-4 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white font-bold rounded-xl shadow-xl transition-all flex items-center justify-center gap-2"
+                            >
+                                {isBlasting ? 'Sending...' : <><Send size={20} /> Send Blast</>}
+                            </button>
+                        </form>
                     </div>
                 )}
             </div>

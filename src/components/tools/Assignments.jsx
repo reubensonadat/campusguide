@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import {
   ChevronLeft, Plus, Filter, Calendar as CalendarIcon, List,
   Clock, AlertTriangle, CheckCircle2, Circle, Trash2, Edit3,
-  ChevronRight, X, Search, ChevronDown, Share2
+  ChevronRight, X, Search, ChevronDown, Share2, Timer
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import ExamCountdown from './ExamCountdown';
 import {
   getAssignments, addAssignment, updateAssignment,
   deleteAssignment, markAssignmentStatus, getAssignmentsByUrgency,
@@ -205,7 +206,7 @@ const Assignments = () => {
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [assignments, setAssignments] = useState(() => getAssignments());
-  const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar' | 'countdown'
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterCourse, setFilterCourse] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
@@ -384,6 +385,7 @@ const Assignments = () => {
   const handleSave = (data) => {
     const payload = {
       ...data,
+      type: data.type || 'assignment',
       academic_year: activeLevel,
       semester: activeSemester
     };
@@ -528,14 +530,23 @@ const Assignments = () => {
               <button
                 onClick={() => setViewMode('list')}
                 className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'list' ? 'bg-gray-900 text-white' : 'text-gray-500'}`}
+                title="List view"
               >
                 <List size={16} />
               </button>
               <button
                 onClick={() => setViewMode('calendar')}
                 className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'calendar' ? 'bg-gray-900 text-white' : 'text-gray-500'}`}
+                title="Calendar view"
               >
                 <CalendarIcon size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('countdown')}
+                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs font-bold transition-colors ${viewMode === 'countdown' ? 'bg-gray-900 text-white' : 'text-gray-500'}`}
+                title="Exam countdowns"
+              >
+                <Timer size={16} />
               </button>
             </div>
           </div>
@@ -790,6 +801,9 @@ const Assignments = () => {
             })()}
           </div>
         )}
+
+        {/* ── EXAM COUNTDOWN VIEW ──────────────────────────────────────── */}
+        {viewMode === 'countdown' && <ExamCountdown />}
       </div>
 
       {/* ── Add / Edit Modal ────────────────────────────────────────────── */}
@@ -1002,6 +1016,7 @@ const AssignmentModal = ({ assignment, courses, onSave, onClose }) => {
   const [form, setForm] = useState({
     title: assignment?.title || '',
     course: assignment?.course || '',
+    type: assignment?.type || 'assignment',
     dueDate: assignment?.dueDate || new Date().toISOString().split('T')[0],
     dueTime: assignment?.dueTime || '',
     priority: assignment?.priority || 'medium',
@@ -1055,6 +1070,31 @@ const AssignmentModal = ({ assignment, courses, onSave, onClose }) => {
               courses={courses}
               placeholder="Search or type a course name..."
             />
+          </div>
+
+          {/* Type */}
+          <div>
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 block">Type</label>
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+              {[
+                { value: 'assignment', label: '📝 Assignment' },
+                { value: 'exam',       label: '📋 Exam' },
+                { value: 'quiz',       label: '⚡ Quiz' },
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setForm({ ...form, type: opt.value })}
+                  className={`py-2 sm:py-2.5 rounded-xl font-bold text-[11px] sm:text-xs transition-all border ${
+                    form.type === opt.value
+                      ? 'bg-gray-900 text-white border-gray-900 shadow-sm'
+                      : 'bg-gray-50 text-gray-500 border-gray-100 hover:border-gray-200'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Due Date & Time */}

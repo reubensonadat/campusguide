@@ -52,7 +52,6 @@ export const GRADE_POINTS = {
   'C': 2.0,
   'D+': 1.5,
   'D': 1.0,
-  'E+': 0.5,
   'E': 0.0
 };
 
@@ -65,8 +64,7 @@ export const GRADE_RANGES = {
   'C': { min: 60, max: 64.9 },
   'D+': { min: 55, max: 59.9 },
   'D': { min: 50, max: 54.9 },
-  'E+': { min: 45, max: 49.9 },
-  'E': { min: 0, max: 44.9 }
+  'E': { min: 0, max: 49.9 }
 };
 
 // Class time slots

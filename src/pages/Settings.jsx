@@ -48,7 +48,8 @@ import {
   Camera,
   Save,
   CheckCircle,
-  CreditCard
+  CreditCard,
+  Wifi
 } from 'lucide-react';
 
 // Custom SVG icons for widget toggles
@@ -167,7 +168,7 @@ const Settings = () => {
   const [restorePin, setRestorePin] = useState('');
   const [isRestoring, setIsRestoring] = useState(false);
   
-  const [appSettings, setAppSettings] = useLocalStorage('ucc_settings', { push_classes: true, push_whispers: true });
+  const [appSettings, setAppSettings] = useLocalStorage('ucc_settings', { push_classes: true, push_whispers: true, data_saver: false });
   const [appColorTheme, setAppColorTheme] = useLocalStorage('ucc_app_color_theme', 'default');
   
   const handleToggleSetting = (key) => {
@@ -593,6 +594,25 @@ const Settings = () => {
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${systemNotificationsEnabled ? 'translate-x-5' : 'translate-x-0'
+                    }`} />
+                </button>
+              </div>
+
+              {/* Data Saver — hides full-res images to conserve mobile data */}
+              <div className="w-full flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
+                <div className="flex items-center gap-4">
+                  <Wifi size={20} className="text-gray-700" strokeWidth={1.5} />
+                  <div>
+                    <span className="text-[15px] text-gray-900 font-bold block leading-tight">Data Saver</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Hide images in feeds to save mobile data</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleToggleSetting('data_saver')}
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${appSettings.data_saver === true ? 'bg-gray-900' : 'bg-gray-200'
+                    }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${appSettings.data_saver === true ? 'translate-x-5' : 'translate-x-0'
                     }`} />
                 </button>
               </div>

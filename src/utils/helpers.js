@@ -60,7 +60,6 @@ export const getGradeFromScore = (score) => {
   if (score >= 60) return 'C';
   if (score >= 55) return 'D+';
   if (score >= 50) return 'D';
-  if (score >= 45) return 'E+';
   return 'E';
 };
 

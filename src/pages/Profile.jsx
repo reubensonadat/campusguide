@@ -109,14 +109,17 @@ const WordSvgIcon = ({ size = 20, className = '' }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}><path d="M216,152.09V216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V152.09a8,8,0,0,1,16,0V208H200V152.09a8,8,0,0,1,16,0Zm-128,32h80a8,8,0,1,0,0-16H88a8,8,0,1,0,0,16Zm4.88-53,77.27,20.68a7.89,7.89,0,0,0,2.08.28,8,8,0,0,0,2.07-15.71L97,115.61A8,8,0,1,0,92.88,131Zm18.45-49.93,69.28,40a8,8,0,0,0,10.93-2.93,8,8,0,0,0-2.93-10.91L119.33,67.27a8,8,0,1,0-8,13.84Zm87.33,13A8,8,0,1,0,210,82.84l-56.57-56.5a8,8,0,0,0-11.32,11.3Z"></path></svg>
 );
 
-// Helper function to check if a listing is expiring soon (within 2 days)
-const isExpiringSoon = (expiresAt) => {
-  if (!expiresAt) return false;
+// Helper function to check if a listing is expiring soon or expired
+const checkExpiryStatus = (expiresAt) => {
+  if (!expiresAt) return { isExpired: false, isExpiringSoon: false };
   const expiryDate = new Date(expiresAt);
   const today = new Date();
   const inTwoDays = new Date(today);
   inTwoDays.setDate(inTwoDays.getDate() + 2);
-  return expiryDate <= inTwoDays;
+  
+  const isExpired = expiryDate <= today;
+  const isExpiringSoon = !isExpired && expiryDate <= inTwoDays;
+  return { isExpired, isExpiringSoon };
 };
 
 const Profile = () => {
@@ -576,8 +579,14 @@ const Profile = () => {
                         {listing.is_featured && !listing.is_sold && (
                           <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded-full text-[10px] font-bold">Featured</span>
                         )}
-                        {!listing.is_sold && !listing.is_featured && isExpiringSoon(listing.expires_at) && (
-                          <span className="px-2 py-0.5 bg-red-50 text-red-500 rounded-full text-[10px] font-bold">Expiring</span>
+                        {!listing.is_sold && !listing.is_featured && (
+                          <>
+                            {checkExpiryStatus(listing.expires_at).isExpired ? (
+                              <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full text-[10px] font-bold">Expired</span>
+                            ) : checkExpiryStatus(listing.expires_at).isExpiringSoon ? (
+                              <span className="px-2 py-0.5 bg-red-50 text-red-500 rounded-full text-[10px] font-bold">Expiring</span>
+                            ) : null}
+                          </>
                         )}
                         <ChevronRight size={16} className="text-gray-300" />
                       </div>

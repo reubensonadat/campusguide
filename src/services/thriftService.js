@@ -45,11 +45,35 @@ export const canPostThriftListing = async (userId) => {
       return { canPost: false, error: error.message, count: 0 };
     }
 
-    const count = data ? data.length : 0;
+    const { data: totalData, error: totalError } = await supabase
+      .from('thrift_listings')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('status', 'ACTIVE')
+      .eq('is_sold', false);
+
+    if (totalError) {
+      console.error('Error checking total active listings:', totalError);
+      return { canPost: false, error: totalError.message, count: 0 };
+    }
+
+    const dailyCount = data ? data.length : 0;
+    const totalCount = totalData ? totalData.length : 0;
+
+    if (totalCount >= 5) {
+      return {
+        canPost: false,
+        error: null,
+        count: dailyCount,
+        limitReason: 'TOTAL'
+      };
+    }
+
     return {
-      canPost: count < 2,
+      canPost: dailyCount < 2,
       error: null,
-      count
+      count: dailyCount,
+      limitReason: dailyCount >= 2 ? 'DAILY' : null
     };
   } catch (error) {
     console.error('Error in canPostThriftListing:', error);
@@ -66,11 +90,9 @@ export const createThriftListing = async (listing) => {
     if (listing.user_id && listing.item_name) {
       const { data: existing } = await supabase
         .from('thrift_listings')
-        .select('id, expires_at')
+        .select('id, expires_at, status')
         .eq('user_id', listing.user_id)
         .eq('item_name', listing.item_name)
-        .eq('status', 'ACTIVE')
-        .eq('is_sold', false)
         .limit(1);
 
       if (existing && existing.length > 0) {
@@ -182,10 +204,12 @@ export const boostThriftListing = async (listingId, days) => {
  */
 export const fetchAllThriftListings = async () => {
   try {
+    const today = new Date().toISOString();
     const { data, error } = await supabase
       .from('thrift_listings')
       .select('*')
       .eq('status', 'ACTIVE')
+      .gte('expires_at', today) // Filter out expired items at the DB level
       .order('is_featured', { ascending: false }) // Featured first
       .order('featured_until', { ascending: true, nullsFirst: false }) // Then by featured expiry
       .order('created_at', { ascending: false }); // Then by creation date

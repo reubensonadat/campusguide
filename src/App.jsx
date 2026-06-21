@@ -63,7 +63,7 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 
 function AppContent() {
   const { selectedCampusId } = useCampus();
-  
+
   const [syncConflict, setSyncConflict] = useState(null);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ function AppContent() {
       });
     }
   };
-  
+
   const [appColorTheme] = useLocalStorage('ucc_app_color_theme', 'default');
   useEffect(() => {
     if (appColorTheme && appColorTheme !== 'default') {
@@ -130,6 +130,18 @@ function AppContent() {
         if (localUserId && window.OneSignal && window.OneSignal.User) {
           window.OneSignal.login(localUserId).catch(console.error);
           window.OneSignal.User.addTag("user_id", localUserId);
+        }
+        // Tag OneSignal with academic profile so admin blasts can target specific year-groups
+        try {
+          const rawProfile = localStorage.getItem('ucc_profile');
+          if (rawProfile && window.OneSignal && window.OneSignal.User) {
+            const p = JSON.parse(rawProfile);
+            if (p.level) window.OneSignal.User.addTag("level", String(p.level));
+            if (p.course) window.OneSignal.User.addTag("course", String(p.course));
+            if (p.semester) window.OneSignal.User.addTag("semester", String(p.semester));
+          }
+        } catch (e) {
+          console.warn("OneSignal profile tagging skipped:", e);
         }
       }).catch(err => {
         console.warn("OneSignal initialization failed (likely Web Push not configured in dashboard yet):", err);
@@ -251,7 +263,7 @@ function AppContent() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 font-medium leading-relaxed">
                 {syncConflict.error || "Your cloud backup has more data than your phone. Which version do you want to keep as the single source of truth?"}
               </p>
-              
+
               <div className="space-y-3">
                 <button
                   onClick={() => handleResolveConflict('restore')}

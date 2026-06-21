@@ -310,7 +310,10 @@ export async function pushGPAToCloud() {
     cloudGPAMap.set(key, row.id);
   }
 
-  const rows = gpaCourses.map(c => {
+  // ★ Exclude locally soft-deleted courses — they must never be upserted with
+  //   deleted_at: null, or the tombstone step above is immediately undone and
+  //   the course gets resurrected on the next pull.
+  const rows = gpaCourses.filter(c => !c._deleted).map(c => {
     const courseName = c.course_name || c.name || '';
     const semanticKey = `${courseName.trim().toLowerCase()}-${c.academic_year || ''}-${c.semester || ''}`;
     const cloudId = cloudGPAMap.get(semanticKey);
@@ -350,7 +353,7 @@ export async function pushGPAToCloud() {
         const key = `${(row.name || '').trim().toLowerCase()}-${row.academic_year || ''}-${row.semester || ''}`;
         newCloudGPAMap.set(key, row.id);
       }
-      
+
       const currentGpaCourses = JSON.parse(localStorage.getItem('ucc_gpa') || '[]');
       let updated = false;
       const updatedLocal = currentGpaCourses.map(c => {
@@ -386,7 +389,7 @@ export async function pullGPAFromCloud() {
   }
 
   if (data && data.length > 0) {
-    const localCourses = data.map(row => ({
+    const cloudCourses = data.map(row => ({
       id: row.id,
       course_name: row.name,
       name: row.name,           // keep both for backward compat
@@ -403,8 +406,42 @@ export async function pullGPAFromCloud() {
       academic_year: row.academic_year,
       semester: row.semester,
     }));
-    localStorage.setItem('ucc_gpa', JSON.stringify(localCourses));
-    console.log('[syncService] pullGPA OK:', localCourses.length, 'rows');
+
+    // ── MERGE instead of overwrite ──────────────────────────────────────
+    // Never resurrect a course the user soft-deleted locally (_deleted: true),
+    // and never drop a local-only course that hasn't been pushed yet. This is
+    // the single guard that keeps the cumulative GPA honest across resyncs —
+    // the old blind overwrite dropped every _deleted flag, so deleted courses
+    // kept coming back from the cloud and polluting the cumulative average.
+    let existingLocal = [];
+    try { existingLocal = JSON.parse(localStorage.getItem('ucc_gpa') || '[]'); } catch (e) { /* use empty */ }
+
+    const semKey = (c) => `${(c.course_name || c.name || '').trim().toLowerCase()}-${c.academic_year || ''}-${c.semester || ''}`;
+    const localByKey = new Map();
+    const localById = new Map();
+    for (const c of existingLocal) {
+      localByKey.set(semKey(c), c);
+      if (c.id != null) localById.set(String(c.id), c);
+    }
+
+    const merged = [];
+    const consumed = new Set();
+    for (const cloud of cloudCourses) {
+      const key = semKey(cloud);
+      consumed.add(key);
+      if (cloud.id != null) consumed.add(String(cloud.id));
+      const localMatch = localByKey.get(key) || (cloud.id != null ? localById.get(String(cloud.id)) : undefined);
+      // ★ Honor local soft-delete — do NOT resurrect a deleted course.
+      merged.push(localMatch && localMatch._deleted ? localMatch : cloud);
+    }
+    // Preserve local-only courses (not yet pushed), keeping their _deleted flag.
+    for (const c of existingLocal) {
+      const key = semKey(c);
+      if (!consumed.has(key) && !(c.id != null && consumed.has(String(c.id)))) merged.push(c);
+    }
+
+    localStorage.setItem('ucc_gpa', JSON.stringify(merged));
+    console.log('[syncService] pullGPA OK (merged):', merged.length, 'rows');
   }
 }
 

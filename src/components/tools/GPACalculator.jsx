@@ -9,6 +9,8 @@ import { GRADE_POINTS, GRADE_RANGES } from '../../utils/constants';
 import { getGradeFromScore } from '../../utils/helpers';
 import { triggerAuthSheet } from '../onboarding/AuthModal';
 import { toast } from 'react-hot-toast';
+import GPATrendGraph from './GPATrendGraph';
+import GraduationTargetSolver from './GraduationTargetSolver';
 
 const TERMS = [
   '100_1', '100_2', '200_1', '200_2', '300_1', '300_2',
@@ -65,7 +67,6 @@ const GPACalculator = () => {
 
   // Target GPA Solver State
   const [targetGPA, setTargetGPA] = useState('');
-  const [remainingCredits, setRemainingCredits] = useState('');
   const [targetResult, setTargetResult] = useState(null);
 
   // Semester Forecaster states
@@ -294,23 +295,41 @@ const GPACalculator = () => {
         currentGpaCourses = raw ? JSON.parse(raw) : [];
       } catch { /* use empty */ }
 
-      // ── Step 3: Strict Sync — ONLY allow timetable courses ──
+      // ── Step 3: ADDITIVE merge — preserve ALL existing GPA courses ──
+      // (historical past-semester grades, manually-added courses, and
+      //  soft-deleted tombstones), then ADD any timetable course that does
+      //  not already exist. The old "strict sync" rebuilt the list from the
+      //  timetable ONLY, which wiped every past-semester grade that wasn't in
+      //  the current timetable — making the cumulative GPA equal just the
+      //  current term and swing wildly on a single grade edit.
       const mergedMap = new Map();
+
+      // 3a. Seed with every existing GPA course so historical & manual grades survive.
+      for (const c of currentGpaCourses) {
+        mergedMap.set(c.id, c);
+      }
 
       for (const ttCourse of uniqueTtCourses) {
         if (!ttCourse.name) continue;
 
         const ttNameKey = `${ttCourse.name.trim().toLowerCase()}-${ttCourse.academic_year || defaultYear}-${ttCourse.semester || defaultSem}`;
-        
+
         let existing = currentGpaCourses.find(c => {
           const cNameKey = `${(c.name || '').trim().toLowerCase()}-${c.academic_year || defaultYear}-${c.semester || defaultSem}`;
           return cNameKey === ttNameKey;
         });
 
         if (existing) {
+          // Preserve existing data (including _deleted flag) — never resurrect a soft-deleted course
           mergedMap.set(existing.id, existing);
         } else {
-          // New timetable course — create a GPA stub
+          // New timetable course — only create a stub if it hasn't been soft-deleted before
+          const wasDeleted = currentGpaCourses.some(c => {
+            const cNameKey = `${(c.name || '').trim().toLowerCase()}-${c.academic_year || defaultYear}-${c.semester || defaultSem}`;
+            return cNameKey === ttNameKey && c._deleted;
+          });
+          if (wasDeleted) continue; // respect the soft delete — do not re-add
+
           const newEntry = {
             id: ttCourse.id || Date.now() + Math.random(),
             name: ttCourse.name,
@@ -347,7 +366,7 @@ const GPACalculator = () => {
   const displayCourses = useMemo(() => {
     return courses.filter(c => {
       const cTerm = `${c.academic_year}_${c.semester}`;
-      return cTerm === activeTerm;
+      return cTerm === activeTerm && !c._deleted;
     });
   }, [courses, activeTerm]);
 
@@ -356,6 +375,9 @@ const GPACalculator = () => {
     let credits = 0;
     let points = 0;
     displayCourses.forEach(c => {
+      const isUngraded = (c.score === '' || c.score == null) || 
+                         ((c.score === 0 || c.score === '0') && (parseFloat(c.gradePoint) || 0) === 0);
+      if (isUngraded) return;
       const ch = parseFloat(c.creditHours) || 3;
       credits += ch;
       points += (parseFloat(c.gradePoint) || 0) * ch;
@@ -367,53 +389,12 @@ const GPACalculator = () => {
     };
   }, [displayCourses]);
 
-  const cumulativeStats = useMemo(() => {
-    let credits = 0;
-    let points = 0;
-    courses.forEach(c => {
-      const ch = parseFloat(c.creditHours) || 3;
-      credits += ch;
-      points += (parseFloat(c.gradePoint) || 0) * ch;
-    });
-    return {
-      gpa: credits > 0 ? (points / credits).toFixed(2) : '0.00',
-      credits,
-      points
-    };
-  }, [courses]);
-
-  // Target GPA Solver Logic
-  const calculateTarget = () => {
-    const target = parseFloat(targetGPA);
-    const remaining = parseInt(remainingCredits, 10);
-
-    if (isNaN(target) || isNaN(remaining) || remaining <= 0) {
-      setTargetResult({ error: 'Please enter valid target GPA and remaining credits (>0).' });
-      return;
-    }
-
-    const futureTotalCredits = cumulativeStats.credits + remaining;
-    const futureTotalPoints = target * futureTotalCredits;
-    const neededPoints = futureTotalPoints - cumulativeStats.points;
-    const neededAvgGpa = neededPoints / remaining;
-
-    if (neededAvgGpa > 4.0) {
-      setTargetResult({ error: `It is mathematically impossible to reach a ${target.toFixed(2)} GPA. You would need an average GPA of ${neededAvgGpa.toFixed(2)} in your remaining classes, but the maximum possible GPA is 4.0.` });
-    } else if (neededAvgGpa < 0) {
-      setTargetResult({ success: `You are mathematically guaranteed to reach your target! Even if you average a 0.0 GPA in your remaining classes, your cumulative GPA will stay above ${target.toFixed(2)}.` });
-    } else {
-      let approximateGrade = 'A';
-      if (neededAvgGpa < 3.5) approximateGrade = 'B+';
-      if (neededAvgGpa < 3.0) approximateGrade = 'B';
-      if (neededAvgGpa < 2.5) approximateGrade = 'C+';
-      if (neededAvgGpa < 2.0) approximateGrade = 'C';
-      if (neededAvgGpa < 1.5) approximateGrade = 'D+';
-      if (neededAvgGpa < 1.0) approximateGrade = 'D';
-
-      setTargetResult({ success: `To reach your overall goal of ${target.toFixed(2)}, you must maintain an average GPA of ${neededAvgGpa.toFixed(2)} in your next ${remaining} credit hours. This means you should aim for mostly ${approximateGrade}'s in your upcoming classes.` });
-    }
-  };
-
+  // NOTE: The auto-computed "Cumulative GPA" card, degree-class badge, and the
+  // legacy calculateTarget() solver were removed. The cumulative figure was
+  // derived from local course data that drifted across sync / timetable-merge
+  // / edits and produced wrong numbers. For graduation forecasting, use the
+  // Graduation Target Solver below with your OFFICIAL CGPA instead — that is
+  // ground truth and cannot be corrupted by local data bugs.
   const handleAddCourse = () => {
     triggerAuthSheet(() => {
       let finalScore = 0;
@@ -495,7 +476,17 @@ const GPACalculator = () => {
   };
 
   const handleDeleteCourse = (id) => {
-    // Disabled in current strict sync mode
+    // Soft delete — marks _deleted: true so the timetable merge won't resurrect it
+    setCourses(prev => prev.map(c => c.id === id ? { ...c, _deleted: true } : c));
+    // Tombstone for cloud sync — prevents pullGPAFromCloud from resurrecting
+    // a deleted course on the next resync. Mirrors TimetableBuilder/BudgetTracker.
+    try {
+      const deleted = JSON.parse(localStorage.getItem('ucc_gpa_deleted') || '[]');
+      if (!deleted.includes(id)) {
+        deleted.push(id);
+        localStorage.setItem('ucc_gpa_deleted', JSON.stringify(deleted));
+      }
+    } catch (e) { /* non-fatal — local soft-delete still works */ }
   };
 
   const getGradeColor = (grade) => {
@@ -542,8 +533,8 @@ const GPACalculator = () => {
                   <div
                     key={idx}
                     className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all ${hasValue
-                        ? 'border-gray-900 bg-gray-900/5'
-                        : 'border-gray-200 bg-gray-50'
+                      ? 'border-gray-900 bg-gray-900/5'
+                      : 'border-gray-200 bg-gray-50'
                       }`}
                   >
                     {hasValue && (
@@ -596,7 +587,7 @@ const GPACalculator = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <Card className="border-primary-100 bg-gray-900/5">
             <CardContent className="pt-6">
               <div className="text-center">
@@ -607,26 +598,25 @@ const GPACalculator = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-indigo-100 bg-indigo-50/50">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-2">Cumulative GPA</p>
-                <p className="text-4xl font-black text-indigo-600 mb-2">{cumulativeStats.gpa}</p>
-                <div className="text-xs font-medium text-indigo-400">{cumulativeStats.credits} total credits</div>
-              </div>
-            </CardContent>
-          </Card>
-
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Grade Points</p>
-                <p className="text-4xl font-black text-gray-800 mb-2">{cumulativeStats.points.toFixed(1)}</p>
-                <div className="text-xs font-medium text-gray-400">total weighted points</div>
+                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">This Term</p>
+                <p className="text-4xl font-black text-gray-800 mb-2">{semesterStats.points.toFixed(1)}</p>
+                <div className="text-xs font-medium text-gray-400">weighted points this term</div>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* GPA Trend Graph — per-semester trend (not a cumulative figure) */}
+        <GPATrendGraph courses={courses} />
+
+        {/* Graduation Target Solver — uses your official CGPA (manual entry) */}
+        <GraduationTargetSolver
+          currentLevel={activeLevel}
+          currentSemester={activeSemester}
+        />
 
         {/* Target GPA Solver Card */}
         <Card padding="none" className="mb-6 bg-white border-gray-100 shadow-sm overflow-hidden">
@@ -923,28 +913,31 @@ const GPACalculator = () => {
                   {displayCourses.map(course => (
                     <div
                       key={course.id}
-                      className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-primary-100 transition-colors bg-white group shadow-sm cursor-pointer hover:shadow-md"
-                      onClick={() => {
-                        setNewCourse({
-                          ...course,
-                          isDetailed: course.isDetailed || false,
-                          examWeight: course.examWeight || 60,
-                          examScore: course.examScore || '',
-                          assessments: course.assessments || [
-                            { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
-                            { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
-                          ]
-                        });
-                        setShowAddForm(true);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
+                      className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-primary-100 transition-colors bg-white group shadow-sm hover:shadow-md"
                     >
-                      <div className="flex-1">
+                      {/* Course info — tap to edit */}
+                      <div
+                        className="flex-1 cursor-pointer"
+                        onClick={() => {
+                          setNewCourse({
+                            ...course,
+                            isDetailed: course.isDetailed || false,
+                            examWeight: course.examWeight || 60,
+                            examScore: course.examScore || '',
+                            assessments: course.assessments || [
+                              { id: Date.now(), name: 'Quiz 1', score: '', max: 20 },
+                              { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }
+                            ]
+                          });
+                          setShowAddForm(true);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                      >
                         <div className="flex items-center gap-3">
                           <span className={`font-bold px-2 py-1 rounded text-sm ${getGradeColor(course.grade)}`}>
                             {course.grade}
                           </span>
-                          <span className="font-bold text-gray-900 truncate max-w-[150px] sm:max-w-none" title={course.name || 'Untitled Course'}>
+                          <span className="font-bold text-gray-900 truncate max-w-[130px] sm:max-w-none" title={course.name || 'Untitled Course'}>
                             {course.name || 'Untitled Course'}
                           </span>
                         </div>
@@ -956,6 +949,18 @@ const GPACalculator = () => {
                           <span className="whitespace-nowrap">{course.gradePoint} Points</span>
                         </div>
                       </div>
+
+                      {/* Soft-delete button — visible on hover */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCourse(course.id);
+                        }}
+                        className="ml-3 p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 flex-shrink-0"
+                        title="Remove course"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   ))}
 
