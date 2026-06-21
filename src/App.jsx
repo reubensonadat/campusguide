@@ -127,21 +127,37 @@ function AppContent() {
         },
       }).then(() => {
         const localUserId = localStorage.getItem('ucc_user_id');
-        if (localUserId && window.OneSignal && window.OneSignal.User) {
-          window.OneSignal.login(localUserId).catch(console.error);
-          window.OneSignal.User.addTag("user_id", localUserId);
-        }
-        // Tag OneSignal with academic profile so admin blasts can target specific year-groups
-        try {
-          const rawProfile = localStorage.getItem('ucc_profile');
-          if (rawProfile && window.OneSignal && window.OneSignal.User) {
-            const p = JSON.parse(rawProfile);
-            if (p.level) window.OneSignal.User.addTag("level", String(p.level));
-            if (p.course) window.OneSignal.User.addTag("course", String(p.course));
-            if (p.semester) window.OneSignal.User.addTag("semester", String(p.semester));
+
+        // Centralised tag setter — called ONLY after identity is established,
+        // so tags never fire against a half-built user (which causes "Op failed").
+        const setAllTags = () => {
+          if (!window.OneSignal || !window.OneSignal.User) return;
+          if (localUserId) window.OneSignal.User.addTag("user_id", localUserId);
+          try {
+            const rawProfile = localStorage.getItem('ucc_profile');
+            if (rawProfile) {
+              const p = JSON.parse(rawProfile);
+              if (p.level) window.OneSignal.User.addTag("level", String(p.level));
+              if (p.course) window.OneSignal.User.addTag("course", String(p.course));
+              if (p.semester) window.OneSignal.User.addTag("semester", String(p.semester));
+            }
+          } catch (e) {
+            console.warn("OneSignal profile tagging skipped:", e);
           }
-        } catch (e) {
-          console.warn("OneSignal profile tagging skipped:", e);
+        };
+
+        if (localUserId && window.OneSignal) {
+          // Logout first to clear any stale identity association that triggers
+          // a 409 Conflict on login, THEN login + set tags in sequence.
+          window.OneSignal.logout()
+            .catch(() => { /* not logged in yet — safe to ignore */ })
+            .finally(() => {
+              window.OneSignal.login(localUserId)
+                .then(setAllTags)
+                .catch(console.error);
+            });
+        } else {
+          setAllTags();
         }
       }).catch(err => {
         console.warn("OneSignal initialization failed (likely Web Push not configured in dashboard yet):", err);
