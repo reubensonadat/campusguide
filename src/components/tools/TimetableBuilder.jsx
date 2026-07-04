@@ -122,27 +122,9 @@ const TimetableBuilder = () => {
   const activeTermIndex = TERMS.indexOf(activeTerm) >= 0 ? TERMS.indexOf(activeTerm) : 0;
   const [activeLevel, activeSemester] = activeTerm.split('_');
 
-  // ─── FIX A: BACKFILL: Patch existing courses that lack academic_year/semester ───
-  useEffect(() => {
-    const needsBackfill = courses.some(
-      c => !c.academic_year || !c.semester
-    );
-    if (!needsBackfill) return;
-
-    // We use the profile's current level/semester as the "best guess"
-    // for orphaned courses. If profile isn't set, default to 100/1.
-    const defaultYear = profile?.level || '100';
-    const defaultSem = profile?.semester || '1';
-
-    const patched = courses.map(c => ({
-      ...c,
-      academic_year: c.academic_year || defaultYear,
-      semester: c.semester || defaultSem,
-    }));
-
-    setCourses(patched);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount
+  // Display filter with null-safe fallbacks — never silently rewrites stored data.
+  // Old courses lacking academic_year/semester show up as term "100_1" in the UI
+  // instead of being invisibly orphaned.
 
   // Update profile when user navigates semesters via the toggle
   const setActiveTermIndex = (newIndex) => {
@@ -154,8 +136,7 @@ const TimetableBuilder = () => {
 
   const displayCourses = useMemo(() => {
     return courses.filter(c => {
-      // Because of backfill, all courses will have academic_year and semester now.
-      const cTerm = `${c.academic_year}_${c.semester}`;
+      const cTerm = `${c.academic_year || '100'}_${c.semester || '1'}`;
       return cTerm === activeTerm;
     });
   }, [courses, activeTerm]);

@@ -194,10 +194,33 @@ const Settings = () => {
 
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
 
+  // OneSignal inits asynchronously in App.jsx, so on mount it may not be
+  // ready yet. Poll until it's initialized, then read the REAL subscription
+  // state. Without this, the toggle resets to OFF on every page refresh
+  // because OneSignal.initialized is still false at mount time.
   useEffect(() => {
-    if (OneSignal.initialized) {
-      setSystemNotificationsEnabled(OneSignal.User.PushSubscription.optedIn);
-    }
+    let cancelled = false;
+    let attempts = 0;
+    const check = () => {
+      if (cancelled) return;
+      try {
+        if (window.OneSignal && OneSignal.initialized && OneSignal.User && OneSignal.User.PushSubscription) {
+          setSystemNotificationsEnabled(OneSignal.User.PushSubscription.optedIn === true);
+          // Keep the toggle in sync if the subscription changes elsewhere
+          try {
+            OneSignal.User.PushSubscription.addEventListener('change', (e) => {
+              if (!cancelled) setSystemNotificationsEnabled(e?.current?.optedIn === true);
+            });
+          } catch (_) { /* listener API varies across SDK versions */ }
+          return; // OneSignal ready — stop polling
+        }
+      } catch (_) { /* not ready yet */ }
+      if (++attempts < 20) { // poll every 500ms for up to ~10 seconds
+        setTimeout(check, 500);
+      }
+    };
+    check();
+    return () => { cancelled = true; };
   }, []);
 
   const handleToggleSystemNotifications = async () => {

@@ -818,26 +818,29 @@ const Home = () => {
       }
     };
 
-    // Only fetch if the widget is active
-    if (homeWidgets.weather && !weatherData) fetchWeather();
-    if (homeWidgets.verse && !verseData) fetchVerse();
-    if (homeWidgets.forex && !forexData) fetchForex();
-    if (homeWidgets.crypto && !cryptoData) fetchCrypto();
-    if (homeWidgets.football) fetchFootball();
-    if (homeWidgets.news && !newsData) fetchNews();
-    if (homeWidgets.quote && !quoteData) fetchQuote();
-    if (homeWidgets.joke && !jokeData) fetchJoke();
-    if (homeWidgets.fact && !factData) fetchFact();
-    if (homeWidgets.github && !githubData) fetchGithub();
-    if (homeWidgets.word && !wordData) fetchWord();
+    // Defer widget data fetching to after first paint so the UI appears instantly
+    const deferTimer = setTimeout(() => {
+      if (homeWidgets.weather && !weatherData) fetchWeather();
+      if (homeWidgets.verse && !verseData) fetchVerse();
+      if (homeWidgets.forex && !forexData) fetchForex();
+      if (homeWidgets.crypto && !cryptoData) fetchCrypto();
+      if (homeWidgets.football) fetchFootball();
+      if (homeWidgets.news && !newsData) fetchNews();
+      if (homeWidgets.quote && !quoteData) fetchQuote();
+      if (homeWidgets.joke && !jokeData) fetchJoke();
+      if (homeWidgets.fact && !factData) fetchFact();
+      if (homeWidgets.github && !githubData) fetchGithub();
+      if (homeWidgets.word && !wordData) fetchWord();
+    }, 0);
 
-    // Football polls every 60 seconds so live scores actually update
+    // Football polls every 60 seconds so live scores actually update (not deferred)
     let footballInterval = null;
     if (homeWidgets.football) {
       footballInterval = setInterval(fetchFootball, 60000);
     }
 
     return () => {
+      clearTimeout(deferTimer);
       if (footballInterval) clearInterval(footballInterval);
     };
   }, [homeWidgets]);
