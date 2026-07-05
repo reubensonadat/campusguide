@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ArrowUpRight, ArrowDownRight, Plus, Activity, Wallet, MoreHorizontal, Trash2, Coffee, Bus, Printer, Wifi, Book, ShoppingBag, RefreshCw, X } from 'lucide-react';
+import RunwayPlanner from '../../pages/RunwayPlanner';
+import { SmartTips } from '../budget/SmartTips';
 import { BUDGET_CATEGORIES } from '../../utils/constants';
 import { formatDate } from '../../utils/helpers';
 
@@ -174,6 +176,7 @@ const CategoryCombobox = ({ value, onChange, categories }) => {
 };
 
 const BudgetTracker = () => {
+  const [activeTab, setActiveTab] = useState('tracker'); // 'tracker' or 'runway'
   const [transactions, setTransactions] = useLocalStorage('ucc_budget', []);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
@@ -204,7 +207,7 @@ const BudgetTracker = () => {
       if (today.getDate() >= recurringConfig.day && recurringConfig.lastTriggered !== currentMonth) {
         // Trigger allowance
         const newTx = {
-          id: Date.now(),
+          id: crypto.randomUUID(),
           type: 'income',
           category: 'Allowance',
           amount: parseFloat(recurringConfig.amount),
@@ -258,7 +261,7 @@ const BudgetTracker = () => {
         const transaction = {
           ...newTransaction,
           description: newTransaction.description || 'General',
-          id: Date.now(),
+          id: crypto.randomUUID(),
           amount: parseFloat(newTransaction.amount)
         };
         setTransactions([...transactions, transaction]);
@@ -277,7 +280,7 @@ const BudgetTracker = () => {
 
   const handleQuickAdd = (category, amount, description) => {
     const transaction = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       type: 'expense',
       category,
       amount: parseFloat(amount),
@@ -393,8 +396,30 @@ const BudgetTracker = () => {
   return (
     <div className="p-4 md:p-6 pb-24 max-w-5xl mx-auto font-sans">
       
-      {/* Desktop Grid Layout */}
-      <div className="lg:grid lg:grid-cols-2 lg:gap-8 mb-6">
+      {/* Tab Switcher */}
+      <div className="flex justify-center mb-8">
+        <div className="bg-gray-100 p-1 rounded-xl inline-flex relative">
+          <button 
+            onClick={() => setActiveTab('tracker')}
+            className={`px-6 py-2 rounded-lg text-sm font-bold transition-colors ${activeTab === 'tracker' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+          >
+            Standard Tracker
+          </button>
+          <button 
+            onClick={() => setActiveTab('runway')}
+            className={`px-6 py-2 rounded-lg text-sm font-bold transition-colors ${activeTab === 'runway' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+          >
+            Proactive Runway
+          </button>
+        </div>
+      </div>
+
+      {activeTab === 'runway' ? (
+        <RunwayPlanner transactions={transactions} currentBalance={balance} />
+      ) : (
+        <>
+          {/* Desktop Grid Layout */}
+          <div className="lg:grid lg:grid-cols-2 lg:gap-8 mb-6">
         {/* Balance Card */}
         <div className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 mb-6 lg:mb-0 h-full flex flex-col">
           <div className="flex justify-between items-start mb-4">
@@ -677,6 +702,9 @@ const BudgetTracker = () => {
       </div>
     </div>
 
+      {/* Smart Money Coach */}
+      <SmartTips transactions={transactions} />
+
       {/* Add Transaction Modal */}
       {showAddForm && (
         <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
@@ -839,6 +867,8 @@ const BudgetTracker = () => {
             </div>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );

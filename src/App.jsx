@@ -47,6 +47,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const PrivacyPolicy = lazy(() => import('./pages/Legal').then(m => ({ default: m.PrivacyPolicy })));
 const TermsOfService = lazy(() => import('./pages/Legal').then(m => ({ default: m.TermsOfService })));
 const LetterGenerator = lazy(() => import('./pages/LetterGenerator').then(m => ({ default: m.LetterGenerator })));
+const RunwayPlanner = lazy(() => import('./pages/RunwayPlanner'));
 
 function NavigationObserver() {
   const location = useLocation();
@@ -232,6 +233,7 @@ function AppContent() {
             <Route path="/admin/*" element={<AdminDashboard />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/planner" element={<RunwayPlanner />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

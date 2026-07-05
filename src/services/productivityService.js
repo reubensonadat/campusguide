@@ -1,11 +1,12 @@
 import { supabase } from '../lib/supabase';
 
 const LS_KEY = 'ucc_productivity_logs';
+const APP_OPENS_KEY = 'ucc_app_open_dates';
 
 export const TITLE_THRESHOLDS = {
-  ACADEMIC_WEAPON: { days: 7, label: 'Academic Weapon', icon: '🔥', color: 'bg-primary-500', textColor: 'text-primary-500', desc: 'You are on an unstoppable study streak (7+ days). Total mastery!' },
-  ORCHESTRATOR: { days: 3, label: 'Orchestrator', icon: '⚡', color: 'bg-primary-400', textColor: 'text-primary-400', desc: 'You are building serious momentum (3-6 days). Keep conducting your success.' },
-  AVERAGE_STUDENT: { days: 0, label: 'Average Student', icon: '📚', color: 'bg-gray-400', textColor: 'text-gray-400', desc: 'You are just getting started (0-2 days). Build a 3-day streak to level up.' }
+  ACADEMIC_WEAPON: { days: 7, label: 'Campus Legend', icon: '🔥', color: 'bg-primary-500', textColor: 'text-primary-500', desc: 'You are on an unstoppable streak (7+ days). Total mastery!' },
+  ORCHESTRATOR: { days: 3, label: 'Consistent', icon: '⚡', color: 'bg-primary-400', textColor: 'text-primary-400', desc: 'You are building serious momentum (3-6 days). Keep it up.' },
+  AVERAGE_STUDENT: { days: 0, label: 'Getting Started', icon: '📚', color: 'bg-gray-400', textColor: 'text-gray-400', desc: 'You are just getting started (0-2 days). Build a 3-day streak to level up.' }
 };
 
 export function getStudyTitle(streakDays) {
@@ -14,9 +15,70 @@ export function getStudyTitle(streakDays) {
   return TITLE_THRESHOLDS.AVERAGE_STUDENT;
 }
 
-// Log a session locally and push to Supabase
+// Log a daily app open to build the streak
+export function logAppOpen() {
+  const today = new Date().toISOString().split('T')[0];
+  let openDates = [];
+  try {
+    const stored = localStorage.getItem(APP_OPENS_KEY);
+    if (stored) openDates = JSON.parse(stored);
+  } catch (e) {}
+
+  if (!openDates.includes(today)) {
+    openDates.push(today);
+    localStorage.setItem(APP_OPENS_KEY, JSON.stringify(openDates));
+  }
+}
+
+// Calculate streak from open dates
+function calculateAppOpenStreak() {
+  let openDates = [];
+  try {
+    const stored = localStorage.getItem(APP_OPENS_KEY);
+    if (stored) openDates = JSON.parse(stored);
+  } catch (e) {}
+
+  const dateMap = {};
+  openDates.forEach(d => dateMap[d] = true);
+
+  let currentStreak = 0;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  
+  let checkDate = new Date(today);
+  const todayStr = checkDate.toISOString().split('T')[0];
+  
+  const yesterdayDate = new Date(checkDate);
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+  if (dateMap[todayStr]) {
+    // Valid for today
+  } else if (dateMap[yesterdayStr]) {
+    // Valid, streak is alive from yesterday, start counting from yesterday
+    checkDate = yesterdayDate;
+  } else {
+    // Streak broken
+    return 0;
+  }
+
+  while (true) {
+    const dateStr = checkDate.toISOString().split('T')[0];
+    if (dateMap[dateStr]) {
+      currentStreak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return currentStreak;
+}
+
+
+// Log a session locally and push to Supabase (Legacy support for Focus Timer)
 export async function logStudySession(durationMinutes) {
-  if (durationMinutes < 15) return false; // Minimum 15 minutes required
+  if (durationMinutes < 15) return false; 
 
   const today = new Date().toISOString().split('T')[0];
   const newLog = {
@@ -26,35 +88,23 @@ export async function logStudySession(durationMinutes) {
     timestamp: Date.now()
   };
 
-  // Save locally first
   let logs = [];
   try {
     const stored = localStorage.getItem(LS_KEY);
     if (stored) logs = JSON.parse(stored);
-  } catch (e) {
-    console.error('Failed to parse local productivity logs', e);
-  }
+  } catch (e) {}
   
   logs.push(newLog);
   localStorage.setItem(LS_KEY, JSON.stringify(logs));
 
-  // Sync to Supabase
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      await supabase.from('productivity_logs').insert([
-        {
-          id: newLog.id,
-          user_id: user.id,
-          date: newLog.date,
-          duration_minutes: newLog.duration_minutes,
-          timestamp: newLog.timestamp
-        }
-      ]);
+      await supabase.from('productivity_logs').insert([{
+        id: newLog.id, user_id: user.id, date: newLog.date, duration_minutes: newLog.duration_minutes, timestamp: newLog.timestamp
+      }]);
     }
-  } catch (e) {
-    console.error('Failed to sync productivity log to Supabase', e);
-  }
+  } catch (e) {}
 
   return true;
 }
@@ -67,7 +117,6 @@ export async function getProductivityStats() {
     if (stored) localLogs = JSON.parse(stored);
   } catch (e) {}
 
-  // Attempt to pull from Supabase to merge
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
@@ -77,73 +126,25 @@ export async function getProductivityStats() {
         .eq('user_id', user.id);
         
       if (!error && data) {
-        // Merge cloud logs with local logs
         const merged = [...localLogs];
         data.forEach(cloudLog => {
-          if (!merged.find(l => l.id === cloudLog.id)) {
-            merged.push(cloudLog);
-          }
+          if (!merged.find(l => l.id === cloudLog.id)) merged.push(cloudLog);
         });
         localLogs = merged;
         localStorage.setItem(LS_KEY, JSON.stringify(localLogs));
       }
     }
-  } catch (e) {
-    console.error('Failed to fetch productivity logs from Supabase', e);
-  }
+  } catch (e) {}
 
-  return calculateStatsFromLogs(localLogs);
-}
-
-function calculateStatsFromLogs(logs) {
-  // Aggregate duration per date
   const dateMap = {};
   let totalMinutes = 0;
-
-  logs.forEach(log => {
+  localLogs.forEach(log => {
     if (!dateMap[log.date]) dateMap[log.date] = 0;
     dateMap[log.date] += log.duration_minutes;
     totalMinutes += log.duration_minutes;
   });
 
-  // Calculate streak
-  let currentStreak = 0;
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  
-  // Start checking from today backwards
-  let checkDate = new Date(today);
-  
-  // If no study today, check if they studied yesterday (streak is preserved if they just woke up)
-  const todayStr = checkDate.toISOString().split('T')[0];
-  const yesterdayDate = new Date(checkDate);
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-  const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
-
-  if (dateMap[todayStr] && dateMap[todayStr] > 0) {
-    // Valid for today
-  } else if (dateMap[yesterdayStr] && dateMap[yesterdayStr] > 0) {
-    // Valid, streak is alive from yesterday, start counting from yesterday
-    checkDate = yesterdayDate;
-  } else {
-    // Streak broken
-    return {
-      totalMinutes,
-      currentStreak: 0,
-      dailyData: dateMap,
-      title: getStudyTitle(0)
-    };
-  }
-
-  while (true) {
-    const dateStr = checkDate.toISOString().split('T')[0];
-    if (dateMap[dateStr] && dateMap[dateStr] > 0) {
-      currentStreak++;
-      checkDate.setDate(checkDate.getDate() - 1); // go back one day
-    } else {
-      break;
-    }
-  }
+  const currentStreak = calculateAppOpenStreak();
 
   return {
     totalMinutes,

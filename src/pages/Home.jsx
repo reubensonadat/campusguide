@@ -11,6 +11,10 @@ import { getUpcomingAcademicEvents } from '../data/academicCalendar';
 import { getCurrentSemesterInfo } from '../services/academicCalendarService';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { getTodayHoliday } from '../services/holidayService';
+import { useRunwaySimulation } from '../hooks/useRunwaySimulation';
+import { logAppOpen } from '../services/productivityService';
+import Modal from '../components/common/Modal';
+import { Wallet, X } from 'lucide-react';
 import { syncToCloud, shouldSyncNow } from '../services/syncService';
 import { getProductivityStats } from '../services/productivityService';
 import { toast } from 'react-hot-toast';
@@ -187,6 +191,108 @@ const getWeekId = (d) => {
 
 const Home = () => {
   React.useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  // ── App Open Streak ──────────────────────────────────────────────
+  React.useEffect(() => { logAppOpen(); }, []);
+
+  // ── Daily Runway ──────────────────────────────────────────────
+  const { config, getSummary } = useRunwaySimulation();
+  const summary = getSummary();
+  const safeToSpend = summary ? summary.dailyAllowance : 0;
+  const isRunwayActive = !!config;
+  const [budgetTransactions, setBudgetTransactions] = useLocalStorage('ucc_budget', []);
+  const [showExpensePopup, setShowExpensePopup] = useState(false);
+  const [quickExpenseAmt, setQuickExpenseAmt] = useState('');
+  
+  const handleQuickExpenseSubmit = (e) => {
+    e.preventDefault();
+    if (!quickExpenseAmt) return;
+    const transaction = {
+      id: crypto.randomUUID(),
+      type: 'expense',
+      category: 'General',
+      amount: parseFloat(quickExpenseAmt),
+      description: 'Quick log from Home',
+      date: new Date().toISOString().split('T')[0]
+    };
+    setBudgetTransactions([...budgetTransactions, transaction]);
+    setQuickExpenseAmt('');
+    setShowExpensePopup(false);
+    toast.success('Expense logged successfully!');
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  const renderFeaturedAd = () => {
+    if (!featuredContent) return null;
+    const isAd = featuredContent.kind === 'ad';
+    const d = featuredContent.data;
+    const imgSrc = isAd ? d.image_url : d.flyer_url;
+
+    let actionText = '';
+    let link = '';
+
+    if (isAd) {
+      let cleanPhone = d.phone_number ? d.phone_number.toString().replace(/\D/g, '') : '';
+      if (cleanPhone.startsWith('0')) {
+        cleanPhone = '233' + cleanPhone.slice(1);
+      } else if (!cleanPhone.startsWith('233') && cleanPhone.length === 9) {
+        cleanPhone = '233' + cleanPhone;
+      }
+
+      if (d.contact_method === 'link' && d.contact_url) {
+        actionText = d.action_text || 'Visit Link';
+        link = d.contact_url;
+      } else if (d.contact_method === 'phone' && cleanPhone) {
+        actionText = d.action_text || 'Call Now';
+        link = `tel:+${cleanPhone}`;
+      } else if (cleanPhone) {
+        actionText = d.action_text || 'Message via WhatsApp';
+        link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
+      }
+    } else {
+      actionText = d.action_text || 'Visit Link';
+      link = d.action_link || '';
+    }
+
+    return (
+      <div className="pt-2">
+        <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">
+          {isAd ? 'Advertisement' : 'Announcement'}
+        </h3>
+        <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden max-w-sm">
+          {imgSrc && (
+            <img src={imgSrc} alt={d.title} className="w-full h-auto object-contain max-h-[600px] bg-gray-50/50" />
+          )}
+          <div className="p-5">
+            <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-gray-900 bg-gray-900/10">
+              {isAd ? 'SPONSORED' : 'OFFICIAL'}
+            </span>
+            <h4 className="text-base font-bold text-gray-900 mb-1">{d.title}</h4>
+            <p className={`text-sm text-gray-500 font-medium mb-4 whitespace-pre-wrap ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
+              {d.description || d.content}
+            </p>
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setIsFeaturedExpanded(!isFeaturedExpanded)}
+                className="text-[13px] font-bold text-gray-900 flex items-center gap-1 active:opacity-70"
+              >
+                {isFeaturedExpanded ? 'Show less' : 'Read more'} <ChevronRight size={14} className={isFeaturedExpanded ? 'rotate-90 transition-transform' : 'transition-transform'} />
+              </button>
+
+              {link && (
+                <button
+                  onClick={() => window.open(link, '_blank')}
+                  className="bg-gray-900 hover:bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
+                >
+                  {actionText}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // ── Invisible dark-mode sync ──────────────────────────────────────────────
   const [theme] = useLocalStorage('theme', 'light');
@@ -956,17 +1062,34 @@ const Home = () => {
 
           {/* Hero Greeting Text & Weather */}
           <div className="relative z-10 flex flex-col items-start gap-4 mt-2">
-            <div>
+            <div className="w-full">
               <h2 className="text-white text-[1.8rem] font-black leading-tight tracking-tight mb-1 flex items-center flex-wrap gap-1">
                 {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'} 
                 {getGreeting() === 'Happy New Month' ? (
                   <span onClick={triggerConfetti} className="cursor-pointer hover:scale-110 active:scale-95 transition-transform">🎉</span>
                 ) : ' 👋'}
               </h2>
-              <p className="text-primary-400 text-sm font-semibold flex items-center cursor-pointer active:opacity-70 transition-opacity">
-                {TODAY_LABEL}
-                <StreakBadge />
-              </p>
+              <div className="flex items-center justify-between mt-1">
+                <div className="flex flex-col gap-1">
+                  <p className="text-primary-400 text-sm font-semibold flex items-center cursor-pointer active:opacity-70 transition-opacity">
+                    {TODAY_LABEL}
+                    <StreakBadge />
+                  </p>
+                  {isRunwayActive && (
+                    <p className="text-white/80 text-sm font-medium flex items-center gap-1.5">
+                      <Wallet size={14} className="text-primary-400" /> Safe to spend: <strong className="text-white font-black tracking-tight">GH₵ {safeToSpend.toFixed(2)}</strong>
+                    </p>
+                  )}
+                </div>
+                {isRunwayActive && (
+                  <button 
+                    onClick={() => setShowExpensePopup(true)} 
+                    className="w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center text-white active:scale-95 transition-all shadow-sm flex-shrink-0"
+                  >
+                    <Plus size={18} />
+                  </button>
+                )}
+              </div>
             </div>
 
             {(() => {
@@ -1200,6 +1323,8 @@ const Home = () => {
         {/* ── Overlapping Content & Body ──────────────────────────────── */}
         <div className="px-5 -mt-8 relative z-20 space-y-6 pb-6">
 
+
+
           {/* Active Reminders Alert Box */}
           {activeReminders.length > 0 && (
             <div className="sticky top-0 z-30 bg-red-50 border border-red-100 rounded-2xl p-4 shadow-sm space-y-3 mb-4">
@@ -1317,6 +1442,8 @@ const Home = () => {
             )}
           </div>
           )}
+
+          {renderFeaturedAd()}
 
           {/* 1.5 Overlapping Floating Card (Today's Tasks + Deadlines) */}
           {homeWidgets.tasks && (<div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
@@ -1641,77 +1768,7 @@ const Home = () => {
           </div>
           )}
 
-          {/* 4. Announcements / Featured Content */}
-          {featuredContent && (() => {
-            const isAd = featuredContent.kind === 'ad';
-            const d = featuredContent.data;
-            const imgSrc = isAd ? d.image_url : d.flyer_url;
 
-            let actionText = '';
-            let link = '';
-
-            if (isAd) {
-              let cleanPhone = d.phone_number ? d.phone_number.toString().replace(/\D/g, '') : '';
-              if (cleanPhone.startsWith('0')) {
-                cleanPhone = '233' + cleanPhone.slice(1);
-              } else if (!cleanPhone.startsWith('233') && cleanPhone.length === 9) {
-                cleanPhone = '233' + cleanPhone;
-              }
-
-              if (d.contact_method === 'link' && d.contact_url) {
-                actionText = d.action_text || 'Visit Link';
-                link = d.contact_url;
-              } else if (d.contact_method === 'phone' && cleanPhone) {
-                actionText = d.action_text || 'Call Now';
-                link = `tel:+${cleanPhone}`;
-              } else if (cleanPhone) {
-                actionText = d.action_text || 'Message via WhatsApp';
-                link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
-              }
-            } else {
-              actionText = d.action_text || 'Visit Link';
-              link = d.action_link || '';
-            }
-
-            return (
-              <div className="pt-2">
-                <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">
-                  {isAd ? 'Advertisement' : 'Announcement'}
-                </h3>
-                <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden">
-                  {imgSrc && (
-                    <img src={imgSrc} alt={d.title} className="w-full h-auto object-contain max-h-[600px] bg-gray-50/50" />
-                  )}
-                  <div className="p-5">
-                    <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-gray-900 bg-gray-900/10">
-                      {isAd ? 'SPONSORED' : 'OFFICIAL'}
-                    </span>
-                    <h4 className="text-base font-bold text-gray-900 mb-1">{d.title}</h4>
-                    <p className={`text-sm text-gray-500 font-medium mb-4 whitespace-pre-wrap ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
-                      {d.description || d.content}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => setIsFeaturedExpanded(!isFeaturedExpanded)}
-                        className="text-[13px] font-bold text-gray-900 flex items-center gap-1 active:opacity-70"
-                      >
-                        {isFeaturedExpanded ? 'Show less' : 'Read more'} <ChevronRight size={14} className={isFeaturedExpanded ? 'rotate-90 transition-transform' : 'transition-transform'} />
-                      </button>
-
-                      {link && (
-                        <button
-                          onClick={() => window.open(link, '_blank')}
-                          className="bg-gray-900 hover:bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
-                        >
-                          {actionText}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
 
           {/* 4. Promotional Banner (Support Card - Mobile) */}
           <div
@@ -1884,6 +1941,10 @@ const Home = () => {
             </section>
           )}
 
+
+
+          {renderFeaturedAd()}
+
           {/* Quick Actions */}
           <section>
             <div className="flex items-center justify-between mb-8">
@@ -1948,6 +2009,31 @@ const Home = () => {
       {/* end DESKTOP */}
 
       {/* Focus Timer logic moved to standalone /focus route */}
+
+      {/* Quick Expense Modal */}
+      <Modal
+        isOpen={showExpensePopup}
+        onClose={() => setShowExpensePopup(false)}
+        title="Quick Log Expense"
+      >
+        <form onSubmit={handleQuickExpenseSubmit} className="flex flex-col gap-4">
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-lg">GH₵</span>
+            <input 
+              type="number"
+              step="0.01"
+              autoFocus
+              value={quickExpenseAmt}
+              onChange={e => setQuickExpenseAmt(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl py-4 pl-14 pr-4 font-bold text-xl text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+              placeholder="0.00"
+            />
+          </div>
+          <button type="submit" className="w-full bg-primary-500 hover:bg-primary-600 text-white py-4 rounded-xl font-bold text-lg active:scale-95 transition-all shadow-sm">
+            Save Expense
+          </button>
+        </form>
+      </Modal>
 
       {/* 🧭 Coach Marks Walkthrough */}
       <CoachMarksOverlay
