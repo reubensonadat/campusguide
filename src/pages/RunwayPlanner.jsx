@@ -170,8 +170,8 @@ export default function RunwayPlanner({ transactions = [], currentBalance = 0 })
 
       {/* ── Restart / New Period Modal ─────────────────────────────────────── */}
       {showRestartModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 max-w-sm w-full border border-gray-100 dark:border-gray-700 shadow-2xl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex flex-col justify-end md:justify-center items-center p-0 md:p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-t-[2rem] md:rounded-3xl p-6 w-full md:max-w-sm border border-gray-100 dark:border-gray-700 shadow-2xl max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom duration-300 md:animate-none">
             <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">Start a New Period?</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
               Your <span className="font-bold text-gray-900 dark:text-white">transaction history</span> in the Budget Tracker stays untouched.

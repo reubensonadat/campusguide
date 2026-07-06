@@ -34,6 +34,8 @@ const TimetableBuilder = () => {
   const [todayHoliday, setTodayHoliday] = useState(null);
   const [sharedTimetable, setSharedTimetable] = useState(null);
   const [selectedImportCourses, setSelectedImportCourses] = useState({});
+  const [examMode, setExamMode] = useLocalStorage('ucc_exam_mode', false);
+  const [selectedDayFilter, setSelectedDayFilter] = useState('All');
 
   const handleShareTimetable = () => {
     if (displayCourses.length === 0) {
@@ -290,6 +292,17 @@ const TimetableBuilder = () => {
                 My Timetable
               </CardTitle>
               <p className="text-sm text-gray-500 mt-1">Simple, unified schedule view.</p>
+              <button
+                type="button"
+                onClick={() => setExamMode(!examMode)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[11px] font-black mt-2 transition-all ${
+                  examMode 
+                    ? 'bg-amber-500 border-amber-600 text-white shadow-sm' 
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                📝 {examMode ? 'Exam Mode Active' : 'Enable Exam Mode'}
+              </button>
             </div>
 
             <div className="flex w-full sm:w-auto gap-2 flex-wrap">
@@ -345,7 +358,7 @@ const TimetableBuilder = () => {
           </div>
 
           {/* Semester Toggle UI */}
-          <div className="flex items-center justify-center mt-6 bg-gray-900/5 rounded-2xl p-2 max-w-sm mx-auto border border-gray-900/10">
+          <div className="flex items-center justify-between mt-6 bg-gray-900/5 rounded-2xl p-2 max-w-sm mx-auto border border-gray-900/10">
             <button
               onClick={() => setActiveTermIndex(Math.max(0, activeTermIndex - 1))}
               disabled={activeTermIndex === 0}
@@ -354,9 +367,26 @@ const TimetableBuilder = () => {
               <ChevronLeft size={20} />
             </button>
 
-            <div className="flex-1 text-center flex flex-col">
-              <span className="text-sm font-black text-gray-900">Level {activeLevel}</span>
-              <span className="text-[10px] font-bold text-gray-900/60 uppercase tracking-widest">Semester {activeSemester}</span>
+            <div className="flex-1 text-center flex flex-col relative justify-center items-center">
+              <select
+                value={activeTerm}
+                onChange={(e) => {
+                  const idx = TERMS.indexOf(e.target.value);
+                  if (idx !== -1) setActiveTermIndex(idx);
+                }}
+                className="bg-transparent text-sm font-black text-gray-900 dark:text-white outline-none cursor-pointer text-center appearance-none border-none py-1 px-4 rounded-lg hover:bg-white/50 transition-colors"
+                style={{ textAlignLast: 'center' }}
+              >
+                {TERMS.map(t => {
+                  const [lvl, sem] = t.split('_');
+                  return (
+                    <option key={t} value={t} className="text-gray-900 bg-white">
+                      Level {lvl} · Semester {sem}
+                    </option>
+                  );
+                })}
+              </select>
+              <span className="text-[9px] font-bold text-gray-900/40 uppercase tracking-wider mt-0.5">Click to choose term</span>
             </div>
 
             <button
@@ -400,12 +430,41 @@ const TimetableBuilder = () => {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {DAYS_OF_WEEK.map(day => {
-                  const dayCourses = coursesByDay[day];
-                  if (!dayCourses || dayCourses.length === 0) return null;
+              <div className="flex flex-col">
+                {/* Mobile Day Selector Tabs */}
+                <div className="flex md:hidden overflow-x-auto gap-2 pb-4 mb-4 scrollbar-none snap-x px-1 border-b border-gray-900/5">
+                  {['All', ...DAYS_OF_WEEK].map(day => (
+                    <button
+                      type="button"
+                      key={day}
+                      onClick={() => setSelectedDayFilter(day)}
+                      className={`px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap snap-align-start transition-all shrink-0 border-none cursor-pointer ${
+                        selectedDayFilter === day
+                          ? 'bg-gray-900 text-white shadow-md'
+                          : 'bg-white text-gray-500 hover:text-gray-900 shadow-sm border border-gray-100'
+                      }`}
+                    >
+                      {day === 'All' ? 'All Days' : day}
+                    </button>
+                  ))}
+                </div>
 
-                  return (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {DAYS_OF_WEEK.map(day => {
+                    if (selectedDayFilter !== 'All' && selectedDayFilter !== day) return null;
+                    const dayCourses = coursesByDay[day];
+                    if (!dayCourses || dayCourses.length === 0) {
+                      if (selectedDayFilter === day) {
+                        return (
+                          <div key={day} className="bg-white rounded-3xl border border-gray-100 p-8 text-center shadow-sm w-full col-span-full">
+                            <p className="text-sm font-bold text-gray-500">No classes scheduled for {day}.</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }
+
+                    return (
                     <div key={day} className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
                       <h3 className="font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center justify-between">
                         {day}
@@ -444,7 +503,8 @@ const TimetableBuilder = () => {
                   )
                 })}
               </div>
-            )}
+            </div>
+          )}
           </div>
         </CardContent>
       </Card>

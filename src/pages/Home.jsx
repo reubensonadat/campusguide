@@ -189,6 +189,16 @@ const getWeekId = (d) => {
 
 // ── component ─────────────────────────────────────────────────────────────────
 
+const SkeletonCard = () => (
+  <div className="bg-white rounded-2xl p-6 min-h-[140px] border border-gray-100 animate-pulse flex flex-col justify-center">
+    <div className="h-4 bg-gray-200/50 rounded w-1/3 mb-4"></div>
+    <div className="space-y-3">
+      <div className="h-3 bg-gray-200/40 rounded w-full"></div>
+      <div className="h-3 bg-gray-200/40 rounded w-5/6"></div>
+    </div>
+  </div>
+);
+
 const Home = () => {
   React.useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -203,7 +213,7 @@ const Home = () => {
   const [budgetTransactions, setBudgetTransactions] = useLocalStorage('ucc_budget', []);
   const [showExpensePopup, setShowExpensePopup] = useState(false);
   const [quickExpenseAmt, setQuickExpenseAmt] = useState('');
-  
+
   const handleQuickExpenseSubmit = (e) => {
     e.preventDefault();
     if (!quickExpenseAmt) return;
@@ -223,6 +233,14 @@ const Home = () => {
   };
 
   const renderFeaturedAd = () => {
+    if (!isDeferredActive) {
+      return (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 h-16 animate-pulse flex items-center justify-between">
+          <div className="h-3 bg-gray-200/50 rounded w-1/4"></div>
+          <div className="h-6 bg-gray-200/40 rounded w-16"></div>
+        </div>
+      );
+    }
     if (!featuredContent) return null;
     const isAd = featuredContent.kind === 'ad';
     const d = featuredContent.data;
@@ -320,6 +338,36 @@ const Home = () => {
 
   // ── Assignments / Deadlines ──────────────────────────────────────────────
   const [homeAssignments, setHomeAssignments] = useState(() => getAssignments());
+  const [examMode] = useLocalStorage('ucc_exam_mode', false);
+  const [semesterInfo, setSemesterInfo] = useState(null);
+  const [isDeferredActive, setIsDeferredActive] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsDeferredActive(true);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const isExamModeActive = useMemo(() => {
+    return examMode || !!semesterInfo?.isExamPeriod;
+  }, [examMode, semesterInfo]);
+
+  const todaysExams = useMemo(() => {
+    if (!Array.isArray(homeAssignments)) return [];
+    const todayStr = new Date().toISOString().split('T')[0];
+    const pLevel = profile.level || '100';
+    const pSem = profile.semester || '1';
+
+    return homeAssignments.filter(a => {
+      if (a.type !== 'exam') return false;
+      const aLevel = a.academic_year || '100';
+      const aSem = a.semester || '1';
+      if (String(aLevel) !== String(pLevel)) return false;
+      if (String(aSem) !== String(pSem)) return false;
+      return a.dueDate === todayStr;
+    });
+  }, [homeAssignments, profile.level, profile.semester]);
 
   // Listen for assignment changes — works for BOTH same-tab and cross-tab
   useEffect(() => {
@@ -357,7 +405,7 @@ const Home = () => {
     const oldStatus = assignment?.status || 'pending';
     markAssignmentStatus(id, 'submitted');
     setHomeAssignments(getAssignments());
-    
+
     // Premium feedback
     triggerConfetti();
     triggerHaptic();
@@ -418,12 +466,13 @@ const Home = () => {
   const [todayHoliday, setTodayHoliday] = useState(null);
 
   // ── Semester awareness ──────────────────────────────────────────────────────
-  const [semesterInfo, setSemesterInfo] = useState(null);
 
   // ── Device ID + Cloud Sync ─────────────────────────────────────────────────
   const { deviceId } = useDeviceId();
 
   useEffect(() => {
+    if (!isDeferredActive) return; // Defer until initial shell has painted
+    
     // Fire-and-forget: fetch today's holiday
     getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => { });
 
@@ -438,7 +487,7 @@ const Home = () => {
       }
     };
     runSync();
-  }, [deviceId]);
+  }, [deviceId, isDeferredActive]);
 
   // Today's classes
   const todaysClassesWithStatus = useMemo(() => {
@@ -460,7 +509,7 @@ const Home = () => {
         const endMins = c.endTime ? getTimeMinutes(c.endTime) : startMins + 60; // Assume 1hr duration if no end time
         let status = 'upcoming';
         let timeUntilStr = '';
-        
+
         const startTotalSeconds = startMins * 60;
 
         if (currentTimeMinutes >= endMins) status = 'completed';
@@ -470,7 +519,7 @@ const Home = () => {
           const hrs = Math.floor(diffSeconds / 3600);
           const mins = Math.floor((diffSeconds % 3600) / 60);
           const secs = diffSeconds % 60;
-          
+
           if (hrs > 0) {
             timeUntilStr = `in ${hrs}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
           } else {
@@ -649,6 +698,7 @@ const Home = () => {
 
   // ── Fetch community updates (gated by notificationsEnabled) ─────────────
   useEffect(() => {
+    if (!isDeferredActive) return; // Defer until initial shell has painted
     if (!notificationsEnabled) {
       setRecentUpdates([]);
       setFetchStatus('idle');
@@ -681,10 +731,11 @@ const Home = () => {
     };
 
     fetchCommunityUpdates();
-  }, [notificationsEnabled]);
+  }, [notificationsEnabled, isDeferredActive]);
 
   // ── Fetch ad / featured content (always runs, separate concern) ──────────
   useEffect(() => {
+    if (!isDeferredActive) return; // Defer until initial shell has painted
     const fetchAdOrFallback = async () => {
       try {
         const { data: adsData } = await supabase
@@ -714,7 +765,7 @@ const Home = () => {
     };
 
     fetchAdOrFallback();
-  }, []);
+  }, [isDeferredActive]);
 
   // ── Weather & API Widget Fetching Logic ───────────────────────────────────────
   const [weatherData, setWeatherData] = useState(null);
@@ -811,10 +862,10 @@ const Home = () => {
           const lastRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=134513');
           if (lastRes.ok) lastData = await lastRes.json();
         } catch (e) { console.warn("Fallback events fetch failed", e); }
-        
+
         if (lastData && lastData.results && lastData.results.length > 0) {
           const match = lastData.results[0];
-          
+
           const matchDateStr = match.strTimestamp || `${match.dateEvent}T${match.strTime || '00:00:00'}Z`;
           const matchDate = new Date(matchDateStr);
           const now = new Date();
@@ -924,6 +975,8 @@ const Home = () => {
       }
     };
 
+    if (!isDeferredActive) return; // Defer until initial shell has painted
+    
     // Defer widget data fetching to after first paint so the UI appears instantly
     const deferTimer = setTimeout(() => {
       if (homeWidgets.weather && !weatherData) fetchWeather();
@@ -949,7 +1002,7 @@ const Home = () => {
       clearTimeout(deferTimer);
       if (footballInterval) clearInterval(footballInterval);
     };
-  }, [homeWidgets]);
+  }, [homeWidgets, isDeferredActive]);
 
   const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
 
@@ -966,7 +1019,7 @@ const Home = () => {
 
     const count = prodStats.currentStreak;
     const title = prodStats.title.label;
-    
+
     if (variant === 'desktop') {
       return (
         <span className="inline-flex items-center gap-1.5 ml-2">
@@ -982,14 +1035,9 @@ const Home = () => {
     }
 
     return (
-      <span className="inline-flex items-center gap-1.5 ml-2">
-        <span className="inline-flex items-center gap-1 bg-white/10 text-white/90 px-2 py-0.5 rounded-full text-[11px] font-bold border border-white/10">
-          <Flame size={11} className="text-orange-400" />
-          {count}
-        </span>
-        <span className="inline-flex items-center bg-primary-500/30 text-primary-200 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-primary-400/30 shadow-sm">
-          {title}
-        </span>
+      <span className="inline-flex items-center gap-1 bg-white/10 text-white/90 px-2 py-0.5 rounded-full text-[11px] font-bold border border-white/10 ml-2">
+        <Flame size={11} className="text-orange-400 fill-orange-400" />
+        {count}
       </span>
     );
   };
@@ -1012,7 +1060,7 @@ const Home = () => {
           {/* Top Bar */}
           <div className="flex items-center justify-between mb-6 relative z-10">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain rounded-md shadow-sm" />
+              <img src="/logo.png" alt="Logo" loading="lazy" className="w-8 h-8 object-contain rounded-md shadow-sm" />
               <span className="text-white font-bold tracking-widest text-xs uppercase opacity-90">Campus Guide</span>
             </div>
 
@@ -1050,7 +1098,7 @@ const Home = () => {
                   onClick={() => navigate('/profile')}
                   className="w-10 h-10 rounded-full border-2 border-white/20 shadow-lg overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white/10 p-0.5"
                 >
-                  <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-full bg-white" />
+                  <img src={profile.avatarUrl} alt="Avatar" loading="lazy" className="w-full h-full object-cover rounded-full bg-white" />
                 </button>
               ) : (
                 <button onClick={() => navigate('/profile')} className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform">
@@ -1063,28 +1111,27 @@ const Home = () => {
           {/* Hero Greeting Text & Weather */}
           <div className="relative z-10 flex flex-col items-start gap-4 mt-2">
             <div className="w-full">
-              <h2 className="text-white text-[1.8rem] font-black leading-tight tracking-tight mb-1 flex items-center flex-wrap gap-1">
-                {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'} 
-                {getGreeting() === 'Happy New Month' ? (
-                  <span onClick={triggerConfetti} className="cursor-pointer hover:scale-110 active:scale-95 transition-transform">🎉</span>
-                ) : ' 👋'}
+              <h2 className="text-white text-2xl font-black leading-tight tracking-tight mb-1">
+                {getGreeting()}, {profile.name ? profile.name.split(' ')[0] : 'Student'}{getGreeting() === 'Happy New Month' ? ' 🎉' : ' 👋'}
               </h2>
-              <div className="flex items-center justify-between mt-1">
-                <div className="flex flex-col gap-1">
-                  <p className="text-primary-400 text-sm font-semibold flex items-center cursor-pointer active:opacity-70 transition-opacity">
+              <div className="flex items-center justify-between mt-2">
+                <div className="flex flex-col gap-1.5">
+                  <p className="text-primary-400 text-xs font-bold uppercase tracking-wider flex items-center cursor-pointer active:opacity-70 transition-opacity">
                     {TODAY_LABEL}
                     <StreakBadge />
                   </p>
                   {isRunwayActive && (
-                    <p className="text-white/80 text-sm font-medium flex items-center gap-1.5">
-                      <Wallet size={14} className="text-primary-400" /> Safe to spend: <strong className="text-white font-black tracking-tight">GH₵ {safeToSpend.toFixed(2)}</strong>
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-white/60 text-sm font-semibold">GH₵ {safeToSpend.toFixed(2)}</span>
+                      <span className="text-white/60 text-xs">safe to spend today</span>
+                    </div>
                   )}
                 </div>
                 {isRunwayActive && (
-                  <button 
-                    onClick={() => setShowExpensePopup(true)} 
+                  <button
+                    onClick={() => setShowExpensePopup(true)}
                     className="w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center text-white active:scale-95 transition-all shadow-sm flex-shrink-0"
+                    title="Add Expense"
                   >
                     <Plus size={18} />
                   </button>
@@ -1232,7 +1279,7 @@ const Home = () => {
                     <>
                       <span className="text-white font-bold text-sm tracking-wide truncate">{footballData.isOffSeason ? 'No Active Matches' : `${footballData.home} vs ${footballData.away}`}</span>
                       <span className="text-primary-400 text-[11px] font-bold leading-none mt-1">
-                        {footballData.isOffSeason ? 'Check back later' : `${footballData.homeScore} - ${footballData.awayScore}`} 
+                        {footballData.isOffSeason ? 'Check back later' : `${footballData.homeScore} - ${footballData.awayScore}`}
                         {!footballData.isOffSeason && <span className="font-medium opacity-80"> ({footballData.status})</span>}
                       </span>
                     </>
@@ -1290,6 +1337,16 @@ const Home = () => {
                 if (a.size === 'medium' && b.size === 'small') return 1;
                 return 0;
               });
+
+              if (!isDeferredActive) {
+                return (
+                  <div className="flex gap-2 w-full items-start">
+                    <div className="h-[46px] bg-white/10 rounded-2xl animate-pulse w-20"></div>
+                    <div className="h-[46px] bg-white/10 rounded-2xl animate-pulse w-16"></div>
+                    <div className="h-[46px] bg-white/10 rounded-2xl animate-pulse w-16"></div>
+                  </div>
+                );
+              }
 
               return (
                 <div className="flex flex-wrap gap-2 w-full items-start">
@@ -1364,89 +1421,154 @@ const Home = () => {
             </div>
           )}
 
-          {/* 1. Overlapping Floating Card (Today's Classes) */}
-          {homeWidgets.classes && (<div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 min-h-[140px] border border-gray-100 flex flex-col justify-center">
-            <div className="flex justify-between items-start mb-4">
-              <span className="text-sm font-black text-gray-900 tracking-tight">Today's Classes</span>
-              <button onClick={() => navigate('/tools')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
-                View all <ChevronRight size={13} />
-              </button>
-            </div>
-
-            {todaysClassesWithStatus.length === 0 ? (
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-gray-900/5 flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#002F45" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"></path></svg>
-                  </div>
-                  <div>
-                    <p className="text-[15px] font-bold text-gray-900 flex items-center gap-1.5">
-                      {todayHoliday ? <><PartyPopper className="w-4 h-4 text-primary-600" /> {todayHoliday.name}</> : 'No classes today!'}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-0.5 font-medium flex items-center">
-                      {todayHoliday ? <>No classes today unless your lecturer said so <CustomEyes size={14} className="inline ml-1" /></> : 'Enjoy your free time.'}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => navigate('/tools/timetable')}
-                  className="flex bg-primary-50 text-primary-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-100 transition-colors"
-                >
-                  Add Class
-                </button>
-              </div>
-            ) : allCompleted ? (
-              <div className="flex items-center gap-4 py-2">
-                <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center flex-shrink-0 border border-green-100">
-                  <CheckCircle2 size={24} className="text-green-500" />
-                </div>
-                <div>
-                  <p className="text-[15px] font-bold text-gray-900">All classes ended!</p>
-                  <p className="text-xs text-gray-500 mt-0.5 font-medium">You've successfully completed all classes for today.</p>
-                </div>
-              </div>
+          {/* 1. Overlapping Floating Card (Today's Classes / Exams) */}
+          {homeWidgets.classes && (
+            !isDeferredActive ? (
+              <SkeletonCard />
             ) : (
-              <div className="space-y-3">
-                {todaysClassesWithStatus.slice(0, 3).map((cls, i) => (
-                  <div key={i} className={`flex items-center gap-4 transition-opacity ${cls.status === 'completed' ? 'opacity-40' : 'opacity-100'}`}>
-                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${cls.status === 'completed' ? 'bg-gray-100' :
-                      cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' :
-                        'bg-gray-900/5'
-                      }`}>
-                      {cls.status === 'completed' ? <CheckCircle2 size={16} className="text-gray-400" /> :
-                        cls.status === 'ongoing' ? <Loader2 size={16} className="text-blue-600 animate-spin" /> :
-                          <Clock size={16} className="text-gray-900" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-bold truncate ${cls.status === 'completed' ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
-                        {cls.courseName || cls.name || 'Class'}
-                      </p>
-                      <p className={`text-xs font-medium mt-0.5 flex flex-wrap items-center gap-1 ${cls.status === 'ongoing' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
-                        <span>
-                          {cls.status === 'ongoing' ? 'Happening Now • ' : ''}
-                          {cls.status === 'completed' ? 'Completed • ' : ''}
-                          {cls.status === 'upcoming' && cls.timeUntilStr ? <span className="text-orange-500 font-bold">{cls.timeUntilStr} • </span> : ''}
-                          {cls.startTime && cls.endTime ? `${formatTime12Hour(cls.startTime)} – ${formatTime12Hour(cls.endTime)}` : formatTime12Hour(cls.startTime) || ''}
-                        </span>
-                        {cls.location && (
-                          <span className="flex items-center gap-0.5 font-bold opacity-90">
-                            • <CustomMapPin className="w-2.5 h-2.5" /> {cls.location}
-                          </span>
-                        )}
-                      </p>
-                    </div>
+              <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 min-h-[140px] border border-gray-100 flex flex-col justify-center">
+            {isExamModeActive ? (
+              <>
+                <div className="flex justify-between items-start mb-4">
+                  <span className="text-sm font-black text-gray-900 tracking-tight flex items-center gap-1.5">
+                    <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    Today's Exams
+                  </span>
+                  <button onClick={() => navigate('/tools/assignments')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
+                    Countdown <ChevronRight size={13} />
+                  </button>
+                </div>
 
+                {todaysExams.length === 0 ? (
+                  <div className="flex items-center justify-between py-2">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                        <FileText size={24} className="text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-[15px] font-bold text-gray-900">No exams today!</p>
+                        <p className="text-xs text-gray-500 mt-0.5 font-medium">Use this time to study and prepare.</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate('/tools/assignments')}
+                      className="flex bg-amber-50 text-amber-700 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-100 transition-colors"
+                    >
+                      Add Exam
+                    </button>
                   </div>
-                ))}
-              </div>
+                ) : (
+                  <div className="space-y-3">
+                    {todaysExams.map((exam, i) => (
+                      <div key={i} className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100">
+                          <FileText size={16} className="text-amber-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-gray-900 truncate">
+                            {exam.title}
+                          </p>
+                          <p className="text-xs font-medium mt-0.5 text-gray-500 flex flex-wrap items-center gap-1">
+                            {exam.course && <span className="font-bold text-amber-600">{exam.course}</span>}
+                            {exam.dueTime && <span>• {formatTime12Hour(exam.dueTime)}</span>}
+                            {exam.notes && <span>• {exam.notes}</span>}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between items-start mb-4">
+                  <span className="text-sm font-black text-gray-900 tracking-tight">Today's Classes</span>
+                  <button onClick={() => navigate('/tools')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
+                    View all <ChevronRight size={13} />
+                  </button>
+                </div>
+
+                {todaysClassesWithStatus.length === 0 ? (
+                  <div className="flex items-center justify-between py-2">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-gray-900/5 flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#002F45" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"></path></svg>
+                      </div>
+                      <div>
+                        <p className="text-[15px] font-bold text-gray-900 flex items-center gap-1.5">
+                          {todayHoliday ? <><PartyPopper className="w-4 h-4 text-primary-600" /> {todayHoliday.name}</> : 'No classes today!'}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5 font-medium flex items-center">
+                          {todayHoliday ? <>No classes today unless your lecturer said so <CustomEyes size={14} className="inline ml-1" /></> : 'Enjoy your free time.'}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate('/tools/timetable')}
+                      className="flex bg-primary-50 text-primary-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-100 transition-colors"
+                    >
+                      Add Class
+                    </button>
+                  </div>
+                ) : allCompleted ? (
+                  <div className="flex items-center gap-4 py-2">
+                    <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center flex-shrink-0 border border-green-100">
+                      <CheckCircle2 size={24} className="text-green-500" />
+                    </div>
+                    <div>
+                      <p className="text-[15px] font-bold text-gray-900">All classes ended!</p>
+                      <p className="text-xs text-gray-500 mt-0.5 font-medium">You've successfully completed all classes for today.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {todaysClassesWithStatus.slice(0, 3).map((cls, i) => (
+                      <div key={i} className={`flex items-center gap-4 transition-opacity ${cls.status === 'completed' ? 'opacity-40' : 'opacity-100'}`}>
+                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${cls.status === 'completed' ? 'bg-gray-100' :
+                          cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' :
+                            'bg-gray-900/5'
+                          }`}>
+                          {cls.status === 'completed' ? <CheckCircle2 size={16} className="text-gray-400" /> :
+                            cls.status === 'ongoing' ? <Loader2 size={16} className="text-blue-600 animate-spin" /> :
+                              <Clock size={16} className="text-gray-900" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-bold truncate ${cls.status === 'completed' ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                            {cls.courseName || cls.name || 'Class'}
+                          </p>
+                          <p className={`text-xs font-medium mt-0.5 flex flex-wrap items-center gap-1 ${cls.status === 'ongoing' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
+                            <span>
+                              {cls.status === 'ongoing' ? 'Happening Now • ' : ''}
+                              {cls.status === 'completed' ? 'Completed • ' : ''}
+                              {cls.status === 'upcoming' && cls.timeUntilStr ? <span className="text-orange-500 font-bold">{cls.timeUntilStr} • </span> : ''}
+                              {cls.startTime && cls.endTime ? `${formatTime12Hour(cls.startTime)} – ${formatTime12Hour(cls.endTime)}` : formatTime12Hour(cls.startTime) || ''}
+                            </span>
+                            {cls.location && (
+                              <span className="flex items-center gap-0.5 font-bold opacity-90">
+                                • <CustomMapPin className="w-2.5 h-2.5" /> {cls.location}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
-          </div>
+              </div>
+            )
           )}
 
           {renderFeaturedAd()}
 
           {/* 1.5 Overlapping Floating Card (Today's Tasks + Deadlines) */}
-          {homeWidgets.tasks && (<div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
+          {homeWidgets.tasks && (
+            !isDeferredActive ? (
+              <SkeletonCard />
+            ) : (
+              <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
             <div className="flex justify-between items-start mb-4">
               <span className="text-sm font-black text-gray-900 tracking-tight">Today's Tasks</span>
               <button onClick={() => navigate('/tools/plan-day')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
@@ -1565,8 +1687,8 @@ const Home = () => {
                       {/* Play Button */}
                       {!isCompleted && (
                         <button
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
+                          onClick={(e) => {
+                            e.stopPropagation();
                             localStorage.setItem('ucc_focus_task', JSON.stringify(task));
                             navigate('/focus');
                           }}
@@ -1633,7 +1755,8 @@ const Home = () => {
               </div>
             )}
           </div>
-          )}
+        )
+      )}
 
           {/* 1.55 Sam Jonah Library Status */}
           {homeWidgets.library && (
@@ -2019,7 +2142,7 @@ const Home = () => {
         <form onSubmit={handleQuickExpenseSubmit} className="flex flex-col gap-4">
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-lg">GH₵</span>
-            <input 
+            <input
               type="number"
               step="0.01"
               autoFocus

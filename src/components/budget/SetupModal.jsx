@@ -28,8 +28,8 @@ export function SetupModal({ onInitialize, currentBalance = 0 }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-gray-100 dark:border-gray-700">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex flex-col justify-end md:justify-center items-center p-0 md:p-4 z-[99999]">
+      <div className="bg-white dark:bg-gray-900 rounded-t-[2rem] md:rounded-3xl p-6 w-full md:max-w-md shadow-2xl border border-gray-100 dark:border-gray-700 max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom duration-300 md:animate-none">
         
         <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-1">New Budget Period</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">

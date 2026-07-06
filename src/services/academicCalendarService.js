@@ -1,4 +1,6 @@
 import { supabase } from '../lib/supabase';
+import { academicCalendar } from '../data/academicCalendar';
+
 
 /**
  * Fetches academic calendar data from Supabase
@@ -125,6 +127,32 @@ export const fetchAcademicCalendar = async () => {
             : `In ${daysUntilEvent} days`
       };
     }
+    // Determine if today is in an exam period dynamically
+    let isExamPeriod = false;
+    const sortedAllEvents = (data && data.length > 0) 
+      ? [...data].sort((a, b) => new Date(a.event_date) - new Date(b.event_date)) 
+      : [...academicCalendar].map(e => ({ event_date: e.date, title: e.title })).sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+      
+    for (let i = 0; i < sortedAllEvents.length; i++) {
+      const event = sortedAllEvents[i];
+      const titleLower = event.title.toLowerCase();
+      if (titleLower.includes('examination') || titleLower.includes('exams')) {
+        const startDate = new Date(event.event_date);
+        startDate.setHours(0, 0, 0, 0);
+        
+        let endDate = new Date(startDate.getTime() + 21 * 24 * 60 * 60 * 1000); // 21 days fallback
+        const subsequent = sortedAllEvents.slice(i + 1);
+        if (subsequent.length > 0) {
+          endDate = new Date(subsequent[0].event_date);
+        }
+        endDate.setHours(23, 59, 59, 999);
+        
+        if (today >= startDate && today <= endDate) {
+          isExamPeriod = true;
+          break;
+        }
+      }
+    }
     
     return {
       semesters,
@@ -135,6 +163,7 @@ export const fetchAcademicCalendar = async () => {
       daysUntil,
       daysText,
       nextMilestone,
+      isExamPeriod,
       error: null
     };
   } catch (error) {
