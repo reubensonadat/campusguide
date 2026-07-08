@@ -1,403 +1,132 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '../components/common/Button';
-import { ArrowRight, Map, CalendarDays, Heart, Settings, MessageCircle, ChevronRight, Clock, Megaphone, ExternalLink, Wifi, User, Bell, CheckCircle2, Loader2, Circle, Calendar, PartyPopper, Play, BookOpen, Plus, Flame, AlertTriangle, FileText, LayoutGrid, ListChecks } from 'lucide-react';
+import { Map, Settings, MessageCircle, Wifi, User, Bell, Plus, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
-import { CustomMapPin } from '../components/common/CustomMapPin';
-import { CustomGuide, CustomTools, CustomEyes, CustomHome, CustomCoach, CustomSafetyCheck, CustomProfile, CustomCustomize } from '../components/common/CustomIcons';
-import NotificationDropdown from '../components/common/NotificationDropdown'; // 🛎️ NEW: Import
+import NotificationDropdown from '../components/common/NotificationDropdown';
 import { getIconComponent } from '../components/tools/PlanYourDay';
-import { FocusTimer } from '../components/tools/FocusTimer';
+import { useAppContext } from '../context/AppContext';
+import { useNotifications } from '../context/NotificationContext';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useDeviceId } from '../hooks/useDeviceId';
+import { useRunwaySimulation } from '../hooks/useRunwaySimulation';
+import { supabase } from '../lib/supabase';
+import { getGreeting, formatTime12Hour, getTimeMinutes, renderWeatherSvg, getWeatherIconAndAdvice, TODAY_NAME, TODAY_LABEL } from '../components/home/utils';
+import { getAssignments, getAssignmentsByUrgency, markAssignmentStatus, onAssignmentsChanged } from '../services/assignmentService';
 import { getUpcomingAcademicEvents } from '../data/academicCalendar';
 import { getCurrentSemesterInfo } from '../services/academicCalendarService';
-import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { getTodayHoliday } from '../services/holidayService';
-import { useRunwaySimulation } from '../hooks/useRunwaySimulation';
-import { logAppOpen } from '../services/productivityService';
-import Modal from '../components/common/Modal';
-import { Wallet, X } from 'lucide-react';
+import { logAppOpen, getProductivityStats } from '../services/productivityService';
 import { syncToCloud, shouldSyncNow } from '../services/syncService';
-import { getProductivityStats } from '../services/productivityService';
-import { toast } from 'react-hot-toast';
-import { useDeviceId } from '../hooks/useDeviceId';
-
-import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../context/AppContext';
-import { PaymentButton } from '../components/payment/PaymentButton';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import { supabase } from '../lib/supabase';
-import { useNotifications } from '../context/NotificationContext';
-
-import { getAssignments, getAssignmentsByUrgency, markAssignmentStatus, onAssignmentsChanged } from '../services/assignmentService';
 import { triggerConfetti } from '../utils/confetti';
 import { triggerHaptic } from '../utils/haptics';
-
-import CampusIllustration from '/college-campus-rafiki.svg';
-
-// ── helpers ───────────────────────────────────────────────────────────────────
-
-const VerseSvgIcon = ({ size = 20, className = '' }) => (
-  <svg id="Bible--Streamline-Atlas" xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 16 16" height={size} width={size} className={className}>
-    <path d="M12.86875 11.675v2.3874999999999997H3.325a1.1937499999999999 1.1937499999999999 0 0 1 -1.1937499999999999 -1.1937499999999999 1.2 1.2 0 0 1 1.1937499999999999 -1.1937499999999999Z" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="M12.86875 0.9375v10.7375H3.325a1.2 1.2 0 0 0 -1.1937499999999999 1.1937499999999999V2.13125A1.2 1.2 0 0 1 3.325 0.9375Z" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="m4.518750000000001 0.9375 0 10.7375" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="m6.90625 5.7125 3.5749999999999997 0" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="m8.69375 3.9187499999999997 0 4.7749999999999995" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-  </svg>
-);
-
-const ForexSvgIcon = ({ size = 20, className = '' }) => (
-  <svg id="Dollar-Transfer-Account--Streamline-Atlas" xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 16 16" height={size} width={size} className={className}>
-    <path d="M0.925 6.31875a1.7874999999999999 1.7874999999999999 0 0 1 1.7937500000000002 -1.7937500000000002 1.7937500000000002 1.7937500000000002 0 0 1 1.7937500000000002 1.7937500000000002" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="M1.525 2.13125a1.1937499999999999 1.1937499999999999 0 1 0 2.3874999999999997 0 1.1937499999999999 1.1937499999999999 0 1 0 -2.3874999999999997 0" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="M6.30625 1.5375h3.5875000000000004a2.3874999999999997 2.3874999999999997 0 0 1 2.3874999999999997 2.3874999999999997v2.99375" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="m14.075 5.125 -1.7937500000000002 1.7874999999999999 -1.7937500000000002 -1.7874999999999999" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="M8.69375 13.49375H5.10625a2.39375 2.39375 0 0 1 -2.3874999999999997 -2.39375V8.125" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="m0.925 9.90625 1.7937500000000002 -1.7937500000000002 1.7937500000000002 1.7937500000000002" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="M14.075 9.90625h-2.09375a0.8937499999999999 0.8937499999999999 0 0 0 -0.8937499999999999 0.8937499999999999 0.8937499999999999 0.8937499999999999 0 0 0 0.8937499999999999 0.8999999999999999h0.625a0.8999999999999999 0.8999999999999999 0 0 1 0.8999999999999999 0.8937499999999999 0.90625 0.90625 0 0 1 -0.8999999999999999 0.8999999999999999h-2.11875" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="m12.28125 8.70625 0 1.2" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-    <path d="m12.28125 13.49375 0 1.1937499999999999" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1"></path>
-  </svg>
-);
-
-const FootballSvgIcon = ({ size = 20, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <circle cx="12" cy="12" r="10"></circle>
-    <polygon points="12 16 16 12 12 8 8 12 12 16"></polygon>
-    <line x1="12" y1="8" x2="12" y2="2"></line>
-    <line x1="12" y1="22" x2="12" y2="16"></line>
-    <line x1="8" y1="12" x2="2" y2="12"></line>
-    <line x1="22" y1="12" x2="16" y2="12"></line>
-  </svg>
-);
-
-const CryptoSvgIcon = ({ size = 20, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 16 16" id="Bitcoin-Circle--Streamline-Atlas" height={size} width={size} className={className}>
-    <g id="bitcoin_coin">
-      <path d="M0.9375 7.5a6.5625 6.5625 0 1 0 13.125 0 6.5625 6.5625 0 1 0 -13.125 0" fill="none" stroke="currentColor" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1"></path>
-      <path d="M5.7125 5.1125h2.9812499999999997a1.1937499999999999 1.1937499999999999 0 0 1 1.1937499999999999 1.1937499999999999v0A1.1937499999999999 1.1937499999999999 0 0 1 8.69375 7.5H5.7125l0 0V5.1125l0 0Z" fill="none" stroke="currentColor" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1"></path>
-      <path d="M5.7125 7.5h2.9812499999999997a1.1937499999999999 1.1937499999999999 0 0 1 1.1937499999999999 1.1937499999999999v0a1.1937499999999999 1.1937499999999999 0 0 1 -1.1937499999999999 1.1937499999999999H5.7125l0 0V7.5l0 0Z" fill="none" stroke="currentColor" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1"></path>
-      <path d="m6.30625 3.9187499999999997 0 1.1937499999999999" fill="none" stroke="currentColor" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1"></path>
-      <path d="m8.69375 3.9187499999999997 0 1.1937499999999999" fill="none" stroke="currentColor" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1"></path>
-      <path d="m6.30625 9.8875 0 1.1937499999999999" fill="none" stroke="currentColor" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1"></path>
-      <path d="m8.69375 9.8875 0 1.1937499999999999" fill="none" stroke="currentColor" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1"></path>
-      <path d="m5.1125 5.1125 0.6 0" fill="none" stroke="currentColor" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1"></path>
-      <path d="m5.1125 9.8875 0.6 0" fill="none" stroke="currentColor" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1"></path>
-    </g>
-  </svg>
-);
-
-const NewsSvgIcon = ({ size = 20, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}><path d="M88,112a8,8,0,0,1,8-8h80a8,8,0,0,1,0,16H96A8,8,0,0,1,88,112Zm8,40h80a8,8,0,0,0,0-16H96a8,8,0,0,0,0,16ZM232,64V184a24,24,0,0,1-24,24H32A24,24,0,0,1,8,184.11V88a8,8,0,0,1,16,0v96a8,8,0,0,0,16,0V64A16,16,0,0,1,56,48H216A16,16,0,0,1,232,64Zm-16,0H56V184a23.84,23.84,0,0,1-1.37,8H208a8,8,0,0,0,8-8Z"></path></svg>
-);
-
-const QuoteSvgIcon = ({ size = 20, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}><path d="M100,56H40A16,16,0,0,0,24,72v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,100,56Zm0,80H40V72h60ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Zm0,80H156V72h60Z"></path></svg>
-);
-
-const JokeSvgIcon = ({ size = 20, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width={size} height={size} className={className}><path d="M12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2ZM12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4ZM12 11C14 11 15.6667 11.3333 17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C8.33333 11.3333 10 11 12 11ZM8.5 7C9.70968 7 10.7187 7.85917 10.9501 9.00057H6.04989C6.28131 7.85917 7.29032 7 8.5 7ZM15.5 7C16.7097 7 17.7187 7.85917 17.9501 9.00057H13.0499C13.2813 7.85917 14.2903 7 15.5 7Z"></path></svg>
-);
-
-const FunFactSvgIcon = ({ size = 20, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width={size} height={size} className={className}><path d="M19.5 4.7832V7.6709L22 9.11426V14.8867L19.499 16.3311L19.5 19.2178L14.5 22.1045L12 20.6611L9.5 22.1045L4.5 19.2178V16.3311L2 14.8877L2.00098 9.11328L4.5 7.66992V4.78418L9.5 1.89746L11.999 3.34082L14.501 1.89648L19.5 4.7832ZM13 5.07227L12.999 8.42285L15.9639 10.1338L14.9639 11.8662L11 9.57715V5.07324L9.5 4.20703L6.49902 5.93848V8.8252L4 10.2676V13.7334L6.5 15.1768V18.0635L9.5 19.7959L11 18.9287L11.001 15.5771L8.03613 13.8652L9.03613 12.1338L13.001 14.4229V18.9297L14.5 19.7959L17.5 18.0625V15.1768L20 13.7324V10.2695L17.499 8.8252L17.5 5.9375L14.501 4.20605L13 5.07227Z"></path></svg>
-);
-
-const GithubSvgIcon = ({ size = 20, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width={size} height={size} className={className}><path d="M12.001 2C6.47598 2 2.00098 6.475 2.00098 12C2.00098 16.425 4.86348 20.1625 8.83848 21.4875C9.33848 21.575 9.52598 21.275 9.52598 21.0125C9.52598 20.775 9.51348 19.9875 9.51348 19.15C7.00098 19.6125 6.35098 18.5375 6.15098 17.975C6.03848 17.6875 5.55098 16.8 5.12598 16.5625C4.77598 16.375 4.27598 15.9125 5.11348 15.9C5.90098 15.8875 6.46348 16.625 6.65098 16.925C7.55098 18.4375 8.98848 18.0125 9.56348 17.75C9.65098 17.1 9.91348 16.6625 10.201 16.4125C7.97598 16.1625 5.65098 15.3 5.65098 11.475C5.65098 10.3875 6.03848 9.4875 6.67598 8.7875C6.57598 8.5375 6.22598 7.5125 6.77598 6.1375C6.77598 6.1375 7.61348 5.875 9.52598 7.1625C10.326 6.9375 11.176 6.825 12.026 6.825C12.876 6.825 13.726 6.9375 14.526 7.1625C16.4385 5.8625 17.276 6.1375 17.276 6.1375C17.826 7.5125 17.476 8.5375 17.376 8.7875C18.0135 9.4875 18.401 10.375 18.401 11.475C18.401 15.3125 16.0635 16.1625 13.8385 16.4125C14.201 16.725 14.5135 17.325 14.5135 18.2625C14.5135 19.6 14.501 20.675 14.501 21.0125C14.501 21.275 14.6885 21.5875 15.1885 21.4875C19.259 20.1133 21.9999 16.2963 22.001 12C22.001 6.475 17.526 2 12.001 2Z"></path></svg>
-);
-
-const WordSvgIcon = ({ size = 20, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}><path d="M216,152.09V216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V152.09a8,8,0,0,1,16,0V208H200V152.09a8,8,0,0,1,16,0Zm-128,32h80a8,8,0,1,0,0-16H88a8,8,0,1,0,0,16Zm4.88-53,77.27,20.68a7.89,7.89,0,0,0,2.08.28,8,8,0,0,0,2.07-15.71L97,115.61A8,8,0,1,0,92.88,131Zm18.45-49.93,69.28,40a8,8,0,0,0,10.93-2.93,8,8,0,0,0-2.93-10.91L119.33,67.27a8,8,0,1,0-8,13.84Zm87.33,13A8,8,0,1,0,210,82.84l-56.57-56.5a8,8,0,0,0-11.32,11.3Z"></path></svg>
-);
-
-const getGreeting = () => {
-  const d = new Date();
-  if (d.getDate() === 1) return 'Happy New Month';
-  const h = d.getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 17) return 'Good afternoon';
-  return 'Good evening';
-};
-
-const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const now = new Date();
-const TODAY_NAME = DAYS[now.getDay()];
-const TODAY_LABEL = `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}`;
-
-const formatTime12Hour = (time24) => {
-  if (!time24) return '';
-  const [hours, minutes] = time24.split(':').map(Number);
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const hours12 = hours % 12 || 12;
-  return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-};
-
-const getTimeMinutes = (timeStr) => {
-  if (!timeStr) return 0;
-  const [h, m] = timeStr.split(':').map(Number);
-  return (h || 0) * 60 + (m || 0);
-};
-
-// Custom SVG weather icons
-const renderWeatherSvg = (type, size = 14, className = '') => {
-  const props = { width: size, height: size, className, viewBox: '0 0 256 256', fill: 'currentColor' };
-  switch (type) {
-    case 'sunny':
-      return <svg {...props}><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z" /></svg>;
-    case 'cloudy':
-      return <svg {...props}><path d="M160,40A88.09,88.09,0,0,0,81.29,88.67,64,64,0,1,0,72,216h88a88,88,0,0,0,0-176Zm0,160H72a48,48,0,0,1,0-96c1.1,0,2.2,0,3.29.11A88,88,0,0,0,72,128a8,8,0,0,0,16,0,72,72,0,1,1,72,72Z" /></svg>;
-    case 'rainy':
-      return <svg {...props}><path d="M158.66,196.44l-32,48a8,8,0,1,1-13.32-8.88l32-48a8,8,0,0,1,13.32,8.88ZM232,92a76.08,76.08,0,0,1-76,76H132.28l-29.62,44.44a8,8,0,1,1-13.32-8.88L113.05,168H76A52,52,0,0,1,76,64a53.26,53.26,0,0,1,8.92.76A76.08,76.08,0,0,1,232,92Zm-16,0A60.06,60.06,0,0,0,96,88.46a8,8,0,0,1-16-.92q.21-3.66.77-7.23A38.11,38.11,0,0,0,76,80a36,36,0,0,0,0,72h80A60.07,60.07,0,0,0,216,92Z" /></svg>;
-    case 'cloudy-sun':
-      return <svg {...props}><path d="M164,72a76.2,76.2,0,0,0-20.26,2.73,55.63,55.63,0,0,0-9.41-11.54l9.51-13.57a8,8,0,1,0-13.11-9.18L121.22,54A55.9,55.9,0,0,0,96,48c-.58,0-1.16,0-1.74,0L91.37,31.71a8,8,0,1,0-15.75,2.77L78.5,50.82A56.1,56.1,0,0,0,55.23,65.67L41.61,56.14a8,8,0,1,0-9.17,13.11L46,78.77A55.55,55.55,0,0,0,40,104c0,.57,0,1.15,0,1.72L23.71,108.6a8,8,0,0,0,1.38,15.88,8.24,8.24,0,0,0,1.39-.12l16.32-2.88a55.74,55.74,0,0,0,5.86,12.42A52,52,0,0,0,84,224h80a76,76,0,0,0,0-152ZM56,104a40,40,0,0,1,72.54-23.24,76.26,76.26,0,0,0-35.62,40,52.14,52.14,0,0,0-31,4.17A40,40,0,0,1,56,104ZM164,208H84a36,36,0,1,1,4.78-71.69c-.37,2.37-.63,4.79-.77,7.23a8,8,0,0,0,16,.92,58.91,58.91,0,0,1,1.88-11.81c0-.16.09-.32.12-.48A60.06,60.06,0,1,1,164,208Z" /></svg>;
-    default:
-      return <svg {...props}><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z" /></svg>;
-  }
-};
-
-// Custom SVG library icon
-const LibrarySvg = ({ size = 16, className = '' }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className}>
-    <path d="M231.65,194.55,198.46,36.75a16,16,0,0,0-19-12.39L132.65,34.42a16.08,16.08,0,0,0-12.3,19l33.19,157.8A16,16,0,0,0,169.16,224a16.25,16.25,0,0,0,3.38-.36l46.81-10.06A16.09,16.09,0,0,0,231.65,194.55ZM136,50.15c0-.06,0-.09,0-.09l46.8-10,3.33,15.87L139.33,66Zm6.62,31.47,46.82-10.05,3.34,15.9L146,97.53Zm6.64,31.57,46.82-10.06,13.3,63.24-46.82,10.06ZM216,197.94l-46.8,10-3.33-15.87L212.67,182,216,197.85C216,197.91,216,197.94,216,197.94ZM104,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32ZM56,48h48V64H56Zm0,32h48v96H56Zm48,128H56V192h48v16Z" />
-  </svg>
-);
-
-// Weather mapping helper
-const getWeatherIconAndAdvice = (code, temp) => {
-  if (temp > 32) return { svgType: 'sunny', color: 'text-orange-500', bg: 'bg-orange-500/10', advice: 'Very hot today. Walk in the shade!' };
-  if (temp < 22) return { svgType: 'cloudy', color: 'text-blue-500', bg: 'bg-blue-500/10', advice: 'Cool weather today.' };
-
-  if (code === 0) return { svgType: 'sunny', color: 'text-yellow-500', bg: 'bg-yellow-500/10', advice: 'Clear skies. Perfect for walking.' };
-  if (code >= 1 && code <= 3) return { svgType: 'cloudy-sun', color: 'text-slate-500', bg: 'bg-slate-500/10', advice: 'Partly cloudy. Good walking weather.' };
-  if (code >= 45 && code <= 48) return { svgType: 'cloudy', color: 'text-slate-400', bg: 'bg-slate-400/10', advice: 'Foggy morning.' };
-  if (code >= 51 && code <= 55) return { svgType: 'rainy', color: 'text-blue-400', bg: 'bg-blue-400/10', advice: 'Drizzling. Might want a light jacket.' };
-  if (code >= 61 && code <= 82) return { svgType: 'rainy', color: 'text-blue-600', bg: 'bg-blue-600/10', advice: 'Raining. Grab an umbrella!' };
-  if (code >= 95) return { svgType: 'rainy', color: 'text-purple-600', bg: 'bg-purple-600/10', advice: 'Thunderstorms. Seek shelter!' };
-
-  return { svgType: 'sunny', color: 'text-yellow-500', bg: 'bg-yellow-500/10', advice: 'Beautiful day on campus.' };
-};
-
-// ── Streak helpers ────────────────────────────────────────────────────────────
-const getISODate = (d) => d.toISOString().split('T')[0];
-const getWeekId = (d) => {
-  const start = new Date(d);
-  start.setHours(0, 0, 0, 0);
-  start.setDate(start.getDate() - ((start.getDay() + 6) % 7)); // Monday
-  return getISODate(start);
-};
-
-// ── component ─────────────────────────────────────────────────────────────────
-
-const SkeletonCard = () => (
-  <div className="bg-white rounded-2xl p-6 min-h-[140px] border border-gray-100 animate-pulse flex flex-col justify-center">
-    <div className="h-4 bg-gray-200/50 rounded w-1/3 mb-4"></div>
-    <div className="space-y-3">
-      <div className="h-3 bg-gray-200/40 rounded w-full"></div>
-      <div className="h-3 bg-gray-200/40 rounded w-5/6"></div>
-    </div>
-  </div>
-);
+import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
+import { HOME_COACH_STEPS } from '../components/home/CoachSteps';
+import StreakBadge from '../components/home/StreakBadge';
+import WidgetBar from '../components/home/WidgetBar';
+import SkeletonCard from '../components/home/SkeletonCard';
+import FeaturedAd from '../components/home/FeaturedAd';
+import ReminderAlert from '../components/home/ReminderAlert';
+import TodayClasses from '../components/home/TodayClasses';
+import TasksSection from '../components/home/TasksSection';
+import LibraryStatus from '../components/home/LibraryStatus';
+import UpcomingSection from '../components/home/UpcomingSection';
+import AcademicEvents from '../components/home/AcademicEvents';
+import QuickActions from '../components/home/QuickActions';
+import QuickNote from '../components/home/QuickNote';
+import SupportBanner from '../components/home/SupportBanner';
+import DesktopLayout from '../components/home/DesktopLayout';
+import ExpenseModal from '../components/home/ExpenseModal';
 
 const Home = () => {
   React.useEffect(() => { window.scrollTo(0, 0); }, []);
-
-  // ── App Open Streak ──────────────────────────────────────────────
   React.useEffect(() => { logAppOpen(); }, []);
 
-  // ── Daily Runway ──────────────────────────────────────────────
+  const navigate = useNavigate();
+  const { state, actions } = useAppContext();
+  const { unreadCount, markAllAsRead: markAllInAppRead } = useNotifications();
+  const { deviceId } = useDeviceId();
   const { config, getSummary } = useRunwaySimulation();
   const summary = getSummary();
   const safeToSpend = summary ? summary.dailyAllowance : 0;
   const isRunwayActive = !!config;
+
   const [budgetTransactions, setBudgetTransactions] = useLocalStorage('ucc_budget', []);
   const [showExpensePopup, setShowExpensePopup] = useState(false);
   const [quickExpenseAmt, setQuickExpenseAmt] = useState('');
+  const [theme] = useLocalStorage('theme', 'light');
+  const [timetable] = useLocalStorage('ucc_timetable', []);
+  const [profile] = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' });
+  const [tasks, setTasks] = useLocalStorage('ucc_daily_tasks', []);
+  const [reminders, setReminders] = useLocalStorage('ucc_reminders', []);
+  const [quickNotes, setQuickNotes] = useLocalStorage('ucc_quick_notes', '');
+  const [homeWidgetsRaw] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
+  const homeWidgets = useMemo(() => ({ ...DEFAULT_HOME_WIDGETS, ...homeWidgetsRaw }), [homeWidgetsRaw]);
+  const [examMode] = useLocalStorage('ucc_exam_mode', false);
+  const [notificationsEnabled] = useLocalStorage('ucc_notifications_enabled', true);
+
+  const activeReminders = useMemo(() => {
+    return Array.isArray(reminders) ? reminders.filter(r => !r.completed) : [];
+  }, [reminders]);
+
+  useEffect(() => {
+    if (theme === 'dark') document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  }, [theme]);
 
   const handleQuickExpenseSubmit = (e) => {
     e.preventDefault();
     if (!quickExpenseAmt) return;
-    const transaction = {
-      id: crypto.randomUUID(),
-      type: 'expense',
-      category: 'General',
-      amount: parseFloat(quickExpenseAmt),
-      description: 'Quick log from Home',
+    setBudgetTransactions([...budgetTransactions, {
+      id: crypto.randomUUID(), type: 'expense', category: 'General',
+      amount: parseFloat(quickExpenseAmt), description: 'Quick log from Home',
       date: new Date().toISOString().split('T')[0]
-    };
-    setBudgetTransactions([...budgetTransactions, transaction]);
+    }]);
     setQuickExpenseAmt('');
     setShowExpensePopup(false);
     toast.success('Expense logged successfully!');
     window.dispatchEvent(new Event('storage'));
   };
 
-  const renderFeaturedAd = () => {
-    if (!isDeferredActive) {
-      return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 h-16 animate-pulse flex items-center justify-between">
-          <div className="h-3 bg-gray-200/50 rounded w-1/4"></div>
-          <div className="h-6 bg-gray-200/40 rounded w-16"></div>
-        </div>
-      );
-    }
-    if (!featuredContent) return null;
-    const isAd = featuredContent.kind === 'ad';
-    const d = featuredContent.data;
-    const imgSrc = isAd ? d.image_url : d.flyer_url;
-
-    let actionText = '';
-    let link = '';
-
-    if (isAd) {
-      let cleanPhone = d.phone_number ? d.phone_number.toString().replace(/\D/g, '') : '';
-      if (cleanPhone.startsWith('0')) {
-        cleanPhone = '233' + cleanPhone.slice(1);
-      } else if (!cleanPhone.startsWith('233') && cleanPhone.length === 9) {
-        cleanPhone = '233' + cleanPhone;
-      }
-
-      if (d.contact_method === 'link' && d.contact_url) {
-        actionText = d.action_text || 'Visit Link';
-        link = d.contact_url;
-      } else if (d.contact_method === 'phone' && cleanPhone) {
-        actionText = d.action_text || 'Call Now';
-        link = `tel:+${cleanPhone}`;
-      } else if (cleanPhone) {
-        actionText = d.action_text || 'Message via WhatsApp';
-        link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
-      }
-    } else {
-      actionText = d.action_text || 'Visit Link';
-      link = d.action_link || '';
-    }
-
-    return (
-      <div className="pt-2">
-        <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">
-          {isAd ? 'Advertisement' : 'Announcement'}
-        </h3>
-        <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden max-w-sm">
-          {imgSrc && (
-            <img src={imgSrc} alt={d.title} className="w-full h-auto object-contain max-h-[600px] bg-gray-50/50" />
-          )}
-          <div className="p-5">
-            <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-gray-900 bg-gray-900/10">
-              {isAd ? 'SPONSORED' : 'OFFICIAL'}
-            </span>
-            <h4 className="text-base font-bold text-gray-900 mb-1">{d.title}</h4>
-            <p className={`text-sm text-gray-500 font-medium mb-4 whitespace-pre-wrap ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
-              {d.description || d.content}
-            </p>
-            <div className="flex items-center justify-between">
-              <button
-                onClick={() => setIsFeaturedExpanded(!isFeaturedExpanded)}
-                className="text-[13px] font-bold text-gray-900 flex items-center gap-1 active:opacity-70"
-              >
-                {isFeaturedExpanded ? 'Show less' : 'Read more'} <ChevronRight size={14} className={isFeaturedExpanded ? 'rotate-90 transition-transform' : 'transition-transform'} />
-              </button>
-
-              {link && (
-                <button
-                  onClick={() => window.open(link, '_blank')}
-                  className="bg-gray-900 hover:bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
-                >
-                  {actionText}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ── Invisible dark-mode sync ──────────────────────────────────────────────
-  const [theme] = useLocalStorage('theme', 'light');
-  React.useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
-
-  const navigate = useNavigate();
-  const { state, actions } = useAppContext();
-  const [timetable] = useLocalStorage('ucc_timetable', []);
-  const [profile] = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' });
-  const [tasks, setTasks] = useLocalStorage('ucc_daily_tasks', []);
-  const [reminders, setReminders] = useLocalStorage('ucc_reminders', []);
-  const activeReminders = useMemo(() => {
-    return Array.isArray(reminders) ? reminders.filter(r => !r.completed) : [];
-  }, [reminders]);
-  const [quickNotes, setQuickNotes] = useLocalStorage('ucc_quick_notes', '');
-  const [homeWidgetsRaw] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
-  const homeWidgets = useMemo(() => ({ ...DEFAULT_HOME_WIDGETS, ...homeWidgetsRaw }), [homeWidgetsRaw]);
-  // Focus Timer is now a separate route.
-
-  // ── Assignments / Deadlines ──────────────────────────────────────────────
   const [homeAssignments, setHomeAssignments] = useState(() => getAssignments());
-  const [examMode] = useLocalStorage('ucc_exam_mode', false);
   const [semesterInfo, setSemesterInfo] = useState(null);
   const [isDeferredActive, setIsDeferredActive] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsDeferredActive(true);
-    }, 400);
+    const timer = setTimeout(() => setIsDeferredActive(true), 400);
     return () => clearTimeout(timer);
   }, []);
 
-  const isExamModeActive = useMemo(() => {
-    return examMode || !!semesterInfo?.isExamPeriod;
-  }, [examMode, semesterInfo]);
+  const isExamModeActive = useMemo(() => examMode || !!semesterInfo?.isExamPeriod, [examMode, semesterInfo]);
 
   const todaysExams = useMemo(() => {
     if (!Array.isArray(homeAssignments)) return [];
     const todayStr = new Date().toISOString().split('T')[0];
     const pLevel = profile.level || '100';
     const pSem = profile.semester || '1';
-
     return homeAssignments.filter(a => {
       if (a.type !== 'exam') return false;
-      const aLevel = a.academic_year || '100';
-      const aSem = a.semester || '1';
-      if (String(aLevel) !== String(pLevel)) return false;
-      if (String(aSem) !== String(pSem)) return false;
-      return a.dueDate === todayStr;
+      return String(a.academic_year || '100') === String(pLevel) &&
+             String(a.semester || '1') === String(pSem) &&
+             a.dueDate === todayStr;
     });
   }, [homeAssignments, profile.level, profile.semester]);
 
-  // Listen for assignment changes — works for BOTH same-tab and cross-tab
   useEffect(() => {
-    // Same-tab: custom event from assignmentService
-    const unsubCustom = onAssignmentsChanged(() => {
-      setHomeAssignments(getAssignments());
-    });
-    // Cross-tab: native storage event
-    const handleStorage = (e) => {
-      if (e.key === 'ucc_assignments') {
-        setHomeAssignments(getAssignments());
-      }
-    };
+    const unsubCustom = onAssignmentsChanged(() => setHomeAssignments(getAssignments()));
+    const handleStorage = (e) => { if (e.key === 'ucc_assignments') setHomeAssignments(getAssignments()); };
     window.addEventListener('storage', handleStorage);
-    return () => {
-      unsubCustom();
-      window.removeEventListener('storage', handleStorage);
-    };
+    return () => { unsubCustom(); window.removeEventListener('storage', handleStorage); };
   }, []);
 
-  // Urgent deadlines: overdue + due today (shown as alert strip)
   const urgentDeadlines = useMemo(() => {
     const urgency = getAssignmentsByUrgency(homeAssignments);
     return [...urgency.overdue, ...urgency.today].slice(0, 3);
   }, [homeAssignments]);
 
-  // This-week assignments (shown in the task section below tasks)
   const thisWeekDeadlines = useMemo(() => {
-    const urgency = getAssignmentsByUrgency(homeAssignments);
-    return urgency.thisWeek.slice(0, 4);
+    return getAssignmentsByUrgency(homeAssignments).thisWeek.slice(0, 4);
   }, [homeAssignments]);
 
   const handleQuickMarkSubmitted = (id) => {
@@ -405,53 +134,21 @@ const Home = () => {
     const oldStatus = assignment?.status || 'pending';
     markAssignmentStatus(id, 'submitted');
     setHomeAssignments(getAssignments());
-
-    // Premium feedback
     triggerConfetti();
     triggerHaptic();
-
     toast((t) => (
       <div className="flex items-center gap-3">
         <span className="text-sm font-bold text-gray-900">Marked as submitted</span>
-        <button
-          onClick={() => {
-            markAssignmentStatus(id, oldStatus);
-            setHomeAssignments(getAssignments());
-            toast.dismiss(t.id);
-            toast.success('Status reverted!');
-          }}
-          className="text-xs font-bold text-primary-400 bg-primary-400/10 px-3 py-1 rounded-lg hover:bg-primary-400/20 transition-colors flex-shrink-0"
-        >
-          Undo
-        </button>
+        <button onClick={() => { markAssignmentStatus(id, oldStatus); setHomeAssignments(getAssignments()); toast.dismiss(t.id); toast.success('Status reverted!'); }}
+          className="text-xs font-bold text-primary-400 bg-primary-400/10 px-3 py-1 rounded-lg hover:bg-primary-400/20 transition-colors flex-shrink-0">Undo</button>
       </div>
-    ), {
-      duration: 4000,
-      icon: '\u2705',
-      style: { borderRadius: '12px', padding: '12px 16px' },
-    });
+    ), { duration: 4000, icon: '\u2705', style: { borderRadius: '12px', padding: '12px 16px' } });
   };
 
-  // ── Focus Productivity Streak ─────────────────────────────────────────────
   const [prodStats, setProdStats] = useState(null);
+  useEffect(() => { getProductivityStats().then(setProdStats); }, []);
 
-  useEffect(() => {
-    async function loadStats() {
-      const data = await getProductivityStats();
-      setProdStats(data);
-    }
-    loadStats();
-  }, []);
-
-
-  // 🛎️ NOTIFICATION LOGIC STATES
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-
-  const supportEmail = state?.supportEmail || 'anonymous@uccguide.com';
-  const handlePaymentSuccess = () => toast.success('Thank you for your support!');
-  const handlePaymentError = (e) => toast.error(`Payment failed: ${e.message}`);
-
-  // Live time tracker for classes (ticks every second for the live countdown)
   const [currentTime, setCurrentTime] = useState(() => new Date());
 
   useEffect(() => {
@@ -462,56 +159,28 @@ const Home = () => {
   const currentTimeMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
   const currentTotalSeconds = currentTime.getHours() * 3600 + currentTime.getMinutes() * 60 + currentTime.getSeconds();
 
-  // ── Holiday awareness ──────────────────────────────────────────────────────
   const [todayHoliday, setTodayHoliday] = useState(null);
 
-  // ── Semester awareness ──────────────────────────────────────────────────────
-
-  // ── Device ID + Cloud Sync ─────────────────────────────────────────────────
-  const { deviceId } = useDeviceId();
-
   useEffect(() => {
-    if (!isDeferredActive) return; // Defer until initial shell has painted
-    
-    // Fire-and-forget: fetch today's holiday
-    getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => { });
-
-    // Fire-and-forget: fetch semester info
-    getCurrentSemesterInfo().then(info => { if (info) setSemesterInfo(info); }).catch(() => { });
-
-    // Fire-and-forget: PUSH-ONLY cloud backup if 24h has passed
-    // No automatic pull — cross-device sync is manual via Settings "Restore"
-    const runSync = async () => {
-      if (shouldSyncNow()) {
-        syncToCloud(deviceId).catch(() => { });
-      }
-    };
-    runSync();
+    if (!isDeferredActive) return;
+    getTodayHoliday().then(h => { if (h) setTodayHoliday(h); }).catch(() => {});
+    getCurrentSemesterInfo().then(info => { if (info) setSemesterInfo(info); }).catch(() => {});
+    if (shouldSyncNow()) syncToCloud(deviceId).catch(() => {});
   }, [deviceId, isDeferredActive]);
 
-  // Today's classes
   const todaysClassesWithStatus = useMemo(() => {
     if (!Array.isArray(timetable)) return [];
-    return timetable
-      .filter(c => {
-        if (!c.day || c.day.toLowerCase() !== TODAY_NAME.toLowerCase()) return false;
-        const cLevel = c.academic_year || '100';
-        const cSem = c.semester || '1';
-        const pLevel = profile.level || '100';
-        const pSem = profile.semester || '1';
-        if (String(cLevel) !== String(pLevel)) return false;
-        if (String(cSem) !== String(pSem)) return false;
-        return true;
-      })
-      .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
+    return timetable.filter(c => {
+      if (!c.day || c.day.toLowerCase() !== TODAY_NAME.toLowerCase()) return false;
+      return String(c.academic_year || '100') === String(profile.level || '100') &&
+             String(c.semester || '1') === String(profile.semester || '1');
+    }).sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
       .map(c => {
         const startMins = getTimeMinutes(c.startTime);
-        const endMins = c.endTime ? getTimeMinutes(c.endTime) : startMins + 60; // Assume 1hr duration if no end time
+        const endMins = c.endTime ? getTimeMinutes(c.endTime) : startMins + 60;
         let status = 'upcoming';
         let timeUntilStr = '';
-
         const startTotalSeconds = startMins * 60;
-
         if (currentTimeMinutes >= endMins) status = 'completed';
         else if (currentTimeMinutes >= startMins && currentTimeMinutes < endMins) status = 'ongoing';
         else if (startTotalSeconds > currentTotalSeconds) {
@@ -519,12 +188,7 @@ const Home = () => {
           const hrs = Math.floor(diffSeconds / 3600);
           const mins = Math.floor((diffSeconds % 3600) / 60);
           const secs = diffSeconds % 60;
-
-          if (hrs > 0) {
-            timeUntilStr = `in ${hrs}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
-          } else {
-            timeUntilStr = `in ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-          }
+          timeUntilStr = hrs > 0 ? `in ${hrs}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s` : `in ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         }
         return { ...c, status, startMins, endMins, timeUntilStr };
       });
@@ -533,178 +197,97 @@ const Home = () => {
   const upcomingOrOngoingClasses = todaysClassesWithStatus.filter(c => c.status !== 'completed');
   const allCompleted = todaysClassesWithStatus.length > 0 && upcomingOrOngoingClasses.length === 0;
 
-  // Today's Tasks
   const todaysTasks = useMemo(() => {
     const d = new Date();
     const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     return tasks.filter(t => {
       if (t.date !== todayStr) return false;
-      const tLevel = t.academic_year || '100';
-      const tSem = t.semester || '1';
-      const pLevel = profile.level || '100';
-      const pSem = profile.semester || '1';
-      if (String(tLevel) !== String(pLevel)) return false;
-      if (String(tSem) !== String(pSem)) return false;
-      return true;
+      return String(t.academic_year || '100') === String(profile.level || '100') &&
+             String(t.semester || '1') === String(profile.semester || '1');
     }).sort((a, b) => a.time.localeCompare(b.time));
   }, [tasks, profile.level, profile.semester]);
 
   const suggestedClassTasks = useMemo(() => {
     return todaysClassesWithStatus.filter(cls => {
-      const classTitle = cls.courseName || cls.name || 'Class';
-      const expectedTitle = `Revise ${classTitle}`;
+      const expectedTitle = `Revise ${cls.courseName || cls.name || 'Class'}`;
       return !todaysTasks.some(t => t.title === expectedTitle);
     });
   }, [todaysClassesWithStatus, todaysTasks]);
 
   const handleAddSuggestion = (cls) => {
-    let suggestedTime = '08:00'; // Default
+    let suggestedTime = '08:00';
     const classTimeStr = cls.startTime || cls.time;
-
     if (classTimeStr) {
       const [h, m] = classTimeStr.split(':').map(Number);
-      const newH = h - 1 < 0 ? 23 : h - 1; // 1 hour before
-      suggestedTime = `${String(newH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      suggestedTime = `${String(h - 1 < 0 ? 23 : h - 1).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
     const d = new Date();
     const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-    const newTask = {
-      id: Date.now().toString(),
-      title: `Revise ${cls.courseName || cls.name || 'Class'}`,
-      time: suggestedTime,
-      endTime: null,
-      icon: 'study',
-      status: 'pending',
-      date: todayStr
-    };
-    setTasks([...tasks, newTask]);
+    setTasks([...tasks, { id: Date.now().toString(), title: `Revise ${cls.courseName || cls.name || 'Class'}`, time: suggestedTime, endTime: null, icon: 'study', status: 'pending', date: todayStr }]);
   };
 
-  // Upcoming planned tasks (next 14 days, excluding today)
   const upcomingPlannedTasks = useMemo(() => {
     const d = new Date();
     const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    const limit = new Date(d);
-    limit.setDate(limit.getDate() + 14);
+    const limit = new Date(d); limit.setDate(limit.getDate() + 14);
     const limitStr = `${limit.getFullYear()}-${String(limit.getMonth() + 1).padStart(2, '0')}-${String(limit.getDate()).padStart(2, '0')}`;
-    return tasks
-      .filter(t => t.date > todayStr && t.date <= limitStr)
+    return tasks.filter(t => t.date > todayStr && t.date <= limitStr)
       .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
   }, [tasks]);
 
   const toggleTaskStatus = (id, forceComplete = false) => {
-    setTasks(prev => prev.map(t => {
-      if (t.id === id) {
-        return { ...t, status: forceComplete ? 'completed' : (t.status === 'completed' ? 'pending' : 'completed') };
-      }
-      return t;
-    }));
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, status: forceComplete ? 'completed' : (t.status === 'completed' ? 'pending' : 'completed') } : t));
   };
 
-  // Upcoming Academic Events
   const upcomingAcademicEvents = useMemo(() => getUpcomingAcademicEvents(2), []);
 
-  // Sam Jonah Library status (holiday-aware)
   const libraryStatus = useMemo(() => {
-    // Public holiday override
-    if (todayHoliday) {
-      return { isOpen: false, label: 'Closed', detail: `Closed for ${todayHoliday.name}. Opens next working day at 9:00 AM.` };
-    }
-
+    if (todayHoliday) return { isOpen: false, label: 'Closed', detail: `Closed for ${todayHoliday.name}. Opens next working day at 9:00 AM.` };
     const now = new Date();
-    const day = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const day = now.getDay();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-    // Sunday - closed
-    if (day === 0) {
-      return { isOpen: false, label: 'Closed', detail: 'Closed today (Sunday). Opens Monday at 9:00 AM.' };
-    }
-
+    if (day === 0) return { isOpen: false, label: 'Closed', detail: 'Closed today (Sunday). Opens Monday at 9:00 AM.' };
     let openMin, closeMin, closeStr;
-    if (day === 6) {
-      // Saturday: 9:00 AM – 8:00 PM
-      openMin = 9 * 60;
-      closeMin = 20 * 60;
-      closeStr = '8:00 PM';
-    } else {
-      // Mon–Fri: 9:00 AM – 10:00 PM
-      openMin = 9 * 60;
-      closeMin = 22 * 60;
-      closeStr = '10:00 PM';
-    }
-
-    if (currentMinutes >= openMin && currentMinutes < closeMin) {
-      return { isOpen: true, label: 'Open', detail: `Closes at ${closeStr}` };
-    } else if (currentMinutes < openMin) {
-      return { isOpen: false, label: 'Closed', detail: 'Opens today at 9:00 AM' };
-    } else {
-      if (day === 6) {
-        return { isOpen: false, label: 'Closed', detail: 'Closed for today. Opens Monday at 9:00 AM.' };
-      }
-      return { isOpen: false, label: 'Closed', detail: 'Closed for today. Opens tomorrow at 9:00 AM.' };
-    }
+    if (day === 6) { openMin = 9 * 60; closeMin = 20 * 60; closeStr = '8:00 PM'; }
+    else { openMin = 9 * 60; closeMin = 22 * 60; closeStr = '10:00 PM'; }
+    if (currentMinutes >= openMin && currentMinutes < closeMin) return { isOpen: true, label: 'Open', detail: `Closes at ${closeStr}` };
+    if (currentMinutes < openMin) return { isOpen: false, label: 'Closed', detail: 'Opens today at 9:00 AM' };
+    return { isOpen: false, label: 'Closed', detail: day === 6 ? 'Closed for today. Opens Monday at 9:00 AM.' : 'Closed for today. Opens tomorrow at 9:00 AM.' };
   }, [currentTimeMinutes, todayHoliday]);
 
-  // ── Announcement → Ad rotation logic ─────────────────────────────────────
   const [featuredContent, setFeaturedContent] = useState(null);
-  const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(false);
-
-  // ── Community notification state (inbox model) ────────────────────────────
   const [recentUpdates, setRecentUpdates] = useState([]);
-  const [fetchStatus, setFetchStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
-  const [seenVersion, setSeenVersion] = useState(0); // bump to re-derive seenIds
-  const [notificationsEnabled] = useLocalStorage('ucc_notifications_enabled', true);
+  const [fetchStatus, setFetchStatus] = useState('idle');
+  const [seenVersion, setSeenVersion] = useState(0);
 
-  // Derived: seen IDs from localStorage (re-computed when seenVersion changes)
-  const seenIds = useMemo(() => {
-    return new Set(JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]').map(String));
-  }, [seenVersion]);
-
-  // Derived: unread vs read community items
+  const seenIds = useMemo(() => new Set(JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]').map(String)), [seenVersion]);
   const unreadItems = useMemo(() => recentUpdates.filter(item => !seenIds.has(String(item.id))), [recentUpdates, seenIds]);
   const readItems = useMemo(() => recentUpdates.filter(item => seenIds.has(String(item.id))), [recentUpdates, seenIds]);
 
-  // In-app notification context (must be before markAllAsRead)
-  const { unreadCount, markAllAsRead: markAllInAppRead } = useNotifications();
-
-  // Mark a single community item as read
   const markItemAsRead = useCallback((id) => {
     const current = JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]');
-    const updated = [...new Set([...current, String(id)])];
-    localStorage.setItem('ucc_seen_updates', JSON.stringify(updated));
+    localStorage.setItem('ucc_seen_updates', JSON.stringify([...new Set([...current, String(id)])]));
     setSeenVersion(v => v + 1);
   }, []);
 
-  // Mark all unread community items as read (also clears in-app notification dot)
   const markAllAsRead = useCallback(() => {
     const current = JSON.parse(localStorage.getItem('ucc_seen_updates') || '[]');
     const allIds = unreadItems.map(item => String(item.id));
-    const updated = [...new Set([...current, ...allIds])];
-    localStorage.setItem('ucc_seen_updates', JSON.stringify(updated));
+    localStorage.setItem('ucc_seen_updates', JSON.stringify([...new Set([...current, ...allIds])]));
     setSeenVersion(v => v + 1);
-    // Also mark all in-app notifications as read so the red dot disappears
     markAllInAppRead?.();
   }, [unreadItems, markAllInAppRead]);
 
-  // Navigate to community hub with correct tab
   const handleNavigateToCommunity = useCallback((tab) => {
     navigate(`/community?tab=${tab}`);
     setIsNotifOpen(false);
   }, [navigate]);
 
-  // Red dot: purely data-driven — shows only when there are truly unread items
   const showRedDot = notificationsEnabled && (unreadItems.length > 0 || unreadCount > 0);
 
-  // ── Fetch community updates (gated by notificationsEnabled) ─────────────
   useEffect(() => {
-    if (!isDeferredActive) return; // Defer until initial shell has painted
-    if (!notificationsEnabled) {
-      setRecentUpdates([]);
-      setFetchStatus('idle');
-      return;
-    }
-
+    if (!isDeferredActive) return;
+    if (!notificationsEnabled) { setRecentUpdates([]); setFetchStatus('idle'); return; }
     const fetchCommunityUpdates = async () => {
       setFetchStatus('loading');
       try {
@@ -713,61 +296,35 @@ const Home = () => {
           supabase.from('campus_whispers').select('*').order('created_at', { ascending: false }).limit(10),
           supabase.from('thrift_listings').select('*').order('created_at', { ascending: false }).limit(10)
         ]);
-
         const items = [];
         if (annRes.data) items.push(...annRes.data.map(i => ({ ...i, updateType: 'announcement' })));
         if (whisperRes.data) items.push(...whisperRes.data.map(i => ({ ...i, updateType: 'whisper' })));
         if (thriftRes.data) items.push(...thriftRes.data.map(i => ({ ...i, updateType: 'thrift' })));
-
-        // Sort DESCENDING — newest first
         items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         setRecentUpdates(items);
         setFetchStatus('success');
-      } catch (err) {
-        console.error("Error fetching community updates", err);
-        setFetchStatus('error');
-        // Do NOT wipe recentUpdates — preserve stale data on error
-      }
+      } catch (err) { console.error("Error fetching community updates", err); setFetchStatus('error'); }
     };
-
     fetchCommunityUpdates();
   }, [notificationsEnabled, isDeferredActive]);
 
-  // ── Fetch ad / featured content (always runs, separate concern) ──────────
   useEffect(() => {
-    if (!isDeferredActive) return; // Defer until initial shell has painted
+    if (!isDeferredActive) return;
     const fetchAdOrFallback = async () => {
       try {
-        const { data: adsData } = await supabase
-          .from('advertisements')
-          .select('*')
-          .ilike('status', 'active')
-          .eq('package_id', 'home_banner')
-          .gte('expires_at', new Date().toISOString());
-
+        const { data: adsData } = await supabase.from('advertisements').select('*')
+          .ilike('status', 'active').eq('package_id', 'home_banner').gte('expires_at', new Date().toISOString());
         if (!adsData || adsData.length === 0) {
-          const { data: annFallback } = await supabase
-            .from('announcements')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(1);
-          if (annFallback && annFallback[0]) {
-            setFeaturedContent({ kind: 'announcement', data: annFallback[0] });
-          }
+          const { data: annFallback } = await supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(1);
+          if (annFallback && annFallback[0]) setFeaturedContent({ kind: 'announcement', data: annFallback[0] });
           return;
         }
-
-        const ad = adsData[Math.floor(Math.random() * adsData.length)];
-        setFeaturedContent({ kind: 'ad', data: ad });
-      } catch (err) {
-        console.error("Error fetching ad", err);
-      }
+        setFeaturedContent({ kind: 'ad', data: adsData[Math.floor(Math.random() * adsData.length)] });
+      } catch (err) { console.error("Error fetching ad", err); }
     };
-
     fetchAdOrFallback();
   }, [isDeferredActive]);
 
-  // ── Weather & API Widget Fetching Logic ───────────────────────────────────────
   const [weatherData, setWeatherData] = useState(null);
   const [verseData, setVerseData] = useState(null);
   const [forexData, setForexData] = useState(null);
@@ -781,203 +338,71 @@ const Home = () => {
   const [wordData, setWordData] = useState(null);
   const [expandedWidget, setExpandedWidget] = useState(null);
 
-
   useEffect(() => {
     const fetchWeather = async () => {
-      try {
-        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=5.1165&longitude=-1.2929&current_weather=true');
-        const data = await res.json();
-        if (data && data.current_weather) {
-          setWeatherData(data.current_weather);
-        }
-      } catch (err) {
-        console.error("Failed to fetch weather", err);
-      }
+      try { const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=5.1165&longitude=-1.2929&current_weather=true'); const data = await res.json(); if (data?.current_weather) setWeatherData(data.current_weather); }
+      catch (err) { console.error("Failed to fetch weather", err); }
     };
-
     const fetchVerse = async () => {
-      try {
-        const res = await fetch('https://labs.bible.org/api/?passage=votd&type=json');
-        const data = await res.json();
-        if (data && data.length > 0) {
-          // Remove potential HTML tags like <b> from the text
-          const cleanText = data[0].text.replace(/<[^>]*>?/gm, '');
-          setVerseData({ ...data[0], text: cleanText });
-        }
-      } catch (err) {
-        console.error("Failed to fetch verse", err);
-      }
+      try { const res = await fetch('https://labs.bible.org/api/?passage=votd&type=json'); const data = await res.json(); if (data?.length > 0) { const cleanText = data[0].text.replace(/<[^>]*>?/gm, ''); setVerseData({ ...data[0], text: cleanText }); } }
+      catch (err) { console.error("Failed to fetch verse", err); }
     };
-
     const fetchForex = async () => {
-      try {
-        const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const data = await res.json();
-        if (data && data.rates && data.rates.GHS) {
-          setForexData(data.rates.GHS);
-        }
-      } catch (err) {
-        console.error("Failed to fetch forex", err);
-      }
+      try { const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD'); const data = await res.json(); if (data?.rates?.GHS) setForexData(data.rates.GHS); }
+      catch (err) { console.error("Failed to fetch forex", err); }
     };
-
     const fetchCrypto = async () => {
-      try {
-        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-        const data = await res.json();
-        if (data && data.bitcoin && data.bitcoin.usd) {
-          setCryptoData(data.bitcoin.usd);
-        }
-      } catch (err) {
-        console.error("Failed to fetch crypto", err);
-      }
+      try { const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'); const data = await res.json(); if (data?.bitcoin?.usd) setCryptoData(data.bitcoin.usd); }
+      catch (err) { console.error("Failed to fetch crypto", err); }
     };
-
     const fetchFootball = async () => {
       try {
-        // 1. Try to get genuinely live matches from any league first
         let liveData = null;
-        try {
-          const liveRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslive.php');
-          if (liveRes.ok) liveData = await liveRes.json();
-        } catch (e) { console.warn("Live events fetch failed or 404", e); }
-
-        if (liveData && liveData.events && liveData.events.length > 0) {
-          // Pick the first live match
-          const match = liveData.events[0];
-          setFootballData({
-            home: match.strHomeTeam,
-            away: match.strAwayTeam,
-            homeScore: match.intHomeScore ?? '?',
-            awayScore: match.intAwayScore ?? '?',
-            status: match.strProgress || 'LIVE',
-            isLive: true
-          });
-          return;
-        }
-
-        // 2. No live match right now — fall back to Ghana's last result
+        try { const liveRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslive.php'); if (liveRes.ok) liveData = await liveRes.json(); } catch (e) {}
+        if (liveData?.events?.length > 0) { const match = liveData.events[0]; setFootballData({ home: match.strHomeTeam, away: match.strAwayTeam, homeScore: match.intHomeScore ?? '?', awayScore: match.intAwayScore ?? '?', status: match.strProgress || 'LIVE', isLive: true }); return; }
         let lastData = null;
-        try {
-          const lastRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=134513');
-          if (lastRes.ok) lastData = await lastRes.json();
-        } catch (e) { console.warn("Fallback events fetch failed", e); }
-
-        if (lastData && lastData.results && lastData.results.length > 0) {
+        try { const lastRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=134513'); if (lastRes.ok) lastData = await lastRes.json(); } catch (e) {}
+        if (lastData?.results?.length > 0) {
           const match = lastData.results[0];
-
           const matchDateStr = match.strTimestamp || `${match.dateEvent}T${match.strTime || '00:00:00'}Z`;
-          const matchDate = new Date(matchDateStr);
-          const now = new Date();
-          const diffHours = (now - matchDate) / (1000 * 60 * 60);
-
-          if (diffHours > 48) {
-            setFootballData({
-              home: "No Active Matches",
-              away: "",
-              homeScore: "",
-              awayScore: "",
-              status: "OFF",
-              isLive: false,
-              isOffSeason: true
-            });
-          } else {
-            setFootballData({
-              home: match.strHomeTeam,
-              away: match.strAwayTeam,
-              homeScore: match.intHomeScore,
-              awayScore: match.intAwayScore,
-              status: 'FT',
-              isLive: false,
-              isOffSeason: false
-            });
-          }
+          const diffHours = (new Date() - new Date(matchDateStr)) / (1000 * 60 * 60);
+          if (diffHours > 48) setFootballData({ home: "No Active Matches", away: "", homeScore: "", awayScore: "", status: "OFF", isLive: false, isOffSeason: true });
+          else setFootballData({ home: match.strHomeTeam, away: match.strAwayTeam, homeScore: match.intHomeScore, awayScore: match.intAwayScore, status: 'FT', isLive: false, isOffSeason: false });
         }
-      } catch (err) {
-        console.error("Failed to fetch football", err);
-        // Do NOT wipe footballData on error — preserve stale data
-      }
+      } catch (err) { console.error("Failed to fetch football", err); }
     };
-
     const fetchNews = async () => {
-      try {
-        const res = await fetch('https://api.spaceflightnewsapi.net/v4/articles/?limit=1');
-        const data = await res.json();
-        if (data && data.results && data.results.length > 0) {
-          setNewsData(data.results[0]);
-        }
-      } catch (err) {
-        console.error("Failed to fetch news", err);
-      }
+      try { const res = await fetch('https://api.spaceflightnewsapi.net/v4/articles/?limit=1'); const data = await res.json(); if (data?.results?.length > 0) setNewsData(data.results[0]); }
+      catch (err) { console.error("Failed to fetch news", err); }
     };
-
     const fetchQuote = async () => {
-      try {
-        const res = await fetch('https://dummyjson.com/quotes/random');
-        const data = await res.json();
-        if (data && data.quote) {
-          setQuoteData(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch quote", err);
-      }
+      try { const res = await fetch('https://dummyjson.com/quotes/random'); const data = await res.json(); if (data?.quote) setQuoteData(data); }
+      catch (err) { console.error("Failed to fetch quote", err); }
     };
-
     const fetchJoke = async () => {
-      try {
-        const res = await fetch('https://icanhazdadjoke.com/', { headers: { Accept: 'application/json' } });
-        const data = await res.json();
-        if (data && data.joke) {
-          setJokeData(data.joke);
-        }
-      } catch (err) {
-        console.error("Failed to fetch joke", err);
-      }
+      try { const res = await fetch('https://icanhazdadjoke.com/', { headers: { Accept: 'application/json' } }); const data = await res.json(); if (data?.joke) setJokeData(data.joke); }
+      catch (err) { console.error("Failed to fetch joke", err); }
     };
-
     const fetchFact = async () => {
-      try {
-        const res = await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random');
-        const data = await res.json();
-        if (data && data.text) {
-          setFactData(data.text);
-        }
-      } catch (err) {
-        console.error("Failed to fetch fact", err);
-      }
+      try { const res = await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random'); const data = await res.json(); if (data?.text) setFactData(data.text); }
+      catch (err) { console.error("Failed to fetch fact", err); }
     };
-
     const fetchGithub = async () => {
-      try {
-        const res = await fetch('https://api.github.com/users/github');
-        const data = await res.json();
-        if (data && data.login) {
-          setGithubData(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch github", err);
-      }
+      try { const res = await fetch('https://api.github.com/users/github'); const data = await res.json(); if (data?.login) setGithubData(data); }
+      catch (err) { console.error("Failed to fetch github", err); }
     };
-
     const fetchWord = async () => {
       try {
         const fallbackWords = ['serendipity', 'ephemeral', 'luminescent', 'resilience', 'eloquent', 'sonder', 'petrichor', 'solitude', 'effervescent', 'aurora', 'halcyon', 'mellifluous', 'ineffable', 'ethereal', 'epiphany'];
         const word = fallbackWords[Math.floor(Math.random() * fallbackWords.length)];
         const res2 = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const data2 = await res2.json();
-        if (Array.isArray(data2) && data2.length > 0) {
-          setWordData(data2[0]);
-        } else {
-          setWordData({ word, meanings: [{ definitions: [{ definition: "Definition not found." }] }] });
-        }
-      } catch (err) {
-        console.error("Failed to fetch word", err);
-      }
+        if (Array.isArray(data2) && data2.length > 0) setWordData(data2[0]);
+        else setWordData({ word, meanings: [{ definitions: [{ definition: "Definition not found." }] }] });
+      } catch (err) { console.error("Failed to fetch word", err); }
     };
 
-    if (!isDeferredActive) return; // Defer until initial shell has painted
-    
-    // Defer widget data fetching to after first paint so the UI appears instantly
+    if (!isDeferredActive) return;
     const deferTimer = setTimeout(() => {
       if (homeWidgets.weather && !weatherData) fetchWeather();
       if (homeWidgets.verse && !verseData) fetchVerse();
@@ -991,21 +416,12 @@ const Home = () => {
       if (homeWidgets.github && !githubData) fetchGithub();
       if (homeWidgets.word && !wordData) fetchWord();
     }, 0);
-
-    // Football polls every 60 seconds so live scores actually update (not deferred)
     let footballInterval = null;
-    if (homeWidgets.football) {
-      footballInterval = setInterval(fetchFootball, 60000);
-    }
-
-    return () => {
-      clearTimeout(deferTimer);
-      if (footballInterval) clearInterval(footballInterval);
-    };
+    if (homeWidgets.football) footballInterval = setInterval(fetchFootball, 60000);
+    return () => { clearTimeout(deferTimer); if (footballInterval) clearInterval(footballInterval); };
   }, [homeWidgets, isDeferredActive]);
 
   const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
-
   const quickActions = [
     { title: 'Campus Map', icon: Map, action: () => navigate('/guide?topic=campus-map') },
     { title: 'Buy Data', icon: Wifi, action: () => window.open(AFFILIATE_URL, '_blank', 'noopener,noreferrer'), isAffiliate: true },
@@ -1013,91 +429,32 @@ const Home = () => {
     { title: 'Settings', icon: Settings, action: () => navigate('/settings') },
   ];
 
+  const widgetProps = { homeWidgets, weatherData, forexData, cryptoData, jokeData, factData, wordData, verseData, footballData, newsData, quoteData, githubData, expandedWidget, setExpandedWidget, isDeferredActive };
+  const notifProps = { isOpen: isNotifOpen, onClose: () => setIsNotifOpen(false), unreadItems, readItems, fetchStatus, notificationsEnabled, onMarkItemRead: markItemAsRead, onMarkAllRead: markAllAsRead, onNavigate: handleNavigateToCommunity };
 
-  const StreakBadge = ({ variant = 'hero' }) => {
-    if (!prodStats || prodStats.currentStreak < 1) return null;
-
-    const count = prodStats.currentStreak;
-    const title = prodStats.title.label;
-
-    if (variant === 'desktop') {
-      return (
-        <span className="inline-flex items-center gap-1.5 ml-2">
-          <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full text-[11px] font-bold border border-orange-200">
-            <Flame size={11} className="text-orange-500" />
-            {count}
-          </span>
-          <span className="inline-flex items-center bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary-200">
-            {title}
-          </span>
-        </span>
-      );
-    }
-
-    return (
-      <span className="inline-flex items-center gap-1 bg-white/10 text-white/90 px-2 py-0.5 rounded-full text-[11px] font-bold border border-white/10 ml-2">
-        <Flame size={11} className="text-orange-400 fill-orange-400" />
-        {count}
-      </span>
-    );
-  };
-
-  // ── render ────────────────────────────────────────────────────────────────
   return (
     <div className="pb-28 bg-[#f0f2f8] min-h-screen font-sans">
-
-      {/* ════════════════════════════════════════════
-          MOBILE LAYOUT
-      ════════════════════════════════════════════ */}
       <div className="lg:hidden">
-
-        {/* ── Chime-Style Hero ────────────────────────────────────────── */}
         <div className="relative overflow-hidden bg-gradient-to-b from-gray-900 to-gray-900 px-6 pt-[calc(2.5rem_+_env(safe-area-inset-top,0px))] pb-16">
-
           <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[150%] h-[100px] bg-gray-900 rounded-[100%] blur-xl opacity-40 pointer-events-none"></div>
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary-400 rounded-full mix-blend-screen filter blur-[80px] opacity-10 pointer-events-none"></div>
-
-          {/* Top Bar */}
           <div className="flex items-center justify-between mb-6 relative z-10">
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="Logo" loading="lazy" className="w-8 h-8 object-contain rounded-md shadow-sm" />
               <span className="text-white font-bold tracking-widest text-xs uppercase opacity-90">Campus Guide</span>
             </div>
-
-            {/* 🛎️ NEW: Right side container for Bell + Avatar */}
             <div className="flex items-center gap-3">
-              {/* Notification Bell */}
               <div id="bell-anchor-mobile" className="relative">
-                <button
-                  onClick={() => setIsNotifOpen(!isNotifOpen)}
-                  className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform"
-                >
+                <button onClick={() => setIsNotifOpen(!isNotifOpen)}
+                  className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform">
                   <Bell size={18} />
-                  {showRedDot && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"></span>
-                  )}
+                  {showRedDot && <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"></span>}
                 </button>
-
-                {/* Dropdown Panel */}
-                <NotificationDropdown
-                  isOpen={isNotifOpen}
-                  onClose={() => setIsNotifOpen(false)}
-                  unreadItems={unreadItems}
-                  readItems={readItems}
-                  fetchStatus={fetchStatus}
-                  notificationsEnabled={notificationsEnabled}
-                  onMarkItemRead={markItemAsRead}
-                  onMarkAllRead={markAllAsRead}
-                  onNavigate={handleNavigateToCommunity}
-                />
+                <NotificationDropdown {...notifProps} />
               </div>
-
-              {/* Profile Avatar */}
               {profile.avatarUrl ? (
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="w-10 h-10 rounded-full border-2 border-white/20 shadow-lg overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white/10 p-0.5"
-                >
+                <button onClick={() => navigate('/profile')}
+                  className="w-10 h-10 rounded-full border-2 border-white/20 shadow-lg overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white/10 p-0.5">
                   <img src={profile.avatarUrl} alt="Avatar" loading="lazy" className="w-full h-full object-cover rounded-full bg-white" />
                 </button>
               ) : (
@@ -1107,8 +464,6 @@ const Home = () => {
               )}
             </div>
           </div>
-
-          {/* Hero Greeting Text & Weather */}
           <div className="relative z-10 flex flex-col items-start gap-4 mt-2">
             <div className="w-full">
               <h2 className="text-white text-2xl font-black leading-tight tracking-tight mb-1">
@@ -1118,7 +473,7 @@ const Home = () => {
                 <div className="flex flex-col gap-1.5">
                   <p className="text-primary-400 text-xs font-bold uppercase tracking-wider flex items-center cursor-pointer active:opacity-70 transition-opacity">
                     {TODAY_LABEL}
-                    <StreakBadge />
+                    <StreakBadge prodStats={prodStats} />
                   </p>
                   {isRunwayActive && (
                     <div className="flex items-center gap-1.5">
@@ -1128,234 +483,14 @@ const Home = () => {
                   )}
                 </div>
                 {isRunwayActive && (
-                  <button
-                    onClick={() => setShowExpensePopup(true)}
-                    className="w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center text-white active:scale-95 transition-all shadow-sm flex-shrink-0"
-                    title="Add Expense"
-                  >
+                  <button onClick={() => setShowExpensePopup(true)}
+                    className="w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center text-white active:scale-95 transition-all shadow-sm flex-shrink-0" title="Add Expense">
                     <Plus size={18} />
                   </button>
                 )}
               </div>
             </div>
-
-            {(() => {
-              const activeWidgets = [];
-
-              const WidgetCard = ({ id, icon: Icon, title, shortText, expandedContent }) => {
-                const isExpanded = expandedWidget === id || activeWidgets.length === 1;
-                return (
-                  <div
-                    onClick={() => {
-                      if (activeWidgets.length > 1) {
-                        setExpandedWidget(isExpanded ? null : id);
-                      }
-                    }}
-                    className={`flex flex-col gap-2 bg-gray-900/50 backdrop-blur-md border border-primary-400/20 px-3 py-2 rounded-2xl shadow-sm self-start transition-all ${isExpanded ? 'w-full max-w-[280px]' : ''} ${activeWidgets.length > 1 ? 'cursor-pointer hover:bg-gray-900/70' : ''}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 shrink-0">
-                        {Icon}
-                      </div>
-                      {!isExpanded && shortText && (
-                        <span className="text-white font-bold text-xs truncate max-w-[100px]">{shortText}</span>
-                      )}
-                      {isExpanded && title && (
-                        <span className="text-white font-bold text-[10px] opacity-80 uppercase tracking-wider">{title}</span>
-                      )}
-                    </div>
-                    {isExpanded && (
-                      <div className="flex flex-col px-1 pb-1">
-                        {expandedContent}
-                      </div>
-                    )}
-                  </div>
-                );
-              };
-
-              const addWidget = (id, size, props) => {
-                activeWidgets.push({ id, size, content: <WidgetCard key={id} id={id} {...props} /> });
-              };
-
-              if (homeWidgets.weather && weatherData) {
-                const { svgType, advice } = getWeatherIconAndAdvice(weatherData.weathercode, weatherData.temperature);
-                addWidget('weather', 'small', {
-                  icon: renderWeatherSvg(svgType, 14, 'text-primary-400'),
-                  title: 'Weather',
-                  shortText: `${weatherData.temperature}°C`,
-                  expandedContent: (
-                    <>
-                      <span className="text-white font-bold text-lg">{weatherData.temperature}°C</span>
-                      <span className="text-primary-400 text-[11px] font-medium leading-snug">{advice}</span>
-                    </>
-                  )
-                });
-              }
-
-              if (homeWidgets.forex && forexData) {
-                addWidget('forex', 'small', {
-                  icon: <ForexSvgIcon size={14} className="text-primary-400" />,
-                  title: 'USD/GHS',
-                  shortText: `₵${forexData.toFixed(2)}`,
-                  expandedContent: (
-                    <>
-                      <span className="text-white font-bold text-lg">₵{forexData.toFixed(2)}</span>
-                      <span className="text-primary-400 text-[11px] font-medium leading-snug">1 USD to GHS</span>
-                    </>
-                  )
-                });
-              }
-
-              if (homeWidgets.crypto && cryptoData) {
-                addWidget('crypto', 'small', {
-                  icon: <CryptoSvgIcon size={14} className="text-primary-400" />,
-                  title: 'Bitcoin',
-                  shortText: `$${cryptoData.toLocaleString()}`,
-                  expandedContent: (
-                    <>
-                      <span className="text-white font-bold text-lg">${cryptoData.toLocaleString()}</span>
-                      <span className="text-primary-400 text-[11px] font-medium leading-snug">Current BTC Price (USD)</span>
-                    </>
-                  )
-                });
-              }
-
-              if (homeWidgets.joke && jokeData) {
-                addWidget('joke', 'small', {
-                  icon: <JokeSvgIcon size={14} className="text-primary-400" />,
-                  title: 'Dad Joke',
-                  shortText: 'Joke',
-                  expandedContent: (
-                    <span className="text-primary-400 text-[11px] font-medium leading-snug">{jokeData}</span>
-                  )
-                });
-              }
-
-              if (homeWidgets.fact && factData) {
-                addWidget('fact', 'small', {
-                  icon: <FunFactSvgIcon size={14} className="text-primary-400" />,
-                  title: 'Fun Fact',
-                  shortText: 'Fact',
-                  expandedContent: (
-                    <span className="text-primary-400 text-[11px] font-medium leading-snug">{factData}</span>
-                  )
-                });
-              }
-
-              if (homeWidgets.word && wordData) {
-                addWidget('word', 'small', {
-                  icon: <WordSvgIcon size={14} className="text-primary-400" />,
-                  title: 'Word of the Day',
-                  shortText: 'Word',
-                  expandedContent: (
-                    <>
-                      <span className="text-white font-bold text-sm capitalize">{wordData.word}</span>
-                      <span className="text-primary-400 text-[11px] font-medium leading-snug mt-1">{wordData.meanings[0]?.definitions[0]?.definition}</span>
-                    </>
-                  )
-                });
-              }
-
-              if (homeWidgets.verse && verseData) {
-                addWidget('verse', 'medium', {
-                  icon: <VerseSvgIcon size={14} className="text-primary-400" />,
-                  title: 'Verse',
-                  shortText: `${verseData.bookname} ${verseData.chapter}`,
-                  expandedContent: (
-                    <>
-                      <span className="text-white font-bold text-[10px] tracking-wide uppercase">{verseData.bookname} {verseData.chapter}:{verseData.verse}</span>
-                      <span className="text-primary-400 text-[11px] font-medium leading-snug italic mt-0.5">"{verseData.text}"</span>
-                    </>
-                  )
-                });
-              }
-
-              if (homeWidgets.football && footballData) {
-                addWidget('football', 'medium', {
-                  icon: <FootballSvgIcon size={14} className="text-primary-400" />,
-                  title: footballData.isLive ? '🔴 Live Score' : (footballData.isOffSeason ? 'Football Updates' : 'Latest Result'),
-                  shortText: footballData.isOffSeason ? 'No Active Matches' : `${footballData.homeScore} - ${footballData.awayScore}`,
-                  expandedContent: (
-                    <>
-                      <span className="text-white font-bold text-sm tracking-wide truncate">{footballData.isOffSeason ? 'No Active Matches' : `${footballData.home} vs ${footballData.away}`}</span>
-                      <span className="text-primary-400 text-[11px] font-bold leading-none mt-1">
-                        {footballData.isOffSeason ? 'Check back later' : `${footballData.homeScore} - ${footballData.awayScore}`}
-                        {!footballData.isOffSeason && <span className="font-medium opacity-80"> ({footballData.status})</span>}
-                      </span>
-                    </>
-                  )
-                });
-              }
-
-              if (homeWidgets.news && newsData) {
-                addWidget('news', 'medium', {
-                  icon: <NewsSvgIcon size={14} className="text-primary-400" />,
-                  title: 'Tech News',
-                  shortText: 'News',
-                  expandedContent: (
-                    <>
-                      <span className="text-white font-bold text-[10px] tracking-wide uppercase">{newsData.news_site}</span>
-                      <span className="text-primary-400 text-[11px] font-medium leading-snug mt-0.5 line-clamp-2">{newsData.title}</span>
-                    </>
-                  )
-                });
-              }
-
-              if (homeWidgets.quote && quoteData) {
-                addWidget('quote', 'medium', {
-                  icon: <QuoteSvgIcon size={14} className="text-primary-400" />,
-                  title: 'Quote',
-                  shortText: 'Quote',
-                  expandedContent: (
-                    <>
-                      <span className="text-white font-bold text-[10px] tracking-wide uppercase">{quoteData.author}</span>
-                      <span className="text-primary-400 text-[11px] font-medium leading-snug italic mt-0.5 line-clamp-2">"{quoteData.quote}"</span>
-                    </>
-                  )
-                });
-              }
-
-              if (homeWidgets.github && githubData) {
-                addWidget('github', 'medium', {
-                  icon: <GithubSvgIcon size={14} className="text-primary-400" />,
-                  title: 'GitHub Stats',
-                  shortText: 'GitHub',
-                  expandedContent: (
-                    <>
-                      <span className="text-white font-bold text-sm">@{githubData.login}</span>
-                      <span className="text-primary-400 text-[11px] font-medium leading-none mt-1">{githubData.followers} followers • {githubData.public_repos} repos</span>
-                    </>
-                  )
-                });
-              }
-
-              // Sort: expanded first, then small, then medium
-              activeWidgets.sort((a, b) => {
-                if (a.id === expandedWidget) return -1;
-                if (b.id === expandedWidget) return 1;
-                if (a.size === 'small' && b.size === 'medium') return -1;
-                if (a.size === 'medium' && b.size === 'small') return 1;
-                return 0;
-              });
-
-              if (!isDeferredActive) {
-                return (
-                  <div className="flex gap-2 w-full items-start">
-                    <div className="h-[46px] bg-white/10 rounded-2xl animate-pulse w-20"></div>
-                    <div className="h-[46px] bg-white/10 rounded-2xl animate-pulse w-16"></div>
-                    <div className="h-[46px] bg-white/10 rounded-2xl animate-pulse w-16"></div>
-                  </div>
-                );
-              }
-
-              return (
-                <div className="flex flex-wrap gap-2 w-full items-start">
-                  {activeWidgets.map(w => w.content)}
-                </div>
-              );
-            })()}
-
-            {/* Semester Status */}
+            <WidgetBar {...widgetProps} />
             {homeWidgets.calendar && semesterInfo && (
               <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-md border border-primary-400/30 px-4 py-3 rounded-2xl shadow-sm w-full">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10">
@@ -1365,835 +500,54 @@ const Home = () => {
                   <span className="text-white font-bold text-sm">{semesterInfo.title}</span>
                   <span className="text-primary-400 text-xs font-medium leading-tight">
                     {semesterInfo.subtitle}
-                    {semesterInfo.details && (
-                      <span className="block mt-0.5">• {semesterInfo.details}</span>
-                    )}
+                    {semesterInfo.details && <span className="block mt-0.5">• {semesterInfo.details}</span>}
                   </span>
                 </div>
               </div>
             )}
-
-
           </div>
         </div>
-
-        {/* ── Overlapping Content & Body ──────────────────────────────── */}
         <div className="px-5 -mt-8 relative z-20 space-y-6 pb-6">
-
-
-
-          {/* Active Reminders Alert Box */}
-          {activeReminders.length > 0 && (
-            <div className="sticky top-0 z-30 bg-red-50 border border-red-100 rounded-2xl p-4 shadow-sm space-y-3 mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-black text-red-800 uppercase tracking-widest flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                  Active Reminders ({activeReminders.length})
-                </span>
-                <button
-                  onClick={() => navigate('/tools')}
-                  className="text-[11px] font-black text-red-700 uppercase tracking-wider hover:underline bg-transparent border-none p-0 cursor-pointer"
-                >
-                  Manage
-                </button>
-              </div>
-              <div className="space-y-2">
-                {activeReminders.map((reminder) => (
-                  <div key={reminder.id} className="bg-white p-3 rounded-xl border border-red-100 flex items-center justify-between gap-3 shadow-sm">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-gray-900 truncate">{reminder.title}</p>
-                      <p className="text-[10px] font-semibold text-red-600 mt-0.5">
-                        Due: {new Date(reminder.dueDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        const updated = reminders.map(r => r.id === reminder.id ? { ...r, completed: true } : r);
-                        setReminders(updated);
-                      }}
-                      className="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-[10px] font-black uppercase tracking-wider rounded-lg transition-colors shrink-0 border-none cursor-pointer"
-                    >
-                      Done
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 1. Overlapping Floating Card (Today's Classes / Exams) */}
+          <ReminderAlert activeReminders={activeReminders} reminders={reminders} setReminders={setReminders} navigate={navigate} />
           {homeWidgets.classes && (
-            !isDeferredActive ? (
-              <SkeletonCard />
-            ) : (
-              <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 min-h-[140px] border border-gray-100 flex flex-col justify-center">
-            {isExamModeActive ? (
-              <>
-                <div className="flex justify-between items-start mb-4">
-                  <span className="text-sm font-black text-gray-900 tracking-tight flex items-center gap-1.5">
-                    <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    Today's Exams
-                  </span>
-                  <button onClick={() => navigate('/tools/assignments')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
-                    Countdown <ChevronRight size={13} />
-                  </button>
-                </div>
-
-                {todaysExams.length === 0 ? (
-                  <div className="flex items-center justify-between py-2">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                        <FileText size={24} className="text-amber-600" />
-                      </div>
-                      <div>
-                        <p className="text-[15px] font-bold text-gray-900">No exams today!</p>
-                        <p className="text-xs text-gray-500 mt-0.5 font-medium">Use this time to study and prepare.</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => navigate('/tools/assignments')}
-                      className="flex bg-amber-50 text-amber-700 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-100 transition-colors"
-                    >
-                      Add Exam
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {todaysExams.map((exam, i) => (
-                      <div key={i} className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100">
-                          <FileText size={16} className="text-amber-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-gray-900 truncate">
-                            {exam.title}
-                          </p>
-                          <p className="text-xs font-medium mt-0.5 text-gray-500 flex flex-wrap items-center gap-1">
-                            {exam.course && <span className="font-bold text-amber-600">{exam.course}</span>}
-                            {exam.dueTime && <span>• {formatTime12Hour(exam.dueTime)}</span>}
-                            {exam.notes && <span>• {exam.notes}</span>}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <div className="flex justify-between items-start mb-4">
-                  <span className="text-sm font-black text-gray-900 tracking-tight">Today's Classes</span>
-                  <button onClick={() => navigate('/tools')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
-                    View all <ChevronRight size={13} />
-                  </button>
-                </div>
-
-                {todaysClassesWithStatus.length === 0 ? (
-                  <div className="flex items-center justify-between py-2">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-gray-900/5 flex items-center justify-center flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#002F45" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"></path></svg>
-                      </div>
-                      <div>
-                        <p className="text-[15px] font-bold text-gray-900 flex items-center gap-1.5">
-                          {todayHoliday ? <><PartyPopper className="w-4 h-4 text-primary-600" /> {todayHoliday.name}</> : 'No classes today!'}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-0.5 font-medium flex items-center">
-                          {todayHoliday ? <>No classes today unless your lecturer said so <CustomEyes size={14} className="inline ml-1" /></> : 'Enjoy your free time.'}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => navigate('/tools/timetable')}
-                      className="flex bg-primary-50 text-primary-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-100 transition-colors"
-                    >
-                      Add Class
-                    </button>
-                  </div>
-                ) : allCompleted ? (
-                  <div className="flex items-center gap-4 py-2">
-                    <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center flex-shrink-0 border border-green-100">
-                      <CheckCircle2 size={24} className="text-green-500" />
-                    </div>
-                    <div>
-                      <p className="text-[15px] font-bold text-gray-900">All classes ended!</p>
-                      <p className="text-xs text-gray-500 mt-0.5 font-medium">You've successfully completed all classes for today.</p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {todaysClassesWithStatus.slice(0, 3).map((cls, i) => (
-                      <div key={i} className={`flex items-center gap-4 transition-opacity ${cls.status === 'completed' ? 'opacity-40' : 'opacity-100'}`}>
-                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${cls.status === 'completed' ? 'bg-gray-100' :
-                          cls.status === 'ongoing' ? 'bg-blue-50 border border-blue-100 shadow-sm' :
-                            'bg-gray-900/5'
-                          }`}>
-                          {cls.status === 'completed' ? <CheckCircle2 size={16} className="text-gray-400" /> :
-                            cls.status === 'ongoing' ? <Loader2 size={16} className="text-blue-600 animate-spin" /> :
-                              <Clock size={16} className="text-gray-900" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-bold truncate ${cls.status === 'completed' ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
-                            {cls.courseName || cls.name || 'Class'}
-                          </p>
-                          <p className={`text-xs font-medium mt-0.5 flex flex-wrap items-center gap-1 ${cls.status === 'ongoing' ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
-                            <span>
-                              {cls.status === 'ongoing' ? 'Happening Now • ' : ''}
-                              {cls.status === 'completed' ? 'Completed • ' : ''}
-                              {cls.status === 'upcoming' && cls.timeUntilStr ? <span className="text-orange-500 font-bold">{cls.timeUntilStr} • </span> : ''}
-                              {cls.startTime && cls.endTime ? `${formatTime12Hour(cls.startTime)} – ${formatTime12Hour(cls.endTime)}` : formatTime12Hour(cls.startTime) || ''}
-                            </span>
-                            {cls.location && (
-                              <span className="flex items-center gap-0.5 font-bold opacity-90">
-                                • <CustomMapPin className="w-2.5 h-2.5" /> {cls.location}
-                              </span>
-                            )}
-                          </p>
-                        </div>
-
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-              </div>
-            )
+            <TodayClasses isExamModeActive={isExamModeActive} todaysExams={todaysExams}
+              todaysClassesWithStatus={todaysClassesWithStatus} allCompleted={allCompleted}
+              todayHoliday={todayHoliday} navigate={navigate} formatTime12Hour={formatTime12Hour}
+              isDeferredActive={isDeferredActive} />
           )}
-
-          {renderFeaturedAd()}
-
-          {/* 1.5 Overlapping Floating Card (Today's Tasks + Deadlines) */}
+          <FeaturedAd isDeferredActive={isDeferredActive} featuredContent={featuredContent} />
           {homeWidgets.tasks && (
-            !isDeferredActive ? (
-              <SkeletonCard />
-            ) : (
-              <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
-            <div className="flex justify-between items-start mb-4">
-              <span className="text-sm font-black text-gray-900 tracking-tight">Today's Tasks</span>
-              <button onClick={() => navigate('/tools/plan-day')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
-                Manage <ChevronRight size={13} />
-              </button>
-            </div>
-
-            {/* ── Urgent Deadlines Strip (overdue + due today) ── */}
-            {urgentDeadlines.length > 0 && (
-              <div className="mb-4 space-y-2">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-1">
-                    <AlertTriangle size={10} /> Deadlines
-                  </span>
-                  <button onClick={() => navigate('/tools/assignments')} className="text-[10px] font-bold text-primary-400 hover:underline">
-                    View all
-                  </button>
-                </div>
-                {urgentDeadlines.map(a => {
-                  const todayStr = new Date().toISOString().split('T')[0];
-                  const isOverdue = a.dueDate < todayStr;
-                  return (
-                    <div key={a.id} className={`flex items-center gap-3 p-3 rounded-xl ${isOverdue ? 'bg-red-50 border border-red-100' : 'bg-orange-50 border border-orange-100'}`}>
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${isOverdue ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
-                        <FileText size={14} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-xs font-bold truncate ${isOverdue ? 'text-red-800' : 'text-orange-800'}`}>{a.title}</p>
-                        <p className={`text-[10px] font-medium ${isOverdue ? 'text-red-600' : 'text-orange-600'}`}>
-                          {isOverdue ? 'Overdue' : 'Due today'}{a.dueTime ? ` • ${formatTime12Hour(a.dueTime)}` : ''}{a.course ? ` • ${a.course}` : ''}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => handleQuickMarkSubmitted(a.id)}
-                        className="text-[9px] font-bold px-2 py-1 rounded-md bg-white shadow-sm border border-gray-100 text-green-700 hover:bg-green-50 active:scale-95 transition-all flex-shrink-0"
-                      >
-                        Done
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* ── Task list or empty state ── */}
-            {todaysTasks.length === 0 && urgentDeadlines.length === 0 ? (
-              suggestedClassTasks.length > 0 ? (
-                <div className="flex flex-col gap-2">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Suggested Task</p>
-                  <div className="flex items-center justify-between py-2 bg-primary-50 p-4 rounded-xl border border-primary-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0">
-                        <CustomGuide size={16} />
-                      </div>
-                      <div className="min-w-0 pr-2">
-                        <p className="text-sm font-bold text-slate-800 break-words leading-tight">Revise {suggestedClassTasks[0].courseName || suggestedClassTasks[0].name || 'Class'}</p>
-                        <p className="text-xs text-slate-500 mt-0.5 font-medium truncate">Before class</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleAddSuggestion(suggestedClassTasks[0])}
-                      className="bg-white border border-primary-200 text-primary-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-primary-50 transition-all flex items-center gap-1 flex-shrink-0"
-                    >
-                      <Plus size={14} /> Add
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between py-2 bg-slate-50 p-4 rounded-xl border border-slate-100 border-dashed">
-                  <div>
-                    <p className="text-sm font-bold text-slate-800">No tasks planned</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Want to organize your day?</p>
-                  </div>
-                  <button
-                    onClick={() => navigate('/tools/plan-day')}
-                    className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:border-primary-200 transition-all"
-                  >
-                    Plan Day
-                  </button>
-                </div>
-              )
-            ) : (
-              <div className="space-y-3">
-                {todaysTasks.slice(0, 3).map((task) => {
-                  const IconCmp = getIconComponent(task.icon);
-                  const isCompleted = task.status === 'completed';
-                  return (
-                    <div key={task.id} className={`flex items-center gap-3 p-2 -mx-2 rounded-xl transition-all hover:bg-slate-50 ${isCompleted ? 'opacity-60' : 'opacity-100'}`}>
-                      {/* Interactive Checkbox */}
-                      <button
-                        onClick={() => toggleTaskStatus(task.id)}
-                        className="flex-shrink-0 text-slate-300 hover:text-primary-600 transition-colors p-1"
-                      >
-                        {isCompleted ? <CheckCircle2 size={22} className="text-primary-500" /> : <Circle size={22} />}
-                      </button>
-
-                      {/* Icon Block */}
-                      <div
-                        className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${isCompleted ? 'bg-slate-100 text-slate-400' : 'bg-primary-50 text-primary-600 shadow-sm border border-primary-100/50'
-                          }`}
-                      >
-                        <IconCmp size={18} />
-                      </div>
-
-                      {/* Text */}
-                      <div className="flex-1 min-w-0 cursor-pointer" onClick={() => toggleTaskStatus(task.id)}>
-                        <p className={`text-sm font-bold truncate ${isCompleted ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
-                          {task.title}
-                        </p>
-                        <p className="text-[11px] font-medium mt-0.5 text-slate-500">
-                          {formatTime12Hour(task.time)}
-                          {task.endTime ? ` – ${formatTime12Hour(task.endTime)}` : ''}
-                        </p>
-                      </div>
-
-                      {/* Play Button */}
-                      {!isCompleted && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            localStorage.setItem('ucc_focus_task', JSON.stringify(task));
-                            navigate('/focus');
-                          }}
-                          className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-colors ml-auto flex-shrink-0"
-                          title="Start Focus Timer"
-                        >
-                          <Play size={18} className="fill-current" />
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-                {todaysTasks.length > 3 && (
-                  <button onClick={() => navigate('/tools/plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
-                    +{todaysTasks.length - 3} more tasks
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* ── This Week Deadlines (upcoming assignments) ── */}
-            {thisWeekDeadlines.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 flex items-center gap-1">
-                    <Clock size={10} /> Coming Up
-                  </span>
-                  <button onClick={() => navigate('/tools/assignments')} className="text-[10px] font-bold text-primary-400 hover:underline">
-                    View all
-                  </button>
-                </div>
-                {thisWeekDeadlines.map(a => {
-                  const todayStr = new Date().toISOString().split('T')[0];
-                  const d = new Date(a.dueDate + 'T12:00:00');
-                  const today = new Date(); today.setHours(0, 0, 0, 0);
-                  const diffDays = Math.round((d - today) / 86400000);
-                  let dayLabel = '';
-                  if (diffDays === 1) dayLabel = 'Tomorrow';
-                  else if (diffDays <= 7) dayLabel = `${d.toLocaleDateString('en-US', { weekday: 'short' })} ${d.getDate()}`;
-
-                  return (
-                    <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl bg-amber-50/50 border border-amber-100/60">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${a.priority === 'high' ? 'bg-red-100 text-red-600' :
-                        a.priority === 'medium' ? 'bg-amber-100 text-amber-600' :
-                          'bg-blue-100 text-blue-600'
-                        }`}>
-                        <FileText size={14} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold truncate text-gray-900">{a.title}</p>
-                        <p className="text-[10px] font-medium text-amber-700">
-                          {dayLabel}{a.dueTime ? ` • ${formatTime12Hour(a.dueTime)}` : ''}{a.course ? ` • ${a.course}` : ''}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => navigate('/tools/assignments')}
-                        className="text-[9px] font-bold px-2 py-1 rounded-md bg-white shadow-sm border border-gray-100 text-primary-400 hover:bg-primary-400/5 active:scale-95 transition-all flex-shrink-0"
-                      >
-                        Open
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )
-      )}
-
-          {/* 1.55 Sam Jonah Library Status */}
-          {homeWidgets.library && (
-            <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
-              <div className="flex items-center gap-2 mb-3">
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${libraryStatus.isOpen ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}>
-                  <LibrarySvg size={16} className={libraryStatus.isOpen ? 'text-green-600' : 'text-red-500'} />
-                </div>
-                <span className="text-sm font-black text-gray-900 tracking-tight">Sam Jonah Library</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${libraryStatus.isOpen
-                  ? 'bg-green-50 text-green-700 border border-green-100'
-                  : 'bg-red-50 text-red-600 border border-red-100'
-                  }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${libraryStatus.isOpen ? 'bg-green-500 animate-pulse' : 'bg-red-400'}`}></span>
-                  {libraryStatus.label}
-                </span>
-                <span className="text-xs text-gray-500 font-medium">{libraryStatus.detail}</span>
-              </div>
-            </div>
+            <TasksSection isDeferredActive={isDeferredActive} urgentDeadlines={urgentDeadlines}
+              todaysTasks={todaysTasks} thisWeekDeadlines={thisWeekDeadlines}
+              handleQuickMarkSubmitted={handleQuickMarkSubmitted} toggleTaskStatus={toggleTaskStatus}
+              handleAddSuggestion={handleAddSuggestion} suggestedClassTasks={suggestedClassTasks}
+              navigate={navigate} formatTime12Hour={formatTime12Hour} getIconComponent={getIconComponent} />
           )}
-
-          {/* 1.5b Upcoming Planned Events */}
-          {homeWidgets.tasks && upcomingPlannedTasks.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-6 border border-gray-100 flex flex-col justify-center">
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-sm font-black text-gray-900 tracking-tight">Upcoming Events</span>
-                <button onClick={() => navigate('/tools/plan-day')} className="text-xs text-primary-600 font-bold flex items-center gap-0.5">
-                  View all <ChevronRight size={13} />
-                </button>
-              </div>
-              <div className="space-y-3">
-                {upcomingPlannedTasks.slice(0, 4).map((task) => {
-                  const IconCmp = getIconComponent(task.icon);
-                  const taskDate = new Date(task.date + 'T00:00:00');
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  const diffDays = Math.ceil((taskDate - today) / (1000 * 60 * 60 * 24));
-                  let dayLabel = '';
-                  if (diffDays === 1) dayLabel = 'Tomorrow';
-                  else if (diffDays <= 7) dayLabel = `In ${diffDays} days`;
-                  else dayLabel = `In ${Math.ceil(diffDays / 7)} week${Math.ceil(diffDays / 7) > 1 ? 's' : ''}`;
-                  return (
-                    <div key={task.id} className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-slate-50 transition-colors">
-                      <div className="w-10 h-10 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center flex-shrink-0 shadow-sm border border-primary-100/50">
-                        <IconCmp size={18} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold truncate text-slate-900">{task.title}</p>
-                        <p className="text-[11px] font-medium mt-0.5 text-slate-500">
-                          {dayLabel} • {formatTime12Hour(task.time)}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-                {upcomingPlannedTasks.length > 4 && (
-                  <button onClick={() => navigate('/tools/plan-day')} className="w-full text-center text-xs font-bold text-gray-400 pt-2 hover:text-primary-600 transition-colors">
-                    +{upcomingPlannedTasks.length - 4} more events
-                  </button>
-                )}
-              </div>
-            </div>
+          {homeWidgets.library && <LibraryStatus libraryStatus={libraryStatus} />}
+          {homeWidgets.tasks && (
+            <UpcomingSection upcomingPlannedTasks={upcomingPlannedTasks} navigate={navigate}
+              formatTime12Hour={formatTime12Hour} getIconComponent={getIconComponent} />
           )}
-
-          {/* 1.6 Upcoming Academic Events */}
-          {homeWidgets.calendar && upcomingAcademicEvents.length > 0 && (
-            <div className="bg-gray-900 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1)] p-6 border border-gray-900/90 flex flex-col justify-center mt-2 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mt-12 -mr-12 pointer-events-none blur-2xl" />
-
-              <div className="flex items-center gap-2 mb-4 relative z-10">
-                <div className="w-6 h-6 rounded-lg bg-white/10 flex items-center justify-center">
-                  <Calendar size={12} className="text-primary-400" />
-                </div>
-                <span className="text-sm font-black text-white tracking-tight">Academic Calendar</span>
-              </div>
-
-              <div className="space-y-3 relative z-10">
-                {upcomingAcademicEvents.map((ev, idx) => (
-                  <div key={idx} className="flex flex-col gap-1 border-l-2 border-primary-400/30 pl-3 py-1">
-                    <p className="text-[13px] font-bold text-white leading-tight">
-                      {ev.title}
-                    </p>
-                    <p className="text-[11px] font-medium text-primary-400 flex items-center gap-1.5">
-                      <span className="font-bold">{ev.timeLabel}</span>
-                      <span className="opacity-50">•</span>
-                      <span>{ev.formattedDate}</span>
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 2. Campus Tools (Horizontal Scroll) */}
-          <div className="pt-2">
-            <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">Tools</h3>
-            <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 px-1 -mx-1">
-              {quickActions.map((action, i) => {
-                const Icon = action.icon;
-                return (
-                  <button
-                    key={i}
-                    onClick={action.action}
-                    className="bg-white border border-gray-200 rounded-2xl p-3 flex-none flex items-center gap-3 active:scale-95 transition-transform"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100">
-                      <Icon size={18} className="text-gray-900" />
-                    </div>
-                    <span className="text-[13px] font-bold text-gray-900 leading-tight pr-2 whitespace-nowrap">
-                      {action.title}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 3. Quick Note Scratchpad */}
-          {homeWidgets.quickNote && (<div className="pt-2">
-            <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">Quick Note</h3>
-            <div className="bg-[#FFF9C4] rounded-2xl shadow-sm border border-[#FFF59D] p-4 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-8 h-8 bg-black/5 rounded-bl-2xl -mt-2 -mr-2 pointer-events-none" />
-              <textarea
-                value={quickNotes}
-                onChange={(e) => setQuickNotes(e.target.value)}
-                placeholder="Jot down a locker number, assignment due date, or anything you don't want to forget..."
-                className="w-full h-24 bg-transparent resize-none border-none outline-none focus:outline-none focus:ring-0 p-0 text-sm font-medium text-amber-900 placeholder-amber-700/50"
-              />
-            </div>
-          </div>
-          )}
-
-
-
-          {/* 4. Promotional Banner (Support Card - Mobile) */}
-          <div
-            onClick={() => actions?.setShowSupportModal(true)}
-            className="bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-gray-100 p-6 flex items-center justify-between overflow-hidden relative group cursor-pointer active:scale-[0.98] transition-transform"
-          >
-            <div className="relative z-10">
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Support the Guide</h3>
-              <p className="text-sm text-gray-500 max-w-[200px] leading-relaxed mb-3">
-                Help us keep this app free and growing for all students.
-              </p>
-              <span className="inline-block bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm">
-                Support Now
-              </span>
-            </div>
-            <div className="relative z-10 w-24 h-24 -mr-4 flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
-              <img src="/Savings.png" alt="Support" className="w-full h-full object-contain drop-shadow-md" />
-            </div>
-          </div>
-
+          {homeWidgets.calendar && <AcademicEvents upcomingAcademicEvents={upcomingAcademicEvents} />}
+          <QuickActions quickActions={quickActions} />
+          {homeWidgets.quickNote && <QuickNote quickNotes={quickNotes} setQuickNotes={setQuickNotes} />}
+          <SupportBanner actions={actions} />
         </div>
       </div>
-      {/* end MOBILE */}
-
-
-      {/* ════════════════════════════════════════════
-          DESKTOP LAYOUT
-      ════════════════════════════════════════════ */}
-      <div className="hidden lg:block">
-        {/* Hero */}
-        <div className="relative overflow-hidden bg-white border-b border-gray-100/80 py-12 px-6">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-40">
-            <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob" />
-            <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000" />
-            <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000" />
-          </div>
-          <div className="relative max-w-6xl mx-auto z-10 grid grid-cols-12 items-center gap-6">
-            <div className="col-span-7 text-left mt-8">
-              <div className="flex items-center gap-4 mb-4">
-                {profile.avatarUrl && (
-                  <div
-                    onClick={() => navigate('/profile')}
-                    className="w-16 h-16 rounded-2xl border border-gray-200 shadow-sm overflow-hidden cursor-pointer active:scale-95 transition-transform bg-white p-0.5"
-                  >
-                    <img src={profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover rounded-xl bg-gray-50" />
-                  </div>
-                )}
-                <div className="flex-1 flex items-center justify-between">
-                  <div>
-                    <p className="text-primary-600 text-sm font-semibold tracking-widest uppercase mb-1 flex items-center">
-                      {TODAY_LABEL}
-                      <StreakBadge variant="desktop" />
-                    </p>
-                    <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight flex items-center flex-wrap gap-1">
-                      {getGreeting()}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''}
-                      {getGreeting() === 'Happy New Month' ? (
-                        <span onClick={triggerConfetti} className="cursor-pointer hover:scale-110 active:scale-95 transition-transform">🎉</span>
-                      ) : ' 👋'}
-                    </h1>
-                  </div>
-
-                  {/* 🛎️ NEW: Desktop Bell Icon */}
-                  <div id="bell-anchor-desktop" className="relative">
-                    <button
-                      onClick={() => setIsNotifOpen(!isNotifOpen)}
-                      className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-500 hover:text-primary-600 hover:border-primary-200 cursor-pointer transition-all"
-                    >
-                      <Bell size={18} />
-                      {showRedDot && (
-                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
-                      )}
-                    </button>
-                    <NotificationDropdown
-                      isOpen={isNotifOpen}
-                      onClose={() => setIsNotifOpen(false)}
-                      unreadItems={unreadItems}
-                      readItems={readItems}
-                      fetchStatus={fetchStatus}
-                      notificationsEnabled={notificationsEnabled}
-                      onMarkItemRead={markItemAsRead}
-                      onMarkAllRead={markAllAsRead}
-                      onNavigate={handleNavigateToCommunity}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <h2 className="text-2xl font-bold text-gray-700 mb-4 tracking-tight leading-tight">
-                Your Essential{' '}
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 via-primary-600 to-primary-600">
-                  Campus Companion
-                </span>
-              </h2>
-
-              {homeWidgets.weather && weatherData && (() => {
-                const { svgType, color, bg, advice } = getWeatherIconAndAdvice(weatherData.weathercode, weatherData.temperature);
-                return (
-                  <div className={`inline-flex items-center gap-3 ${bg} border border-white px-4 py-2 rounded-2xl shadow-sm mb-6`}>
-                    {renderWeatherSvg(svgType, 20, color)}
-                    <span className="text-gray-800 font-bold text-sm">
-                      {weatherData.temperature}°C <span className="font-medium text-gray-500 mx-1">•</span> {advice}
-                    </span>
-                  </div>
-                );
-              })()}
-
-              <p className="text-lg text-gray-500 mb-6 max-w-xl font-medium">
-                Navigate campus life with clear guides, essential tools, and quick access to services all in a compact, easy-to-use hub.
-              </p>
-              <div className="flex items-center gap-4">
-                <Button variant="primary" onClick={() => navigate('/guide')}
-                  className="bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold shadow-soft btn-hover flex items-center gap-3">
-                  <CustomGuide size={18} /> Open Guide
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/tools')}
-                  className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-xl font-semibold shadow-sm flex items-center gap-3">
-                  <CustomTools size={18} className="text-gray-400" /> Open Tools
-                </Button>
-              </div>
-            </div>
-            <div className="col-span-5 flex items-center justify-end">
-              <div className="relative w-full max-w-lg -mr-6">
-                <img src={CampusIllustration} alt="Campus illustration"
-                  className="w-full h-auto object-contain drop-shadow-lg"
-                  style={{ WebkitTransform: 'translateZ(0)' }} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop content */}
-        <div className="max-w-5xl mx-auto px-6 py-16 space-y-12">
-
-          {/* Active Reminders (Desktop) */}
-          {activeReminders.length > 0 && (
-            <section className="bg-red-50 border border-red-100 rounded-3xl p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black text-red-800 uppercase tracking-widest flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
-                  Active Reminders ({activeReminders.length})
-                </h3>
-                <button
-                  onClick={() => navigate('/tools')}
-                  className="text-xs font-black text-red-700 uppercase tracking-wider hover:underline bg-transparent border-none p-0 cursor-pointer"
-                >
-                  Manage Reminders
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {activeReminders.map((reminder) => (
-                  <div key={reminder.id} className="bg-white p-4 rounded-2xl border border-red-100 flex items-center justify-between gap-4 shadow-sm">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-base font-bold text-gray-900 truncate">{reminder.title}</p>
-                      <p className="text-xs font-semibold text-red-600 mt-1">
-                        Due: {new Date(reminder.dueDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        const updated = reminders.map(r => r.id === reminder.id ? { ...r, completed: true } : r);
-                        setReminders(updated);
-                      }}
-                      className="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-black uppercase tracking-wider rounded-xl transition-colors shrink-0 border-none cursor-pointer"
-                    >
-                      Mark Done
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-
-
-          {renderFeaturedAd()}
-
-          {/* Quick Actions */}
-          <section>
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quick Actions</h2>
-            </div>
-            <div className="space-y-6">
-              <div className="flex gap-6 py-2 overflow-x-auto hide-scrollbar">
-                {quickActions.map((action, index) => {
-                  const Icon = action.icon;
-                  return (
-                    <button key={index} onClick={action.action}
-                      className="group relative overflow-hidden text-left p-5 bg-white border border-gray-100 hover:border-primary-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-xl transition-all duration-300 flex items-center justify-between flex-none"
-                      style={{ minWidth: 'min(24rem, calc((100vw - 96px) / 4))' }}>
-                      <div className="flex items-center gap-4 relative z-10">
-                        <div className="w-14 h-14 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 bg-primary-50">
-                          <Icon size={24} className="text-primary-600" />
-                        </div>
-                        <h4 className="font-bold text-gray-900 text-base">{action.title}</h4>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 relative z-10">
-                        <ArrowRight size={16} className="text-primary-600" />
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-
-          {/* Support (Desktop Fixed Button) */}
-          <section>
-            <div className="relative overflow-hidden bg-gradient-to-br from-primary-50 to-white rounded-xl p-10 sm:p-14 border border-primary-100 shadow-sm">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary-100/30 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
-              <div className="relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 text-center lg:text-left">
-                <div className="flex-1">
-                  <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">Support This Project</h2>
-                  <p className="text-gray-500 mb-10 max-w-lg mx-auto lg:mx-0 text-lg font-medium">
-                    Your support keeps this project alive and growing for every UCC student.
-                  </p>
-                  <div className="max-w-sm mx-auto lg:mx-0 space-y-5">
-                    <button
-                      onClick={() => actions?.setShowSupportModal(true)}
-                      className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-primary-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      Support Now (GH₵5)
-                    </button>
-                    <p className="text-sm font-medium text-gray-500">
-                      Issues or suggestions?{' '}
-                      <a href="mailto:uccguide25@gmail.com" className="text-primary-600 hover:underline">Contact us</a>
-                    </p>
-                  </div>
-                </div>
-                <div className="flex-1 flex justify-center lg:justify-end">
-                  <img src="/Savings.png" alt="Support Development" className="w-full max-w-[300px] object-contain drop-shadow-2xl" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-        </div>
-      </div>
-      {/* end DESKTOP */}
-
-      {/* Focus Timer logic moved to standalone /focus route */}
-
-      {/* Quick Expense Modal */}
-      <Modal
-        isOpen={showExpensePopup}
-        onClose={() => setShowExpensePopup(false)}
-        title="Quick Log Expense"
-      >
-        <form onSubmit={handleQuickExpenseSubmit} className="flex flex-col gap-4">
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-lg">GH₵</span>
-            <input
-              type="number"
-              step="0.01"
-              autoFocus
-              value={quickExpenseAmt}
-              onChange={e => setQuickExpenseAmt(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl py-4 pl-14 pr-4 font-bold text-xl text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
-              placeholder="0.00"
-            />
-          </div>
-          <button type="submit" className="w-full bg-primary-500 hover:bg-primary-600 text-white py-4 rounded-xl font-bold text-lg active:scale-95 transition-all shadow-sm">
-            Save Expense
-          </button>
-        </form>
-      </Modal>
-
-      {/* 🧭 Coach Marks Walkthrough */}
-      <CoachMarksOverlay
-        storageKey="ucc_coach_home"
-        steps={HOME_COACH_STEPS}
-      />
-
+      <DesktopLayout profile={profile} getGreeting={getGreeting} TODAY_LABEL={TODAY_LABEL}
+        TODAY_NAME={TODAY_NAME} triggerConfetti={triggerConfetti} prodStats={prodStats}
+        weatherData={weatherData} homeWidgets={homeWidgets} renderWeatherSvg={renderWeatherSvg}
+        getWeatherIconAndAdvice={getWeatherIconAndAdvice} isNotifOpen={isNotifOpen}
+        setIsNotifOpen={setIsNotifOpen} showRedDot={showRedDot} {...notifProps}
+        navigate={navigate} quickActions={quickActions} isDeferredActive={isDeferredActive}
+        featuredContent={featuredContent} actions={actions}
+        activeReminders={activeReminders} reminders={reminders} setReminders={setReminders} />
+      <ExpenseModal showExpensePopup={showExpensePopup} setShowExpensePopup={setShowExpensePopup}
+        quickExpenseAmt={quickExpenseAmt} setQuickExpenseAmt={setQuickExpenseAmt}
+        handleQuickExpenseSubmit={handleQuickExpenseSubmit} />
+      <CoachMarksOverlay storageKey="ucc_coach_home" steps={HOME_COACH_STEPS} />
     </div>
   );
 };
-
-const HOME_COACH_STEPS = [
-  {
-    icon: <CustomHome size={24} />,
-    title: 'Welcome to your Hub!',
-    description: 'Your home screen is your main campus cockpit. View class alerts, quick actions, and widget grids.'
-  },
-  {
-    icon: <CustomCoach size={24} />,
-    title: 'Timetable Classes',
-    description: "Instantly view today's lecture schedule and locations, with real-time countdown alerts for your classes."
-  },
-  {
-    icon: <CustomSafetyCheck size={24} />,
-    title: "Today's Tasks & Sync",
-    description: "Manage your daily todo checklist directly on your homepage to stay on top of study sessions and projects."
-  },
-  {
-    icon: <CustomCustomize size={24} />,
-    title: "Customize Your Home",
-    description: "Personalize your home screen with customizable widgets! Add dad jokes, fun facts, forex rates, and more from your Profile settings."
-  },
-  {
-    icon: <CustomProfile size={24} />,
-    title: "Profile Digital ID",
-    description: "Tap your digital student card to update your credentials, set up cloud backups, and configure widget visibility."
-  }
-];
 
 export default Home;

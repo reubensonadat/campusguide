@@ -2,203 +2,142 @@ import { supabase } from '../lib/supabase';
 import CampusMapData from '../components/guide/content/ucc/CampusMap';
 import { UCC_KNOWLEDGE_BASE, getKnowledgeForLocation } from '../components/guide/content/ucc/KnowledgeBase';
 
-/**
- * Campus Data Service
- * 
- * Fetches buildings, knowledge, and guide cards from Supabase.
- * Falls back to static data if fetch fails (never wipes user data).
- * 
- * 3-State Logic: Loading → Success(data) | Error(fallback to static)
- */
+const CACHE_KEY = 'ucc_campus_data';
+const CACHE_META_KEY = 'ucc_campus_data_meta';
+const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-// Static fallback data (always available, no network needed)
+const readCache = () => {
+  try {
+    const meta = JSON.parse(localStorage.getItem(CACHE_META_KEY));
+    if (!meta || Date.now() - meta.timestamp > CACHE_TTL) return null;
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (meta.buildingsHash !== hashData(data?.buildings)) return null;
+    return { data, meta };
+  } catch { return null; }
+};
+
+const writeCache = (data) => {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    localStorage.setItem(CACHE_META_KEY, JSON.stringify({
+      timestamp: Date.now(),
+      buildingsHash: hashData(data?.buildings),
+    }));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      try {
+        localStorage.removeItem(CACHE_KEY);
+        localStorage.removeItem(CACHE_META_KEY);
+      } catch {}
+    }
+  }
+};
+
+const clearCache = () => {
+  try { localStorage.removeItem(CACHE_KEY); localStorage.removeItem(CACHE_META_KEY); } catch {}
+};
+
+const hashData = (obj) => {
+  if (!obj) return '';
+  let h = 0;
+  const s = typeof obj === 'string' ? obj : JSON.stringify(obj);
+  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+  return h.toString();
+};
+
 const getStaticBuildings = () => {
-    const { buildings, openGoogleMaps, getCoordinates, defaultCenter } = CampusMapData({ onLocationSelect: () => { } });
-    return { buildings, openGoogleMaps, getCoordinates, defaultCenter };
+  const { buildings, openGoogleMaps, getCoordinates, defaultCenter } = CampusMapData({ onLocationSelect: () => {} });
+  return { buildings, openGoogleMaps, getCoordinates, defaultCenter };
 };
 
 const getStaticKnowledge = () => UCC_KNOWLEDGE_BASE;
 
-/**
- * Transform a Supabase building row to match the static buildings array format.
- * DB has latitude/longitude columns; static uses "lat, lng" url string.
- */
 const transformBuildingRow = (row) => ({
-    id: row.id,
-    fullName: row.full_name,
-    shortForm: row.short_form,
-    description: row.description,
-    url: `${row.latitude}, ${row.longitude}`,
-    category: row.category,
-    _source: 'db' // marker to distinguish from static
+  id: row.id, fullName: row.full_name, shortForm: row.short_form, description: row.description,
+  url: `${row.latitude}, ${row.longitude}`, category: row.category, _source: 'db'
 });
 
-/**
- * Transform a Supabase knowledge row to match the static KnowledgeBase format.
- */
 const transformKnowledgeRow = (row) => {
-    const entry = {
-        title: row.title,
-        tags: row.tags || [],
-        history: row.history,
-        architecture: row.architecture,
-        statistics: row.statistics || {},
-        disclaimer: row.disclaimer,
-        _source: 'db'
-    };
-    // Only add non-null fields
-    if (row.rules && row.rules.length > 0) entry.rules = row.rules;
-    if (row.residential_rules && row.residential_rules.length > 0) entry.residentialRules = row.residential_rules;
-    if (row.floors && row.floors.length > 0) entry.floors = row.floors;
-    if (row.accessibility) entry.accessibility = row.accessibility;
-    if (row.hazards && row.hazards.length > 0) entry.hazards = row.hazards;
-    if (row.sculpture) entry.sculpture = row.sculpture;
-    if (row.grievance_chain && row.grievance_chain.length > 0) entry.grievanceChain = row.grievance_chain;
-    return entry;
+  const entry = { title: row.title, tags: row.tags || [], history: row.history, architecture: row.architecture, statistics: row.statistics || {}, disclaimer: row.disclaimer, _source: 'db' };
+  if (row.rules?.length > 0) entry.rules = row.rules;
+  if (row.residential_rules?.length > 0) entry.residentialRules = row.residential_rules;
+  if (row.floors?.length > 0) entry.floors = row.floors;
+  if (row.accessibility) entry.accessibility = row.accessibility;
+  if (row.hazards?.length > 0) entry.hazards = row.hazards;
+  if (row.sculpture) entry.sculpture = row.sculpture;
+  if (row.grievance_chain?.length > 0) entry.grievanceChain = row.grievance_chain;
+  return entry;
 };
 
-/**
- * Transform a Supabase guide card row to the format used by the search UI.
- */
 const transformGuideCardRow = (row) => ({
-    id: row.id,
-    title: row.title,
-    subtitle: row.subtitle,
-    icon: row.icon,
-    category: row.category,
-    content: row.content || [],
-    searchKeywords: row.search_keywords || [],
-    _source: 'db',
-    _type: 'guide_card' // marker to distinguish from buildings
+  id: row.id, title: row.title, subtitle: row.subtitle, icon: row.icon, category: row.category,
+  content: row.content || [], searchKeywords: row.search_keywords || [], _source: 'db', _type: 'guide_card'
 });
 
-/**
- * Fetch all campus data from Supabase with static fallback.
- * Returns { buildings, knowledge, guideCards, openGoogleMaps, getCoordinates, defaultCenter, isLoading, error }
- */
 export const fetchCampusData = async (campusId = 'ucc') => {
-    const staticData = getStaticBuildings();
+  const staticData = getStaticBuildings();
+  const cached = readCache();
+  if (cached) return { ...cached.data, isLoading: false, error: null, source: 'cache', isCached: true };
 
-    try {
-        // Fetch all 3 tables in parallel
-        const [buildingsRes, knowledgeRes, cardsRes] = await Promise.all([
-            supabase
-                .from('campus_buildings')
-                .select('*')
-                .eq('campus_id', campusId)
-                .eq('is_active', true)
-                .order('sort_order', { ascending: true }),
-            supabase
-                .from('campus_knowledge')
-                .select('*')
-                .eq('campus_id', campusId)
-                .eq('is_active', true),
-            supabase
-                .from('campus_guide_cards')
-                .select('*')
-                .eq('campus_id', campusId)
-                .eq('is_active', true)
-                .order('sort_order', { ascending: true })
-        ]);
+  try {
+    const [buildingsRes, knowledgeRes, cardsRes] = await Promise.all([
+      supabase.from('campus_buildings').select('*').eq('campus_id', campusId).eq('is_active', true).order('sort_order', { ascending: true }),
+      supabase.from('campus_knowledge').select('*').eq('campus_id', campusId).eq('is_active', true),
+      supabase.from('campus_guide_cards').select('*').eq('campus_id', campusId).eq('is_active', true).order('sort_order', { ascending: true })
+    ]);
 
-        // Check for errors (but don't throw — fall back gracefully)
-        const buildingsError = buildingsRes.error;
-        const knowledgeError = knowledgeRes.error;
-        const cardsError = cardsRes.error;
+    const bErr = buildingsRes.error, kErr = knowledgeRes.error, cErr = cardsRes.error;
 
-        if (buildingsError && knowledgeError && cardsError) {
-            // All 3 failed — use static fallback
-            console.warn('[CampusData] All fetches failed, using static fallback:', buildingsError.message);
-            return {
-                buildings: staticData.buildings,
-                knowledge: getStaticKnowledge(),
-                guideCards: [],
-                openGoogleMaps: staticData.openGoogleMaps,
-                getCoordinates: staticData.getCoordinates,
-                defaultCenter: staticData.defaultCenter,
-                isLoading: false,
-                error: null,
-                source: 'static'
-            };
-        }
-
-        // Build buildings: prefer DB, fall back to static for any missing
-        const dbBuildings = buildingsRes.data && !buildingsError
-            ? buildingsRes.data.map(transformBuildingRow)
-            : null;
-
-        // Build knowledge: merge DB entries over static
-        const dbKnowledge = {};
-        if (knowledgeRes.data && !knowledgeError) {
-            knowledgeRes.data.forEach(row => {
-                dbKnowledge[row.id] = transformKnowledgeRow(row);
-            });
-        }
-
-        // Build guide cards
-        const dbGuideCards = cardsRes.data && !cardsError
-            ? cardsRes.data.map(transformGuideCardRow)
-            : [];
-
-        return {
-            buildings: dbBuildings || staticData.buildings,
-            knowledge: Object.keys(dbKnowledge).length > 0 ? { ...getStaticKnowledge(), ...dbKnowledge } : getStaticKnowledge(),
-            guideCards: dbGuideCards,
-            openGoogleMaps: staticData.openGoogleMaps,
-            getCoordinates: staticData.getCoordinates,
-            defaultCenter: dbBuildings && dbBuildings.length > 0
-                ? [dbBuildings[0]?.url?.split(',')[0]?.trim() || staticData.defaultCenter[0],
-                dbBuildings[0]?.url?.split(',')[1]?.trim() || staticData.defaultCenter[1]]
-                : staticData.defaultCenter,
-            isLoading: false,
-            error: null,
-            source: dbBuildings ? 'db' : 'static'
-        };
-    } catch (err) {
-        // Network error or other exception — fall back to static
-        console.warn('[CampusData] Fetch failed, using static fallback:', err.message);
-        return {
-            buildings: staticData.buildings,
-            knowledge: getStaticKnowledge(),
-            guideCards: [],
-            openGoogleMaps: staticData.openGoogleMaps,
-            getCoordinates: staticData.getCoordinates,
-            defaultCenter: staticData.defaultCenter,
-            isLoading: false,
-            error: err.message,
-            source: 'static'
-        };
+    if (bErr && kErr && cErr) {
+      console.warn('[CampusData] All fetches failed, using static fallback:', bErr.message);
+      return { buildings: staticData.buildings, knowledge: getStaticKnowledge(), guideCards: [], openGoogleMaps: staticData.openGoogleMaps, getCoordinates: staticData.getCoordinates, defaultCenter: staticData.defaultCenter, isLoading: false, error: null, source: 'static' };
     }
+
+    const dbBuildings = buildingsRes.data && !bErr ? buildingsRes.data.map(transformBuildingRow) : null;
+    const dbKnowledge = {};
+    if (knowledgeRes.data && !kErr) knowledgeRes.data.forEach(row => { dbKnowledge[row.id] = transformKnowledgeRow(row); });
+    const dbGuideCards = cardsRes.data && !cErr ? cardsRes.data.map(transformGuideCardRow) : [];
+
+    const result = {
+      buildings: dbBuildings || staticData.buildings,
+      knowledge: Object.keys(dbKnowledge).length > 0 ? { ...getStaticKnowledge(), ...dbKnowledge } : getStaticKnowledge(),
+      guideCards: dbGuideCards,
+      openGoogleMaps: staticData.openGoogleMaps,
+      getCoordinates: staticData.getCoordinates,
+      defaultCenter: dbBuildings?.length > 0 ? [dbBuildings[0]?.url?.split(',')[0]?.trim() || staticData.defaultCenter[0], dbBuildings[0]?.url?.split(',')[1]?.trim() || staticData.defaultCenter[1]] : staticData.defaultCenter,
+      isLoading: false, error: null, source: dbBuildings ? 'db' : 'static'
+    };
+
+    writeCache(result);
+    return { ...result, isCached: true };
+  } catch (err) {
+    console.warn('[CampusData] Fetch failed, using static fallback:', err.message);
+    return { buildings: staticData.buildings, knowledge: getStaticKnowledge(), guideCards: [], openGoogleMaps: staticData.openGoogleMaps, getCoordinates: staticData.getCoordinates, defaultCenter: staticData.defaultCenter, isLoading: false, error: err.message, source: 'static' };
+  }
 };
 
-/**
- * Search guide cards by keywords. Returns matching cards.
- */
+export const refreshCampusData = async (campusId = 'ucc') => {
+  clearCache();
+  return fetchCampusData(campusId);
+};
+
 export const searchGuideCards = (cards, searchTerm) => {
-    if (!searchTerm || !cards || cards.length === 0) return [];
-    const lowerTerm = searchTerm.toLowerCase();
-    const terms = lowerTerm.split(/\s+/).filter(t => t.length > 1);
-
-    return cards.filter(card => {
-        const titleMatch = card.title.toLowerCase().includes(lowerTerm);
-        const subtitleMatch = card.subtitle?.toLowerCase().includes(lowerTerm);
-        const keywordMatch = card.searchKeywords?.some(kw =>
-            terms.some(term => kw.toLowerCase().includes(term))
-        );
-        const categoryMatch = card.category.toLowerCase().includes(lowerTerm);
-        return titleMatch || subtitleMatch || keywordMatch || categoryMatch;
-    });
+  if (!searchTerm || !cards || cards.length === 0) return [];
+  const lowerTerm = searchTerm.toLowerCase();
+  const terms = lowerTerm.split(/\s+/).filter(t => t.length > 1);
+  return cards.filter(card => {
+    const titleMatch = card.title?.toLowerCase().includes(lowerTerm);
+    const subtitleMatch = card.subtitle?.toLowerCase().includes(lowerTerm);
+    const keywordMatch = card.searchKeywords?.some(kw => terms.some(term => kw.toLowerCase().includes(term)));
+    const categoryMatch = card.category?.toLowerCase().includes(lowerTerm);
+    return titleMatch || subtitleMatch || keywordMatch || categoryMatch;
+  });
 };
 
-/**
- * Get knowledge for a location name, checking DB knowledge first, then static.
- */
 export const getKnowledge = (locationName, dbKnowledge = {}) => {
-    // Try DB knowledge first
-    const name = locationName?.toLowerCase() || '';
-    for (const [key, entry] of Object.entries(dbKnowledge)) {
-        if (name.includes(key)) return entry;
-    }
-    // Fall back to static matcher
-    return getKnowledgeForLocation(locationName);
+  const name = locationName?.toLowerCase() || '';
+  for (const [key, entry] of Object.entries(dbKnowledge)) { if (name.includes(key)) return entry; }
+  return getKnowledgeForLocation(locationName);
 };

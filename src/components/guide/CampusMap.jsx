@@ -1,751 +1,195 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { ExternalLink, ChevronUp, ChevronDown, X as XIcon, Info, Search, Navigation, Loader2, AlertTriangle, FileText, Phone, Globe, Shield, AlertCircle } from 'lucide-react';
+import { ExternalLink, Info, Navigation, Loader2, Search } from 'lucide-react';
 import CampusMapData from './content/ucc/CampusMap';
 import { getKnowledgeForLocation } from './content/ucc/KnowledgeBase';
 import { fetchCampusData, searchGuideCards } from '@/services/campusDataService';
-import { Linkify } from '@/utils/linkify';
 import { Map, MapControls, MapMarker, MarkerPopup, MarkerContent, MapRoute } from '@/components/ui/map';
 import { calculateDistance, truncateRouteByProximity } from '@/utils/navigation';
-import { CustomGuide } from '@/components/common/CustomIcons';
-
-const CustomMapPin = ({ className = "w-4 h-4" }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 256 256"
-        className={className}
-        fill="currentColor"
-    >
-        <path d="M184,72a56,56,0,1,0-64,55.42V232a8,8,0,0,0,16,0V127.42A56.09,56.09,0,0,0,184,72Zm-56,40a40,40,0,1,1,40-40A40,40,0,0,1,128,112Z"></path>
-    </svg>
-);
+import LiveNavigationHUD from './LiveNavigationHUD';
+import CampusSearchSidebar from './CampusSearchSidebar';
+import KnowledgeModal from './KnowledgeModal';
 
 const MapView = () => {
-    const [knowledgeModalData, setKnowledgeModalData] = useState(null);
+  const [knowledgeModalData, setKnowledgeModalData] = useState(null);
+  const [dbBuildings, setDbBuildings] = useState(null);
+  const [dbKnowledge, setDbKnowledge] = useState({});
+  const [dbGuideCards, setDbGuideCards] = useState([]);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
-    // DB data states (must be declared before callbacks that reference them)
-    const [dbBuildings, setDbBuildings] = useState(null);
-    const [dbKnowledge, setDbKnowledge] = useState({});
-    const [dbGuideCards, setDbGuideCards] = useState([]);
-    const [isDataLoading, setIsDataLoading] = useState(true);
+  const handleMapLocate = useCallback((coords) => {
+    const userLngLat = [coords.longitude, coords.latitude];
+    if (calculateDistance(userLngLat, [-1.290810, 5.115788]) > 10000) { alert('You are currently located off-campus! Your location cannot be mapped inside the university boundaries.'); return; }
+    setUserLocation(userLngLat);
+    setViewport(prev => ({ ...prev, center: userLngLat, zoom: 17 }));
+  }, []);
 
-    // Handle Map Locate
-    const handleMapLocate = useCallback((coords) => {
-        const userLngLat = [coords.longitude, coords.latitude];
-        const uccCentroid = [-1.290810, 5.115788];
-        const distToCampus = calculateDistance(userLngLat, uccCentroid);
+  const handleLocationSelect = useCallback((loc) => {
+    let coords = null;
+    if (loc.url) { const m = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/.exec(loc.url); if (m) coords = [parseFloat(m[3]), parseFloat(m[1])]; }
+    if (coords) {
+      setViewport(prev => ({ ...prev, center: coords, zoom: 17, pitch: 45, transitionDuration: 1200 }));
+      setSelectedLocation({ ...loc, coords });
+      if (window.innerWidth < 1024) setIsMobileMenuOpen(false);
+    } else {
+      const isCoord = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(loc.url);
+      let url = loc.url;
+      if (!isCoord && url && !url.startsWith('http')) url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(url.includes('Cape Coast') ? url : `${url} University of Cape Coast`)}`;
+      if (url) window.open(url, '_blank');
+    }
+  }, []);
 
-        if (distToCampus > 10000) { // 10km away
-            alert("You are currently located off-campus! Your location cannot be mapped inside the university boundaries.");
-            return;
+  const { buildings, openGoogleMaps, getCoordinates, defaultCenter } = useMemo(() => CampusMapData({ onLocationSelect: handleLocationSelect }), [handleLocationSelect]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [fullRouteData, setFullRouteData] = useState(null);
+  const [activeRouteData, setActiveRouteData] = useState(null);
+  const [isRouting, setIsRouting] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [distanceRemaining, setDistanceRemaining] = useState(null);
+  const [isLiveNavigating, setIsLiveNavigating] = useState(false);
+  const [showBetaWarning, setShowBetaWarning] = useState(true);
+  const [sidebarView, setSidebarView] = useState('locations');
+  const watchIdRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadData = async () => {
+      try {
+        const data = await fetchCampusData('ucc');
+        if (!cancelled) {
+          if (data.buildings && data.source === 'db') setDbBuildings(data.buildings);
+          if (data.knowledge && data.source === 'db') setDbKnowledge(data.knowledge);
+          if (data.guideCards) setDbGuideCards(data.guideCards);
         }
-
-        setUserLocation(userLngLat);
-        setViewport(prev => ({
-            ...prev,
-            center: userLngLat,
-            zoom: 17
-        }));
-    }, []);
-
-    // Handle Location Selection — navigates map + shows marker popup
-    const handleLocationSelect = useCallback((loc) => {
-        // Simple coordinate extraction
-        let coords = null;
-        if (loc.url) {
-            const coordMatch = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/.exec(loc.url);
-            if (coordMatch) coords = [parseFloat(coordMatch[1]), parseFloat(coordMatch[3])];
-        }
-
-        if (coords) {
-            // Valid coordinates found - Zoom to map
-            const mapCoords = [coords[1], coords[0]];
-            setViewport(prev => ({
-                ...prev,
-                center: mapCoords,
-                zoom: 17,
-                pitch: 45,
-                transitionDuration: 1200
-            }));
-            setSelectedLocation({ ...loc, coords: mapCoords });
-
-            // On mobile/tablet, close the menu to show the map
-            if (window.innerWidth < 1024) {
-                setIsMobileMenuOpen(false);
-            }
-        } else {
-            // No coordinates - open external map (fallback)
-            const isCoordinates = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(loc.url);
-            let url = loc.url;
-            if (!isCoordinates && url && !url.startsWith('http')) {
-                const query = url.includes("Cape Coast") ? url : `${url} University of Cape Coast`;
-                url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-            }
-            if (url) window.open(url, '_blank');
-        }
-    }, []);
-
-    // Initialize data from the Guide module
-    const { buildings, openGoogleMaps, getCoordinates, defaultCenter } = useMemo(() => CampusMapData({ onLocationSelect: handleLocationSelect }), [handleLocationSelect]);
-
-    // State
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [fullRouteData, setFullRouteData] = useState(null);
-    const [activeRouteData, setActiveRouteData] = useState(null);
-    const [isRouting, setIsRouting] = useState(false);
-    const [userLocation, setUserLocation] = useState(null);
-    const [distanceRemaining, setDistanceRemaining] = useState(null);
-    const [isLiveNavigating, setIsLiveNavigating] = useState(false);
-    const [showBetaWarning, setShowBetaWarning] = useState(true);
-    const [sidebarView, setSidebarView] = useState('locations');
-    const watchIdRef = useRef(null);
-
-    // Fetch campus data from Supabase on mount (with static fallback)
-    useEffect(() => {
-        let cancelled = false;
-        const loadData = async () => {
-            try {
-                const data = await fetchCampusData('ucc');
-                if (!cancelled) {
-                    if (data.buildings && data.source === 'db') setDbBuildings(data.buildings);
-                    if (data.knowledge && data.source === 'db') setDbKnowledge(data.knowledge);
-                    if (data.guideCards) setDbGuideCards(data.guideCards);
-                }
-            } catch (err) {
-                console.warn('[CampusMap] Data fetch failed, using static fallback:', err);
-            } finally {
-                if (!cancelled) setIsDataLoading(false);
-            }
-        };
-        loadData();
-        return () => { cancelled = true; };
-    }, []);
-
-    // Resolved data: DB data takes priority, static as fallback
-    const resolvedBuildings = dbBuildings || buildings;
-
-    // Dynamic Route Truncation & Distance Math
-    useEffect(() => {
-        if (isLiveNavigating && fullRouteData && userLocation) {
-            const truncated = truncateRouteByProximity(fullRouteData, userLocation);
-            setActiveRouteData(truncated);
-
-            const dest = fullRouteData[fullRouteData.length - 1];
-            const dist = calculateDistance(userLocation, dest);
-            setDistanceRemaining(dist);
-        }
-    }, [userLocation, fullRouteData, isLiveNavigating]);
-
-    // Hardware Cleanup
-    useEffect(() => {
-        return () => {
-            if (watchIdRef.current !== null) {
-                navigator.geolocation.clearWatch(watchIdRef.current);
-            }
-        };
-    }, []);
-
-    const defaultViewport = {
-        center: [defaultCenter[1], defaultCenter[0]],
-        zoom: 15
+      } catch (err) { console.warn('[CampusMap] Data fetch failed, using static fallback:', err); }
+      finally { if (!cancelled) setIsDataLoading(false); }
     };
-    const [viewport, setViewport] = useState(defaultViewport);
+    loadData();
+    return () => { cancelled = true; };
+  }, []);
 
-    // Routing Logic
-    const handleRouteToLocation = useCallback(async (targetCoords) => {
-        if (!navigator.geolocation) {
-            alert('Geolocation is not supported by your browser');
-            return;
-        }
+  const resolvedBuildings = dbBuildings || buildings;
 
-        setIsRouting(true);
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const startLng = position.coords.longitude;
-                const startLat = position.coords.latitude;
-                const [endLat, endLng] = targetCoords;
-                const startCoord = [startLng, startLat];
-                setUserLocation(startCoord);
+  useEffect(() => {
+    if (isLiveNavigating && fullRouteData && userLocation) {
+      setActiveRouteData(truncateRouteByProximity(fullRouteData, userLocation));
+      setDistanceRemaining(calculateDistance(userLocation, fullRouteData[fullRouteData.length - 1]));
+    }
+  }, [userLocation, fullRouteData, isLiveNavigating]);
 
-                try {
-                    const response = await fetch(`https://router.project-osrm.org/route/v1/foot/${startLng},${startLat};${endLng},${endLat}?geometries=geojson`);
-                    const data = await response.json();
+  useEffect(() => { return () => { if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current); }; }, []);
 
-                    if (data.routes && data.routes.length > 0) {
-                        const originalRoute = data.routes[0].geometry.coordinates;
-                        setFullRouteData(originalRoute);
-                        setActiveRouteData(originalRoute);
-                        setIsLiveNavigating(true);
+  const defaultViewport = { center: [defaultCenter[1], defaultCenter[0]], zoom: 15 };
+  const [viewport, setViewport] = useState(defaultViewport);
 
-                        // Hardware Layer: Start Live Tracking
-                        if (watchIdRef.current !== null) {
-                            navigator.geolocation.clearWatch(watchIdRef.current);
-                        }
-                        watchIdRef.current = navigator.geolocation.watchPosition(
-                            (pos) => {
-                                const newLoc = [pos.coords.longitude, pos.coords.latitude];
-                                setUserLocation(newLoc);
-                                setViewport(prev => ({
-                                    ...prev,
-                                    center: newLoc
-                                }));
-                            },
-                            (err) => console.error("Live tracking error:", err),
-                            { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
-                        );
+  const handleRouteToLocation = useCallback(async (targetCoords) => {
+    if (!navigator.geolocation) { alert('Geolocation is not supported by your browser'); return; }
+    setIsRouting(true);
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const startLng = position.coords.longitude, startLat = position.coords.latitude;
+      const endLat = targetCoords[0], endLng = targetCoords[1];
+      const startCoord = [startLng, startLat];
+      setUserLocation(startCoord);
+      try {
+        const res = await fetch(`https://router.project-osrm.org/route/v1/foot/${startLng},${startLat};${endLng},${endLat}?geometries=geojson`);
+        const data = await res.json();
+        if (data.routes?.length > 0) {
+          const originalRoute = data.routes[0].geometry.coordinates;
+          setFullRouteData(originalRoute); setActiveRouteData(originalRoute); setIsLiveNavigating(true);
+          if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current);
+          watchIdRef.current = navigator.geolocation.watchPosition((pos) => { const nl = [pos.coords.longitude, pos.coords.latitude]; setUserLocation(nl); setViewport(prev => ({ ...prev, center: nl })); }, (err) => console.error('Live tracking error:', err), { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 });
+          setViewport(prev => ({ ...prev, center: startCoord, zoom: 17, pitch: 60 })); setSelectedLocation(null);
+        } else alert('Could not find a valid walking route to this location.');
+      } catch (error) { console.error('Error fetching route:', error); alert('Error calculating route. Please try again.'); }
+      finally { setIsRouting(false); }
+    }, (error) => { console.error('Error getting location:', error); alert('Could not get your current location. Please ensure location services are enabled.'); setIsRouting(false); }, { enableHighAccuracy: true });
+  }, []);
 
-                        // Center Map on User
-                        setViewport(prev => ({
-                            ...prev,
-                            center: startCoord,
-                            zoom: 17,
-                            pitch: 60
-                        }));
-                        setSelectedLocation(null); // Close popup
-                    } else {
-                        alert('Could not find a valid walking route to this location.');
-                    }
-                } catch (error) {
-                    console.error('Error fetching route:', error);
-                    alert('Error calculating route. Please try again.');
-                } finally {
-                    setIsRouting(false);
-                }
-            },
-            (error) => {
-                console.error('Error getting location:', error);
-                alert('Could not get your current location. Please ensure location services are enabled.');
-                setIsRouting(false);
-            },
-            { enableHighAccuracy: true }
-        );
-    }, []);
+  const endNavigation = useCallback(() => {
+    if (watchIdRef.current !== null) { navigator.geolocation.clearWatch(watchIdRef.current); watchIdRef.current = null; }
+    setIsLiveNavigating(false); setFullRouteData(null); setActiveRouteData(null); setUserLocation(null); setDistanceRemaining(null);
+  }, []);
 
-    const endNavigation = useCallback(() => {
-        if (watchIdRef.current !== null) {
-            navigator.geolocation.clearWatch(watchIdRef.current);
-            watchIdRef.current = null;
-        }
-        setIsLiveNavigating(false);
-        setFullRouteData(null);
-        setActiveRouteData(null);
-        setUserLocation(null);
-        setDistanceRemaining(null);
-    }, []);
+  const filteredLocations = useMemo(() => {
+    if (!searchTerm) return resolvedBuildings;
+    const lower = searchTerm.toLowerCase();
+    return resolvedBuildings.filter(b => b.fullName.toLowerCase().includes(lower) || (b.shortForm && b.shortForm.toLowerCase().includes(lower)) || b.description.toLowerCase().includes(lower) || (b.category && b.category.toLowerCase().includes(lower)));
+  }, [resolvedBuildings, searchTerm]);
 
-    // Filter buildings based on search
-    const filteredLocations = useMemo(() => {
-        if (!searchTerm) return resolvedBuildings;
-        const lowerTerm = searchTerm.toLowerCase();
-        return resolvedBuildings.filter(b =>
-            b.fullName.toLowerCase().includes(lowerTerm) ||
-            (b.shortForm && b.shortForm.toLowerCase().includes(lowerTerm)) ||
-            b.description.toLowerCase().includes(lowerTerm) ||
-            (b.category && b.category.toLowerCase().includes(lowerTerm))
-        );
-    }, [resolvedBuildings, searchTerm]);
+  const filteredGuideCards = useMemo(() => {
+    if (!searchTerm || searchTerm.length < 2) return [];
+    return searchGuideCards(dbGuideCards, searchTerm);
+  }, [dbGuideCards, searchTerm]);
 
-    // Filter guide cards based on search
-    const filteredGuideCards = useMemo(() => {
-        if (!searchTerm || searchTerm.length < 2) return [];
-        return searchGuideCards(dbGuideCards, searchTerm);
-    }, [dbGuideCards, searchTerm]);
+  const maxBounds = [[-1.3100, 5.0900], [-1.2600, 5.1400]];
 
-    // Guide card category icon mapping
-    const getGuideCardIcon = (icon) => {
-        switch (icon) {
-            case 'file-text': return FileText;
-            case 'phone': return Phone;
-            case 'globe': return Globe;
-            case 'shield': return Shield;
-            case 'alert-triangle': return AlertTriangle;
-            case 'alert-circle': return AlertCircle;
-            default: return CustomGuide;
-        }
-    };
+  const handleCardSelect = (card) => {
+    setKnowledgeModalData({ title: card.title, subtitle: card.subtitle, tags: [card.category.charAt(0).toUpperCase() + card.category.slice(1)], guideCardContent: card.content, _type: 'guide_card' });
+  };
 
-    // Boundary for UCC to restrict infinite scrolling
-    const maxBounds = [
-        [-1.3100, 5.0900], // Southwest coordinates (lng, lat)
-        [-1.2600, 5.1400]  // Northeast coordinates (lng, lat)
-    ];
-
-    return (
-        <div className="absolute inset-0 bg-slate-50 dark:bg-[#0a0a0a] flex flex-col animate-in fade-in overflow-hidden">
-            {/* --- MAP CONTAINER --- */}
-            <div className="absolute inset-0 z-0 h-full w-full">
-                <Map
-                    viewport={viewport}
-                    onViewportChange={setViewport}
-                    theme="light"
-                    className="w-full h-full"
-                    maxBounds={maxBounds}
-                    minZoom={13}
-                >
-                    <MapControls position="top-right" showZoom showCompass showLocate onLocate={handleMapLocate} className="top-[calc(0.5rem_+_env(safe-area-inset-top,0px))]" />
-
-                    {/* Active Route */}
-                    {activeRouteData && (
-                        <MapRoute coordinates={activeRouteData} color="#3b82f6" width={6} opacity={0.9} />
-                    )}
-
-                    {/* User Location Marker (shows when located or navigating) */}
-                    {userLocation && (
-                        <MapMarker
-                            longitude={userLocation[0]}
-                            latitude={userLocation[1]}
-                            onClick={() => {
-                                setViewport(prev => ({
-                                    ...prev,
-                                    center: userLocation,
-                                    zoom: 17,
-                                    pitch: 60,
-                                    transitionDuration: 1200
-                                }));
-                            }}
-                        >
-                            <MarkerContent>
-                                <div className="relative flex items-center justify-center cursor-pointer">
-                                    <div className="absolute w-8 h-8 bg-blue-500 rounded-full opacity-30 animate-ping" />
-                                    <div className="relative w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg" />
-                                </div>
-                            </MarkerContent>
-                        </MapMarker>
-                    )}
-
-                    {/* Markers for Search Results or Selected Location */}
-                    {filteredLocations.map(loc => {
-                        const coords = getCoordinates(loc.url);
-                        if (!coords) return null;
-
-                        const [lat, lng] = coords;
-                        const isSelected = selectedLocation?.id === loc.id;
-
-                        return (
-                            <MapMarker
-                                key={loc.id}
-                                longitude={lng}
-                                latitude={lat}
-                                onClick={() => handleLocationSelect(loc)}
-                            >
-                                <MarkerContent>
-                                    <div className={`relative h-4 w-4 rounded-full border-2 border-white shadow-lg transition-transform ${isSelected ? 'bg-primary-600 scale-125 z-10' : 'bg-slate-500 scale-100'}`} />
-                                </MarkerContent>
-                                {isSelected && (
-                                    <MarkerPopup onClose={() => setSelectedLocation(null)}>
-                                        <div className="w-48 text-center pt-3 pb-2 px-2 bg-white dark:bg-[#111111] rounded-2xl shadow-xl border border-slate-100 dark:border-gray-800">
-                                            <h3 className="font-bold text-[13px] text-slate-900 dark:text-gray-100 leading-tight mb-1">{loc.fullName}</h3>
-                                            <p className="text-[11px] text-slate-500 dark:text-gray-400 mb-3 leading-tight">{loc.description}</p>
-                                            <div className="flex flex-col gap-2 mt-2">
-                                                <button
-                                                    onClick={() => handleRouteToLocation([lat, lng])}
-                                                    disabled={isRouting}
-                                                    className="w-full text-[12px] font-bold bg-primary-600 hover:bg-primary-700 text-white px-2 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
-                                                >
-                                                    {isRouting ? <Loader2 size={14} className="animate-spin" /> : <Navigation size={14} />}
-                                                    {isRouting ? 'Calculating...' : 'Route Here'}
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        // Check DB knowledge first, then static fallback
-                                                        const name = loc.fullName.toLowerCase();
-                                                        let data = null;
-                                                        for (const [key, entry] of Object.entries(dbKnowledge)) {
-                                                            if (name.includes(key)) { data = entry; break; }
-                                                        }
-                                                        if (!data) data = getKnowledgeForLocation(loc.fullName);
-                                                        setKnowledgeModalData(data || {
-                                                            title: loc.fullName,
-                                                            history: loc.description,
-                                                            architecture: "No detailed architectural data available for this location yet.",
-                                                            tags: ["Info"],
-                                                            statistics: {}
-                                                        });
-                                                    }}
-                                                    className="w-full text-[12px] font-bold bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 px-2 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-sm"
-                                                >
-                                                    <Info size={14} /> Read More
-                                                </button>
-
-                                                <button
-                                                    onClick={() => openGoogleMaps(loc.url)}
-                                                    className="w-full text-[11px] font-medium text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-200 flex items-center justify-center gap-1 transition-colors"
-                                                >
-                                                    <ExternalLink size={12} /> Open in Google Maps
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </MarkerPopup>
-                                )}
-                            </MapMarker>
-                        );
-                    })}
-                </Map>
-
-                {/* Live Navigation HUD */}
-                {isLiveNavigating && distanceRemaining !== null && (
-                    <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-sm flex flex-col gap-3">
-                        {showBetaWarning && (
-                            <div className="bg-amber-50 border border-amber-200 shadow-xl rounded-xl p-3 flex items-start gap-3 animate-in slide-in-from-top-2">
-                                <div className="shrink-0 p-1.5 bg-amber-100 rounded-full text-amber-600">
-                                    <AlertTriangle size={16} strokeWidth={3} />
-                                </div>
-                                <div className="flex-1">
-                                    <h4 className="text-[10px] font-black text-amber-900 uppercase tracking-wide">Navigation Advisory</h4>
-                                    <p className="text-[10px] font-medium text-amber-800 leading-tight mt-0.5">Routes are for visual reference only — paths may cross water or restricted areas. Use Google Maps for turn-by-turn directions.</p>
-                                </div>
-                                <button onClick={() => setShowBetaWarning(false)} className="shrink-0 p-1 text-amber-400 hover:text-amber-600">
-                                    <XIcon size={16} />
-                                </button>
-                            </div>
-                        )}
-                        <div className="bg-white/95 dark:bg-[#111111]/95 backdrop-blur-md shadow-2xl border border-slate-200/60 dark:border-gray-800/60 rounded-2xl px-8 py-4 flex flex-col items-center animate-in slide-in-from-top-4">
-                            <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-1">Remaining Distance</span>
-                            <span className="text-4xl font-black text-slate-800 dark:text-gray-100 tracking-tight">
-                                {distanceRemaining > 1000
-                                    ? `${(distanceRemaining / 1000).toFixed(1)} km`
-                                    : `${Math.round(distanceRemaining)} m`}
-                            </span>
-                            <button
-                                onClick={endNavigation}
-                                className="mt-3 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold px-4 py-2 rounded-full flex items-center gap-1.5 transition-colors uppercase tracking-wide"
-                            >
-                                <XIcon size={12} /> End Route
-                            </button>
-                        </div>
+  return (
+    <div className="absolute inset-0 bg-slate-50 flex flex-col animate-in fade-in overflow-hidden">
+      <div className="absolute inset-0 z-0 h-full w-full">
+        <Map viewport={viewport} onViewportChange={setViewport} theme="light" className="w-full h-full" maxBounds={maxBounds} minZoom={13}>
+          <MapControls position="top-right" showZoom showCompass showLocate onLocate={handleMapLocate} className="top-[calc(0.5rem_+_env(safe-area-inset-top,0px))]" />
+          {activeRouteData && <MapRoute coordinates={activeRouteData} color="#3b82f6" width={6} opacity={0.9} />}
+          {userLocation && (
+            <MapMarker longitude={userLocation[0]} latitude={userLocation[1]} onClick={() => setViewport(prev => ({ ...prev, center: userLocation, zoom: 17, pitch: 60, transitionDuration: 1200 }))}>
+              <MarkerContent><div className="relative flex items-center justify-center cursor-pointer"><div className="absolute w-8 h-8 bg-blue-500 rounded-full opacity-30 animate-ping" /><div className="relative w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg" /></div></MarkerContent>
+            </MapMarker>
+          )}
+          {filteredLocations.map(loc => {
+            const coordsObj = getCoordinates(loc.url);
+            if (!coordsObj) return null;
+            const [lat, lng] = coordsObj;
+            const isSelected = selectedLocation?.id === loc.id;
+            return (
+              <MapMarker key={loc.id} longitude={lng} latitude={lat} onClick={() => handleLocationSelect(loc)}>
+                <MarkerContent><div className={`relative h-4 w-4 rounded-full border-2 border-white shadow-lg transition-transform ${isSelected ? 'bg-primary-600 scale-125 z-10' : 'bg-slate-500 scale-100'}`} /></MarkerContent>
+                {isSelected && (
+                  <MarkerPopup onClose={() => setSelectedLocation(null)}>
+                    <div className="w-48 text-center pt-3 pb-2 px-2 bg-white rounded-2xl shadow-xl border border-slate-100">
+                      <h3 className="font-bold text-[13px] text-slate-900 leading-tight mb-1">{loc.fullName}</h3>
+                      <p className="text-[11px] text-slate-500 mb-3 leading-tight">{loc.description}</p>
+                      <div className="flex flex-col gap-2 mt-2">
+                        <button onClick={() => handleRouteToLocation([lat, lng])} disabled={isRouting} className="w-full text-[12px] font-bold bg-primary-600 hover:bg-primary-700 text-white px-2 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
+                          {isRouting ? <Loader2 size={14} className="animate-spin" /> : <Navigation size={14} />}{isRouting ? 'Calculating...' : 'Route Here'}
+                        </button>
+                        <button onClick={() => {
+                          const name = loc.fullName.toLowerCase();
+                          let data = null;
+                          for (const [key, entry] of Object.entries(dbKnowledge)) { if (name.includes(key)) { data = entry; break; } }
+                          if (!data) data = getKnowledgeForLocation(loc.fullName);
+                          setKnowledgeModalData(data || { title: loc.fullName, history: loc.description, architecture: 'No detailed architectural data available for this location yet.', tags: ['Info'], statistics: {} });
+                        }} className="w-full text-[12px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-sm">
+                          <Info size={14} /> Read More
+                        </button>
+                        <button onClick={() => openGoogleMaps(loc.url)} className="w-full text-[11px] font-medium text-slate-500 hover:text-slate-700 flex items-center justify-center gap-1 transition-colors">
+                          <ExternalLink size={12} /> Open in Google Maps
+                        </button>
+                      </div>
                     </div>
+                  </MarkerPopup>
                 )}
-            </div>
+              </MapMarker>
+            );
+          })}
+        </Map>
 
-            {/* --- FLOATING DESKTOP SIDEBAR / MOBILE BOTTOM SHEET --- */}
-            <div className={`
-                absolute z-20 bg-white dark:bg-[#111111] shadow-xl border border-slate-200/60 dark:border-gray-800/60 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col overflow-hidden
-                
-                /* Desktop positioning (left sidebar) */
-                lg:top-4 lg:left-4 lg:bottom-auto lg:rounded-2xl lg:w-96 lg:max-h-[calc(100vh-8rem)]
-                
-                /* Mobile positioning (floating above tab bar) */
-                bottom-[calc(84px_+_env(safe-area-inset-bottom,0px))] left-3 right-3 rounded-2xl
-                ${isMobileMenuOpen ? 'top-20 lg:top-4' : 'h-auto lg:top-4 lg:h-auto'}
-            `}>
-                {/* Header / Search Bar + Guide Toggle */}
-                <div className="px-3 py-3 bg-white dark:bg-[#111111] flex-shrink-0 relative border-b border-slate-100 dark:border-gray-800 flex items-center gap-2">
-                    <button
-                        onClick={() => setSidebarView(sidebarView === 'guide_cards' ? 'locations' : 'guide_cards')}
-                        className={`shrink-0 p-2 rounded-xl transition-all flex items-center gap-1.5 ${sidebarView === 'guide_cards'
-                            ? 'bg-primary-50 dark:bg-gray-900/30 text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-800 shadow-sm'
-                            : 'bg-slate-50 dark:bg-[#1e1e1e] text-slate-500 dark:text-gray-400 border border-slate-200 dark:border-gray-700 hover:bg-slate-100 dark:hover:bg-gray-800'
-                            }`}
-                        title="Toggle Guide Cards"
-                    >
-                        <CustomGuide size={16} />
-                        <span className="text-[11px] font-bold hidden sm:inline">Guide</span>
-                    </button>
-                    <div className="flex-1 relative min-w-0">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onFocus={() => window.innerWidth < 1024 && setIsMobileMenuOpen(true)}
-                            placeholder={sidebarView === 'guide_cards' ? 'Search guide cards...' : 'Search locations...'}
-                            className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 dark:bg-[#1e1e1e] dark:text-white border border-slate-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium"
-                        />
-                    </div>
+        {isLiveNavigating && distanceRemaining !== null && (
+          <LiveNavigationHUD distanceRemaining={distanceRemaining} showBetaWarning={showBetaWarning} onDismissBeta={() => setShowBetaWarning(false)} onEndRoute={endNavigation} />
+        )}
 
-                    <button
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="p-2 rounded-xl text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-primary-600 transition-colors lg:hidden bg-slate-50 dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-700 shadow-sm"
-                    >
-                        {isMobileMenuOpen ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
-                    </button>
-                </div>
+        <CampusSearchSidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} sidebarView={sidebarView} setSidebarView={setSidebarView}
+          searchTerm={searchTerm} onSearchChange={setSearchTerm} filteredLocations={filteredLocations} getCoordinates={getCoordinates}
+          onLocationSelect={handleLocationSelect} filteredGuideCards={filteredGuideCards} dbGuideCards={dbGuideCards} onCardSelect={handleCardSelect} />
+      </div>
 
-                {/* Content Area */}
-                <div className={`overflow-y-auto custom-scrollbar bg-slate-50/50 dark:bg-[#0a0a0a]/50 flex-1 p-2 transition-all duration-300 ${!isMobileMenuOpen && (typeof window !== 'undefined' && window.innerWidth < 1024) ? 'opacity-0 h-0 hidden lg:block lg:h-auto lg:opacity-100' : 'opacity-100 block'}`}>
-                    <div className="space-y-1.5">
-                        {/* Locations View */}
-                        {sidebarView === 'locations' && (
-                            <>
-                                {filteredLocations.map(loc => {
-                                    const hasCoords = !!getCoordinates(loc.url);
-                                    return (
-                                        <button
-                                            key={loc.id}
-                                            onClick={() => handleLocationSelect(loc)}
-                                            className="w-full text-left bg-white dark:bg-[#111111] p-3 hover:bg-primary-50/50 dark:hover:bg-gray-800/50 border border-slate-100 dark:border-gray-800 hover:border-primary-100 dark:hover:border-gray-700 rounded-xl group transition-all flex justify-between items-center shadow-sm"
-                                        >
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="font-bold text-slate-900 dark:text-gray-100 group-hover:text-primary-700 text-sm">{loc.fullName}</span>
-                                                    {loc.shortForm && <span className="text-[10px] bg-slate-100 dark:bg-gray-800 px-1.5 py-0.5 rounded font-black uppercase text-slate-600 dark:text-gray-300">{loc.shortForm}</span>}
-                                                </div>
-                                                <p className="text-[11px] text-slate-500 dark:text-gray-400 line-clamp-1">{loc.description}</p>
-                                            </div>
-                                            <div className="text-slate-300 dark:text-gray-600 group-hover:text-primary-400 flex-shrink-0 ml-2 bg-slate-50 dark:bg-[#1e1e1e] p-1.5 rounded-lg">
-                                                {hasCoords ? <CustomMapPin className="w-4 h-4" /> : <ExternalLink className="w-3.5 h-3.5" />}
-                                            </div>
-                                        </button>
-                                    );
-                                })}
-                                {filteredLocations.length === 0 && <p className="text-center text-slate-400 dark:text-gray-500 text-sm py-8 font-medium">No locations found.</p>}
-                            </>
-                        )}
-
-                        {/* Guide Cards View */}
-                        {sidebarView === 'guide_cards' && (() => {
-                            const cards = searchTerm ? filteredGuideCards : dbGuideCards;
-                            if (!cards || cards.length === 0) return (
-                                <p className="text-center text-slate-400 dark:text-gray-500 text-sm py-8 font-medium">
-                                    {searchTerm ? 'No guide cards match your search.' : 'No guide cards available yet.'}
-                                </p>
-                            );
-                            return cards.map(card => {
-                                const CardIcon = getGuideCardIcon(card.icon);
-                                return (
-                                    <button
-                                        key={card.id}
-                                        onClick={() => setKnowledgeModalData({
-                                            title: card.title,
-                                            subtitle: card.subtitle,
-                                            tags: [card.category.charAt(0).toUpperCase() + card.category.slice(1)],
-                                            guideCardContent: card.content,
-                                            _type: 'guide_card'
-                                        })}
-                                        className="w-full text-left bg-primary-50/70 dark:bg-gray-900/20 p-3 hover:bg-primary-100/70 dark:hover:bg-primary-900/30 border border-primary-200/60 dark:border-primary-800/50 rounded-xl group transition-all flex justify-between items-center shadow-sm"
-                                    >
-                                        <div className="flex items-start gap-3">
-                                            <div className="p-1.5 bg-primary-100 dark:bg-primary-900/50 rounded-lg text-primary-600 dark:text-primary-400 shrink-0">
-                                                <CardIcon size={16} />
-                                            </div>
-                                            <div>
-                                                <span className="font-bold text-primary-900 dark:text-primary-200 text-sm block">{card.title}</span>
-                                                {card.subtitle && <p className="text-[11px] text-primary-600/80 dark:text-primary-400/80 line-clamp-1">{card.subtitle}</p>}
-                                            </div>
-                                        </div>
-                                        <span className="text-[9px] bg-primary-200/80 dark:bg-primary-800 px-1.5 py-0.5 rounded font-black uppercase text-primary-700 dark:text-primary-300 shrink-0">{card.category}</span>
-                                    </button>
-                                );
-                            });
-                        })()}
-                    </div>
-                </div>
-            </div>
-
-            {/* RICH KNOWLEDGE MODAL (BOTTOM SHEET) */}
-            {knowledgeModalData && typeof document !== 'undefined' && createPortal(
-                <div className="fixed inset-0 z-[99999] flex items-end justify-center sm:items-center p-0 sm:p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    {/* Background click to close */}
-                    <div className="absolute inset-0" onClick={() => setKnowledgeModalData(null)}></div>
-
-                    <div className="relative bg-white dark:bg-[#111111] rounded-t-3xl sm:rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 flex flex-col max-h-[66vh]">
-                        {/* Drag Handle for mobile */}
-                        <div className="pt-3 pb-1 flex justify-center items-center w-full shrink-0 sm:hidden">
-                            <div className="w-12 h-1.5 bg-slate-200 dark:bg-gray-700 rounded-full"></div>
-                        </div>
-
-                        {/* Header (No Image) */}
-                        <div className="flex items-start justify-between px-6 pt-2 sm:pt-6 pb-2 shrink-0">
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-gray-100 leading-tight pr-4">
-                                {knowledgeModalData.title}
-                            </h2>
-                            <button
-                                onClick={() => setKnowledgeModalData(null)}
-                                className="bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 text-slate-500 dark:text-gray-400 p-2 rounded-full transition-colors shrink-0"
-                            >
-                                <XIcon size={20} />
-                            </button>
-                        </div>
-
-                        {/* Scrollable Content */}
-                        <div className="p-6 overflow-y-auto flex-1 overscroll-contain">
-                            {/* Tags */}
-                            {knowledgeModalData.tags && knowledgeModalData.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mb-6">
-                                    {knowledgeModalData.tags.map(tag => (
-                                        <span key={tag} className="px-3 py-1 bg-primary-50 text-primary-700 text-[10px] font-bold uppercase tracking-wider rounded-full">
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Guide Card Content (distinct card-based layout) */}
-                            {knowledgeModalData._type === 'guide_card' && knowledgeModalData.guideCardContent && (
-                                <div className="space-y-4">
-                                    {/* Subtitle Banner */}
-                                    {knowledgeModalData.subtitle && (
-                                        <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-gray-900/40 dark:to-blue-950/30 border border-primary-100 dark:border-primary-900 rounded-xl p-3 mb-2">
-                                            <p className="text-sm text-primary-700 dark:text-primary-300 leading-relaxed font-medium">{knowledgeModalData.subtitle}</p>
-                                        </div>
-                                    )}
-                                    {/* Content Sections as Cards */}
-                                    {knowledgeModalData.guideCardContent.map((section, sIdx) => {
-                                        const sectionColors = [
-                                            { border: 'border-l-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/20', header: 'text-blue-700 dark:text-blue-400', num: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' },
-                                            { border: 'border-l-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/20', header: 'text-emerald-700 dark:text-emerald-400', num: 'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300' },
-                                            { border: 'border-l-amber-500', bg: 'bg-amber-50 dark:bg-amber-950/20', header: 'text-amber-700 dark:text-amber-400', num: 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300' },
-                                            { border: 'border-l-purple-500', bg: 'bg-purple-50 dark:bg-purple-950/20', header: 'text-purple-700 dark:text-purple-400', num: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300' },
-                                            { border: 'border-l-rose-500', bg: 'bg-rose-50 dark:bg-rose-950/20', header: 'text-rose-700 dark:text-rose-400', num: 'bg-rose-100 dark:bg-rose-900 text-rose-700 dark:text-rose-300' },
-                                        ];
-                                        const color = sectionColors[sIdx % sectionColors.length];
-                                        return (
-                                            <div key={sIdx} className={`border-l-4 ${color.border} ${color.bg} rounded-r-xl p-4`}>
-                                                <h3 className={`text-xs font-black ${color.header} uppercase tracking-widest mb-3 flex items-center gap-2`}>
-                                                    <span className={`w-5 h-5 rounded-full ${color.num} flex items-center justify-center text-[10px] font-black`}>{sIdx + 1}</span>
-                                                    {section.title}
-                                                </h3>
-                                                {section.items && section.items.length > 0 && (
-                                                    <ul className="space-y-2.5">
-                                                        {section.items.map((item, iIdx) => (
-                                                            <li key={iIdx} className="flex items-start gap-2.5 text-sm text-slate-700 dark:text-gray-300 leading-relaxed">
-                                                                <span className={`mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full ${color.num}`} />
-                                                                <Linkify text={item} />
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                )}
-                                                {section.content && (
-                                                    <Linkify text={section.content} className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed" />
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            {/* History — only for building knowledge, not guide cards */}
-                            {knowledgeModalData._type !== 'guide_card' && (
-                                <div className="mb-6">
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-2">Historical Context</h3>
-                                    <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed">{knowledgeModalData.history}</p>
-                                </div>
-                            )}
-
-                            {/* Architecture — only for building knowledge, not guide cards */}
-                            {knowledgeModalData._type !== 'guide_card' && (
-                                <div className="mb-6">
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-2">Architecture & Function</h3>
-                                    <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed">{knowledgeModalData.architecture}</p>
-                                </div>
-                            )}
-
-                            {/* Statistics Grid */}
-                            {knowledgeModalData.statistics && Object.keys(knowledgeModalData.statistics).length > 0 && (
-                                <div className="mb-6">
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-3">Verified Data Points</h3>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {Object.entries(knowledgeModalData.statistics).map(([key, val]) => (
-                                            <div key={key} className="bg-slate-50 dark:bg-gray-800 p-3 rounded-xl border border-slate-100 dark:border-gray-700">
-                                                <div className="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-1">{key}</div>
-                                                <div className="text-xs font-bold text-slate-800 dark:text-gray-100">{val}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Accessibility Warning */}
-                            {knowledgeModalData.accessibility && (
-                                <div className="mb-6 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
-                                    <h3 className="text-xs font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-2">♿ Accessibility Alert</h3>
-                                    <p className="text-sm text-amber-800 dark:text-amber-300 leading-relaxed">{knowledgeModalData.accessibility}</p>
-                                </div>
-                            )}
-
-                            {/* Hazards */}
-                            {knowledgeModalData.hazards && knowledgeModalData.hazards.length > 0 && (
-                                <div className="mb-6 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-xl p-4">
-                                    <h3 className="text-xs font-black text-red-700 dark:text-red-400 uppercase tracking-widest mb-2">⚠️ Hazards & Warnings</h3>
-                                    <ul className="space-y-2">
-                                        {knowledgeModalData.hazards.map((hazard, i) => (
-                                            <li key={i} className="text-sm text-red-800 dark:text-red-300 leading-relaxed">{hazard}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-
-                            {/* Floor-by-Floor Guide */}
-                            {knowledgeModalData.floors && knowledgeModalData.floors.length > 0 && (
-                                <div className="mb-6">
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-3">Floor-by-Floor Guide</h3>
-                                    <div className="space-y-2">
-                                        {knowledgeModalData.floors.map((floor, i) => (
-                                            <div key={i} className="bg-slate-50 dark:bg-gray-800 p-3 rounded-xl border border-slate-100 dark:border-gray-700">
-                                                <p className="text-sm text-slate-700 dark:text-gray-300 leading-relaxed">{floor}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Rules */}
-                            {knowledgeModalData.rules && knowledgeModalData.rules.length > 0 && (
-                                <div className="mb-6">
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-3">📋 Rules & Regulations</h3>
-                                    <ul className="space-y-2">
-                                        {knowledgeModalData.rules.map((rule, i) => (
-                                            <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-gray-300 leading-relaxed">
-                                                <span className="text-slate-400 dark:text-gray-500 mt-1 shrink-0">•</span>
-                                                <span>{rule}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-
-                            {/* Residential Rules */}
-                            {knowledgeModalData.residentialRules && knowledgeModalData.residentialRules.length > 0 && (
-                                <div className="mb-6">
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-3">🏠 Residential Rules</h3>
-                                    <ul className="space-y-2">
-                                        {knowledgeModalData.residentialRules.map((rule, i) => (
-                                            <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-gray-300 leading-relaxed">
-                                                <span className="text-slate-400 dark:text-gray-500 mt-1 shrink-0">•</span>
-                                                <span>{rule}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-
-                            {/* Grievance Chain */}
-                            {knowledgeModalData.grievanceChain && knowledgeModalData.grievanceChain.length > 0 && (
-                                <div className="mb-6">
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-3">🔗 Grievance Redressal Chain</h3>
-                                    <div className="space-y-2">
-                                        {knowledgeModalData.grievanceChain.map((step, i) => (
-                                            <div key={i} className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-xl border border-blue-100 dark:border-blue-900">
-                                                <p className="text-sm text-blue-800 dark:text-blue-300 leading-relaxed font-medium">{step}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Sculpture / POI */}
-                            {knowledgeModalData.sculpture && (
-                                <div className="mb-6 bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
-                                    <h3 className="text-xs font-black text-purple-700 dark:text-purple-400 uppercase tracking-widest mb-2">🎨 Point of Interest</h3>
-                                    <p className="text-sm text-purple-800 dark:text-purple-300 leading-relaxed">{knowledgeModalData.sculpture}</p>
-                                </div>
-                            )}
-
-                            {/* Disclaimer */}
-                            {knowledgeModalData.disclaimer && (
-                                <p className="text-[10px] text-slate-400 dark:text-gray-500 italic text-center mt-8 pb-4 border-t border-slate-100 dark:border-gray-800 pt-4">
-                                    {knowledgeModalData.disclaimer}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
-        </div>
-    );
+      <KnowledgeModal data={knowledgeModalData} onClose={() => setKnowledgeModalData(null)} />
+    </div>
+  );
 };
 
 export default MapView;
