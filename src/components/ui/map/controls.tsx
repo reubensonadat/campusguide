@@ -10,6 +10,7 @@ type MapControlsProps = {
   position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
   showZoom?: boolean;
   showCompass?: boolean;
+  show3D?: boolean;
   showLocate?: boolean;
   showFullscreen?: boolean;
   className?: string;
@@ -99,10 +100,43 @@ function CompassButton({ onClick }: { onClick: () => void }) {
   );
 }
 
+function PitchToggle({ onClick }: { onClick: () => void }) {
+  const { map } = useMap();
+  const [is3D, setIs3D] = useState(false);
+
+  useEffect(() => {
+    if (!map) return;
+    const checkPitch = () => {
+      setIs3D(map.getPitch() > 30);
+    };
+    map.on("pitch", checkPitch);
+    checkPitch();
+    return () => {
+      map.off("pitch", checkPitch);
+    };
+  }, [map]);
+
+  const togglePitch = useCallback(() => {
+    if (!map) return;
+    const nextPitch = map.getPitch() > 30 ? 0 : 60;
+    map.easeTo({ pitch: nextPitch, duration: 600 });
+    onClick();
+  }, [map, onClick]);
+
+  return (
+    <ControlButton onClick={togglePitch} label={is3D ? "Switch to 2D view" : "Switch to 3D view"}>
+      <span className={cn("text-xs font-bold transition-colors", is3D ? "text-primary-600" : "text-slate-600")}>
+        {is3D ? "2D" : "3D"}
+      </span>
+    </ControlButton>
+  );
+}
+
 function MapControls({
   position = "bottom-right",
   showZoom = true,
   showCompass = false,
+  show3D = false,
   showLocate = false,
   showFullscreen = false,
   className,
@@ -178,9 +212,10 @@ function MapControls({
           </ControlButton>
         </ControlGroup>
       )}
-      {showCompass && (
+      {(showCompass || show3D) && (
         <ControlGroup>
-          <CompassButton onClick={handleResetBearing} />
+          {showCompass && <CompassButton onClick={handleResetBearing} />}
+          {show3D && <PitchToggle onClick={() => {}} />}
         </ControlGroup>
       )}
       {showLocate && (

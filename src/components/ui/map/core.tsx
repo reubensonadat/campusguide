@@ -191,6 +191,41 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
         if (projection) {
           map.setProjection(projection);
         }
+
+        // 3D Buildings Effect
+        if (map.getSource("carto") && !map.getLayer("3d-buildings")) {
+          map.addLayer(
+            {
+              id: "3d-buildings",
+              source: "carto",
+              "source-layer": "building",
+              type: "fill-extrusion",
+              minzoom: 15,
+              paint: {
+                "fill-extrusion-color": resolvedTheme === "dark" ? "#333333" : "#e2e8f0",
+                "fill-extrusion-height": [
+                  "case",
+                  ["has", "render_height"],
+                  ["get", "render_height"],
+                  ["has", "height"],
+                  ["get", "height"],
+                  12, // Fallback height if basemap has no height data
+                ],
+                "fill-extrusion-base": [
+                  "case",
+                  ["has", "render_min_height"],
+                  ["get", "render_min_height"],
+                  ["has", "min_height"],
+                  ["get", "min_height"],
+                  0,
+                ],
+                "fill-extrusion-opacity": 0.8,
+              },
+            },
+            // Insert below labels if possible, otherwise just add it
+            map.getLayer("place_label_city") ? "place_label_city" : undefined
+          );
+        }
       }, 100);
     };
     const loadHandler = () => setIsLoaded(true);
