@@ -1,6 +1,7 @@
 "use client";
 
 import MapLibreGL from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import {
   forwardRef,
   useCallback,
@@ -194,8 +195,11 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     };
     const loadHandler = () => setIsLoaded(true);
 
-    const handleMove = () => {
+    const handleMove = (e: any) => {
       if (internalUpdateRef.current) return;
+      // ONLY trigger React state updates if the user physically dragged the map.
+      // Programmatic flyTo animations should NOT trigger React updates, as 60FPS re-renders will freeze the UI!
+      if (!e.originalEvent) return;
       onViewportChangeRef.current?.(getViewport(map));
     };
 
@@ -219,7 +223,6 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
 
   useEffect(() => {
     if (!mapInstance || !isControlled || !viewport) return;
-    if (mapInstance.isMoving()) return;
 
     const current = getViewport(mapInstance);
     const next = {
@@ -229,13 +232,14 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
       pitch: viewport.pitch ?? current.pitch,
     };
 
-    if (
-      next.center[0] === current.center[0] &&
-      next.center[1] === current.center[1] &&
-      next.zoom === current.zoom &&
-      next.bearing === current.bearing &&
-      next.pitch === current.pitch
-    ) {
+    const dLng = Math.abs(next.center[0] - current.center[0]);
+    const dLat = Math.abs(next.center[1] - current.center[1]);
+    const dZoom = Math.abs(next.zoom - current.zoom);
+    const dPitch = Math.abs(next.pitch - current.pitch);
+    const dBearing = Math.abs(next.bearing - current.bearing);
+
+    // If we're basically already there, don't fly again
+    if (dLng < 0.0001 && dLat < 0.0001 && dZoom < 0.01 && dPitch < 1 && dBearing < 1) {
       return;
     }
 
@@ -245,7 +249,7 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
       zoom: next.zoom,
       bearing: next.bearing,
       pitch: next.pitch,
-      duration: 2000,
+      duration: (viewport as any).transitionDuration ?? 2000,
       essential: true,
     });
     internalUpdateRef.current = false;

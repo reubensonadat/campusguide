@@ -20,6 +20,8 @@ const PlanYourDay = () => {
 
     const [editingTask, setEditingTask] = useState(null);
     const [taskToDelete, setTaskToDelete] = useState(null);
+    const [conflictConfirmTask, setConflictConfirmTask] = useState(null);
+    const [conflictingClass, setConflictingClass] = useState(null);
 
     useEffect(() => {
         const needsBackfill = tasks.some(t => !t.academic_year || !t.semester);
@@ -109,7 +111,44 @@ const PlanYourDay = () => {
         setTasks([...tasks, newTask]);
     };
 
-    const handleAddTask = (data) => {
+    const checkConflictWithClass = (taskDate, startTime, endTime) => {
+        if (!taskDate || !startTime) return null;
+        const d = new Date(taskDate + 'T00:00:00');
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = days[d.getDay()];
+
+        const classForDay = semesterTimetable.filter(c => c.day && c.day.toLowerCase() === dayName.toLowerCase());
+        
+        const timeToDecimal = (t) => {
+            const [h, m] = t.split(':').map(Number);
+            return h + m / 60;
+        };
+
+        const taskStart = timeToDecimal(startTime);
+        const taskEnd = endTime ? timeToDecimal(endTime) : taskStart + 1; // default to 1 hour task if no end time
+
+        return classForDay.find(c => {
+            const classStart = timeToDecimal(c.startTime);
+            const classEnd = timeToDecimal(c.endTime);
+            return (
+                (taskStart >= classStart && taskStart < classEnd) ||
+                (taskEnd > classStart && taskEnd <= classEnd) ||
+                (taskStart <= classStart && taskEnd >= classEnd)
+            );
+        });
+    };
+
+    const handleAddTask = (data, bypassConflict = false) => {
+        if (!bypassConflict) {
+            const conflict = checkConflictWithClass(data.date, data.time, data.endTime);
+            if (conflict) {
+                setConflictConfirmTask(data);
+                setConflictingClass(conflict);
+                setIsAddModalOpen(false);
+                return;
+            }
+        }
+
         if (data.id) {
             setTasks(tasks.map(t => t.id === data.id ? {
                 ...t,
@@ -343,6 +382,45 @@ const PlanYourDay = () => {
                     onConfirm={deleteTask}
                     onCancel={() => setTaskToDelete(null)}
                 />
+            )}
+
+            {conflictConfirmTask && conflictingClass && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[28px] w-full max-w-sm p-6 shadow-2xl relative z-10 text-center animate-fade-in-up">
+                        <div className="w-14 h-14 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-amber-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <h3 className="text-lg font-black text-slate-900 mb-2">Schedule Conflict</h3>
+                        <p className="text-sm text-slate-500 mb-6 leading-relaxed">
+                            You have a class <span className="font-extrabold text-slate-900">"{conflictingClass.name}"</span> scheduled at <span className="font-bold text-slate-700">{formatTime12Hour(conflictingClass.startTime)} - {formatTime12Hour(conflictingClass.endTime)}</span>. 
+                            Are you sure you want to schedule this event during class hours?
+                        </p>
+                        <div className="flex flex-col gap-2">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    handleAddTask(conflictConfirmTask, true);
+                                    setConflictConfirmTask(null);
+                                    setConflictingClass(null);
+                                }}
+                                className="w-full bg-slate-950 hover:bg-black text-white py-3.5 rounded-[18px] font-bold transition-all active:scale-[0.98]"
+                            >
+                                Yes, Schedule Anyway
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setConflictConfirmTask(null);
+                                    setConflictingClass(null);
+                                    setIsAddModalOpen(true); // reopen the form to fix the time
+                                }}
+                                className="w-full hover:bg-slate-50 text-slate-600 py-3.5 rounded-[18px] font-bold transition-colors active:scale-[0.98]"
+                            >
+                                No, Change Time
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

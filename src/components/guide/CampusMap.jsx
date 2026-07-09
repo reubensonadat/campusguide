@@ -3,7 +3,7 @@ import { ExternalLink, Info, Navigation, Loader2, Search } from 'lucide-react';
 import CampusMapData from './content/ucc/CampusMap';
 import { getKnowledgeForLocation } from './content/ucc/KnowledgeBase';
 import { fetchCampusData, searchGuideCards } from '@/services/campusDataService';
-import { Map, MapControls, MapMarker, MarkerPopup, MarkerContent, MapRoute } from '@/components/ui/map';
+import { Map, MapControls, MapMarker, MarkerPopup, MarkerContent, MapRoute, DefaultMarkerIcon } from '@/components/ui/map';
 import { calculateDistance, truncateRouteByProximity } from '@/utils/navigation';
 import LiveNavigationHUD from './LiveNavigationHUD';
 import CampusSearchSidebar from './CampusSearchSidebar';
@@ -27,7 +27,7 @@ const MapView = () => {
     let coords = null;
     if (loc.url) { const m = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/.exec(loc.url); if (m) coords = [parseFloat(m[3]), parseFloat(m[1])]; }
     if (coords) {
-      setViewport(prev => ({ ...prev, center: coords, zoom: 17, pitch: 45, transitionDuration: 1200 }));
+      setViewport(prev => ({ ...prev, center: coords, zoom: 17, pitch: 0, transitionDuration: 1200 }));
       setSelectedLocation({ ...loc, coords });
       if (window.innerWidth < 1024) setIsMobileMenuOpen(false);
     } else {
@@ -147,7 +147,12 @@ const MapView = () => {
             const isSelected = selectedLocation?.id === loc.id;
             return (
               <MapMarker key={loc.id} longitude={lng} latitude={lat} onClick={() => handleLocationSelect(loc)}>
-                <MarkerContent><div className={`relative h-4 w-4 rounded-full border-2 border-white shadow-lg transition-transform ${isSelected ? 'bg-primary-600 scale-125 z-10' : 'bg-slate-500 scale-100'}`} /></MarkerContent>
+                <MarkerContent>
+                  {isSelected
+                    ? <div className="h-5 w-5 rounded-full border-2 border-white bg-primary-600 shadow-lg" />
+                    : <DefaultMarkerIcon />
+                  }
+                </MarkerContent>
                 {isSelected && (
                   <MarkerPopup onClose={() => setSelectedLocation(null)}>
                     <div className="w-48 text-center pt-3 pb-2 px-2 bg-white rounded-2xl shadow-xl border border-slate-100">
@@ -193,3 +198,5 @@ const MapView = () => {
 };
 
 export default MapView;
+
+// force vite invalidate

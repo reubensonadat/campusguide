@@ -83,8 +83,8 @@ const TimetableDayCard = ({ day, courses, selectedDayFilter, onSelectCourse }) =
                       <CustomMapPin className="h-4 w-4 opacity-80" />
                       <span className="truncate">{course.location || 'Venue TBD'}</span>
                     </span>
-                    <span className="flex items-center gap-1.5 rounded-full bg-white/20 px-2 py-1 shadow-sm backdrop-blur-sm">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900/10 text-[11px] font-black text-white">
+                    <span className="flex items-center gap-1.5 max-w-[60%]">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900/10 text-[11px] font-black text-white">
                         {(course.lecturer || 'T').split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase()}
                       </span>
                       <span className="truncate font-medium text-white/95">{course.lecturer || 'Lecturer TBD'}</span>

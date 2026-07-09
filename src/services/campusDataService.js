@@ -2,8 +2,8 @@ import { supabase } from '../lib/supabase';
 import CampusMapData from '../components/guide/content/ucc/CampusMap';
 import { UCC_KNOWLEDGE_BASE, getKnowledgeForLocation } from '../components/guide/content/ucc/KnowledgeBase';
 
-const CACHE_KEY = 'ucc_campus_data';
-const CACHE_META_KEY = 'ucc_campus_data_meta';
+const CACHE_KEY = 'ucc_campus_data_v2';
+const CACHE_META_KEY = 'ucc_campus_data_meta_v2';
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 const readCache = () => {
@@ -101,7 +101,7 @@ export const fetchCampusData = async (campusId = 'ucc') => {
     const dbGuideCards = cardsRes.data && !cErr ? cardsRes.data.map(transformGuideCardRow) : [];
 
     const result = {
-      buildings: dbBuildings || staticData.buildings,
+      buildings: (dbBuildings && dbBuildings.length > 0) ? dbBuildings : staticData.buildings,
       knowledge: Object.keys(dbKnowledge).length > 0 ? { ...getStaticKnowledge(), ...dbKnowledge } : getStaticKnowledge(),
       guideCards: dbGuideCards,
       openGoogleMaps: staticData.openGoogleMaps,
@@ -141,3 +141,5 @@ export const getKnowledge = (locationName, dbKnowledge = {}) => {
   for (const [key, entry] of Object.entries(dbKnowledge)) { if (name.includes(key)) return entry; }
   return getKnowledgeForLocation(locationName);
 };
+
+// force reload

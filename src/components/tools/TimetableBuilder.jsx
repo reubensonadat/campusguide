@@ -18,6 +18,7 @@ import TimetableDayCard from '../timetable/TimetableDayCard';
 import AddCourseModal from '../timetable/AddCourseModal';
 import CourseDetailModal from '../timetable/CourseDetailModal';
 import ImportTimetableModal from '../timetable/ImportTimetableModal';
+import TimetableCalendarView from '../timetable/TimetableCalendarView';
 
 const TERMS = ['100_1','100_2','200_1','200_2','300_1','300_2','400_1','400_2','500_1','500_2','600_1','600_2'];
 const colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#84cc16','#f97316','#6366f1'];
@@ -33,6 +34,7 @@ const TimetableBuilder = () => {
   const [sharedTimetable, setSharedTimetable] = useState(null);
   const [selectedImportCourses, setSelectedImportCourses] = useState({});
   const [examMode, setExamMode] = useLocalStorage('ucc_exam_mode', false);
+  const [viewMode, setViewMode] = useLocalStorage('ucc_timetable_view_mode', 'list');
   const getTodayName = () => new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date());
   const getTodayDateLabel = () => new Intl.DateTimeFormat('en-US', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' }).format(new Date());
   const [selectedDayFilter, setSelectedDayFilter] = useState(() => getTodayName());
@@ -183,7 +185,7 @@ const TimetableBuilder = () => {
     <div className="pb-20">
       <Card>
         <CardHeader>
-          <TimetableHeader examMode={examMode} onToggleExamMode={() => setExamMode(!examMode)} notificationsEnabled={notificationsEnabled} onEnableNotifications={handleEnableNotifications} displayCourses={displayCourses} onShare={handleShareTimetable} onAdd={resetAddForm} />
+          <TimetableHeader examMode={examMode} onToggleExamMode={() => setExamMode(!examMode)} notificationsEnabled={notificationsEnabled} onEnableNotifications={handleEnableNotifications} displayCourses={displayCourses} onShare={handleShareTimetable} onAdd={resetAddForm} viewMode={viewMode} onViewModeChange={setViewMode} />
           <SemesterToggle activeTerm={activeTerm} activeTermIndex={activeTermIndex} onTermChange={setActiveTermIndex} />
         </CardHeader>
         <CardContent>
@@ -203,30 +205,36 @@ const TimetableBuilder = () => {
               </div>
             ) : (
               <div className="flex flex-col">
-                <MobileDayFilter selectedDayFilter={selectedDayFilter} onChange={setSelectedDayFilter} />
-                <div className="mb-5 rounded-[28px] border border-primary-100 bg-gradient-to-r from-primary-50 via-white to-primary-50 p-4 shadow-sm sm:p-5">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">Schedule</p>
-                      <h3 className="text-xl font-black text-slate-900">
-                        {selectedDayFilter === 'All' ? 'Your week overview' : `${selectedDayFilter}'s classes`}
-                      </h3>
+                {viewMode === 'calendar' ? (
+                  <TimetableCalendarView courses={displayCourses} onSelectCourse={(c) => setSelectedCourse(c)} />
+                ) : (
+                  <>
+                    <MobileDayFilter selectedDayFilter={selectedDayFilter} onChange={setSelectedDayFilter} />
+                    <div className="mb-5 rounded-[28px] border border-primary-100 bg-gradient-to-r from-primary-50 via-white to-primary-50 p-4 shadow-sm sm:p-5">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">Schedule</p>
+                          <h3 className="text-xl font-black text-slate-900">
+                            {selectedDayFilter === 'All' ? 'Your week overview' : `${selectedDayFilter}'s classes`}
+                          </h3>
+                        </div>
+                        <div className="rounded-full border border-primary-200 bg-white px-3 py-2 text-sm font-semibold text-primary-700 shadow-sm">
+                          {todayDateLabel}
+                        </div>
+                      </div>
+                      <p className="mt-2 text-sm text-slate-600">
+                        {selectedDayFilter === 'All'
+                          ? 'Today is highlighted first and the rest of the week follows behind it.'
+                          : `Showing classes for ${selectedDayFilter}. Tap another day to switch.`}
+                      </p>
                     </div>
-                    <div className="rounded-full border border-primary-200 bg-white px-3 py-2 text-sm font-semibold text-primary-700 shadow-sm">
-                      {todayDateLabel}
+                    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                      {daysToRender.map(day => (
+                        <TimetableDayCard key={day} day={day} courses={coursesByDay[day]} selectedDayFilter={selectedDayFilter} onSelectCourse={(c) => setSelectedCourse(c)} />
+                      ))}
                     </div>
-                  </div>
-                  <p className="mt-2 text-sm text-slate-600">
-                    {selectedDayFilter === 'All'
-                      ? 'Today is highlighted first and the rest of the week follows behind it.'
-                      : `Showing classes for ${selectedDayFilter}. Tap another day to switch.`}
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                  {daysToRender.map(day => (
-                    <TimetableDayCard key={day} day={day} courses={coursesByDay[day]} selectedDayFilter={selectedDayFilter} onSelectCourse={(c) => setSelectedCourse(c)} />
-                  ))}
-                </div>
+                  </>
+                )}
               </div>
             )}
           </div>

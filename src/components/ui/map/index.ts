@@ -5,6 +5,7 @@ export { useMap } from "./context";
 export {
   MapMarker,
   MarkerContent,
+  DefaultMarkerIcon,
   MarkerPopup,
   MarkerTooltip,
   MarkerLabel,
