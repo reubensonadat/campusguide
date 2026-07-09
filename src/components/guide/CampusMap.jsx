@@ -404,7 +404,12 @@ const MapView = () => {
                           title: post.title, 
                           subtitle: post.seller || post.author || 'Community Post', 
                           tags: [post.type.charAt(0).toUpperCase() + post.type.slice(1)], 
-                          guideCardContent: post.description || post.content || 'No details available',
+                          guideCardContent: [
+                            {
+                              title: "Description",
+                              content: post.description || post.content || 'No details available'
+                            }
+                          ],
                           _type: 'guide_card' 
                         });
                       }} className="w-full text-[12px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1.5 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-sm">
