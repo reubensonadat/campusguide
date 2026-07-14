@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, UploadCloud, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import ModalPortal from '../common/ModalPortal';
 
 const LostFoundModal = ({ isOpen, onClose, onSuccess }) => {
     const [formData, setFormData] = useState({
@@ -138,8 +139,9 @@ const LostFoundModal = ({ isOpen, onClose, onSuccess }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-gray-900/60 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
-            <div className="bg-white w-full sm:w-[480px] sm:rounded-3xl rounded-t-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300">
+        <ModalPortal>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-gray-900/60 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-white w-full sm:w-[480px] sm:rounded-3xl rounded-t-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300" onClick={e => e.stopPropagation()}>
                 
                 <div className="flex justify-between items-center p-5 border-b border-gray-100">
                     <h2 className="text-xl font-bold text-gray-900">Report Lost/Found Item</h2>
@@ -211,6 +213,7 @@ const LostFoundModal = ({ isOpen, onClose, onSuccess }) => {
                 </div>
             </div>
         </div>
+        </ModalPortal>
     );
 };
 

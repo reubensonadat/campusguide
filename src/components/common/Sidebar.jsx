@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomSettings } from './CustomIcons';
 import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import MagneticButton from './MagneticButton';
 
 const Sidebar = ({ onExpandedChange }) => {
   const [isExpanded, setIsExpanded] = useLocalStorage('ucc_sidebar_expanded', true);
@@ -78,9 +79,7 @@ const Sidebar = ({ onExpandedChange }) => {
           const Icon = tab.icon;
 
           return (
-            <button
-              key={tab.id}
-              onClick={() => navigate(tab.path)}
+            <MagneticButton key={tab.id} as="button" onClick={() => navigate(tab.path)}
               className={`w-full flex items-center px-2.5 h-[44px] rounded-xl transition-all duration-200 group focus:outline-none ${
                 isActive 
                   ? 'bg-primary-500 text-white shadow-sm' 
@@ -98,15 +97,14 @@ const Sidebar = ({ onExpandedChange }) => {
               >
                 {tab.label}
               </span>
-            </button>
+            </MagneticButton>
           );
         })}
       </nav>
 
       {/* Settings Footer */}
       <div className="p-3 border-t border-gray-100 mt-auto">
-        <button
-          onClick={() => navigate('/settings')}
+        <MagneticButton as="button" onClick={() => navigate('/settings')}
           className={`w-full flex items-center px-2.5 h-[44px] rounded-xl transition-all duration-200 group focus:outline-none ${
             ['/settings', '/privacy', '/terms'].includes(location.pathname)
               ? 'bg-primary-400 text-white shadow-sm' 
@@ -124,7 +122,7 @@ const Sidebar = ({ onExpandedChange }) => {
           >
             Settings
           </span>
-        </button>
+        </MagneticButton>
       </div>
     </div>
   );

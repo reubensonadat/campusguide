@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Clock, Check, Trash2, Zap, AlertCircle, Calendar, Tag } from 'lucide-react';
+import ModalPortal from '../common/ModalPortal';
 import { PaymentButton } from '../payment/PaymentButton';
 import { boostThriftListing, extendThriftListing, markThriftListingAsSold, deleteThriftListing } from '../../services/thriftService';
 import { toast } from 'react-hot-toast';
@@ -109,8 +110,9 @@ const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) =>
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end justify-center sm:items-center sm:p-4">
-      <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[85vh] shadow-2xl">
+    <ModalPortal>
+    <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end justify-center sm:items-center sm:p-4" onClick={onClose}>
+      <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[85vh] shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <h2 className="text-lg font-black text-gray-900">Manage Listing</h2>
@@ -169,6 +171,7 @@ const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) =>
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 };
 

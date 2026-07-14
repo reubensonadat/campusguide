@@ -1,12 +1,14 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import ModalPortal from '../common/ModalPortal';
 
 const ChangePinModal = ({ isOpen, onClose, newPin, onPinChange, onSubmit, isUpdating }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end justify-center sm:items-center sm:p-4 animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-lg rounded-t-2xl sm:rounded-2xl flex flex-col shadow-2xl animate-in slide-in-from-bottom-8 duration-300 p-6">
+    <ModalPortal>
+    <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end justify-center sm:items-center sm:p-4 animate-in fade-in duration-200" onClick={onClose}>
+      <div className="bg-white w-full max-w-lg rounded-t-2xl sm:rounded-2xl flex flex-col shadow-2xl animate-in slide-in-from-bottom-8 duration-300 p-6" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
           <h2 className="text-lg font-black text-gray-900 pl-2">Change Recovery PIN</h2>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"><X size={20} /></button>
@@ -28,6 +30,7 @@ const ChangePinModal = ({ isOpen, onClose, newPin, onPinChange, onSubmit, isUpda
         </form>
       </div>
     </div>
+    </ModalPortal>
   );
 };
 

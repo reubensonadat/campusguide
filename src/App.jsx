@@ -1,6 +1,7 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import OneSignal from 'react-onesignal';
 import { DataLoader } from './components/common/CustomLoaders';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
@@ -23,6 +24,9 @@ import Sidebar from './components/common/Sidebar';
 import { SupportModal } from './components/payment/SupportModal';
 import FeedbackModal from './components/common/FeedbackSurveyModal';
 import PWAInstallButton from './components/common/PWAInstallButton';
+import CustomCursor from './components/common/CustomCursor';
+import { PageSkeleton, MapPageSkeleton } from './components/common/Skeleton';
+import PageParallax from './components/common/PageParallax';
 
 import { preloadPaystack } from './services/paymentService';
 import { useOnboarding } from './hooks/useOnboarding';
@@ -60,9 +64,23 @@ function NavigationObserver() {
   return null;
 }
 
+function PageTransition({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 import { useLocalStorage } from './hooks/useLocalStorage';
 
 function AppContent() {
+  const location = useLocation();
   const { selectedCampusId } = useCampus();
 
   const [syncConflict, setSyncConflict] = useState(null);
@@ -203,6 +221,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex bg-gray-50/50 overflow-x-hidden">
+      <CustomCursor />
       <Toaster
         position="top-center"
         containerStyle={{ top: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}
@@ -211,32 +230,31 @@ function AppContent() {
       <Sidebar onExpandedChange={setIsSidebarExpanded} />
 
       <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>
-        <Suspense fallback={
-          <div className="flex-1 min-h-[60vh] flex flex-col items-center justify-center gap-4 py-20 bg-gray-50/50 dark:bg-[#0a0a0a]">
-            <DataLoader className="w-10 h-10 text-gray-900" />
-            <span className="text-xs font-black tracking-widest text-gray-900/60 dark:text-gray-400/60 uppercase animate-pulse">Loading...</span>
-          </div>
-        }>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/focus" element={<FocusTimer />} />
-            <Route path="/guide" element={<Guide />} />
-            <Route path="/guide/:topic" element={<Guide />} />
-            <Route path="/tools/letter-generator" element={<LetterGenerator />} />
-            <Route path="/tools/*" element={<Tools />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/advertise" element={<Advertise />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin/*" element={<AdminDashboard />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/planner" element={<RunwayPlanner />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
+        <PageParallax>
+        <AnimatePresence mode="wait">
+          <Suspense fallback={<PageSkeleton />}>
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+              <Route path="/focus" element={<PageTransition><FocusTimer /></PageTransition>} />
+              <Route path="/guide" element={<PageTransition><Guide /></PageTransition>} />
+              <Route path="/guide/:topic" element={<PageTransition><Guide /></PageTransition>} />
+              <Route path="/tools/letter-generator" element={<PageTransition><LetterGenerator /></PageTransition>} />
+              <Route path="/tools/*" element={<PageTransition><Tools /></PageTransition>} />
+              <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
+              <Route path="/support" element={<PageTransition><Support /></PageTransition>} />
+              <Route path="/advertise" element={<PageTransition><Advertise /></PageTransition>} />
+              <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+              <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
+              <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+              <Route path="/admin/*" element={<PageTransition><AdminDashboard /></PageTransition>} />
+              <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
+              <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
+              <Route path="/planner" element={<PageTransition><RunwayPlanner /></PageTransition>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
+        </AnimatePresence>
+        </PageParallax>
 
         <TabBar />
 

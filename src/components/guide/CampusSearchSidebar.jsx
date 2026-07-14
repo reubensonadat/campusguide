@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, ChevronDown, ChevronUp, ExternalLink, FileText, Phone, Globe, Shield, AlertTriangle, AlertCircle } from 'lucide-react';
 import { CustomGuide } from '../common/CustomIcons';
+import TiltCard from '../common/TiltCard';
 
 const CustomMapPin = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" className={className} fill="currentColor">
@@ -57,8 +58,9 @@ const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarVie
                 <div className="mb-2 space-y-1">
                   <div className="text-[10px] font-black uppercase text-slate-400 mt-2 px-1 mb-1">Community & Business</div>
                   {filteredCommunityPosts.map(post => (
-                    <button key={post.id} onClick={() => onCommunityPostSelect(post)}
-                      className={`w-full text-left bg-gradient-to-r to-white p-3 rounded-xl group transition-all flex flex-col gap-1 shadow-sm mt-1 relative overflow-hidden border ${
+                    <TiltCard key={post.id} mode="drag">
+                    <button onClick={() => onCommunityPostSelect(post)}
+                      className={`w-full text-left p-3 rounded-xl group transition-all flex flex-col gap-1 shadow-sm mt-1 relative overflow-hidden border bg-gradient-to-r to-white ${
                         post.type === 'business' ? 'from-amber-50 hover:from-amber-100 hover:to-amber-50 border-amber-200/50' :
                         post.type === 'event' ? 'from-rose-50 hover:from-rose-100 hover:to-rose-50 border-rose-200/50' :
                         'from-blue-50 hover:from-blue-100 hover:to-blue-50 border-blue-200/50'
@@ -92,6 +94,7 @@ const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarVie
                         </div>
                       </div>
                     </button>
+                    </TiltCard>
                   ))}
                   {searchTerm && filteredLocations.length > 0 && <div className="text-[10px] font-black uppercase text-slate-400 mt-3 mb-1 px-1 pt-2 border-t border-slate-200/50">Campus Locations</div>}
                 </div>
@@ -108,6 +111,7 @@ const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarVie
 
                 return (
                   <React.Fragment key={loc.id}>
+                    <TiltCard mode="drag">
                     <button onClick={() => onLocationSelect(loc)}
                       className="w-full text-left bg-white p-3 hover:bg-primary-50/50 border border-slate-100 hover:border-primary-100 rounded-xl group transition-all flex justify-between items-center shadow-sm">
                       <div>
@@ -121,11 +125,13 @@ const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarVie
                         {hasCoords ? <CustomMapPin className="w-4 h-4" /> : <ExternalLink className="w-3.5 h-3.5" />}
                       </div>
                     </button>
+                    </TiltCard>
 
                     {/* Inline Interleaved Community Ad */}
                     {inlineCommunityPost && (
-                      <button key={`ad-${inlineCommunityPost.id}-${index}`} onClick={() => onCommunityPostSelect(inlineCommunityPost)}
-                        className={`w-full text-left bg-gradient-to-r to-white p-3 rounded-xl group transition-all flex flex-col gap-1 shadow-sm mt-1 mb-1 relative overflow-hidden border ${
+                      <TiltCard key={`ad-${inlineCommunityPost.id}-${index}`} mode="drag">
+                      <button onClick={() => onCommunityPostSelect(inlineCommunityPost)}
+                        className={`w-full text-left p-3 rounded-xl group transition-all flex flex-col gap-1 shadow-sm mt-1 mb-1 relative overflow-hidden border bg-gradient-to-r to-white ${
                           inlineCommunityPost.type === 'business' ? 'from-amber-50 hover:from-amber-100 hover:to-amber-50 border-amber-200/50' :
                           inlineCommunityPost.type === 'event' ? 'from-rose-50 hover:from-rose-100 hover:to-rose-50 border-rose-200/50' :
                           'from-blue-50 hover:from-blue-100 hover:to-blue-50 border-blue-200/50'
@@ -159,6 +165,7 @@ const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarVie
                           </div>
                         </div>
                       </button>
+                      </TiltCard>
                     )}
                   </React.Fragment>
                 );
@@ -175,7 +182,8 @@ const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarVie
                 cards.map(card => {
                   const CardIcon = getGuideCardIcon(card.icon);
                   return (
-                    <button key={card.id} onClick={() => onCardSelect(card)}
+                    <TiltCard key={card.id} mode="drag">
+                    <button onClick={() => onCardSelect(card)}
                       className="w-full text-left bg-primary-50/70 p-3 hover:bg-primary-100/70 border border-primary-200/60 rounded-xl group transition-all flex justify-between items-center shadow-sm">
                       <div className="flex items-start gap-3">
                         <div className="p-1.5 bg-primary-100 rounded-lg text-primary-600 shrink-0"><CardIcon size={16} /></div>
@@ -186,6 +194,7 @@ const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarVie
                       </div>
                       <span className="text-[9px] bg-primary-200/80 px-1.5 py-0.5 rounded font-black uppercase text-primary-700 shrink-0">{card.category}</span>
                     </button>
+                    </TiltCard>
                   );
                 })
               )}

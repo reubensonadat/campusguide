@@ -289,10 +289,12 @@ export const addWhisperComment = async (whisperId, text) => {
 
 export const getThriftListings = async () => {
     try {
+        const today = new Date().toISOString();
         const { data, error } = await supabase
             .from('thrift_listings')
             .select('*')
             .eq('status', 'ACTIVE')
+            .gte('expires_at', today)
             .order('created_at', { ascending: false })
             .limit(50);
 

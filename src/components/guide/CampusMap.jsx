@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { ExternalLink, Info, Navigation, Loader2, Search, ShoppingBag, MessageCircle, Store, ArrowRight, X } from 'lucide-react';
+import { ExternalLink, Info, Navigation, Loader2, Search } from 'lucide-react';
 import CampusMapData from './content/ucc/CampusMap';
 import { getKnowledgeForLocation } from './content/ucc/KnowledgeBase';
 import { fetchCampusData, searchGuideCards } from '@/services/campusDataService';
@@ -7,6 +7,7 @@ import { Map, MapControls, MapMarker, MarkerPopup, MarkerContent, MapRoute, Defa
 import { calculateDistance, truncateRouteByProximity } from '@/utils/navigation';
 import LiveNavigationHUD from './LiveNavigationHUD';
 import CampusSearchSidebar from './CampusSearchSidebar';
+import WeatherOverlay from './WeatherOverlay';
 import KnowledgeModal from './KnowledgeModal';
 import { useMap } from '@/components/ui/map/context';
 
@@ -289,13 +290,19 @@ const MapView = () => {
   const maxBounds = [[-1.3500, 5.0700], [-1.2200, 5.1600]];
 
   const handleCardSelect = (card) => {
-    setKnowledgeModalData({ title: card.fullName || card.title, subtitle: card.category, tags: [card.category?.charAt(0).toUpperCase() + card.category?.slice(1)], guideCardContent: card.description, _type: 'guide_card' });
+    setKnowledgeModalData({ 
+      title: card.fullName || card.title, 
+      subtitle: card.category, 
+      tags: [card.category?.charAt(0).toUpperCase() + card.category?.slice(1)], 
+      guideCardContent: card.content || [{ title: 'Overview', content: card.description }], 
+      _type: 'guide_card' 
+    });
   };
 
   return (
     <div className="absolute inset-0 bg-slate-50 flex flex-col animate-in fade-in overflow-hidden">
       <div className="absolute inset-0 z-0 h-full w-full">
-        <Map viewport={viewport} onViewportChange={setViewport} theme="light" className="w-full h-full" maxBounds={maxBounds} minZoom={13}>
+        <Map viewport={viewport} onViewportChange={setViewport} theme="light" className="w-full h-full" maxBounds={maxBounds} minZoom={13} dragRotate={false} touchPitch={false} touchZoomRotate={true} doubleClickZoom={true}>
           <MapControls position="top-right" showZoom showCompass show3D showLocate onLocate={handleMapLocate} className="top-[calc(0.5rem_+_env(safe-area-inset-top,0px))]" />
           {activeRouteData && <MapRoute coordinates={activeRouteData} color="#3b82f6" width={6} opacity={0.9} />}
           <CommunityHeatmap posts={filteredCommunityPosts} visible={showCommunityLayer} />
@@ -319,7 +326,24 @@ const MapView = () => {
                 </MarkerContent>
                 {isSelected && (
                   <MarkerPopup onClose={() => setSelectedLocation(null)}>
-                    <div className="w-48 text-center pt-3 pb-2 px-2 bg-white rounded-2xl shadow-xl border border-slate-100 relative z-50">
+                    <div
+                      className="w-48 text-center pt-3 pb-2 px-2 bg-white rounded-2xl shadow-xl border border-slate-100 relative z-50"
+                      style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
+                      onMouseMove={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        const cx = rect.left + rect.width / 2
+                        const cy = rect.top + rect.height / 2
+                        const dx = (e.clientX - cx) / (rect.width / 2)
+                        const dy = (e.clientY - cy) / (rect.height / 2)
+                        e.currentTarget.style.transform = `perspective(600px) rotateX(${-dy * 12}deg) rotateY(${dx * 12}deg) scale3d(1.03, 1.03, 1.03)`
+                        e.currentTarget.style.boxShadow = `${-dx * 6}px ${-dy * 6}px 15px rgba(0,0,0,0.15)`
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transition = 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease-out'
+                        e.currentTarget.style.transform = ''
+                        e.currentTarget.style.boxShadow = ''
+                      }}
+                    >
                       <h3 className="font-bold text-[13px] text-slate-900 leading-tight mb-1">{loc.fullName}</h3>
                       <p className="text-[11px] text-slate-500 mb-2 line-clamp-2">{loc.description || 'Campus location'}</p>
                       <div className="flex flex-col gap-1.5 px-2 mb-1">
@@ -392,7 +416,24 @@ const MapView = () => {
               </MarkerContent>
               {selectedCommunityPost?.id === post.id && (
                 <MarkerPopup onClose={() => setSelectedCommunityPost(null)}>
-                  <div className="w-48 text-center pt-3 pb-2 px-2 bg-white rounded-2xl shadow-xl border border-slate-100 relative z-50">
+                  <div
+                    className="w-48 text-center pt-3 pb-2 px-2 bg-white rounded-2xl shadow-xl border border-slate-100 relative z-50"
+                    style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
+                    onMouseMove={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect()
+                      const cx = rect.left + rect.width / 2
+                      const cy = rect.top + rect.height / 2
+                      const dx = (e.clientX - cx) / (rect.width / 2)
+                      const dy = (e.clientY - cy) / (rect.height / 2)
+                      e.currentTarget.style.transform = `perspective(600px) rotateX(${-dy * 12}deg) rotateY(${dx * 12}deg) scale3d(1.03, 1.03, 1.03)`
+                      e.currentTarget.style.boxShadow = `${-dx * 6}px ${-dy * 6}px 15px rgba(0,0,0,0.15)`
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transition = 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease-out'
+                      e.currentTarget.style.transform = ''
+                      e.currentTarget.style.boxShadow = ''
+                    }}
+                  >
                     <h3 className="font-bold text-[13px] text-slate-900 leading-tight mb-1">{post.title}</h3>
                     <p className="text-[11px] text-slate-500 mb-2 line-clamp-2">{post.description}</p>
                     <div className="flex flex-col gap-1.5 px-2 mb-1">
@@ -438,6 +479,8 @@ const MapView = () => {
         {isLiveNavigating && distanceRemaining !== null && (
           <LiveNavigationHUD distanceRemaining={distanceRemaining} showBetaWarning={showBetaWarning} onDismissBeta={() => setShowBetaWarning(false)} onEndRoute={endNavigation} />
         )}
+
+        <WeatherOverlay className="absolute top-4 left-4 lg:bottom-4 lg:right-4 lg:top-auto lg:left-auto z-30" />
 
         <CampusSearchSidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} sidebarView={sidebarView} setSidebarView={setSidebarView}
           searchTerm={searchTerm} onSearchChange={setSearchTerm} filteredLocations={filteredLocations} getCoordinates={getCoordinates}

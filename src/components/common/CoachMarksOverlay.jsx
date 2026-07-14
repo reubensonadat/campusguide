@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, X } from 'lucide-react';
+import ModalPortal from './ModalPortal';
 
 export function CoachMarksOverlay({ steps, storageKey, condition = true, forceShow }) {
     const [isVisible, setIsVisible] = useState(false);
@@ -39,7 +40,8 @@ export function CoachMarksOverlay({ steps, storageKey, condition = true, forceSh
     const isLastStep = currentStep === steps.length - 1;
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-6 animate-in fade-in duration-200">
+        <ModalPortal>
+        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-6 animate-in fade-in duration-200" onClick={handleDismiss}>
             {/* Backdrop */}
             <div
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm"
@@ -47,7 +49,7 @@ export function CoachMarksOverlay({ steps, storageKey, condition = true, forceSh
             />
 
             {/* Coach Card */}
-            <div className="relative w-full max-w-md bg-white border border-gray-100 rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden z-10 animate-in slide-in-from-bottom-8 duration-300">
+            <div className="relative w-full max-w-md bg-white border border-gray-100 rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden z-10 animate-in slide-in-from-bottom-8 duration-300" onClick={e => e.stopPropagation()}>
                 {/* Close button */}
                 <button
                     onClick={handleDismiss}
@@ -108,5 +110,6 @@ export function CoachMarksOverlay({ steps, storageKey, condition = true, forceSh
                 </div>
             </div>
         </div>
+        </ModalPortal>
     );
 }

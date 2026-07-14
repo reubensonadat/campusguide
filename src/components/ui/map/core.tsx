@@ -230,24 +230,22 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     };
     const loadHandler = () => setIsLoaded(true);
 
-    const handleMove = (e: any) => {
+    const handleMoveEnd = (e: any) => {
       if (internalUpdateRef.current) return;
-      // ONLY trigger React state updates if the user physically dragged the map.
-      // Programmatic flyTo animations should NOT trigger React updates, as 60FPS re-renders will freeze the UI!
       if (!e.originalEvent) return;
       onViewportChangeRef.current?.(getViewport(map));
     };
 
     map.on("load", loadHandler);
     map.on("styledata", styleDataHandler);
-    map.on("move", handleMove);
+    map.on("moveend", handleMoveEnd);
     setMapInstance(map);
 
     return () => {
       clearStyleTimeout();
       map.off("load", loadHandler);
       map.off("styledata", styleDataHandler);
-      map.off("move", handleMove);
+      map.off("moveend", handleMoveEnd);
       map.remove();
       setIsLoaded(false);
       setIsStyleLoaded(false);

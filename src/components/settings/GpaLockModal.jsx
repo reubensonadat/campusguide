@@ -1,12 +1,14 @@
 import React from 'react';
 import { X, Lock } from 'lucide-react';
+import ModalPortal from '../common/ModalPortal';
 
 const GpaLockModal = ({ isOpen, onClose, mode, pinInput, pinConfirmInput, onInputChange, onSubmit }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6 animate-in fade-in duration-200">
-      <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 flex flex-col">
+    <ModalPortal>
+    <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6 animate-in fade-in duration-200" onClick={onClose}>
+      <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 flex flex-col" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <h2 className="text-lg font-black text-gray-900 px-2 flex items-center gap-2">
             <Lock size={18} className="text-gray-900" />
@@ -38,6 +40,7 @@ const GpaLockModal = ({ isOpen, onClose, mode, pinInput, pinConfirmInput, onInpu
         </form>
       </div>
     </div>
+    </ModalPortal>
   );
 };
 
