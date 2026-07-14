@@ -20,7 +20,8 @@ export const LS_KEYS = {
   GPA: 'ucc_gpa',
   REMINDERS: 'ucc_reminders',
   SETTINGS: 'ucc_settings',
-  HOME_WIDGETS: 'ucc_home_widgets'
+  HOME_WIDGETS: 'ucc_home_widgets',
+  ONBOARDED: 'ucc_onboarded'
 };
 
 // Default home widget visibility

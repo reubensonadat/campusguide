@@ -1,9 +1,39 @@
 import React from 'react';
+import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomContact, CustomSettings, CustomGraph, CustomCoolFinds, CustomThriftStore, CustomNavigation, CustomSparkles, CustomEyes } from './CustomIcons';
+import { AboutIcon, HeartFeatureIcon } from './CustomTaskIcons';
+
+function SectionLoader({ Icon, label, subtitle, className = '' }) {
+  return (
+    <div className={`flex flex-col items-center justify-center py-16 px-6 ${className}`}>
+      <div className="relative mb-6">
+        <div className="absolute inset-0 bg-primary-100/50 rounded-full blur-xl animate-pulse" style={{ width: '120%', height: '120%', left: '-10%', top: '-10%' }} />
+        <div className="relative w-20 h-20 flex items-center justify-center">
+          <Icon size={52} className="text-primary-500 animate-pulse" />
+        </div>
+      </div>
+      <p className="text-gray-900 font-black text-lg tracking-tight mb-1.5">{label}</p>
+      <p className="text-gray-400 font-semibold text-sm text-center max-w-[200px]">{subtitle}</p>
+    </div>
+  );
+}
+
+export const HomeLoader = (props) => <SectionLoader Icon={CustomHome} label="Home" subtitle="Loading your dashboard..." {...props} />;
+export const GuideLoader = (props) => <SectionLoader Icon={CustomNavigation} label="Campus Map" subtitle="Loading map data..." {...props} />;
+export const ToolsLoader = (props) => <SectionLoader Icon={CustomTools} label="Tools" subtitle="Loading your tools..." {...props} />;
+export const CommunityLoader = (props) => <SectionLoader Icon={CustomCommunity} label="Community" subtitle="Loading community feed..." {...props} />;
+export const ProfileLoader = (props) => <SectionLoader Icon={CustomProfile} label="Profile" subtitle="Loading your profile..." {...props} />;
+export const SettingsLoader = (props) => <SectionLoader Icon={CustomSettings} label="Settings" subtitle="Loading settings..." {...props} />;
+export const WhispersLoader = (props) => <SectionLoader Icon={CustomEyes} label="Campus Whispers" subtitle="Loading whispers..." {...props} />;
+export const ThriftLoader = (props) => <SectionLoader Icon={CustomThriftStore} label="Student Thrift" subtitle="Loading listings..." {...props} />;
+export const LeaderboardLoader = (props) => <SectionLoader Icon={CustomGraph} label="Leaderboards" subtitle="Loading rankings..." {...props} />;
+export const CoolFindsLoader = (props) => <SectionLoader Icon={CustomCoolFinds} label="Cool Finds" subtitle="Loading resources..." {...props} />;
+export const ContactLoader = (props) => <SectionLoader Icon={CustomContact} label="Contact" subtitle="Loading contact info..." {...props} />;
+export const SupportLoader = (props) => <SectionLoader Icon={HeartFeatureIcon} label="Support" subtitle="Loading support info..." {...props} />;
+export const LetterLoader = (props) => <SectionLoader Icon={CustomSparkles} label="Letter Generator" subtitle="Preparing letter generator..." {...props} />;
 
 export const DataLoader = ({ className = "w-6 h-6 text-gray-900" }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" xmlSpace="preserve">
-    <style>
-      {`
+    <style>{`
       .box5532 { fill: currentColor; transform-origin: 50% 50%; }
       @keyframes box5532-1 {
         9.0909090909% { transform: translate(-12px, 0); }
@@ -131,8 +161,7 @@ export const DataLoader = ({ className = "w-6 h-6 text-gray-900" }) => (
         100% { transform: translate(0px, 0); }
       }
       .box5532:nth-child(9) { animation: box5532-9 4s infinite; }
-      `}
-    </style>
+    `}</style>
     <g>
       <rect className="box5532" x="13" y="1" rx="1" width="10" height="10"/>
       <rect className="box5532" x="13" y="1" rx="1" width="10" height="10"/>

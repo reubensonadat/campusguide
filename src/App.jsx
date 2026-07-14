@@ -201,7 +201,8 @@ function AppContent() {
         }
       }
     };
-    recoverUserId();
+    const idleId = requestIdleCallback ? requestIdleCallback(() => recoverUserId(), { timeout: 3000 }) : setTimeout(recoverUserId, 2000);
+    return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); };
   }, []);
 
   // Onboarding

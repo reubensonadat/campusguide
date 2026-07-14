@@ -5,7 +5,7 @@ import NewWhisperModal from './NewWhisperModal';
 import WhisperCommentsModal from './WhisperCommentsModal';
 import { getWhispers, interactWithWhisper, deleteWhisper, getUserInteractions, toggleWhisperReaction } from '../../services/communityService';
 import { getCurrentUser } from '../../services/authService';
-import { DataLoader } from '../common/CustomLoaders';
+import { WhispersLoader } from '../common/CustomLoaders';
 import { Linkify } from '../../utils/linkify';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { toBlob } from 'html-to-image';
@@ -344,10 +344,7 @@ const WhispersFeed = () => {
 
             <div className="space-y-4">
                 {loading ? (
-                    <div className="py-12 flex flex-col items-center justify-center text-gray-400">
-                        <DataLoader className="w-8 h-8 text-gray-900 mb-4" />
-                        <p className="text-sm font-medium">Loading whispers...</p>
-                    </div>
+                    <WhispersLoader />
                 ) : sortedWhispers.length === 0 ? (
                     <div className="py-12 text-center text-gray-400 font-medium">
                         No whispers yet. Be the first to spill the tea!

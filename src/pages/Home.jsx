@@ -41,7 +41,7 @@ import ExpenseModal from '../components/home/ExpenseModal';
 
 const Home = () => {
   React.useEffect(() => { window.scrollTo(0, 0); }, []);
-  React.useEffect(() => { logAppOpen(); }, []);
+  React.useEffect(() => { const idleId = requestIdleCallback ? requestIdleCallback(() => logAppOpen(), { timeout: 2000 }) : setTimeout(logAppOpen, 1000); return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); }; }, []);
 
   const navigate = useNavigate();
   const { state, actions } = useAppContext();
@@ -94,7 +94,7 @@ const Home = () => {
   const [isDeferredActive, setIsDeferredActive] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsDeferredActive(true), 400);
+    const timer = setTimeout(() => setIsDeferredActive(true), 2000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -146,7 +146,7 @@ const Home = () => {
   };
 
   const [prodStats, setProdStats] = useState(null);
-  useEffect(() => { getProductivityStats().then(setProdStats); }, []);
+  useEffect(() => { const idleId = requestIdleCallback ? requestIdleCallback(() => getProductivityStats().then(setProdStats), { timeout: 3000 }) : setTimeout(() => getProductivityStats().then(setProdStats), 2000); return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); }; }, []);
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(() => new Date());
@@ -305,7 +305,8 @@ const Home = () => {
         setFetchStatus('success');
       } catch (err) { console.error("Error fetching community updates", err); setFetchStatus('error'); }
     };
-    fetchCommunityUpdates();
+    const idleId = requestIdleCallback ? requestIdleCallback(() => fetchCommunityUpdates(), { timeout: 3000 }) : setTimeout(fetchCommunityUpdates, 2000);
+    return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); };
   }, [notificationsEnabled, isDeferredActive]);
 
   useEffect(() => {
@@ -322,7 +323,8 @@ const Home = () => {
         setFeaturedContent({ kind: 'ad', data: adsData[Math.floor(Math.random() * adsData.length)] });
       } catch (err) { console.error("Error fetching ad", err); }
     };
-    fetchAdOrFallback();
+    const idleId = requestIdleCallback ? requestIdleCallback(() => fetchAdOrFallback(), { timeout: 3000 }) : setTimeout(fetchAdOrFallback, 2000);
+    return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); };
   }, [isDeferredActive]);
 
   const [weatherData, setWeatherData] = useState(null);
@@ -403,7 +405,7 @@ const Home = () => {
     };
 
     if (!isDeferredActive) return;
-    const deferTimer = setTimeout(() => {
+    const fetchAllWidgets = () => {
       if (homeWidgets.weather && !weatherData) fetchWeather();
       if (homeWidgets.verse && !verseData) fetchVerse();
       if (homeWidgets.forex && !forexData) fetchForex();
@@ -415,10 +417,11 @@ const Home = () => {
       if (homeWidgets.fact && !factData) fetchFact();
       if (homeWidgets.github && !githubData) fetchGithub();
       if (homeWidgets.word && !wordData) fetchWord();
-    }, 0);
+    };
+    const idleId = requestIdleCallback ? requestIdleCallback(() => fetchAllWidgets(), { timeout: 5000 }) : setTimeout(fetchAllWidgets, 3000);
     let footballInterval = null;
     if (homeWidgets.football) footballInterval = setInterval(fetchFootball, 60000);
-    return () => { clearTimeout(deferTimer); if (footballInterval) clearInterval(footballInterval); };
+    return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); if (footballInterval) clearInterval(footballInterval); };
   }, [homeWidgets, isDeferredActive]);
 
   const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';

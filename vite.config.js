@@ -10,7 +10,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['logo.png', 'Savings.png', 'Dicebear.png'],
+      includeAssets: ['logo.png', 'Savings.png'],
       manifest: {
         name: 'UCC Campus Guide',
         short_name: 'UCC Guide',
@@ -28,7 +28,9 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5000000,
         importScripts: ['https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js'],
         navigateFallback: '/index.html',
-        navigateFallbackAllowlist: [/^\/[a-zA-Z0-9\-_]+$/],
+        navigateFallbackAllowlist: [/^\/[a-zA-Z0-9\-_\/]+$/],
+        navigationPreload: true,
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,ttf,woff,woff2,eot}'],
         runtimeCaching: [
           {
             urlPattern: /^https?:\/\/.*\.supabase\.co\/.*/i,
@@ -50,8 +52,8 @@ export default defineConfig({
             options: {
               cacheName: 'images',
               expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 30 * 24 * 60 * 60
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 24 * 60 * 60
               }
             }
           },
@@ -63,6 +65,17 @@ export default defineConfig({
               expiration: {
                 maxEntries: 20,
                 maxAgeSeconds: 365 * 24 * 60 * 60
+              }
+            }
+          },
+          {
+            urlPattern: /\/api\//i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60
               }
             }
           }

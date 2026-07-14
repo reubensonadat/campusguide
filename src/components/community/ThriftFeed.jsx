@@ -4,7 +4,7 @@ import { CustomSafetyCheck } from '../common/CustomIcons';
 import { CustomMapPin } from '../common/CustomMapPin';
 import NewThriftModal from './NewThriftModal';
 import { getThriftListings } from '../../services/communityService';
-import { DataLoader } from '../common/CustomLoaders';
+import { ThriftLoader } from '../common/CustomLoaders';
 import { useWishlist } from '../../hooks/useWishlist';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { toast } from 'react-hot-toast';
@@ -340,12 +340,7 @@ const ThriftFeed = () => {
     });
 
     const renderContent = () => {
-        if (loading) return (
-            <div className="py-12 flex flex-col items-center justify-center text-gray-400">
-                <DataLoader className="w-8 h-8 text-gray-900 mb-3" />
-                <p className="text-sm font-medium">Loading listings...</p>
-            </div>
-        );
+        if (loading) return <ThriftLoader />;
 
         if (items.length === 0) return (
             <div className="py-16 flex flex-col items-center text-center gap-3">

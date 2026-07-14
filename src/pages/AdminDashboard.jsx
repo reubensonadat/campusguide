@@ -10,6 +10,7 @@ import { sendBlast, BLAST_SEGMENTS } from '../services/blastService';
 
 import AdminLoginScreen from '../components/admin/AdminLoginScreen';
 import AdminSidebar from '../components/admin/AdminSidebar';
+import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 import AdModerationPanel from '../components/admin/AdModerationPanel';
 import ThriftVerificationPanel from '../components/admin/ThriftVerificationPanel';
 import LostFoundPanel from '../components/admin/LostFoundPanel';
@@ -49,7 +50,7 @@ const AdminDashboard = () => {
   const [isBlasting, setIsBlasting] = useState(false);
 
   useEffect(() => {
-    const pathTab = ({ '/admin/moderation': 'moderation', '/admin/lostfound': 'lostfound', '/admin/upload': 'upload', '/admin/thrift': 'thrift', '/admin/campus-data': 'campus-data', '/admin/blast': 'blast' });
+    const pathTab = ({ '/admin/analytics': 'analytics', '/admin/moderation': 'moderation', '/admin/lostfound': 'lostfound', '/admin/upload': 'upload', '/admin/thrift': 'thrift', '/admin/campus-data': 'campus-data', '/admin/blast': 'blast' });
     for (const [path, tab] of Object.entries(pathTab)) { if (location.pathname.includes(path)) { setActiveTab(tab); return; } }
     setActiveTab('moderation');
   }, [location.pathname]);
@@ -161,7 +162,8 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row mb-24 md:mb-0">
       <AdminSidebar activeTab={activeTab} onTabChange={setTab} onLogout={logout} />
       <div className="flex-1 p-4 md:p-8 overflow-y-auto w-full">
-        {isLoading && <div className="text-center py-10 font-bold text-gray-400">Loading data...</div>}
+        {activeTab === 'analytics' && <AnalyticsDashboard />}
+        {isLoading && activeTab !== 'analytics' && <div className="text-center py-10 font-bold text-gray-400">Loading data...</div>}
         {!isLoading && activeTab === 'moderation' && <AdModerationPanel ads={ads} onApprove={(id) => updateAdStatus(id, 'ACTIVE')} onReject={(id) => updateAdStatus(id, 'REJECTED')} onDelete={deleteAd} />}
         {!isLoading && activeTab === 'thrift' && <ThriftVerificationPanel thriftItems={thriftItems} isPurging={isPurging} onApprove={(id) => updateThriftStatus(id, 'ACTIVE')} onReject={(id) => updateThriftStatus(id, 'REJECTED')} onDelete={deleteThrift} onPurge={handlePurgeThrift} />}
         {!isLoading && activeTab === 'lostfound' && <LostFoundPanel lostFoundItems={lostFoundItems} onDelete={deleteLostFound} />}

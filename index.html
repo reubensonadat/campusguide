@@ -5,15 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#002F45" />
-  <title>UCC Campus Guide | Student Timetable, GPA & Resources</title>
-  <meta name="description"
-    content="The ultimate student companion. Manage your timetable, calculate GPA, track budgets, auto-generate formal letters, buy/sell on student thrift, and navigate campus life." />
-  <meta name="keywords"
-    content="Campus Guide, Student Timetable Builder, GPA Calculator, Budget Tracker, Formal Letter Generator, Student Thrift, Campus Whispers, UCC, KNUST, UG Legon" />
+  <meta name="description" content="The ultimate student companion. Manage your timetable, calculate GPA, track budgets, auto-generate formal letters, buy/sell on student thrift, and navigate campus life." />
+  <meta name="keywords" content="Campus Guide, Student Timetable Builder, GPA Calculator, Budget Tracker, Formal Letter Generator, Student Thrift, Campus Whispers, UCC, KNUST, UG Legon" />
   <meta name="author" content="Campus Guide Team" />
   <meta name="robots" content="index, follow" />
   <meta name="google-site-verification" content="eswOh6_rFxLJGmlwGc8-dsGLrgl3HZWsOysTz0T4-UU" />
-
+  <title>UCC Campus Guide | Student Timetable, GPA & Resources</title>
   <link rel="canonical" href="https://campusguide.pages.dev/" />
 
   <meta property="og:type" content="website" />
@@ -21,13 +18,10 @@
   <meta property="og:title" content="Campus Guide | Ultimate Student Companion" />
   <meta property="og:description" content="Manage your class timetable, track budgets, project GPAs, auto-generate letters, and keep up with campus updates." />
   <meta property="og:image" content="https://campusguide.pages.dev/preview-image.jpg" />
-
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Campus Guide Student Companion" />
   <meta name="twitter:description" content="Ultimate student guide and productivity toolkit. Timetable, GPA, budgets, and more." />
   <meta name="twitter:image" content="https://campusguide.pages.dev/preview-image.jpg" />
-
-  <meta name="google-site-verification" content="eswOh6_rFxLJGmlwGc8-dsGLrgl3HZWsOysTz0T4-UU" />
 
   <!-- PWA Meta Tags -->
   <link rel="manifest" href="/manifest.json" />
@@ -38,185 +32,159 @@
   <meta name="apple-mobile-web-app-title" content="Campus Guide" />
   <meta name="mobile-web-app-capable" content="yes" />
 
-  <link rel="stylesheet" href="/src/styles/globals.css" />
+  <!-- Preload critical assets -->
+  <link rel="preload" href="/logo.png" as="image" />
+  <link rel="preconnect" href="https://js.paystack.co" />
+  <link rel="preconnect" href="https://www.googletagmanager.com" />
+  <link rel="dns-prefetch" href="https://*.supabase.co" />
 
-  <!-- Google Analytics -->
-  <!-- PASTE YOUR MEASUREMENT ID WHERE "G-XXXXXXXXXX" IS -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2QRPP6PB27"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  <!-- Critical inline styles for instant app shell -->
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Fira Sans','Droid Sans','Helvetica Neue',sans-serif;background:#f0f2f8;color:#1f2937;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    #root{min-height:100vh;display:flex;flex-direction:column}
 
-    gtag('config', 'G-2QRPP6PB27');
-  </script>
+    #app-shell{display:flex;min-height:100vh}
+
+    /* Sidebar - Desktop only */
+    .shell-sb{display:none;position:fixed;left:0;top:0;bottom:0;width:220px;background:#fff;border-right:1px solid #f3f4f6;z-index:40;flex-direction:column}
+    @media(min-width:768px){.shell-sb{display:flex}}
+    .shell-sb-hdr{height:76px;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid #f3f4f6;flex-shrink:0}
+    .shell-sb-logo{width:40px;height:40px;border-radius:12px;overflow:hidden;flex-shrink:0}
+    .shell-sb-logo img{width:100%;height:100%;object-fit:cover}
+    .shell-sb-title{margin-left:12px;font-weight:900;font-size:18px;color:#111827;white-space:nowrap}
+    .shell-sb-nav{flex:1;padding:12px;display:flex;flex-direction:column;gap:4px}
+    .shell-sb-item{height:44px;display:flex;align-items:center;padding:0 10px;border-radius:12px}
+    .shell-sb-item.active{background:#6eabc6;color:#fff}
+    .shell-sb-item:not(.active){background:#f9fafb}
+    .shell-sb-dot{width:22px;height:22px;border-radius:6px;background:#e5e7eb;flex-shrink:0}
+    .shell-sb-dot.active{background:#fff}
+    .shell-sb-label{margin-left:12px;height:12px;border-radius:4px;background:#e5e7eb}
+    .shell-sb-label.active{background:rgba(255,255,255,0.5)}
+    .shell-sb-ftr{padding:12px;border-top:1px solid #f3f4f6;flex-shrink:0}
+
+    /* Content area */
+    .shell-ct{flex:1;min-width:0;padding-bottom:80px}
+    @media(min-width:768px){.shell-ct{margin-left:220px}}
+
+    /* Header gradient */
+    .shell-hdr{background:linear-gradient(to bottom,#111827,#111827);padding:40px 24px 64px;position:relative;overflow:hidden}
+    .shell-hdr-bg{position:absolute;top:0;right:0;width:256px;height:256px;background:#6eabc6;border-radius:50%;mix-blend-mode:screen;filter:blur(80px);opacity:0.1;pointer-events:none}
+    .shell-hdr-top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+    .shell-hdr-brand{display:flex;align-items:center;gap:8px}
+    .shell-hdr-brand img{width:32px;height:32px;border-radius:6px}
+    .shell-hdr-brand span{color:#fff;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;opacity:0.9}
+    .shell-hdr-actions{display:flex;gap:12px}
+    .shell-hdr-icon{width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);flex-shrink:0}
+    .shell-greeting{position:relative;z-index:1;margin-top:16px}
+    .shell-greeting-l1{height:28px;width:200px;border-radius:6px;background:rgba(255,255,255,0.1)}
+    .shell-greeting-l2{height:12px;width:120px;border-radius:4px;background:rgba(255,255,255,0.08);margin-top:8px}
+    .shell-widgets{display:flex;gap:8px;margin-top:16px;position:relative;z-index:1}
+    .shell-wdgt{height:46px;border-radius:16px;background:rgba(255,255,255,0.08)}
+
+    /* Cards */
+    .shell-body{padding:16px 20px;margin-top:-32px;position:relative;z-index:2}
+    .shell-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,0.05)}
+    .shell-card-line{height:14px;background:#f3f4f6;border-radius:6px;margin-bottom:10px}
+    .shell-card-line-sm{width:60%}
+
+    /* Tab Bar - Mobile only */
+    .shell-tb{display:flex;position:fixed;bottom:0;left:0;right:0;padding:8px 12px calc(12px + env(safe-area-inset-bottom,0px));z-index:50}
+    @media(min-width:768px){.shell-tb{display:none}}
+    .shell-tb-inner{background:#fff;border-radius:16px;padding:0 8px;height:62px;display:flex;align-items:center;justify-content:space-around;width:100%;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1)}
+    .shell-tb-tab{height:40px;width:44px;border-radius:12px;background:#f3f4f6}
+
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .shell-pulse{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}
+  </style>
 </head>
 
 <body>
   <div id="root">
-    <div style="position: fixed; inset: 0; background-color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;">
-      <img src="/logo.png" alt="Campus Guide Logo" style="width: 90px; height: 90px; margin-bottom: 32px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;" />
-      <svg style="width: 48px; height: 48px; color: #111827;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" xml:space="preserve">
-        <style>
-          .box5532 { fill: currentColor; transform-origin: 50% 50%; }
-          @keyframes box5532-1 {
-            9.0909090909% { transform: translate(-12px, 0); }
-            18.1818181818% { transform: translate(0px, 0); }
-            27.2727272727% { transform: translate(0px, 0); }
-            36.3636363636% { transform: translate(12px, 0); }
-            45.4545454545% { transform: translate(12px, 12px); }
-            54.5454545455% { transform: translate(12px, 12px); }
-            63.6363636364% { transform: translate(12px, 12px); }
-            72.7272727273% { transform: translate(12px, 0px); }
-            81.8181818182% { transform: translate(0px, 0px); }
-            90.9090909091% { transform: translate(-12px, 0px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .box5532:nth-child(1) { animation: box5532-1 4s infinite; }
-          @keyframes box5532-2 {
-            9.0909090909% { transform: translate(0, 0); }
-            18.1818181818% { transform: translate(12px, 0); }
-            27.2727272727% { transform: translate(0px, 0); }
-            36.3636363636% { transform: translate(12px, 0); }
-            45.4545454545% { transform: translate(12px, 12px); }
-            54.5454545455% { transform: translate(12px, 12px); }
-            63.6363636364% { transform: translate(12px, 12px); }
-            72.7272727273% { transform: translate(12px, 12px); }
-            81.8181818182% { transform: translate(0px, 12px); }
-            90.9090909091% { transform: translate(0px, 12px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .box5532:nth-child(2) { animation: box5532-2 4s infinite; }
-          @keyframes box5532-3 {
-            9.0909090909% { transform: translate(-12px, 0); }
-            18.1818181818% { transform: translate(-12px, 0); }
-            27.2727272727% { transform: translate(0px, 0); }
-            36.3636363636% { transform: translate(-12px, 0); }
-            45.4545454545% { transform: translate(-12px, 0); }
-            54.5454545455% { transform: translate(-12px, 0); }
-            63.6363636364% { transform: translate(-12px, 0); }
-            72.7272727273% { transform: translate(-12px, 0); }
-            81.8181818182% { transform: translate(-12px, -12px); }
-            90.9090909091% { transform: translate(0px, -12px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .box5532:nth-child(3) { animation: box5532-3 4s infinite; }
-          @keyframes box5532-4 {
-            9.0909090909% { transform: translate(-12px, 0); }
-            18.1818181818% { transform: translate(-12px, 0); }
-            27.2727272727% { transform: translate(-12px, -12px); }
-            36.3636363636% { transform: translate(0px, -12px); }
-            45.4545454545% { transform: translate(0px, 0px); }
-            54.5454545455% { transform: translate(0px, -12px); }
-            63.6363636364% { transform: translate(0px, -12px); }
-            72.7272727273% { transform: translate(0px, -12px); }
-            81.8181818182% { transform: translate(-12px, -12px); }
-            90.9090909091% { transform: translate(-12px, 0px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .box5532:nth-child(4) { animation: box5532-4 4s infinite; }
-          @keyframes box5532-5 {
-            9.0909090909% { transform: translate(0, 0); }
-            18.1818181818% { transform: translate(0, 0); }
-            27.2727272727% { transform: translate(0, 0); }
-            36.3636363636% { transform: translate(12px, 0); }
-            45.4545454545% { transform: translate(12px, 0); }
-            54.5454545455% { transform: translate(12px, 0); }
-            63.6363636364% { transform: translate(12px, 0); }
-            72.7272727273% { transform: translate(12px, 0); }
-            81.8181818182% { transform: translate(12px, -12px); }
-            90.9090909091% { transform: translate(0px, -12px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .box5532:nth-child(5) { animation: box5532-5 4s infinite; }
-          @keyframes box5532-6 {
-            9.0909090909% { transform: translate(0, 0); }
-            18.1818181818% { transform: translate(-12px, 0); }
-            27.2727272727% { transform: translate(-12px, 0); }
-            36.3636363636% { transform: translate(0px, 0); }
-            45.4545454545% { transform: translate(0px, 0); }
-            54.5454545455% { transform: translate(0px, 0); }
-            63.6363636364% { transform: translate(0px, 0); }
-            72.7272727273% { transform: translate(0px, 12px); }
-            81.8181818182% { transform: translate(-12px, 12px); }
-            90.9090909091% { transform: translate(-12px, 0px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .box5532:nth-child(6) { animation: box5532-6 4s infinite; }
-          @keyframes box5532-7 {
-            9.0909090909% { transform: translate(12px, 0); }
-            18.1818181818% { transform: translate(12px, 0); }
-            27.2727272727% { transform: translate(12px, 0); }
-            36.3636363636% { transform: translate(0px, 0); }
-            45.4545454545% { transform: translate(0px, -12px); }
-            54.5454545455% { transform: translate(12px, -12px); }
-            63.6363636364% { transform: translate(0px, -12px); }
-            72.7272727273% { transform: translate(0px, -12px); }
-            81.8181818182% { transform: translate(0px, 0px); }
-            90.9090909091% { transform: translate(12px, 0px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .box5532:nth-child(7) { animation: box5532-7 4s infinite; }
-          @keyframes box5532-8 {
-            9.0909090909% { transform: translate(0, 0); }
-            18.1818181818% { transform: translate(-12px, 0); }
-            27.2727272727% { transform: translate(-12px, -12px); }
-            36.3636363636% { transform: translate(0px, -12px); }
-            45.4545454545% { transform: translate(0px, -12px); }
-            54.5454545455% { transform: translate(0px, -12px); }
-            63.6363636364% { transform: translate(0px, -12px); }
-            72.7272727273% { transform: translate(0px, -12px); }
-            81.8181818182% { transform: translate(12px, -12px); }
-            90.9090909091% { transform: translate(12px, 0px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .box5532:nth-child(8) { animation: box5532-8 4s infinite; }
-          @keyframes box5532-9 {
-            9.0909090909% { transform: translate(-12px, 0); }
-            18.1818181818% { transform: translate(-12px, 0); }
-            27.2727272727% { transform: translate(0px, 0); }
-            36.3636363636% { transform: translate(-12px, 0); }
-            45.4545454545% { transform: translate(0px, 0); }
-            54.5454545455% { transform: translate(0px, 0); }
-            63.6363636364% { transform: translate(-12px, 0); }
-            72.7272727273% { transform: translate(-12px, 0); }
-            81.8181818182% { transform: translate(-24px, 0); }
-            90.9090909091% { transform: translate(-12px, 0); }
-            100% { transform: translate(0px, 0); }
-          }
-          .box5532:nth-child(9) { animation: box5532-9 4s infinite; }
-        </style>
-        <g>
-          <rect class="box5532" x="13" y="1" rx="1" width="10" height="10"/>
-          <rect class="box5532" x="13" y="1" rx="1" width="10" height="10"/>
-          <rect class="box5532" x="25" y="25" rx="1" width="10" height="10"/>
-          <rect class="box5532" x="13" y="13" rx="1" width="10" height="10"/>
-          <rect class="box5532" x="13" y="13" rx="1" width="10" height="10"/>
-          <rect class="box5532" x="25" y="13" rx="1" width="10" height="10"/>
-          <rect class="box5532" x="1" y="25" rx="1" width="10" height="10"/>
-          <rect class="box5532" x="13" y="25" rx="1" width="10" height="10"/>
-          <rect class="box5532" x="25" y="25" rx="1" width="10" height="10"/>
-        </g>
-      </svg>
+    <!-- App Shell Skeleton - instantly paints the app layout -->
+    <div id="app-shell">
+      <!-- Sidebar (Desktop) -->
+      <div class="shell-sb">
+        <div class="shell-sb-hdr">
+          <div class="shell-sb-logo"><img src="/logo.png" alt="Campus Guide" /></div>
+          <div class="shell-sb-title">Campus Guide</div>
+        </div>
+        <div class="shell-sb-nav">
+          <div class="shell-sb-item active"><div class="shell-sb-dot active shell-pulse" style="background:#ffffff50"></div><div class="shell-sb-label active" style="background:rgba(255,255,255,0.5)"></div></div>
+          <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
+          <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
+          <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
+          <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
+        </div>
+        <div class="shell-sb-ftr"><div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div></div>
+      </div>
+
+      <!-- Content -->
+      <div class="shell-ct">
+        <!-- Header section -->
+        <div class="shell-hdr">
+          <div class="shell-hdr-bg"></div>
+          <div class="shell-hdr-top">
+            <div class="shell-hdr-brand"><img src="/logo.png" alt="" /><span>Campus Guide</span></div>
+            <div class="shell-hdr-actions"><div class="shell-hdr-icon shell-pulse"></div><div class="shell-hdr-icon shell-pulse"></div></div>
+          </div>
+          <div class="shell-greeting">
+            <div class="shell-greeting-l1 shell-pulse"></div>
+            <div class="shell-greeting-l2 shell-pulse"></div>
+          </div>
+          <div class="shell-widgets">
+            <div class="shell-wdgt shell-pulse" style="width:80px"></div>
+            <div class="shell-wdgt shell-pulse" style="width:64px"></div>
+            <div class="shell-wdgt shell-pulse" style="width:64px"></div>
+          </div>
+        </div>
+
+        <!-- Card skeletons -->
+        <div class="shell-body">
+          <div class="shell-card"><div class="shell-card-line shell-pulse"></div><div class="shell-card-line shell-pulse"></div><div class="shell-card-line shell-card-line-sm shell-pulse"></div></div>
+          <div class="shell-card"><div class="shell-card-line shell-pulse"></div><div class="shell-card-line shell-pulse"></div></div>
+          <div class="shell-card"><div class="shell-card-line shell-pulse" style="width:40%"></div><div class="shell-card-line shell-pulse" style="width:80%"></div></div>
+        </div>
+      </div>
+
+      <!-- Tab Bar (Mobile) -->
+      <div class="shell-tb">
+        <div class="shell-tb-inner">
+          <div class="shell-tb-tab shell-pulse"></div>
+          <div class="shell-tb-tab shell-pulse"></div>
+          <div class="shell-tb-tab shell-pulse"></div>
+          <div class="shell-tb-tab shell-pulse"></div>
+          <div class="shell-tb-tab shell-pulse"></div>
+        </div>
+      </div>
     </div>
-    <style>
-      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-    </style>
   </div>
 
   <script type="module" src="/src/main.jsx"></script>
 
   <script>
     window.addEventListener('load', function () {
-
-      // Load Paystack
       const script = document.createElement('script');
       script.src = 'https://js.paystack.co/v1/inline.js';
       script.async = true;
-      script.onload = function () {
-        console.log('Paystack loaded successfully');
-      };
       document.head.appendChild(script);
+    });
+  </script>
+
+  <!-- Google Analytics - deferred -->
+  <script>
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        var ga = document.createElement('script');
+        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-2QRPP6PB27';
+        ga.async = true;
+        document.head.appendChild(ga);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-2QRPP6PB27');
+      }, 3000);
     });
   </script>
 

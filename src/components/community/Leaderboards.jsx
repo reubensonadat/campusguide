@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { DataLoader } from '../common/CustomLoaders';
+import { LeaderboardLoader } from '../common/CustomLoaders';
 import { Trophy, Medal, Crown, Star, User as UserIcon } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 import { 
@@ -66,14 +66,7 @@ const Leaderboards = () => {
         return <span className="text-gray-400 font-bold w-5 text-center">{index + 1}</span>;
     };
 
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-                <DataLoader className="w-8 h-8 text-primary-500 mb-4" />
-                <p className="text-sm font-bold">Crunching the numbers...</p>
-            </div>
-        );
-    }
+    if (loading) return <LeaderboardLoader />;
 
     if (error) {
         return (

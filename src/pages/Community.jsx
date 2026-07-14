@@ -13,7 +13,7 @@ import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 
 import { supabase } from '../lib/supabase';
 import { withCache, cacheInvalidate, cacheAge, CACHE_KEYS, DEFAULT_TTL, SHORT_TTL } from '../services/cacheService';
-import { DataLoader } from '../components/common/CustomLoaders';
+import { CommunityLoader } from '../components/common/CustomLoaders';
 
 // Categories matching Advertise.jsx options
 const CATEGORIES = [
@@ -321,9 +321,8 @@ const Community = () => {
                         </div>
 
                         {isLoading ? (
-                            <div className="py-20 flex flex-col items-center justify-center text-center gap-4">
-                                <DataLoader />
-                                <p className="text-gray-400 font-semibold text-sm">Loading community feed...</p>
+                            <div className="py-10 flex flex-col items-center justify-center text-center gap-4">
+                                <CommunityLoader />
                             </div>
                         ) : feedError ? (
                             <div className="py-20 flex flex-col items-center justify-center text-center bg-white rounded-xl border border-red-100 shadow-sm mb-8">

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Lock, LogOut, LayoutDashboard, CheckCircle, HelpCircle, MapPin, Megaphone, Radio } from 'lucide-react';
+import { Lock, LogOut, LayoutDashboard, CheckCircle, HelpCircle, MapPin, Megaphone, Radio, TrendingUp } from 'lucide-react';
 
 const tabs = [
+  { key: 'analytics', label: 'Analytics', icon: TrendingUp },
   { key: 'moderation', label: 'Ads Moderation', icon: LayoutDashboard },
   { key: 'thrift', label: 'Thrift Verify', icon: CheckCircle },
   { key: 'lostfound', label: 'Lost & Found', icon: HelpCircle },
