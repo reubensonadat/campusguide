@@ -20,6 +20,7 @@ import { useFeedbackModal } from './hooks/useFeedbackModal';
 import { Toast } from './components/common/Toast';
 import { TabBar } from './components/common/TabBar';
 import Sidebar from './components/common/Sidebar';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 import { SupportModal } from './components/payment/SupportModal';
 import FeedbackModal from './components/common/FeedbackSurveyModal';
@@ -82,6 +83,12 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 function AppContent() {
   const location = useLocation();
   const { selectedCampusId } = useCampus();
+
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const uid = localStorage.getItem('ucc_user_id');
+  if (uid && !UUID_REGEX.test(uid)) {
+    localStorage.removeItem('ucc_user_id');
+  }
 
   const [syncConflict, setSyncConflict] = useState(null);
 
@@ -223,44 +230,47 @@ function AppContent() {
   return (
     <div className="min-h-screen flex bg-gray-50/50 overflow-x-hidden">
       <CustomCursor />
+      <Sidebar onExpandedChange={setIsSidebarExpanded} />
+
+      <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>
+        <ErrorBoundary>
+          <AnimatePresence mode="wait">
+            <Suspense fallback={<PageSkeleton />}>
+              <Routes location={location} key={location.pathname}>
+                <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+                <Route path="/focus" element={<PageTransition><FocusTimer /></PageTransition>} />
+                <Route path="/guide" element={<PageTransition><Guide /></PageTransition>} />
+                <Route path="/guide/:topic" element={<PageTransition><Guide /></PageTransition>} />
+                <Route path="/tools/letter-generator" element={<PageTransition><LetterGenerator /></PageTransition>} />
+                <Route path="/tools/*" element={<PageTransition><Tools /></PageTransition>} />
+                <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
+                <Route path="/support" element={<PageTransition><Support /></PageTransition>} />
+                <Route path="/advertise" element={<PageTransition><Advertise /></PageTransition>} />
+                <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+                <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
+                <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+                <Route path="/admin/*" element={<PageTransition><AdminDashboard /></PageTransition>} />
+                <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
+                <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
+                <Route path="/planner" element={<PageTransition><RunwayPlanner /></PageTransition>} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
+          </AnimatePresence>
+        </ErrorBoundary>
+
+        <TabBar />
+      </div>
+
+      {/* Global Overlays & Modals OUTSIDE the flex layout */}
       <Toaster
         position="top-center"
         containerStyle={{ top: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}
         toastOptions={{ duration: 3000, style: { fontWeight: 'bold' } }}
       />
-      <Sidebar onExpandedChange={setIsSidebarExpanded} />
-
-      <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>
-        <PageParallax>
-        <AnimatePresence mode="wait">
-          <Suspense fallback={<PageSkeleton />}>
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-              <Route path="/focus" element={<PageTransition><FocusTimer /></PageTransition>} />
-              <Route path="/guide" element={<PageTransition><Guide /></PageTransition>} />
-              <Route path="/guide/:topic" element={<PageTransition><Guide /></PageTransition>} />
-              <Route path="/tools/letter-generator" element={<PageTransition><LetterGenerator /></PageTransition>} />
-              <Route path="/tools/*" element={<PageTransition><Tools /></PageTransition>} />
-              <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
-              <Route path="/support" element={<PageTransition><Support /></PageTransition>} />
-              <Route path="/advertise" element={<PageTransition><Advertise /></PageTransition>} />
-              <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-              <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
-              <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
-              <Route path="/admin/*" element={<PageTransition><AdminDashboard /></PageTransition>} />
-              <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
-              <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
-              <Route path="/planner" element={<PageTransition><RunwayPlanner /></PageTransition>} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
-        </AnimatePresence>
-        </PageParallax>
-
-        <TabBar />
-
-        {/* PWA Install Button - Fixed Position */}
-        <PWAInstallButton />
+      
+      {/* PWA Install Button - Fixed Position */}
+      <PWAInstallButton />
 
         <SupportModal
           isOpen={showModal}
@@ -319,7 +329,6 @@ function AppContent() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }
@@ -331,7 +340,7 @@ function App() {
     <AppProvider>
       <NotificationProvider>
         <CampusProvider>
-          <Router>
+          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <NavigationObserver />
             <AppContent />
           </Router>

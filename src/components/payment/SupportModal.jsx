@@ -5,6 +5,7 @@ import { Button } from '../common/Button';
 import { PaymentButton } from './PaymentButton';
 import { CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { saveSupporterStatus } from '../../hooks/usePremiumAccess';
 import ParticleSphere from '../common/ParticleSphere';
 
 const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) => {
@@ -22,6 +23,18 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
   const [email, setEmail] = useState(profile.email || '');
   const [paymentResult, setPaymentResult] = useState(null);
   const [showWhySupport, setShowWhySupport] = useState(false);
+  const [forceSupportForm, setForceSupportForm] = useState(false);
+
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const uid = localStorage.getItem('ucc_user_id');
+    return !!uid && UUID_REGEX.test(uid);
+  });
+
+  React.useEffect(() => {
+    const uid = localStorage.getItem('ucc_user_id');
+    setIsAuthenticated(!!uid && UUID_REGEX.test(uid));
+  }, [internalIsOpen]);
 
   React.useEffect(() => {
     const handleOpen = (e) => {
@@ -57,22 +70,23 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
       data: cleanResult
     });
 
-    // Save supporter status to localStorage
-    const supporterData = {
-      isSupporter: true,
-      plan: 'supporter',
-      paymentDate: new Date().toISOString(),
-      reference: result.reference,
+    // Save supporter status globally and trigger storage events
+    saveSupporterStatus({
+      tier: tier,
       name: name || 'Anonymous Supporter',
+      phone: phone,
       amount: amountPaid,
-      tier: tier
-    };
-    localStorage.setItem('ucc_supporter_status', JSON.stringify(supporterData));
+      reference: result.reference
+    });
 
     // Save to database
     try {
-      const userId = localStorage.getItem('ucc_user_id') || 'anonymous';
-      await supabase.from('payments').insert({
+      const userId = localStorage.getItem('ucc_user_id');
+      const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!userId || !UUID_REGEX.test(userId)) {
+        throw new Error('Cannot process payment: account not found. Please sign up first.');
+      }
+      const { error: dbError } = await supabase.from('payments').insert({
         reference: result.reference,
         amount: amountPaid,
         currency: 'GHS',
@@ -81,8 +95,10 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
         user_id: userId,
         user_name: name || 'Anonymous',
         user_phone: phone || '',
+        status: 'completed',
         metadata: { plan: 'supporter', email }
       });
+      if (dbError) throw dbError;
     } catch (e) {
       console.error("Failed to record support payment in DB", e);
     }
@@ -109,6 +125,7 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
     setEmail(profile.email || '');
     setPaymentResult(null);
     setShowWhySupport(false);
+    setForceSupportForm(false);
   };
 
   const closeModal = () => {
@@ -135,7 +152,65 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
         <div className="w-full flex items-center justify-center py-3 flex-shrink-0 modal-drag-handle cursor-grab active:cursor-grabbing">
           <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
         </div>
-        {isSupporter ? (
+        {paymentResult ? (
+          /* Payment Result */
+          <div className="flex flex-col items-center pt-8 pb-4 px-2">
+            {paymentResult.success ? (
+              <>
+                <div className="w-24 h-24 mb-5 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#86efac" className="w-full h-full drop-shadow-md">
+                    <path d="M10.007 2.10377C8.60544 1.65006 7.08181 2.28116 6.41156 3.59306L5.60578 5.17023C5.51004 5.35763 5.35763 5.51004 5.17023 5.60578L3.59306 6.41156C2.28116 7.08181 1.65006 8.60544 2.10377 10.007L2.64923 11.692C2.71404 11.8922 2.71404 12.1078 2.64923 12.308L2.10377 13.993C1.65006 15.3946 2.28116 16.9182 3.59306 17.5885L5.17023 18.3942C5.35763 18.49 5.51004 18.6424 5.60578 18.8298L6.41156 20.407C7.08181 21.7189 8.60544 22.35 10.007 21.8963L11.692 21.3508C11.8922 21.286 12.1078 21.286 12.308 21.3508L13.993 21.8963C15.3946 22.35 16.9182 21.7189 17.5885 20.407L18.3942 18.8298C18.49 18.6424 18.6424 18.49 18.8298 18.3942L20.407 17.5885C21.7189 16.9182 22.35 15.3946 21.8963 13.993L21.3508 12.308C21.286 12.1078 21.286 11.8922 21.3508 11.692L21.8963 10.007C22.35 8.60544 21.7189 7.08181 20.407 6.41156L18.8298 5.60578C18.6424 5.51004 18.49 5.35763 18.3942 5.17023L17.5885 3.59306C16.9182 2.28116 15.3946 1.65006 13.993 2.10377L12.308 2.64923C12.1078 2.71403 11.8922 2.71404 11.692 2.64923L10.007 2.10377ZM6.75977 11.7573L8.17399 10.343L11.0024 13.1715L16.6593 7.51465L18.0735 8.92886L11.0024 15.9999L6.75977 11.7573Z"></path>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Payment Successful!
+                </h3>
+                <p className="text-sm text-gray-500 text-center mb-8 px-4 leading-relaxed">
+                  Transaction ID: {paymentResult.data.reference}
+                </p>
+                <div className="flex w-full gap-3 mt-4 mb-2">
+                  <Button 
+                    variant="secondary"
+                    onClick={closeModal} 
+                    className="flex-1 !h-auto !py-3.5 !rounded-full !font-bold transition-colors"
+                  >
+                    Done
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-24 h-24 mb-5 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fbbf24" className="w-full h-full drop-shadow-md">
+                    <path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11 15V17H13V15H11ZM11 7V13H13V7H11Z"></path>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  There is a problem
+                </h3>
+                <p className="text-sm text-gray-500 text-center mb-8 px-4 leading-relaxed">
+                  {paymentResult.error || "Please ensure you are connected to the internet and try again."}
+                </p>
+                <div className="flex w-full gap-3 mt-4 mb-2">
+                  <Button 
+                    variant="secondary"
+                    onClick={closeModal} 
+                    className="flex-1 !h-auto !py-3.5 !rounded-full !font-bold transition-colors"
+                  >
+                    Close
+                  </Button>
+                  <Button 
+                    variant="primary"
+                    onClick={resetModal} 
+                    className="flex-1 !h-auto !py-3.5 !rounded-full !font-bold !bg-gray-900 hover:!bg-black transition-colors"
+                  >
+                    Try again
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        ) : (isSupporter && !forceSupportForm) ? (
           <div className="flex flex-col items-center pt-8 pb-4 px-2">
             <div className="w-24 h-24 mb-5 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fbbf24" className="w-full h-full drop-shadow-lg">
@@ -154,7 +229,7 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
                 <span className="text-sm font-mono font-medium text-gray-700">{supporterStatus.reference}</span>
               </div>
             )}
-            <div className="flex w-full gap-3 mt-4 mb-2">
+            <div className="flex w-full gap-3 mt-4 mb-2 px-4">
               <Button 
                 variant="secondary"
                 onClick={closeModal} 
@@ -162,9 +237,36 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
               >
                 Close
               </Button>
+              <Button 
+                variant="primary"
+                onClick={() => setForceSupportForm(true)} 
+                className="flex-1 !h-auto !py-3.5 !rounded-full !font-bold !bg-gray-900 hover:!bg-black transition-colors"
+              >
+                Support Again
+              </Button>
             </div>
           </div>
-        ) : !paymentResult ? (
+        ) : !isAuthenticated ? (
+          <div className="flex flex-col items-center justify-center flex-1 px-6 py-12 text-center">
+            <div className="w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-gray-400">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
+            <h3 className="text-xl font-black text-gray-900 mb-2">Sign Up Required</h3>
+            <p className="text-sm text-gray-500 mb-8 max-w-xs leading-relaxed">
+              You need to create an account or sign in before you can support Campus Guide. 
+              It only takes a moment and helps us keep your supporter status across devices.
+            </p>
+            <Button
+              variant="primary"
+              onClick={closeModal}
+              className="!h-auto !py-3.5 !px-8 !rounded-xl !font-bold !bg-gray-900 hover:!bg-black !text-white transition-colors text-sm"
+            >
+              Go to Settings to Sign Up
+            </Button>
+          </div>
+        ) : (
           <div className="flex flex-col sm:flex-row flex-1 overflow-hidden">
             {/* Desktop: two-column. Mobile: stacked */}
 
@@ -321,65 +423,6 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
                 </PaymentButton>
               </div>
             </div>
-
-          </div>
-        ) : (
-          /* Payment Result */
-          <div className="flex flex-col items-center pt-8 pb-4 px-2">
-            {paymentResult.success ? (
-              <>
-                <div className="w-24 h-24 mb-5 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#86efac" className="w-full h-full drop-shadow-md">
-                    <path d="M10.007 2.10377C8.60544 1.65006 7.08181 2.28116 6.41156 3.59306L5.60578 5.17023C5.51004 5.35763 5.35763 5.51004 5.17023 5.60578L3.59306 6.41156C2.28116 7.08181 1.65006 8.60544 2.10377 10.007L2.64923 11.692C2.71404 11.8922 2.71404 12.1078 2.64923 12.308L2.10377 13.993C1.65006 15.3946 2.28116 16.9182 3.59306 17.5885L5.17023 18.3942C5.35763 18.49 5.51004 18.6424 5.60578 18.8298L6.41156 20.407C7.08181 21.7189 8.60544 22.35 10.007 21.8963L11.692 21.3508C11.8922 21.286 12.1078 21.286 12.308 21.3508L13.993 21.8963C15.3946 22.35 16.9182 21.7189 17.5885 20.407L18.3942 18.8298C18.49 18.6424 18.6424 18.49 18.8298 18.3942L20.407 17.5885C21.7189 16.9182 22.35 15.3946 21.8963 13.993L21.3508 12.308C21.286 12.1078 21.286 11.8922 21.3508 11.692L21.8963 10.007C22.35 8.60544 21.7189 7.08181 20.407 6.41156L18.8298 5.60578C18.6424 5.51004 18.49 5.35763 18.3942 5.17023L17.5885 3.59306C16.9182 2.28116 15.3946 1.65006 13.993 2.10377L12.308 2.64923C12.1078 2.71403 11.8922 2.71404 11.692 2.64923L10.007 2.10377ZM6.75977 11.7573L8.17399 10.343L11.0024 13.1715L16.6593 7.51465L18.0735 8.92886L11.0024 15.9999L6.75977 11.7573Z"></path>
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Payment Successful!
-                </h3>
-                <p className="text-sm text-gray-500 text-center mb-8 px-4 leading-relaxed">
-                  Transaction ID: {paymentResult.data.reference}
-                </p>
-                <div className="flex w-full gap-3 mt-4 mb-2">
-                  <Button 
-                    variant="secondary"
-                    onClick={closeModal} 
-                    className="flex-1 !h-auto !py-3.5 !rounded-full !font-bold transition-colors"
-                  >
-                    Done
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="w-24 h-24 mb-5 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fbbf24" className="w-full h-full drop-shadow-md">
-                    <path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11 15V17H13V15H11ZM11 7V13H13V7H11Z"></path>
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  There is a problem
-                </h3>
-                <p className="text-sm text-gray-500 text-center mb-8 px-4 leading-relaxed">
-                  {paymentResult.error || "Please ensure you are connected to the internet and try again."}
-                </p>
-                <div className="flex w-full gap-3 mt-4 mb-2">
-                  <Button 
-                    variant="secondary"
-                    onClick={closeModal} 
-                    className="flex-1 !h-auto !py-3.5 !rounded-full !font-bold transition-colors"
-                  >
-                    Close
-                  </Button>
-                  <Button 
-                    variant="primary"
-                    onClick={resetModal} 
-                    className="flex-1 !h-auto !py-3.5 !rounded-full !font-bold !bg-gray-900 hover:!bg-black transition-colors"
-                  >
-                    Try again
-                  </Button>
-                </div>
-              </>
-            )}
           </div>
         )}
       </div>
