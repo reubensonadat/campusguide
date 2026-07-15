@@ -33,6 +33,8 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
 
   React.useEffect(() => {
     const uid = localStorage.getItem('ucc_user_id');
+    console.log('🔍 [Auth Gate] ucc_user_id:', JSON.stringify(uid), '| all ucc_ keys:', 
+      Object.keys(localStorage).filter(k => k.startsWith('ucc_')).join(', '));
     setIsAuthenticated(!!uid && UUID_REGEX.test(uid));
   }, [internalIsOpen]);
 
@@ -82,8 +84,10 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
     // Save to database
     try {
       const userId = localStorage.getItem('ucc_user_id');
+      console.log('🔍 DEBUG ucc_user_id:', JSON.stringify(userId));
       const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (!userId || !UUID_REGEX.test(userId)) {
+        console.warn('🔍 DEBUG ucc_user_id FAILED regex:', JSON.stringify(userId));
         throw new Error('Cannot process payment: account not found. Please sign up first.');
       }
       const { error: dbError } = await supabase.from('payments').insert({

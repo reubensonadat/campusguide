@@ -86,8 +86,15 @@ function AppContent() {
 
   const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   const uid = localStorage.getItem('ucc_user_id');
-  if (uid && !UUID_REGEX.test(uid)) {
-    localStorage.removeItem('ucc_user_id');
+  if (uid) {
+    if (!UUID_REGEX.test(uid)) {
+      console.log('🔍 [Boot] Removed stale ucc_user_id:', JSON.stringify(uid));
+      localStorage.removeItem('ucc_user_id');
+    } else {
+      console.log('🔍 [Boot] ucc_user_id is valid UUID:', uid);
+    }
+  } else {
+    console.log('🔍 [Boot] ucc_user_id not set');
   }
 
   const [syncConflict, setSyncConflict] = useState(null);
