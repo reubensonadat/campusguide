@@ -145,9 +145,15 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
             <h3 className="text-2xl font-black text-gray-900 mb-2">
               You are a Supporter!
             </h3>
-            <p className="text-sm text-gray-500 text-center mb-8 px-4 leading-relaxed max-w-sm">
+            <p className="text-sm text-gray-500 text-center mb-6 px-4 leading-relaxed max-w-sm">
               Thank you! Your contribution fuels the future of Campus Guide. We are incredibly grateful to have you backing our vision.
             </p>
+            {supporterStatus.reference && (
+              <div className="bg-gray-50 rounded-xl p-4 w-full mb-6 border border-gray-100 flex flex-col items-center">
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Transaction ID</span>
+                <span className="text-sm font-mono font-medium text-gray-700">{supporterStatus.reference}</span>
+              </div>
+            )}
             <div className="flex w-full gap-3 mt-4 mb-2">
               <Button 
                 variant="secondary"
