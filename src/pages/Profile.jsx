@@ -9,6 +9,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { AvatarBuilder } from '../components/profile/AvatarBuilder';
 import { useNavigate } from 'react-router-dom';
+import { usePremiumAccess, TIERS } from '../hooks/usePremiumAccess';
 import { CustomSettings, CustomProfile, CustomSafetyCheck, CustomCoach, CustomContact } from '../components/common/CustomIcons';
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 import { AboutIcon } from '../common/CustomTaskIcons';
@@ -43,6 +44,7 @@ const checkExpiryStatus = (expiresAt) => {
 const Profile = () => {
   const navigate = useNavigate();
   const { actions } = useAppContext();
+  const { isSupporter, tier } = usePremiumAccess();
 
   const [theme, setTheme] = useLocalStorage('theme', 'light');
   useEffect(() => {
@@ -381,11 +383,17 @@ const Profile = () => {
                         {profile.student_id || 'PS/ITC/20/0000'}
                       </p>
                     </div>
-                    {prodStats && prodStats.currentStreak > 0 && (
+                    {isSupporter && (
                       <div className="mt-3 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 w-max">
-                        <span className="text-sm drop-shadow-sm">{prodStats.title.icon}</span>
+                        <span className="text-sm drop-shadow-sm flex items-center justify-center">
+                          {TIERS[tier]?.icon || (
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fbbf24" className="w-4 h-4">
+                               <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                             </svg>
+                          )}
+                        </span>
                         <span className="text-white font-black text-[10px] tracking-widest uppercase drop-shadow-sm">
-                          {prodStats.title.label} ({prodStats.currentStreak}d)
+                          {TIERS[tier]?.label || 'Supporter'}
                         </span>
                       </div>
                     )}

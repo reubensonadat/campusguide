@@ -8,6 +8,7 @@ import LostFoundModal from '../components/community/LostFoundModal';
 import ThriftFeed from '../components/community/ThriftFeed';
 import WhispersFeed from '../components/community/WhispersFeed';
 import Leaderboards from '../components/community/Leaderboards';
+import SupportersWall from '../components/community/SupportersWall';
 import PageHeader from '../components/common/PageHeader';
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 
@@ -31,6 +32,7 @@ const mainTabs = [
     { id: 'general', label: 'General Feed' },
     { id: 'thrift', label: 'Student Thrift' },
     { id: 'whispers', label: 'Campus Whispers' },
+    { id: 'support', label: 'Supporters' },
     { id: 'leaderboard', label: 'Leaderboards' }
 ];
 
@@ -374,6 +376,7 @@ const Community = () => {
 
                 {activeMainTab === 'thrift' && <ThriftFeed />}
                 {activeMainTab === 'whispers' && <WhispersFeed />}
+                {activeMainTab === 'support' && <SupportersWall />}
                 {activeMainTab === 'leaderboard' && <Leaderboards />}
             </div>
 

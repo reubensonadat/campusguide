@@ -2,6 +2,7 @@ import React from 'react';
 import { Search, ChevronDown, ChevronUp, ExternalLink, FileText, Phone, Globe, Shield, AlertTriangle, AlertCircle } from 'lucide-react';
 import { CustomGuide } from '../common/CustomIcons';
 import TiltCard from '../common/TiltCard';
+import TypewriterText from '../common/TypewriterText';
 
 const CustomMapPin = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" className={className} fill="currentColor">
@@ -37,12 +38,18 @@ const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarVie
           title="Toggle Guide Cards">
           <CustomGuide size={16} /><span className="text-[11px] font-bold hidden sm:inline">Guide</span>
         </button>
-        <div className="flex-1 relative min-w-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <div className="flex-1 relative min-w-0 bg-slate-50 rounded-xl">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-20" />
           <input type="text" value={searchTerm} onChange={e => onSearchChange(e.target.value)}
             onFocus={() => window.innerWidth < 1024 && setIsMobileMenuOpen(true)}
-            placeholder={sidebarView === 'guide_cards' ? 'Search guide cards...' : 'Search locations...'}
-            className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium" />
+            placeholder={sidebarView === 'guide_cards' ? 'Search guide cards...' : ''}
+            className="w-full pl-9 pr-3 py-2 text-sm bg-transparent border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium relative z-10" />
+            
+          {!searchTerm && sidebarView === 'locations' && (
+            <div className="absolute left-9 top-1/2 -translate-y-1/2 pointer-events-none text-sm text-slate-400 font-medium z-0">
+              Search <TypewriterText />
+            </div>
+          )}
         </div>
         <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-primary-600 transition-colors lg:hidden bg-slate-50 border border-slate-200 shadow-sm">

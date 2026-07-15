@@ -201,7 +201,7 @@ export default function CustomCursor() {
   const origin = textMode ? '9px 9px' : pointer ? '12px 12px' : pressed ? '13px 13px' : '0% 0%'
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 999999, pointerEvents: 'none' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 2147483647, pointerEvents: 'none' }}>
       {/* Cursor glow */}
       <motion.div
         style={{

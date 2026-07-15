@@ -1,9 +1,8 @@
 import React from 'react';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { usePremiumAccess } from '../../hooks/usePremiumAccess';
 
 const SupportBanner = ({ actions, onClick }) => {
-  const [supporterStatus] = useLocalStorage('ucc_supporter_status', {});
-  const isSupporter = supporterStatus?.isSupporter;
+  const { isSupporter } = usePremiumAccess();
 
   const handleClick = () => {
     if (onClick) onClick();
@@ -24,7 +23,7 @@ const SupportBanner = ({ actions, onClick }) => {
           <p className="text-sm text-gray-600 max-w-[200px] leading-relaxed mb-3">
             Thank you for backing Campus Guide.
           </p>
-          <span className="inline-block bg-white text-gray-900 border border-gray-200 text-xs font-bold px-4 py-2 rounded-lg shadow-sm">View Details</span>
+          <span className="inline-block bg-white text-gray-900 border border-gray-200 text-xs font-bold px-4 py-2 rounded-lg shadow-sm">Support Again</span>
         </div>
       </div>
     );

@@ -4,18 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import { generateLetter } from '../services/aiService';
 import { toast } from 'react-hot-toast';
 import PageHeader from '../components/common/PageHeader';
+import PremiumGate from '../components/common/PremiumGate';
 
 export const LetterGenerator = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [generatedLetter, setGeneratedLetter] = useState('');
   
+  const profile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
+  
   const [formData, setFormData] = useState({
     letterType: 'Missing Grade',
-    studentName: '',
-    studentId: '',
+    studentName: profile.name || '',
+    studentId: profile.studentId || profile.indexNumber || '',
     courseInfo: '',
-    department: '',
+    department: profile.department || profile.programme || '',
     reason: ''
   });
 
@@ -88,93 +91,95 @@ export const LetterGenerator = () => {
             <div className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 h-full flex flex-col">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Letter Details</h2>
               
-              <form onSubmit={handleGenerate} className="space-y-4 flex-1">
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Letter Type</label>
-                  <select 
-                    value={formData.letterType}
-                    onChange={(e) => setFormData({...formData, letterType: e.target.value})}
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all appearance-none"
-                  >
-                    <option>Missing Grade Request</option>
-                    <option>Excuse of Absence</option>
-                    <option>Course Deferment</option>
-                    <option>Change of Programme</option>
-                    <option>Recommendation Request</option>
-                    <option>General Petition</option>
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
+              <PremiumGate featureId="ai_letter_generator" requiredTier="silver">
+                <form onSubmit={handleGenerate} className="space-y-4 flex-1">
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Full Name</label>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Letter Type</label>
+                    <select 
+                      value={formData.letterType}
+                      onChange={(e) => setFormData({...formData, letterType: e.target.value})}
+                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all appearance-none"
+                    >
+                      <option>Missing Grade Request</option>
+                      <option>Excuse of Absence</option>
+                      <option>Course Deferment</option>
+                      <option>Change of Programme</option>
+                      <option>Recommendation Request</option>
+                      <option>General Petition</option>
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Full Name</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="e.g. John Doe"
+                        value={formData.studentName}
+                        onChange={(e) => setFormData({...formData, studentName: e.target.value})}
+                        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Student ID</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="e.g. PS/CSC/20/0001"
+                        value={formData.studentId}
+                        onChange={(e) => setFormData({...formData, studentId: e.target.value})}
+                        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Department Name</label>
                     <input 
                       type="text" 
                       required
-                      placeholder="e.g. John Doe"
-                      value={formData.studentName}
-                      onChange={(e) => setFormData({...formData, studentName: e.target.value})}
+                      placeholder="e.g. Computer Science"
+                      value={formData.department}
+                      onChange={(e) => setFormData({...formData, department: e.target.value})}
                       className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
                     />
                   </div>
+
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Student ID</label>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Course Info (If applicable)</label>
                     <input 
                       type="text" 
-                      required
-                      placeholder="e.g. PS/CSC/20/0001"
-                      value={formData.studentId}
-                      onChange={(e) => setFormData({...formData, studentId: e.target.value})}
+                      placeholder="e.g. CSC301 - Data Structures"
+                      value={formData.courseInfo}
+                      onChange={(e) => setFormData({...formData, courseInfo: e.target.value})}
                       className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
                     />
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Department Name</label>
-                  <input 
-                    type="text" 
-                    required
-                    placeholder="e.g. Computer Science"
-                    value={formData.department}
-                    onChange={(e) => setFormData({...formData, department: e.target.value})}
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
-                  />
-                </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Brief Reason / Context</label>
+                    <textarea 
+                      rows="3"
+                      required
+                      placeholder="e.g. I was sick with malaria on the day of the exam and have a medical report."
+                      value={formData.reason}
+                      onChange={(e) => setFormData({...formData, reason: e.target.value})}
+                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all resize-none"
+                    />
+                  </div>
 
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Course Info (If applicable)</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. CSC301 - Data Structures"
-                    value={formData.courseInfo}
-                    onChange={(e) => setFormData({...formData, courseInfo: e.target.value})}
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Brief Reason / Context</label>
-                  <textarea 
-                    rows="3"
-                    required
-                    placeholder="e.g. I was sick with malaria on the day of the exam and have a medical report."
-                    value={formData.reason}
-                    onChange={(e) => setFormData({...formData, reason: e.target.value})}
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all resize-none"
-                  />
-                </div>
-
-                <div className="pt-4 mt-auto">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-gray-900 transition-colors active:scale-95 shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100"
-                  >
-                    {loading ? 'Generating...' : 'Generate Letter'}
-                  </button>
-                </div>
-              </form>
+                  <div className="pt-4 mt-auto">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-gray-900 transition-colors active:scale-95 shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100"
+                    >
+                      {loading ? 'Generating...' : 'Generate Letter'}
+                    </button>
+                  </div>
+                </form>
+              </PremiumGate>
             </div>
           </div>
 

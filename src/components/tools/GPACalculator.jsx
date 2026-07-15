@@ -12,6 +12,7 @@ import GraduationTargetSolver from './GraduationTargetSolver';
 import GpaVaultLock from './GpaVaultLock';
 import SemesterForecaster from './SemesterForecaster';
 import CourseGradeForm from './CourseGradeForm';
+import PremiumGate from '../common/PremiumGate';
 import CourseCardList from './CourseCardList';
 import { useTimetableGpaSync } from './useTimetableGpaSync';
 
@@ -134,9 +135,11 @@ const GPACalculator = () => {
           <Card><CardContent className="pt-6"><div className="text-center"><p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">This Term</p><p className="text-4xl font-black text-gray-800 mb-2">{semesterStats.points.toFixed(1)}</p><div className="text-xs font-medium text-gray-400">weighted points this term</div></div></CardContent></Card>
         </div>
 
-        <GPATrendGraph courses={courses} />
-        <GraduationTargetSolver currentLevel={activeLevel} currentSemester={activeSemester} />
-        <SemesterForecaster displayCourses={displayCourses} />
+        <PremiumGate featureId="gpa_forecasting" requiredTier="silver">
+          <GPATrendGraph courses={courses} />
+          <GraduationTargetSolver currentLevel={activeLevel} currentSemester={activeSemester} />
+          <SemesterForecaster displayCourses={displayCourses} />
+        </PremiumGate>
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">

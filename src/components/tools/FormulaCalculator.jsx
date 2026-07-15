@@ -3,6 +3,8 @@ import { formulasData } from '../../data/formulas';
 import { Modal } from '../common/Modal';
 import { CustomGuide, CustomTools, CustomCommunity, CustomProfile, CustomSettings } from '../common/CustomIcons';
 import { FormulaLoaderIcon } from '../common/CustomLoaders';
+import { usePremiumAccess } from '../../hooks/usePremiumAccess';
+import { triggerUpgradeModal } from '../common/PremiumGate';
 import {
   Play, RotateCcw, Lightbulb,
   Search, X, ArrowRight, AlertTriangle, CheckCircle2,
@@ -82,6 +84,8 @@ const FormulaCalculator = () => {
   const [solveFor, setSolveFor] = useState(null); // which variable to solve for
   const [mode, setMode] = useState('auto'); // 'auto' = leave-blank, 'target' = solve-for
   const [selectedUnits, setSelectedUnits] = useState({});
+  const { isSupporter } = usePremiumAccess();
+  
   const [favorites, setFavorites] = useState(() => {
     try {
       const saved = localStorage.getItem('formula-favorites');
@@ -201,6 +205,15 @@ const FormulaCalculator = () => {
 
     // Fake 2-second loader for database illusion
     setTimeout(() => {
+      // Track usage for non-supporters to show the support modal every 10 uses
+      if (!isSupporter) {
+        const currentUsage = parseInt(localStorage.getItem('ucc_formula_usage') || '0', 10) + 1;
+        localStorage.setItem('ucc_formula_usage', currentUsage.toString());
+        if (currentUsage % 10 === 0) {
+          triggerUpgradeModal('support');
+        }
+      }
+
       const cleanVals = {};
       for (const [k, v] of Object.entries(inputValues)) {
         const variable = modalFormula.variables.find(vr => vr.id === k);

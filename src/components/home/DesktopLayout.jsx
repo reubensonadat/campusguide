@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePremiumAccess } from '../../hooks/usePremiumAccess';
 import { ArrowRight, Bell, Calendar } from 'lucide-react';
 import { Button } from '../common/Button';
 import { CustomGuide as GuideIcon, CustomTools as ToolsIcon } from '../common/CustomIcons';
@@ -15,7 +16,10 @@ const DesktopLayout = ({
   markItemAsRead, markAllAsRead, handleNavigateToCommunity,
   navigate, quickActions, isDeferredActive, featuredContent,
   actions, activeReminders, reminders, setReminders
-}) => (
+}) => {
+  const { isSupporter } = usePremiumAccess();
+
+  return (
   <div className="hidden lg:block">
     <div className="relative overflow-hidden bg-white border-b border-gray-100/80 py-12 px-6">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-40">
@@ -147,12 +151,16 @@ const DesktopLayout = ({
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary-100/30 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
           <div className="relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 text-center lg:text-left">
             <div className="flex-1">
-              <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">Support This Project</h2>
-              <p className="text-gray-500 mb-10 max-w-lg mx-auto lg:mx-0 text-lg font-medium">Your support keeps this project alive and growing for every UCC student.</p>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">
+                {isSupporter ? "You're a Supporter! 🎉" : "Support This Project"}
+              </h2>
+              <p className="text-gray-500 mb-10 max-w-lg mx-auto lg:mx-0 text-lg font-medium">
+                {isSupporter ? "Thank you for backing Campus Guide and helping us grow. We appreciate you!" : "Your support keeps this project alive and growing for every UCC student."}
+              </p>
               <div className="max-w-sm mx-auto lg:mx-0 space-y-5">
                 <button onClick={() => actions?.setShowSupportModal(true)}
-                  className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-primary-200 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer">
-                  Support Now (GH₵5)
+                  className={`w-full text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer ${isSupporter ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-primary-600 hover:bg-primary-700 shadow-primary-200'}`}>
+                  {isSupporter ? "Support Again" : "Support Now (GH₵5)"}
                 </button>
                 <p className="text-sm font-medium text-gray-500">Issues or suggestions? <a href="mailto:uccguide25@gmail.com" className="text-primary-600 hover:underline">Contact us</a></p>
               </div>
@@ -165,6 +173,7 @@ const DesktopLayout = ({
       </section>
     </div>
   </div>
-);
+  );
+};
 
 export default DesktopLayout;

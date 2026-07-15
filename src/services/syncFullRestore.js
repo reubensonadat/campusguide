@@ -18,6 +18,7 @@ export async function restoreFromCloud() {
       'ucc_coach_community', 'ucc_coach_profile',
       'ucc_first_visit', 'ucc_guide_completion',
       'ucc_seen_updates', 'ucc_notifications_enabled',
+      'ucc_supporter_status',
     ]);
     const keysToWipe = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -71,6 +72,33 @@ export async function restoreFromCloud() {
     if (notes && notes.content) {
       localStorage.setItem('ucc_quick_notes', notes.content);
     }
+
+    const { data: paymentsData } = await supabase
+      .from('payments')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'completed')
+      .order('created_at', { ascending: false });
+
+    if (paymentsData && paymentsData.length > 0) {
+      const highestPayment = paymentsData.sort((a, b) => b.amount - a.amount)[0];
+      let tier = 'bronze';
+      if (highestPayment.amount >= 50) tier = 'gold';
+      else if (highestPayment.amount >= 20) tier = 'silver';
+      
+      const statusObj = {
+        isSupporter: true,
+        tier,
+        amount: highestPayment.amount,
+        reference: highestPayment.reference,
+        paymentDate: highestPayment.created_at,
+        name: highestPayment.user_name,
+      };
+      localStorage.setItem('ucc_supporter_status', JSON.stringify(statusObj));
+    }
+    
+    // Notify providers
+    window.dispatchEvent(new Event('storage'));
 
     return { success: true };
   } catch (error) {
