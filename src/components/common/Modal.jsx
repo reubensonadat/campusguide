@@ -1,5 +1,6 @@
 // src/components/common/Modal.jsx
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 const Modal = ({
@@ -10,6 +11,7 @@ const Modal = ({
   showCloseButton = true,
   closeOnBackdropClick = true,
   className = '',
+  noPadding = false,
   size = 'md'
 }) => {
   const sizeClasses = {
@@ -60,8 +62,11 @@ const Modal = ({
   };
 
   const handleMouseDown = (e) => {
-    // Only allow dragging from header
-    if (headerRef.current && headerRef.current.contains(e.target)) {
+    // Allow dragging from header OR a custom drag handle
+    const isHeader = headerRef.current && headerRef.current.contains(e.target);
+    const isCustomHandle = e.target.closest('.modal-drag-handle');
+    
+    if (isHeader || isCustomHandle) {
       setIsDragging(true);
       setDragStart({
         x: e.clientX - position.x,
@@ -75,15 +80,24 @@ const Modal = ({
 
   const handleMouseMove = (e) => {
     if (isDragging) {
+      const newY = e.clientY - dragStart.y;
+      // Only allow dragging downwards for swipe-to-close, or slightly upwards
       setPosition({
         x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        y: Math.max(-50, newY)
       });
     }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    // If dragged down significantly, close the modal
+    if (position.y > 150) {
+      onClose();
+    } else {
+      // Otherwise snap back
+      setPosition({ x: 0, y: 0 });
+    }
   };
 
   useEffect(() => {
@@ -100,17 +114,18 @@ const Modal = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center modal-backdrop p-0 sm:p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center modal-backdrop p-0 sm:p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={handleBackdropClick}
     >
       <div
         ref={modalRef}
-        className={`modal-content bg-white w-full sm:w-[90vw] ${sizeClass} max-h-[90vh] flex flex-col rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 ${className}`}
+        className={`modal-content bg-white w-full sm:w-[90vw] ${sizeClass} max-h-[90vh] flex flex-col rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 pb-[env(safe-area-inset-bottom)] ${className}`}
         style={{
           position: 'relative',
           transform: `translate(${position.x}px, ${position.y}px)`,
+          transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
           cursor: isDragging ? 'grabbing' : 'auto'
         }}
         role="dialog"
@@ -138,11 +153,12 @@ const Modal = ({
           </div>
         )}
         
-        <div className="flex-1 overflow-y-auto p-4 pb-6">
+        <div className={`flex-1 overflow-y-auto ${noPadding ? '' : 'p-4 pb-6'}`}>
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
