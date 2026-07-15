@@ -78,6 +78,30 @@ export default defineConfig({
                 maxAgeSeconds: 60 * 60
               }
             }
+          },
+          {
+            urlPattern: /basemaps\.cartocdn\.com\/gl\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'map-tiles',
+              expiration: { maxEntries: 200, maxAgeSeconds: 30 * 24 * 60 * 60 }
+            }
+          },
+          {
+            urlPattern: /router\.project-osrm\.org\/route\//i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'osrm-routes',
+              expiration: { maxEntries: 50, maxAgeSeconds: 7 * 24 * 60 * 60 }
+            }
+          },
+          {
+            urlPattern: /api\.open-meteo\.com\//i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'weather',
+              expiration: { maxEntries: 10, maxAgeSeconds: 30 * 60 }
+            }
           }
         ]
       }

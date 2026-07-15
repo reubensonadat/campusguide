@@ -171,6 +171,7 @@ const MapView = () => {
   const [dbKnowledge, setDbKnowledge] = useState({});
   const [dbGuideCards, setDbGuideCards] = useState([]);
   const [isDataLoading, setIsDataLoading] = useState(true);
+  const [dataError, setDataError] = useState(null);
 
   const handleMapLocate = useCallback((coords) => {
     const userLngLat = [coords.longitude, coords.latitude];
@@ -197,6 +198,11 @@ const MapView = () => {
   const { buildings, openGoogleMaps, getCoordinates, defaultCenter } = useMemo(() => CampusMapData({ onLocationSelect: handleLocationSelect }), [handleLocationSelect]);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearchTerm(searchTerm), 250);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [fullRouteData, setFullRouteData] = useState(null);
@@ -221,7 +227,7 @@ const MapView = () => {
           if (data.knowledge && data.source === 'db') setDbKnowledge(data.knowledge);
           if (data.guideCards) setDbGuideCards(data.guideCards);
         }
-      } catch (err) { console.warn('[CampusMap] Data fetch failed, using static fallback:', err); }
+      } catch (err) { console.warn('[CampusMap] Data fetch failed, using static fallback:', err); if (!cancelled) setDataError('Could not load live campus data. Showing offline map.'); }
       finally { if (!cancelled) setIsDataLoading(false); }
     };
     loadData();
@@ -242,6 +248,33 @@ const MapView = () => {
   const defaultViewport = { center: [defaultCenter[1], defaultCenter[0]], zoom: 15 };
   const [viewport, setViewport] = useState(defaultViewport);
 
+  // Viewport culling: only render markers within the visible area
+  const viewportBounds = useMemo(() => {
+    if (!viewport?.center) return null;
+    const [lng, lat] = viewport.center;
+    const zoom = viewport.zoom ?? 15;
+    const deg = 0.05 / Math.pow(2, 15 - zoom);
+    return { minLng: lng - deg, maxLng: lng + deg, minLat: lat - deg, maxLat: lat + deg };
+  }, [viewport?.center?.[0], viewport?.center?.[1], viewport?.zoom]);
+
+  const isInViewport = useCallback((coords) => {
+    if (!viewportBounds || !coords) return true;
+    const [lat, lng] = coords;
+    return lng >= viewportBounds.minLng && lng <= viewportBounds.maxLng &&
+           lat >= viewportBounds.minLat && lat <= viewportBounds.maxLat;
+  }, [viewportBounds]);
+
+  const routeCache = useRef(new Map());
+  const startLiveTracking = useCallback((startCoord) => {
+    if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current);
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => { const nl = [pos.coords.longitude, pos.coords.latitude]; setUserLocation(nl); setViewport(prev => ({ ...prev, center: nl })); },
+      (err) => console.error('Live tracking error:', err),
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
+    );
+    setViewport(prev => ({ ...prev, center: startCoord, zoom: 17, pitch: 60 })); setSelectedLocation(null);
+  }, []);
+
   const handleRouteToLocation = useCallback(async (targetCoords) => {
     if (!navigator.geolocation) { alert('Geolocation is not supported by your browser'); return; }
     setIsRouting(true);
@@ -250,20 +283,27 @@ const MapView = () => {
       const endLat = targetCoords[0], endLng = targetCoords[1];
       const startCoord = [startLng, startLat];
       setUserLocation(startCoord);
+      const cacheKey = `${startLat.toFixed(4)},${startLng.toFixed(4)}-${endLat.toFixed(4)},${endLng.toFixed(4)}`;
+      const cached = routeCache.current.get(cacheKey);
+      if (cached) {
+        setFullRouteData(cached); setActiveRouteData(cached); setIsLiveNavigating(true);
+        startLiveTracking(startCoord);
+        setIsRouting(false);
+        return;
+      }
       try {
         const res = await fetch(`https://router.project-osrm.org/route/v1/foot/${startLng},${startLat};${endLng},${endLat}?geometries=geojson`);
         const data = await res.json();
         if (data.routes?.length > 0) {
           const originalRoute = data.routes[0].geometry.coordinates;
+          routeCache.current.set(cacheKey, originalRoute);
           setFullRouteData(originalRoute); setActiveRouteData(originalRoute); setIsLiveNavigating(true);
-          if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current);
-          watchIdRef.current = navigator.geolocation.watchPosition((pos) => { const nl = [pos.coords.longitude, pos.coords.latitude]; setUserLocation(nl); setViewport(prev => ({ ...prev, center: nl })); }, (err) => console.error('Live tracking error:', err), { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 });
-          setViewport(prev => ({ ...prev, center: startCoord, zoom: 17, pitch: 60 })); setSelectedLocation(null);
+          startLiveTracking(startCoord);
         } else alert('Could not find a valid walking route to this location.');
       } catch (error) { console.error('Error fetching route:', error); alert('Error calculating route. Please try again.'); }
       finally { setIsRouting(false); }
     }, (error) => { console.error('Error getting location:', error); alert('Could not get your current location. Please ensure location services are enabled.'); setIsRouting(false); }, { enableHighAccuracy: true });
-  }, []);
+  }, [startLiveTracking]);
 
   const endNavigation = useCallback(() => {
     if (watchIdRef.current !== null) { navigator.geolocation.clearWatch(watchIdRef.current); watchIdRef.current = null; }
@@ -271,19 +311,19 @@ const MapView = () => {
   }, []);
 
   const filteredLocations = useMemo(() => {
-    if (!searchTerm) return resolvedBuildings;
-    const lower = searchTerm.toLowerCase();
+    if (!debouncedSearchTerm) return resolvedBuildings;
+    const lower = debouncedSearchTerm.toLowerCase();
     return resolvedBuildings.filter(b => b.fullName.toLowerCase().includes(lower) || (b.shortForm && b.shortForm.toLowerCase().includes(lower)) || b.description.toLowerCase().includes(lower) || (b.category && b.category.toLowerCase().includes(lower)));
-  }, [resolvedBuildings, searchTerm]);
+  }, [resolvedBuildings, debouncedSearchTerm]);
 
   const filteredGuideCards = useMemo(() => {
-    if (!searchTerm || searchTerm.length < 2) return [];
-    return searchGuideCards(dbGuideCards, searchTerm);
-  }, [dbGuideCards, searchTerm]);
+    if (!debouncedSearchTerm || debouncedSearchTerm.length < 2) return [];
+    return searchGuideCards(dbGuideCards, debouncedSearchTerm);
+  }, [dbGuideCards, debouncedSearchTerm]);
 
   const filteredCommunityPosts = useMemo(() => {
-    if (!searchTerm) return MOCK_COMMUNITY_POSTS;
-    const lower = searchTerm.toLowerCase();
+    if (!debouncedSearchTerm) return MOCK_COMMUNITY_POSTS;
+    const lower = debouncedSearchTerm.toLowerCase();
     return MOCK_COMMUNITY_POSTS.filter(post => 
       post.title?.toLowerCase().includes(lower) || 
       post.description?.toLowerCase().includes(lower) ||
@@ -291,7 +331,7 @@ const MapView = () => {
       post.seller?.toLowerCase().includes(lower) ||
       (post.keywords && post.keywords.some(k => k.toLowerCase().includes(lower)))
     );
-  }, [searchTerm]);
+  }, [debouncedSearchTerm]);
 
   const maxBounds = [[-1.3500, 5.0700], [-1.2200, 5.1600]];
 
@@ -307,6 +347,16 @@ const MapView = () => {
 
   return (
     <div className="absolute inset-0 bg-slate-50 flex flex-col animate-in fade-in overflow-hidden">
+      {isDataLoading && (
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur-sm rounded-full px-4 py-1.5 shadow-md border border-slate-200 text-xs font-medium text-slate-500 flex items-center gap-2">
+          <Loader2 size={12} className="animate-spin" /> Loading campus data…
+        </div>
+      )}
+      {dataError && !isDataLoading && (
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 bg-amber-50 rounded-full px-4 py-1.5 shadow-md border border-amber-200 text-xs font-medium text-amber-700 flex items-center gap-2">
+          <Info size={12} /> {dataError}
+        </div>
+      )}
       <div className="absolute inset-0 z-0 h-full w-full">
         <Map viewport={viewport} onViewportChange={setViewport} theme="light" className="w-full h-full" maxBounds={maxBounds} minZoom={13} dragRotate={false} touchPitch={false} touchZoomRotate={true} doubleClickZoom={true}>
           <MapControls position="top-right" showZoom showCompass show3D showLocate showFullscreen onLocate={handleMapLocate} className="top-[calc(0.5rem_+_env(safe-area-inset-top,0px))] flex-row lg:flex-col" />
@@ -320,6 +370,7 @@ const MapView = () => {
           {filteredLocations.map(loc => {
             const coordsObj = getCoordinates(loc.url);
             if (!coordsObj) return null;
+            if (!isInViewport(coordsObj)) return null;
             const [lat, lng] = coordsObj;
             const isSelected = selectedLocation?.id === loc.id;
             return (
@@ -384,7 +435,7 @@ const MapView = () => {
           })}
 
           {/* Community Layer - Rendered LAST so it sits ON TOP of buildings */}
-          {showCommunityLayer && filteredCommunityPosts.map(post => (
+          {showCommunityLayer && filteredCommunityPosts.filter(post => isInViewport(post.coords)).map(post => (
             <MapMarker 
               key={post.id} 
               longitude={post.coords[1]} 
