@@ -3,7 +3,7 @@ import { ExternalLink, Info, Navigation, Loader2, Search } from 'lucide-react';
 import CampusMapData from './content/ucc/CampusMap';
 import { getKnowledgeForLocation } from './content/ucc/KnowledgeBase';
 import { fetchCampusData, searchGuideCards } from '@/services/campusDataService';
-import { Map, MapControls, MapMarker, MarkerPopup, MarkerContent, MapRoute, DefaultMarkerIcon } from '@/components/ui/map';
+import { Map, MapControls, MapMarker, MarkerPopup, MarkerContent, MapRoute, DefaultMarkerIcon, MarkerLabel } from '@/components/ui/map';
 import { calculateDistance, truncateRouteByProximity } from '@/utils/navigation';
 import LiveNavigationHUD from './LiveNavigationHUD';
 import CampusSearchSidebar from './CampusSearchSidebar';
@@ -159,6 +159,12 @@ const MOCK_COMMUNITY_POSTS = [
   }
 ];
 
+const POST_COLORS = {
+  'business': '#f59e0b',
+  'event': '#f43f5e',
+  'thrift': '#3b82f6',
+};
+
 const MapView = () => {
   const [knowledgeModalData, setKnowledgeModalData] = useState(null);
   const [dbBuildings, setDbBuildings] = useState(null);
@@ -303,7 +309,7 @@ const MapView = () => {
     <div className="absolute inset-0 bg-slate-50 flex flex-col animate-in fade-in overflow-hidden">
       <div className="absolute inset-0 z-0 h-full w-full">
         <Map viewport={viewport} onViewportChange={setViewport} theme="light" className="w-full h-full" maxBounds={maxBounds} minZoom={13} dragRotate={false} touchPitch={false} touchZoomRotate={true} doubleClickZoom={true}>
-          <MapControls position="top-right" showZoom showCompass show3D showLocate onLocate={handleMapLocate} className="top-[calc(0.5rem_+_env(safe-area-inset-top,0px))]" />
+          <MapControls position="top-right" showZoom showCompass show3D showLocate showFullscreen onLocate={handleMapLocate} className="top-[calc(0.5rem_+_env(safe-area-inset-top,0px))] flex-row lg:flex-col" />
           {activeRouteData && <MapRoute coordinates={activeRouteData} color="#3b82f6" width={6} opacity={0.9} />}
           <CommunityHeatmap posts={filteredCommunityPosts} visible={showCommunityLayer} />
           {userLocation && (
@@ -324,6 +330,13 @@ const MapView = () => {
                     : <DefaultMarkerIcon />
                   }
                 </MarkerContent>
+                {viewport.zoom >= 16 && !isSelected && (
+                  <MarkerLabel position="bottom" className="pointer-events-none">
+                    <span className="bg-white/80 backdrop-blur-sm text-[10px] font-semibold text-slate-700 px-1.5 py-0.5 rounded shadow-sm border border-slate-200/60 whitespace-nowrap">
+                      {loc.shortForm || loc.fullName}
+                    </span>
+                  </MarkerLabel>
+                )}
                 {isSelected && (
                   <MarkerPopup onClose={() => setSelectedLocation(null)}>
                     <div
@@ -395,22 +408,25 @@ const MapView = () => {
                     }
                   }}
                 >
-                  {/* Custom SVGs for community types - Small white icons with LARGE transparent clickable hit area */}
+                  {/* Custom SVGs for community types - Small white icons with colored square background */}
                   <div className={`relative flex items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-transform ${selectedCommunityPost?.id === post.id ? 'scale-125' : 'scale-100 group-hover:scale-110'}`}>
-                    <div className="absolute inset-0 bg-transparent rounded-full" /> {/* Invisible hit area so they can easily click! */}
-                    {post.type === 'business' ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-white drop-shadow-md relative z-10 pointer-events-none">
-                        <path d="M8 1.5C8 0.947715 7.55228 0.5 7 0.5C6.44772 0.5 6 0.947715 6 1.5V2.5C6 2.50686 6.00042 2.51285 6.00081 2.51843C6.00385 2.56193 6.00516 2.58063 5.79289 2.79289L5.77277 2.81298C5.50599 3.07912 5 3.58391 5 4.5V5.5C5 6.05228 5.44772 6.5 6 6.5C6.55228 6.5 7 6.05228 7 5.5V4.5C7 4.49314 6.99958 4.48715 6.99919 4.48157C6.99615 4.43807 6.99484 4.41937 7.20711 4.20711L7.22723 4.18702C7.49401 3.92088 8 3.41609 8 2.5V1.5ZM2 9C2 8.44771 2.44772 8 3 8H21C21.5523 8 22 8.44772 22 9V10C22 14.1006 19.5318 17.6248 16 19.1679V20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20V19.1679C4.46819 17.6248 2 14.1006 2 10V9ZM18 0.5C18.5523 0.5 19 0.947715 19 1.5V2.5C19 3.41609 18.494 3.92088 18.2272 4.18702L18.2071 4.20711C17.9948 4.41937 17.9962 4.43807 17.9992 4.48157C17.9996 4.48715 18 4.49314 18 4.5V5.5C18 6.05228 17.5523 6.5 17 6.5C16.4477 6.5 16 6.05228 16 5.5V4.5C16 3.58391 16.506 3.07912 16.7728 2.81298L16.7929 2.79289C17.0052 2.58063 17.0038 2.56193 17.0008 2.51843C17.0004 2.51285 17 2.50686 17 2.5V1.5C17 0.947715 17.4477 0.5 18 0.5ZM13.5 1.5C13.5 0.947715 13.0523 0.5 12.5 0.5C11.9477 0.5 11.5 0.947715 11.5 1.5V2.5C11.5 2.50686 11.5004 2.51285 11.5008 2.51843C11.5038 2.56193 11.5052 2.58063 11.2929 2.79289L11.2728 2.81298C11.006 3.07912 10.5 3.58391 10.5 4.5V5.5C10.5 6.05228 10.9477 6.5 11.5 6.5C12.0523 6.5 12.5 6.05228 12.5 5.5V4.5C12.5 4.49314 12.4996 4.48715 12.4992 4.48157C12.4962 4.43807 12.4948 4.41937 12.7071 4.20711L12.7272 4.18702C12.994 3.92088 13.5 3.41609 13.5 2.5V1.5Z"></path>
-                      </svg>
-                    ) : post.type === 'event' ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-white drop-shadow-md relative z-10 pointer-events-none">
-                        <path d="M9 1V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9ZM20 11H4V19H20V11ZM11 13V17H6V13H11ZM7 5H4V9H20V5H17V7H15V5H9V7H7V5Z"></path>
-                      </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-white drop-shadow-md relative z-10 pointer-events-none">
-                        <path d="M21 13V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V13H2V11L3 6H21L22 11V13H21ZM5 13V19H19V13H5ZM6 14H14V17H6V14ZM3 3H21V5H3V3Z"></path>
-                      </svg>
-                    )}
+                    <div className="absolute inset-0 bg-transparent rounded-full" />
+                    <div className="relative z-10 pointer-events-none flex items-center justify-center">
+                      <div className="absolute w-5 h-5 rounded-sm" style={{ backgroundColor: (POST_COLORS[post.type] || '#3b82f6') + '70' }} />
+                      {post.type === 'business' ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-white drop-shadow-md relative z-10">
+                          <path d="M8 1.5C8 0.947715 7.55228 0.5 7 0.5C6.44772 0.5 6 0.947715 6 1.5V2.5C6 2.50686 6.00042 2.51285 6.00081 2.51843C6.00385 2.56193 6.00516 2.58063 5.79289 2.79289L5.77277 2.81298C5.50599 3.07912 5 3.58391 5 4.5V5.5C5 6.05228 5.44772 6.5 6 6.5C6.55228 6.5 7 6.05228 7 5.5V4.5C7 4.49314 6.99958 4.48715 6.99919 4.48157C6.99615 4.43807 6.99484 4.41937 7.20711 4.20711L7.22723 4.18702C7.49401 3.92088 8 3.41609 8 2.5V1.5ZM2 9C2 8.44771 2.44772 8 3 8H21C21.5523 8 22 8.44772 22 9V10C22 14.1006 19.5318 17.6248 16 19.1679V20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20V19.1679C4.46819 17.6248 2 14.1006 2 10V9ZM18 0.5C18.5523 0.5 19 0.947715 19 1.5V2.5C19 3.41609 18.494 3.92088 18.2272 4.18702L18.2071 4.20711C17.9948 4.41937 17.9962 4.43807 17.9992 4.48157C17.9996 4.48715 18 4.49314 18 4.5V5.5C18 6.05228 17.5523 6.5 17 6.5C16.4477 6.5 16 6.05228 16 5.5V4.5C16 3.58391 16.506 3.07912 16.7728 2.81298L16.7929 2.79289C17.0052 2.58063 17.0038 2.56193 17.0008 2.51843C17.0004 2.51285 17 2.50686 17 2.5V1.5C17 0.947715 17.4477 0.5 18 0.5ZM13.5 1.5C13.5 0.947715 13.0523 0.5 12.5 0.5C11.9477 0.5 11.5 0.947715 11.5 1.5V2.5C11.5 2.50686 11.5004 2.51285 11.5008 2.51843C11.5038 2.56193 11.5052 2.58063 11.2929 2.79289L11.2728 2.81298C11.006 3.07912 10.5 3.58391 10.5 4.5V5.5C10.5 6.05228 10.9477 6.5 11.5 6.5C12.0523 6.5 12.5 6.05228 12.5 5.5V4.5C12.5 4.49314 12.4996 4.48715 12.4992 4.48157C12.4962 4.43807 12.4948 4.41937 12.7071 4.20711L12.7272 4.18702C12.994 3.92088 13.5 3.41609 13.5 2.5V1.5Z"></path>
+                        </svg>
+                      ) : post.type === 'event' ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-white drop-shadow-md relative z-10">
+                          <path d="M9 1V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9ZM20 11H4V19H20V11ZM11 13V17H6V13H11ZM7 5H4V9H20V5H17V7H15V5H9V7H7V5Z"></path>
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-white drop-shadow-md relative z-10">
+                          <path d="M21 13V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V13H2V11L3 6H21L22 11V13H21ZM5 13V19H19V13H5ZM6 14H14V17H6V14ZM3 3H21V5H3V3Z"></path>
+                        </svg>
+                      )}
+                    </div>
                   </div>
                 </div>
               </MarkerContent>
@@ -435,6 +451,14 @@ const MapView = () => {
                     }}
                   >
                     <h3 className="font-bold text-[13px] text-slate-900 leading-tight mb-1">{post.title}</h3>
+                    <div className="flex items-center justify-center gap-2 mb-1.5">
+                      {post.price && (
+                        <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full">{post.price}</span>
+                      )}
+                      {post.seller && (
+                        <span className="text-[10px] text-slate-400">by {post.seller}</span>
+                      )}
+                    </div>
                     <p className="text-[11px] text-slate-500 mb-2 line-clamp-2">{post.description}</p>
                     <div className="flex flex-col gap-1.5 px-2 mb-1">
                       <button onClick={() => handleRouteToLocation(post.coords)} disabled={isRouting} className="flex items-center justify-center gap-1.5 w-full bg-slate-700 hover:bg-slate-800 text-white py-1.5 rounded-xl text-xs font-bold transition-colors">
@@ -480,7 +504,11 @@ const MapView = () => {
           <LiveNavigationHUD distanceRemaining={distanceRemaining} showBetaWarning={showBetaWarning} onDismissBeta={() => setShowBetaWarning(false)} onEndRoute={endNavigation} />
         )}
 
-        <WeatherOverlay className="absolute top-4 left-4 lg:bottom-4 lg:right-4 lg:top-auto lg:left-auto z-30" />
+        <WeatherOverlay
+          className="absolute top-4 left-4 lg:bottom-4 lg:right-4 lg:top-auto lg:left-auto z-30"
+          showLegend={showCommunityLayer}
+          legendColors={POST_COLORS}
+        />
 
         <CampusSearchSidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} sidebarView={sidebarView} setSidebarView={setSidebarView}
           searchTerm={searchTerm} onSearchChange={setSearchTerm} filteredLocations={filteredLocations} getCoordinates={getCoordinates}

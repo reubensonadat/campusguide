@@ -184,6 +184,24 @@ function MapControls({
     }
   }, [map, onLocate]);
 
+  useEffect(() => {
+    const toggleCustomCursor = () => {
+      const style = document.getElementById('custom-cursor-hide');
+      if (document.fullscreenElement) {
+        if (style) style.remove();
+      } else {
+        if (!style) {
+          const s = document.createElement('style');
+          s.id = 'custom-cursor-hide';
+          s.textContent = '* { cursor: none !important; }';
+          document.head.appendChild(s);
+        }
+      }
+    };
+    document.addEventListener('fullscreenchange', toggleCustomCursor);
+    return () => document.removeEventListener('fullscreenchange', toggleCustomCursor);
+  }, []);
+
   const handleFullscreen = useCallback(() => {
     const container = map?.getContainer();
     if (!container) return;
@@ -218,26 +236,26 @@ function MapControls({
           {show3D && <PitchToggle onClick={() => {}} />}
         </ControlGroup>
       )}
-      {showLocate && (
+      {(showLocate || showFullscreen) && (
         <ControlGroup>
-          <ControlButton
-            onClick={handleLocate}
-            label="Find my location"
-            disabled={waitingForLocation}
-          >
-            {waitingForLocation ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Locate className="size-4" />
-            )}
-          </ControlButton>
-        </ControlGroup>
-      )}
-      {showFullscreen && (
-        <ControlGroup>
-          <ControlButton onClick={handleFullscreen} label="Toggle fullscreen">
-            <Maximize className="size-4" />
-          </ControlButton>
+          {showLocate && (
+            <ControlButton
+              onClick={handleLocate}
+              label="Find my location"
+              disabled={waitingForLocation}
+            >
+              {waitingForLocation ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Locate className="size-4" />
+              )}
+            </ControlButton>
+          )}
+          {showFullscreen && (
+            <ControlButton onClick={handleFullscreen} label="Toggle fullscreen">
+              <Maximize className="size-4" />
+            </ControlButton>
+          )}
         </ControlGroup>
       )}
     </div>

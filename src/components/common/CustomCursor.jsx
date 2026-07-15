@@ -40,8 +40,19 @@ function randomBetween(a, b) {
 }
 
 export default function CustomCursor() {
-  const [profile] = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' })
-  const cursorName = profile.name?.trim() || 'Student'
+  const [profile, setProfile] = useLocalStorage('ucc_profile', { name: '', phone: '', avatarUrl: '' })
+  const [savedEmoji, setSavedEmoji] = useLocalStorage('cursor_emoji', '')
+
+  // Migrate old emoji saved directly to profile name
+  const migratedEmoji = EMOJIS.includes(profile.name?.trim()) ? profile.name.trim() : ''
+  useEffect(() => {
+    if (migratedEmoji) {
+      setSavedEmoji(migratedEmoji)
+      setProfile(prev => ({ ...prev, name: '' }))
+    }
+  }, [])
+
+  const cursorName = savedEmoji || migratedEmoji || profile.name?.trim() || 'Student'
 
   const [isTouch, setIsTouch] = useState(false)
 
@@ -74,6 +85,7 @@ export default function CustomCursor() {
   const [bursts, setBursts] = useState([])
   const burstId = useRef(0)
   const scale = useMotionValue(1)
+  const shiftHoldRef = useRef(null)
 
   useEffect(() => {
     animate(scale, pressed ? 0.85 : 1, {
@@ -90,24 +102,40 @@ export default function CustomCursor() {
   const labelFinalX = useTransform(labelX, v => v + labelOffsetX)
   const labelFinalY = useTransform(labelY, v => v + labelOffsetY)
 
-  // Emoji mode: hold Shift
+  // Emoji mode: hold Shift — hold for 2s to toggle cursor emoji
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === 'Shift') {
         setEmojiMode(true)
-        setCurrentEmoji(EMOJIS[Math.floor(Math.random() * EMOJIS.length)])
+        const emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)]
+        setCurrentEmoji(emoji)
+        shiftHoldRef.current = setTimeout(() => {
+          if (savedEmoji) {
+            setSavedEmoji('')
+          } else {
+            setSavedEmoji(emoji)
+          }
+          setEmojiMode(false)
+        }, 2000)
       }
     }
     const onKeyUp = (e) => {
-      if (e.key === 'Shift') setEmojiMode(false)
+      if (e.key === 'Shift') {
+        if (shiftHoldRef.current) {
+          clearTimeout(shiftHoldRef.current)
+          shiftHoldRef.current = null
+        }
+        setEmojiMode(false)
+      }
     }
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
     return () => {
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
+      if (shiftHoldRef.current) clearTimeout(shiftHoldRef.current)
     }
-  }, [])
+  }, [savedEmoji])
 
   const onMouseMove = useCallback((e) => {
     const now = performance.now()
@@ -196,6 +224,7 @@ export default function CustomCursor() {
 
   if (isTouch) return null
 
+  const isEmojiLabel = emojiMode || !!savedEmoji
   const cursorW = pressed ? 26 : textMode ? 18 : pointer ? 24 : 26
   const cursorViewBox = `0 0 ${cursorW} ${cursorW}`
   const origin = textMode ? '9px 9px' : pointer ? '12px 12px' : pressed ? '13px 13px' : '0% 0%'
@@ -260,16 +289,16 @@ export default function CustomCursor() {
           y: labelFinalY,
           rotate: labelRotate,
           scale,
-          background: emojiMode ? 'transparent' : '#1a1a1a',
+          background: isEmojiLabel ? 'transparent' : '#1a1a1a',
           color: '#fff',
           borderRadius: 999,
-          padding: emojiMode ? 0 : '5px 12px',
-          fontSize: emojiMode ? 22 : 11,
+          padding: isEmojiLabel ? 0 : '5px 12px',
+          fontSize: isEmojiLabel ? 22 : 11,
           fontWeight: 600,
           fontFamily: 'system-ui, -apple-system, sans-serif',
           whiteSpace: 'nowrap',
           letterSpacing: 0.1,
-          boxShadow: emojiMode ? 'none' : '0 4px 14px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)',
+          boxShadow: isEmojiLabel ? 'none' : '0 4px 14px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)',
           transformOrigin: '0% 50%',
           userSelect: 'none',
           pointerEvents: 'none',
