@@ -264,7 +264,7 @@ const MapView = () => {
            lat >= viewportBounds.minLat && lat <= viewportBounds.maxLat;
   }, [viewportBounds]);
 
-  const routeCache = useRef(new Map());
+  const routeCache = useRef({});
   const startLiveTracking = useCallback((startCoord) => {
     if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current);
     watchIdRef.current = navigator.geolocation.watchPosition(
@@ -284,7 +284,7 @@ const MapView = () => {
       const startCoord = [startLng, startLat];
       setUserLocation(startCoord);
       const cacheKey = `${startLat.toFixed(4)},${startLng.toFixed(4)}-${endLat.toFixed(4)},${endLng.toFixed(4)}`;
-      const cached = routeCache.current.get(cacheKey);
+      const cached = routeCache.current[cacheKey];
       if (cached) {
         setFullRouteData(cached); setActiveRouteData(cached); setIsLiveNavigating(true);
         startLiveTracking(startCoord);
@@ -296,7 +296,7 @@ const MapView = () => {
         const data = await res.json();
         if (data.routes?.length > 0) {
           const originalRoute = data.routes[0].geometry.coordinates;
-          routeCache.current.set(cacheKey, originalRoute);
+          routeCache.current[cacheKey] = originalRoute;
           setFullRouteData(originalRoute); setActiveRouteData(originalRoute); setIsLiveNavigating(true);
           startLiveTracking(startCoord);
         } else alert('Could not find a valid walking route to this location.');

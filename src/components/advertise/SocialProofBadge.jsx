@@ -20,7 +20,7 @@ const SocialProofBadge = ({ userCount, variant = 'students', className = '' }) =
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
             </div>
             <span className="font-extrabold text-sm text-gray-900 tracking-tight">
-                Reach <span className="text-rose-600">{userCount || 'active'} Students</span> across campus
+                Reach <span className="text-rose-600">{userCount ? `${userCount} Student${userCount === '1' ? '' : 's'}` : 'Students'}</span> across campus
             </span>
         </div>
     );
