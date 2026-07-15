@@ -323,7 +323,7 @@ const Profile = () => {
 
   const handleShareApp = async () => {
     const shareData = {
-      title: 'UCC Campus Guide',
+      title: 'Campus Guide',
       text: "Hey! I'm using the UCC Campus Guide app for my timetable, GPA, and campus updates. Check it out here:",
       url: window.location.origin,
     };

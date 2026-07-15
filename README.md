@@ -1,6 +1,6 @@
-# UCC Campus Guide
+# Campus Guide
 
-A comprehensive mobile app for University of Cape Coast students, featuring guides, tools, and essential information to navigate campus life successfully.
+A comprehensive mobile app for students, featuring guides, tools, and essential information to navigate campus life successfully.
 
 ## 🚀 Features
 
@@ -162,4 +162,4 @@ Create a Pull Request
 📞 Support
 For support, please open an issue on GitHub or contact the development team.
 
-Built with ❤️ for UCC Students
+Built with ❤️ for Students

@@ -12,7 +12,7 @@ const FAQS = [
   },
   {
     question: 'Is the Campus Guide app really free?',
-    answer: 'Yes! The app is 100% free for all UCC students. We do not display ads and rely entirely on student contributions and donations to pay database and server bills.'
+    answer: 'Yes! The app is 100% free for all students. We do not display ads and rely entirely on student contributions and donations to pay database and server bills.'
   },
   {
     question: 'How does the offline Sync Service work?',

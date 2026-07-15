@@ -160,7 +160,7 @@ const Community = () => {
                 } else {
                     actionText = 'Message via WhatsApp';
                     link = cleanPhone
-                        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${ad.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`
+                        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${ad.title}" on the Campus Guide app and I'm interested in finding out more.`)}`
                         : '#';
                 }
 

@@ -7,20 +7,20 @@ import CoolFinds from '../components/tools/CoolFinds';
 import BudgetTracker from '../components/tools/BudgetTracker';
 import PlanYourDay from '../components/tools/PlanYourDay';
 import Assignments from '../components/tools/Assignments';
-import { Library, Cpu } from 'lucide-react';
+import { Library, Cpu, ChevronDown, Calendar, Calculator, ClipboardList, FunctionSquare, Wallet, Sun, Tag } from 'lucide-react';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import PageHeader from '../components/common/PageHeader';
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 import { CustomCoach, CustomCalculator, CustomBudget, CustomPlanner, CustomCoolFinds } from '../components/common/CustomIcons';
 
 const tabs = [
-    { id: 'timetable', label: 'Timetable Builder' },
-    { id: 'gpa', label: 'GPA Calculator' },
-    { id: 'assignments', label: 'Deadlines & Assignments' },
-    { id: 'formulas', label: 'Formula Solver' },
-    { id: 'budget', label: 'Budget Tracker' },
-    { id: 'plan-day', label: 'Plan Your Day' },
-    { id: 'resources', label: 'Cool Finds' }
+    { id: 'timetable', label: 'Timetable Builder', short: 'Timetable', icon: Calendar },
+    { id: 'gpa', label: 'GPA Calculator', short: 'GPA', icon: Calculator },
+    { id: 'assignments', label: 'Deadlines & Assignments', short: 'Tasks', icon: ClipboardList },
+    { id: 'formulas', label: 'Formula Solver', short: 'Formulas', icon: FunctionSquare },
+    { id: 'budget', label: 'Budget Tracker', short: 'Budget', icon: Wallet },
+    { id: 'plan-day', label: 'Plan Your Day', short: 'Planner', icon: Sun },
+    { id: 'resources', label: 'Cool Finds', short: 'Cool Finds', icon: Tag }
 ];
 
 const Tools = () => {
@@ -28,7 +28,9 @@ const Tools = () => {
     const location = useLocation();
     const [isAuthVerified, setIsAuthVerified] = useState(false);
     const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const tabsRef = useRef([]);
+    const dropdownRef = useRef(null);
 
     // Extract the active tab from the URL path (e.g. /tools/gpa -> 'gpa')
     const activeTool = location.pathname.split('/').pop() || 'timetable';
@@ -62,6 +64,16 @@ const Tools = () => {
         return () => clearTimeout(timeoutId);
     }, [activeTool]);
 
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const handleTabChange = (tabId) => {
         startTransition(() => {
             navigate(`/tools/${tabId}`);
@@ -74,8 +86,46 @@ const Tools = () => {
 
                 <PageHeader title="Student Tools" subtitle="Manage your schedule, track your academic progress, and solve complex formulas." />
 
-                {/* Premium Custom Horizontal Tab Switcher */}
-                <div className="w-full mb-8 relative">
+                {/* Mobile Dropdown (hidden on md+) */}
+                <div className="md:hidden flex justify-end mb-4 relative" ref={dropdownRef}>
+                    <button
+                        onClick={() => setDropdownOpen(o => !o)}
+                        className="flex items-center gap-1.5 bg-white px-3 py-2 rounded-xl shadow-sm border border-gray-200 text-xs font-bold text-gray-900"
+                    >
+                        {(() => {
+                            const active = tabs.find(t => t.id === activeTool);
+                            const Icon = active?.icon;
+                            return Icon ? <Icon size={16} /> : null;
+                        })()}
+                        <span>{tabs.find(t => t.id === activeTool)?.short || 'Select'}</span>
+                        <ChevronDown size={14} className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {dropdownOpen && (
+                        <div className="absolute top-full right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden min-w-[160px]">
+                            {tabs.map(tab => {
+                                const isActive = activeTool === tab.id;
+                                const Icon = tab.icon;
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => {
+                                            handleTabChange(tab.id);
+                                            setDropdownOpen(false);
+                                        }}
+                                        className={`w-full flex items-center gap-2.5 text-left px-3.5 py-2 text-sm font-medium transition-colors ${isActive ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        <Icon size={16} />
+                                        {tab.short}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+
+                {/* Desktop Horizontal Tab Switcher (hidden on mobile) */}
+                <div className="hidden md:block w-full mb-8 relative">
                     <div className="overflow-x-auto pb-2 scrollbar-none scroll-smooth">
                         <div className="relative inline-flex items-center gap-1  bg-white overflow-auto p-1 rounded-xl  w-full sm:w-auto z-0 shadow-sm">
                             {/* Sliding Pill */}
@@ -124,19 +174,13 @@ const Tools = () => {
                 <div className="mt-8 mb-6">
                     <button
                         onClick={() => navigate('/tools/letter-generator')}
-                        className="w-full bg-gray-900 text-white rounded-3xl p-6 shadow-md hover:bg-gray-900 hover:-translate-y-0.5 transition-all active:scale-95 text-left relative overflow-hidden group"
+                        className="w-full bg-gray-900 text-white rounded-2xl px-5 py-4 shadow-sm hover:bg-gray-900 active:scale-95 transition-all text-left"
                     >
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="bg-white/20 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white">AI Powered</span>
-                            </div>
-                            <h3 className="text-xl font-black mb-1">Formal Letter Generator</h3>
-                            <p className="text-sm font-medium text-white/70 max-w-sm">Draft professional academic letters and petitions in seconds.</p>
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white">AI</span>
                         </div>
-                        {/* Decorative background shape */}
-                        <div className="absolute -right-8 -bottom-12 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                            <Library size={160} />
-                        </div>
+                        <h3 className="text-base font-bold mb-0.5">Formal Letter Generator</h3>
+                        <p className="text-xs font-medium text-white/70">Draft academic letters and petitions in seconds.</p>
                     </button>
                 </div>
 

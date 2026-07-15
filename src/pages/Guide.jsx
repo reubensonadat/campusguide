@@ -22,7 +22,7 @@ const MAP_COACH_STEPS = [
   {
     icon: <CustomGuide size={24} />,
     title: 'Interactive Campus Map',
-    description: 'Explore UCC with our custom interactive campus map. Search for lecture halls, offices, and study squares.'
+    description: 'Explore campus with our custom interactive campus map. Search for lecture halls, offices, and study squares.'
   },
   {
     icon: <CustomEyes size={24} />,

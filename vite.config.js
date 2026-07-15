@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['logo.png', 'Savings.png'],
       manifest: {
-        name: 'UCC Campus Guide',
-        short_name: 'UCC Guide',
+        name: 'Campus Guide',
+        short_name: 'Campus Guide',
         description: 'The ultimate guide for University of Cape Coast students.',
         theme_color: '#002F45',
         background_color: '#ffffff',

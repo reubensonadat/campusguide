@@ -210,7 +210,7 @@ const Support = () => {
         {/* Header matching Profile style */}
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">About & Support</h1>
-          <p className="text-[10px] text-gray-400 font-medium mt-0.5">Built for UCC students, by UCC students. Keep the Guide free.</p>
+          <p className="text-[10px] text-gray-400 font-medium mt-0.5">Built for students, by students. Keep the Guide free.</p>
         </div>
 
         {/* Category 1: Our Mission */}
@@ -218,7 +218,7 @@ const Support = () => {
           <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">Our Mission</h2>
           <div className="space-y-4 text-[14px] text-gray-600 leading-relaxed font-medium">
             <p>
-              UCC Campus Guide is built by students, for students. We got tired of scrambling to calculate GPAs on loose sheets of paper, trying to recreate timetables from blurry screenshots, and losing track of course assignments. Every student was trying to solve the same problems alone.
+              Campus Guide is built by students, for students. We got tired of scrambling to calculate GPAs on loose sheets of paper, trying to recreate timetables from blurry screenshots, and losing track of course assignments. Every student was trying to solve the same problems alone.
             </p>
             <p>
               We designed this app to gather everything you actually need into a unified, clean interface: timetables with class alarms, GPA forecasts with what-if scenario planning, assignment tracker boards, step-by-step formula calculators, budget logging, a student thrift market, and private campus whispers.
@@ -467,7 +467,7 @@ const Support = () => {
         <div className="text-center pt-8 pb-12">
           <div className="flex items-center justify-center gap-1.5 text-gray-300 mb-2">
             <Code2 size={12} />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Built with purpose by UCC Students</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest">Built with purpose by Students</span>
           </div>
           <a
             href="mailto:uccguide25@gmail.com?subject=Campus%20Guide%20Bug%20Report"
