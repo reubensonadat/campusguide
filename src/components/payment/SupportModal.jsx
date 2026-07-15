@@ -90,7 +90,7 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
         console.warn('🔍 DEBUG ucc_user_id FAILED regex:', JSON.stringify(userId));
         throw new Error('Cannot process payment: account not found. Please sign up first.');
       }
-      const { error: dbError } = await supabase.from('payments').insert({
+      const payload = {
         reference: result.reference,
         amount: amountPaid,
         currency: 'GHS',
@@ -101,7 +101,9 @@ const SupportModal = ({ isOpen: controlledIsOpen, onClose, onPaymentSuccess }) =
         user_phone: phone || '',
         status: 'completed',
         metadata: { plan: 'supporter', email }
-      });
+      };
+      console.log('🔍 PAYLOAD:', JSON.stringify(payload));
+      const { error: dbError } = await supabase.from('payments').insert(payload);
       if (dbError) throw dbError;
     } catch (e) {
       console.error("Failed to record support payment in DB", e);
