@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Fingerprint, ChevronRight, CreditCard, RefreshCw, Bell, Moon, User,
-  Share2, Lock, Phone, FileText, CheckCircle, Trash2, HelpCircle, X
+  Share2, Lock, Phone, FileText, CheckCircle, Trash2, HelpCircle, X, Sun
 } from 'lucide-react';
 import { DataLoader } from '../components/common/CustomLoaders';
 import { sanitizeGhanaPhone, isValidGhanaPhone } from '../utils/helpers';
@@ -520,6 +520,31 @@ const Profile = () => {
               <button onClick={handleToggleSystemNotifications}
                 className={`relative inline-flex h-[26px] w-[46px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 ${systemNotificationsEnabled ? 'bg-gray-900' : 'bg-gray-200'}`}>
                 <span className={`pointer-events-none inline-block h-[22px] w-[22px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${systemNotificationsEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
+            </div>
+          </div>
+
+          {/* Daily Digest Toggle */}
+          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden">
+            <div className="flex items-center justify-between group relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gray-900/5 flex items-center justify-center">
+                  <Sun size={20} className="text-gray-900" />
+                </div>
+                <div>
+                  <h3 className="text-[17px] font-bold text-gray-900">Daily Schedule Digest</h3>
+                  <p className="text-[13px] text-gray-500 font-medium">Morning summary at 6:30 AM</p>
+                </div>
+              </div>
+              <button onClick={() => {
+                const current = JSON.parse(localStorage.getItem('ucc_settings') || '{}');
+                const next = { ...current, push_daily_digest: current.push_daily_digest === false };
+                localStorage.setItem('ucc_settings', JSON.stringify(next));
+                window.dispatchEvent(new Event('storage'));
+                toast.success(next.push_daily_digest ? 'Daily digest enabled' : 'Daily digest disabled');
+              }}
+                className={`relative w-12 h-7 rounded-full transition-colors duration-200 flex-shrink-0 ${(() => { try { return JSON.parse(localStorage.getItem('ucc_settings') || '{}').push_daily_digest !== false; } catch { return true; } })() ? 'bg-gray-900' : 'bg-gray-200'}`}>
+                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200 ${(() => { try { return JSON.parse(localStorage.getItem('ucc_settings') || '{}').push_daily_digest !== false; } catch { return true; } })() ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
             </div>
           </div>

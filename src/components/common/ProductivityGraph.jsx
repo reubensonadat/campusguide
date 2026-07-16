@@ -69,6 +69,19 @@ export const ProductivityGraph = () => {
     return cols;
   }, [stats, daysToRender, timeRange]);
 
+  const filteredTotalMinutes = useMemo(() => {
+    if (!stats) return 0;
+    const today = new Date();
+    let total = 0;
+    for (let i = 0; i < daysToRender; i++) {
+      const d = new Date();
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      total += stats.dailyData[dateStr] || 0;
+    }
+    return total;
+  }, [stats, daysToRender]);
+
   if (!stats) return null;
 
   const getColorClass = (intensity) => {
@@ -167,7 +180,7 @@ export const ProductivityGraph = () => {
           <div className="flex flex-col">
             <h4 className={`text-sm font-bold ${stats.title.textColor}`}>{stats.title.label}</h4>
             <p className="text-xs text-gray-500 font-medium mt-0.5">
-              Total focus time: <strong className="text-gray-900">{Math.floor(stats.totalMinutes / 60)}h {stats.totalMinutes % 60}m</strong>
+              Total focus time: <strong className="text-gray-900">{Math.floor(filteredTotalMinutes / 60)}h {filteredTotalMinutes % 60}m</strong>
             </p>
           </div>
         </div>
