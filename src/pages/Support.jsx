@@ -469,6 +469,21 @@ const Support = () => {
             <Code2 size={12} />
             <span className="text-[10px] font-bold uppercase tracking-widest">Built with purpose by Students</span>
           </div>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <button
+              onClick={() => navigate('/terms')}
+              className="text-[10px] font-bold text-gray-400 hover:text-gray-900 transition-colors border-none bg-transparent cursor-pointer"
+            >
+              Terms of Service
+            </button>
+            <span className="text-gray-200 text-[10px]">|</span>
+            <button
+              onClick={() => navigate('/privacy')}
+              className="text-[10px] font-bold text-gray-400 hover:text-gray-900 transition-colors border-none bg-transparent cursor-pointer"
+            >
+              Privacy Policy
+            </button>
+          </div>
           <a
             href="mailto:uccguide25@gmail.com?subject=Campus%20Guide%20Bug%20Report"
             className="inline-flex items-center gap-2 text-[10px] font-bold text-gray-400 hover:text-red-500 transition-colors"
