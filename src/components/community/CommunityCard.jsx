@@ -42,8 +42,6 @@ const CommunityCard = ({ post }) => {
     const defaultActionText = isAd ? "Message via WhatsApp" : "View Details";
     const buttonText = actionText || defaultActionText;
 
-    const buttonStyle = "bg-primary-600 text-white hover:bg-primary-700 hover:shadow-primary-200";
-
     return (
         <div
             onMouseDown={startPress}
@@ -53,13 +51,13 @@ const CommunityCard = ({ post }) => {
             onTouchEnd={endPress}
             onTouchMove={endPress}
             onClick={() => setIsExpanded(prev => !prev)}
-            className={`cursor-pointer relative bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.06)] mb-6 flex flex-col group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 h-full border ${isShared ? 'ring-2 ring-primary-500 border-primary-200 bg-primary-50/10' : 'border-gray-100'}`}
+            className={`cursor-pointer relative bg-white rounded-[28px] p-3 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] flex flex-col gap-3 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 h-full border ${isShared ? 'ring-2 ring-primary-500 border-primary-200 bg-primary-50/10' : 'border-gray-100'}`}
         >
             {/* Absolute share button */}
             {isExpanded && (
                 <button
                     onClick={(e) => handleSharePost(e, post.id)}
-                    className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white/95 text-gray-500 hover:text-primary-600 flex items-center justify-center shadow-md active:scale-95 transition-all duration-200"
+                    className="absolute top-6 right-6 z-10 w-9 h-9 rounded-full bg-white/95 text-gray-500 hover:text-primary-600 flex items-center justify-center shadow-md active:scale-95 transition-all duration-200"
                     title="Share post"
                 >
                     <Share2 size={16} />
@@ -68,7 +66,7 @@ const CommunityCard = ({ post }) => {
 
             {/* Full Image Container (Flyer) */}
             {image && (
-                <div className="relative w-full bg-gray-100 flex items-center justify-center shrink-0 lg:h-64">
+                <div className="relative w-full bg-gray-100 rounded-2xl overflow-hidden flex items-center justify-center shrink-0 lg:h-64">
                     <SmartImage
                         src={image}
                         alt={title}
@@ -78,28 +76,30 @@ const CommunityCard = ({ post }) => {
             )}
 
             {/* Post Content */}
-            <div className="p-6 flex-1 flex flex-col min-h-0">
+            <div className="flex flex-col gap-3 px-1 pb-1">
                 {displayTag && (
-                    <div className="flex mb-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xl text-[10px] font-bold tracking-widest uppercase ${isAd ? 'bg-amber-50 text-amber-600' : 'bg-primary-50 text-primary-600'}`}>
+                    <div className="flex">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border ${isAd ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-primary-50 text-primary-600 border-primary-200'}`}>
                             {isAd && <Tag size={10} />}
                             {displayTag}
                         </span>
                     </div>
                 )}
-                <h3 className="text-xl sm:text-[22px] font-bold text-gray-900 leading-tight mb-3 group-hover:text-primary-600 transition-colors line-clamp-2 shrink-0 pr-8">
-                    {title}
-                </h3>
+                <div className="flex justify-between items-start gap-2">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2 pr-8">
+                        {title}
+                    </h3>
+                </div>
 
                 {description && (
-                    <div className="mb-5 flex-1 min-h-0 flex flex-col">
-                        <p className={`text-[15px] text-gray-600 leading-relaxed whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
+                    <div className="flex flex-col">
+                        <p className={`text-sm text-gray-500 leading-relaxed whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
                             {description}
                         </p>
                         {description.length > 120 && (
                             <button
                                 onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
-                                className="text-primary-600 font-bold text-sm mt-2 hover:underline focus:outline-none self-start shrink-0"
+                                className="text-primary-600 font-bold text-xs mt-1.5 hover:underline focus:outline-none self-start shrink-0"
                             >
                                 {isExpanded ? 'Show Less' : 'Read More...'}
                             </button>
@@ -107,23 +107,23 @@ const CommunityCard = ({ post }) => {
                     </div>
                 )}
 
-                {/* Bottom Action Button - Pinned to bottom using mt-auto */}
+                {/* Bottom Action Button */}
                 {(actionText || link) && (
-                    <div className="mt-auto shrink-0 pt-2">
+                    <div className="mt-1">
                         {link ? (
                             <a
                                 href={link}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}
+                                className="w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[20px] transition-all duration-300 gap-2 bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98]"
                             >
                                 {buttonText} {isAd && <ExternalLink size={16} />}
                             </a>
                         ) : (
                             <button
                                 onClick={(e) => e.stopPropagation()}
-                                className={`w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[16px] transition-all duration-300 shadow-sm gap-2 hover:-translate-y-0.5 ${buttonStyle}`}
+                                className="w-full flex items-center justify-center font-bold py-3.5 px-4 rounded-[20px] transition-all duration-300 gap-2 bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98]"
                             >
                                 {buttonText} {isAd && <ExternalLink size={16} />}
                             </button>

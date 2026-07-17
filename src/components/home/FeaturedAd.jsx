@@ -48,19 +48,21 @@ const FeaturedAd = ({ isDeferredActive, featuredContent }) => {
       <h3 className="text-gray-900 font-black text-xl mb-4 px-1 tracking-tight">
         {isAd ? 'Advertisement' : 'Announcement'}
       </h3>
-      <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden max-w-sm">
+      <div className="bg-white rounded-[28px] p-3 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-gray-100 max-w-sm flex flex-col gap-3">
         {imgSrc && (
-          <img src={imgSrc} alt={d.title} className="w-full h-auto object-contain max-h-[600px] bg-gray-50/50" />
+          <div className="rounded-2xl overflow-hidden bg-gray-50/50">
+            <img src={imgSrc} alt={d.title} className="w-full h-auto object-contain max-h-[600px]" />
+          </div>
         )}
-        <div className="p-5">
-          <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-xl mb-2 text-gray-900 bg-gray-900/10">
+        <div className="flex flex-col gap-3 px-1 pb-1">
+          <span className="inline-flex self-start items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-gray-200 text-gray-900 bg-gray-100">
             {isAd ? 'SPONSORED' : 'OFFICIAL'}
           </span>
-          <h4 className="text-base font-bold text-gray-900 mb-1">{d.title}</h4>
-          <p className={`text-sm text-gray-500 font-medium mb-4 whitespace-pre-wrap ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
+          <h4 className="text-base font-bold text-gray-900">{d.title}</h4>
+          <p className={`text-sm text-gray-500 leading-relaxed whitespace-pre-wrap ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
             {d.description || d.content}
           </p>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-1">
             <button
               onClick={() => setIsFeaturedExpanded(!isFeaturedExpanded)}
               className="text-[13px] font-bold text-gray-900 flex items-center gap-1 active:opacity-70"
@@ -70,7 +72,7 @@ const FeaturedAd = ({ isDeferredActive, featuredContent }) => {
             {link && (
               <button
                 onClick={() => window.open(link, '_blank')}
-                className="bg-gray-900 hover:bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl active:scale-95 transition-all shadow-sm"
+                className="bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold px-4 py-2.5 rounded-[20px] active:scale-[0.98] transition-all"
               >
                 {actionText}
               </button>
