@@ -202,27 +202,34 @@ export const boostThriftListing = async (listingId, days) => {
 /**
  * Fetches all thrift listings, ordered by featured status first, then by date
  */
-export const fetchAllThriftListings = async () => {
+const THRIFT_PAGE_SIZE = 20;
+
+export const fetchAllThriftListings = async (page = 0, campusId = null) => {
   try {
     const today = new Date().toISOString();
-    const { data, error } = await supabase
+    const from = page * THRIFT_PAGE_SIZE;
+    const to = from + THRIFT_PAGE_SIZE - 1;
+    let query = supabase
       .from('thrift_listings')
       .select('*')
       .eq('status', 'ACTIVE')
-      .gte('expires_at', today) // Filter out expired items at the DB level
-      .order('is_featured', { ascending: false }) // Featured first
-      .order('featured_until', { ascending: true, nullsFirst: false }) // Then by featured expiry
-      .order('created_at', { ascending: false }); // Then by creation date
+      .gte('expires_at', today);
+    if (campusId) query = query.eq('campus_id', campusId);
+    const { data, error } = await query
+      .order('is_featured', { ascending: false })
+      .order('featured_until', { ascending: true, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     if (error) {
       console.error('Error fetching all thrift listings:', error);
-      return { listings: [], error: error.message };
+      return { listings: [], error: error.message, hasMore: false };
     }
 
-    return { listings: data || [], error: null };
+    return { listings: data || [], error: null, hasMore: (data || []).length === THRIFT_PAGE_SIZE };
   } catch (error) {
     console.error('Error in fetchAllThriftListings:', error);
-    return { listings: [], error: error.message };
+    return { listings: [], error: error.message, hasMore: false };
   }
 };
 

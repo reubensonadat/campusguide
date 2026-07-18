@@ -1,6 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import OneSignal from 'react-onesignal';
-import { DataLoader } from './components/common/CustomLoaders';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
@@ -17,7 +16,7 @@ import { useClassReminders } from './hooks/useClassReminders';
 import { useAppNotifications } from './hooks/useAppNotifications';
 import { useFeedbackTimer } from './hooks/useFeedbackTimer';
 import { useFeedbackModal } from './hooks/useFeedbackModal';
-import { Toast } from './components/common/Toast';
+
 import { TabBar } from './components/common/TabBar';
 import Sidebar from './components/common/Sidebar';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -26,10 +25,9 @@ import { SupportModal } from './components/payment/SupportModal';
 import FeedbackModal from './components/common/FeedbackSurveyModal';
 import PWAInstallButton from './components/common/PWAInstallButton';
 import CustomCursor from './components/common/CustomCursor';
-import { PageSkeleton, MapPageSkeleton } from './components/common/Skeleton';
-import PageParallax from './components/common/PageParallax';
+import { PageSkeleton } from './components/common/Skeleton';
 
-import { preloadPaystack } from './services/paymentService';
+
 import { useOnboarding } from './hooks/useOnboarding';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { triggerHaptic } from './utils/haptics';

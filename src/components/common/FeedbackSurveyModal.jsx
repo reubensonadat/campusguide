@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { CheckCircle, Star, X, MessageSquare, Heart, ThumbsUp, ChevronRight, Loader2 } from 'lucide-react';
-import { submitToGoogleSheet } from '../../utils/googleSheets';
 import { LS_KEYS } from '../../utils/constants';
 import { supabase } from '../../lib/supabase';
 import { toast } from 'react-hot-toast';
@@ -99,10 +98,11 @@ const FeedbackModal = ({ isOpen, onClose }) => {
             
             // Still submit to google sheets as a fallback/secondary store if URL exists
             if (GOOGLE_SCRIPT_URL) {
-                submitToGoogleSheet(GOOGLE_SCRIPT_URL, {
-                    timestamp: new Date().toISOString(),
-                    ...answers,
-                    source: 'web_v1_revised_survey'
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ timestamp: new Date().toISOString(), ...answers, source: 'web_v1_revised_survey' })
                 }).catch(e => console.warn('Google Sheet fallback failed', e));
             }
 

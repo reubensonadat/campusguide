@@ -1,25 +1,30 @@
 import { useState, useEffect } from 'react';
+import { useCampus } from '../context/CampusContext';
 
-const DEVICE_ID_KEY = 'ucc_device_id';
-const LAST_SYNC_KEY = 'ucc_last_sync';
+const DEVICE_ID_KEY = 'campus_device_id';
+const LEGACY_DEVICE_ID_KEY = 'ucc_device_id';
+const LAST_SYNC_KEY = 'campus_last_sync';
 
-/**
- * Generates a UCC-prefixed device ID once and persists it in localStorage.
- * Format: UCC-XXXXXXXX (8-char hex)
- * 
- * Also tracks last sync timestamp.
- */
 export const useDeviceId = () => {
+  const { selectedCampus } = useCampus();
+  const campusShortName = selectedCampus?.shortName || 'CAMPUS';
+
   const [deviceId, setDeviceId] = useState(() => {
+    // Migrate legacy key if exists
+    const legacy = localStorage.getItem(LEGACY_DEVICE_ID_KEY);
+    if (legacy && !localStorage.getItem(DEVICE_ID_KEY)) {
+      localStorage.setItem(DEVICE_ID_KEY, legacy);
+    }
+
     const existing = localStorage.getItem(DEVICE_ID_KEY);
     if (existing) return existing;
 
-    // Generate new UCC-prefixed ID
+    // Generate new campus-prefixed ID
     const hex = Array.from(crypto.getRandomValues(new Uint8Array(4)))
       .map(b => b.toString(16).padStart(2, '0'))
       .join('')
       .toUpperCase();
-    const newId = `UCC-${hex}`;
+    const newId = `${campusShortName}-${hex}`;
     localStorage.setItem(DEVICE_ID_KEY, newId);
     return newId;
   });

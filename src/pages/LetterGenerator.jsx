@@ -5,13 +5,16 @@ import { generateLetter } from '../services/aiService';
 import { toast } from 'react-hot-toast';
 import PageHeader from '../components/common/PageHeader';
 import PremiumGate from '../components/common/PremiumGate';
+import { useCampus } from '../context/CampusContext';
 
 export const LetterGenerator = () => {
   const navigate = useNavigate();
+  const { selectedCampus } = useCampus();
+  const campusName = selectedCampus ? `${selectedCampus.name} (${selectedCampus.shortName})` : 'your university';
   const [loading, setLoading] = useState(false);
   const [generatedLetter, setGeneratedLetter] = useState('');
   
-  const profile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
+  const profile = JSON.parse(localStorage.getItem('campus_profile') || localStorage.getItem('ucc_profile') || '{}');
   
   const [formData, setFormData] = useState({
     letterType: 'Missing Grade',
@@ -53,7 +56,7 @@ export const LetterGenerator = () => {
     setLoading(true);
     setGeneratedLetter('');
     try {
-      const result = await generateLetter(formData);
+      const result = await generateLetter(formData, campusName);
       setGeneratedLetter(result);
       toast.success('Letter generated successfully!');
       

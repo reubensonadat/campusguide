@@ -15,7 +15,7 @@ const CampusDataPanel = ({ tab, onTabChange, buildings, knowledge, guideCards, i
     <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-black">Campus Data Manager</h2>
-        <button onClick={() => { setShowAddForm(true); setEditingItem({}); setEditForm({ campus_id: 'ucc', is_active: true }); }}
+        <button onClick={onAddNew}
           className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-xl transition-colors text-sm">
           <Plus size={16} /> Add New
         </button>

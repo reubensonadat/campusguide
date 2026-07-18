@@ -15,6 +15,7 @@ import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 import { supabase } from '../lib/supabase';
 import { withCache, cacheInvalidate, cacheAge, CACHE_KEYS, DEFAULT_TTL, SHORT_TTL } from '../services/cacheService';
 import { CommunityLoader } from '../components/common/CustomLoaders';
+import { useCampus } from '../context/CampusContext';
 
 // Categories matching Advertise.jsx options
 const CATEGORIES = [
@@ -37,6 +38,7 @@ const mainTabs = [
 ];
 
 const Community = () => {
+    const { selectedCampus } = useCampus();
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [feedData, setFeedData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -44,7 +46,7 @@ const Community = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isLostFoundModalOpen, setIsLostFoundModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const [activeMainTab, setActiveMainTab] = useLocalStorage('ucc_community_tab', 'general');
+    const [activeMainTab, setActiveMainTab] = useLocalStorage('campus_community_tab', 'general');
 
     const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
     const tabsRef = React.useRef([]);
@@ -91,49 +93,59 @@ const Community = () => {
     React.useEffect(() => {
         window.scrollTo(0, 0);
         fetchCommunityData();
-    }, [refreshTrigger]);
+    }, [refreshTrigger, selectedCampus?.id]);
 
     const fetchCommunityData = async (forceRefresh = false) => {
         setIsLoading(true);
         // On manual refresh: bust the cache so we actually hit the DB
+        const campusId = selectedCampus?.id || '';
+        const adsCacheKey = `${CACHE_KEYS.COMMUNITY_ADS}_${campusId}`;
+        const annCacheKey = `${CACHE_KEYS.COMMUNITY_ANNOUNCEMENTS}_${campusId}`;
+        const lfCacheKey = `${CACHE_KEYS.COMMUNITY_LOST_FOUND}_${campusId}`;
         if (forceRefresh) {
-            cacheInvalidate(CACHE_KEYS.COMMUNITY_ADS);
-            cacheInvalidate(CACHE_KEYS.COMMUNITY_ANNOUNCEMENTS);
-            cacheInvalidate(CACHE_KEYS.COMMUNITY_LOST_FOUND);
+            cacheInvalidate(adsCacheKey);
+            cacheInvalidate(annCacheKey);
+            cacheInvalidate(lfCacheKey);
         }
         try {
-            // ── Cached fetches — each cached for 24h independently ──────────
             const threeDaysAgo = new Date();
             threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
             const [adsData, announcementsData, lostFoundData] = await Promise.all([
-                withCache(CACHE_KEYS.COMMUNITY_ADS, async () => {
+                withCache(adsCacheKey, async () => {
                     const { data, error } = await supabase
                         .from('advertisements')
                         .select('*')
+                        .eq('campus_id', campusId)
                         .ilike('status', 'active')
-                        .gte('expires_at', new Date().toISOString());
+                        .gte('expires_at', new Date().toISOString())
+                        .limit(20);
                     if (error) throw error;
                     return data || [];
                 }, DEFAULT_TTL),
 
-                withCache(CACHE_KEYS.COMMUNITY_ANNOUNCEMENTS, async () => {
+                withCache(annCacheKey, async () => {
                     const { data, error } = await supabase
                         .from('announcements')
-                        .select('*');
+                        .select('*')
+                        .eq('campus_id', campusId)
+                        .order('created_at', { ascending: false })
+                        .limit(20);
                     if (error) throw error;
                     return data || [];
                 }, DEFAULT_TTL),
 
-                withCache(CACHE_KEYS.COMMUNITY_LOST_FOUND, async () => {
+                withCache(lfCacheKey, async () => {
                     const { data, error } = await supabase
                         .from('lost_and_found')
                         .select('*')
+                        .eq('campus_id', campusId)
                         .gte('created_at', threeDaysAgo.toISOString())
-                        .order('created_at', { ascending: false });
+                        .order('created_at', { ascending: false })
+                        .limit(20);
                     if (error) throw error;
                     return data || [];
-                }, SHORT_TTL), // Lost & found is time-sensitive — 2h cache
+                }, SHORT_TTL),
             ]);
 
             const adsError = null;

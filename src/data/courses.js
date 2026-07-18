@@ -1,4 +1,4 @@
-export const UCC_COURSES = [
+export const CAMPUS_COURSES = [
   // COLLEGE OF AGRICULTURE AND NATURAL SCIENCES
   // School of Agriculture
   "BSc. Agriculture",

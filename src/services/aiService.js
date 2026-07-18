@@ -1,10 +1,10 @@
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
-export const generateLetter = async (formData) => {
+export const generateLetter = async (formData, campusName = 'your university') => {
   const { letterType, studentName, studentId, courseInfo, department, reason } = formData;
 
-  const prompt = `You are a professional academic assistant for the University of Cape Coast (UCC).
+  const prompt = `You are a professional academic assistant for ${campusName}.
 Your task is to write a formal academic letter based on the following details:
 
 - Letter Type: ${letterType}
@@ -15,7 +15,7 @@ Your task is to write a formal academic letter based on the following details:
 - Reason/Context: ${reason}
 
 Instructions:
-1. Address the letter to: "The Head of Department, Department of ${department || '[Insert Department]'}, University of Cape Coast".
+1. Address the letter to: "The Head of Department, Department of ${department || '[Insert Department]'}, ${campusName}".
 2. Use a strictly formal, respectful, and professional tone suitable for a university administration.
 3. Include standard formal letter elements (Date, Salutation, Subject Line, Body, Sign-off).
 4. For the Date, use the placeholder [Insert Date].

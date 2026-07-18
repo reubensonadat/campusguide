@@ -141,7 +141,7 @@ export const handlePayment = async ({ amount, email, reference, metadata }) => {
 };
 
 // Generate unique payment reference
-export const generatePaymentReference = (prefix = 'UCC') => {
+export const generatePaymentReference = (prefix = 'CG') => {
   const timestamp = Date.now();
   const random = Math.floor(Math.random() * 1000000);
   return `${prefix}_${timestamp}_${random}`;

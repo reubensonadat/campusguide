@@ -30,7 +30,7 @@ const PaymentButton = ({
 
     try {
       // Use custom prefix if provided, otherwise default to UCC
-      const prefix = metadata.campusPrefix ? metadata.campusPrefix.toUpperCase() : 'UCC';
+      const prefix = metadata.campusPrefix ? metadata.campusPrefix.toUpperCase() : 'CG';
       const reference = generatePaymentReference(prefix);
 
       // Initiate payment
@@ -40,7 +40,7 @@ const PaymentButton = ({
         reference,
         metadata: {
           ...metadata,
-          app_name: 'UCC Campus Guide',
+          app_name: 'Campus Guide',
           timestamp: new Date().toISOString()
         }
       });

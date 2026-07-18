@@ -5,6 +5,7 @@ import NewWhisperModal from './NewWhisperModal';
 import WhisperCommentsModal from './WhisperCommentsModal';
 import { getWhispers, interactWithWhisper, deleteWhisper, getUserInteractions, toggleWhisperReaction } from '../../services/communityService';
 import { getCurrentUser } from '../../services/authService';
+import { useCampus } from '../../context/CampusContext';
 import { WhispersLoader } from '../common/CustomLoaders';
 import { Linkify } from '../../utils/linkify';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
@@ -94,11 +95,15 @@ const handleShareWhisper = async (e, whisper) => {
 };
 
 const WhispersFeed = () => {
+    const { selectedCampus } = useCampus();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedWhisper, setSelectedWhisper] = useState(null);
     const [whispers, setWhispers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [sortBy, setSortBy] = useState('new'); // 'new' or 'top'
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [whisperPage, setWhisperPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [sortBy, setSortBy] = useState('new');
     const [currentUser, setCurrentUser] = useState(null);
     const [userInteractions, setUserInteractions] = useState({ upvotes: new Set(), downvotes: new Set(), flags: new Set(), emojis: {} });
     const [searchQuery, setSearchQuery] = useState('');
@@ -121,17 +126,23 @@ const WhispersFeed = () => {
         return finalCount > 50 ? 50 : finalCount;
     }, []);
 
-    const loadWhispers = async () => {
-        setLoading(true);
+    const loadWhispers = async (page = 0, append = false) => {
+        if (page === 0) setLoading(true);
         const [whispersRes, userRes, interactionsRes] = await Promise.all([
-            getWhispers(),
+            getWhispers(page),
             getCurrentUser(),
             getUserInteractions()
         ]);
         if (whispersRes.success) {
-            setWhispers(whispersRes.data);
+            if (append) {
+                setWhispers(prev => [...prev, ...whispersRes.data]);
+            } else {
+                setWhispers(whispersRes.data);
+                setWhisperPage(0);
+            }
+            setHasMore(whispersRes.hasMore);
             const whisperId = new URLSearchParams(window.location.search).get('whisperId');
-            if (whisperId) {
+            if (whisperId && !append) {
                 const found = whispersRes.data.find(w => w.id.toString() === whisperId);
                 if (found) {
                     setSelectedWhisper(found);
@@ -157,12 +168,20 @@ const WhispersFeed = () => {
             setUserInteractions({ upvotes, downvotes, flags, emojis });
         }
 
-        setLoading(false);
+        if (page === 0) setLoading(false);
+    };
+
+    const loadMoreWhispers = async () => {
+        const nextPage = whisperPage + 1;
+        setWhisperPage(nextPage);
+        setLoadingMore(true);
+        await loadWhispers(nextPage, true);
+        setLoadingMore(false);
     };
 
     useEffect(() => {
-        loadWhispers();
-    }, []);
+        loadWhispers(0, false);
+    }, [selectedCampus?.id]);
 
     const handleInteract = async (id, type) => {
         triggerHaptic();
@@ -364,6 +383,20 @@ const WhispersFeed = () => {
                             getTimeAgo={getTimeAgo}
                         />
                     ))
+                )}
+                {hasMore && !loading && sortedWhispers.length > 0 && (
+                    <div className="flex justify-center pt-2 pb-4">
+                        <button
+                            onClick={loadMoreWhispers}
+                            disabled={loadingMore}
+                            className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
+                        >
+                            {loadingMore ? (
+                                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="31.4 31.4" strokeLinecap="round" /></svg>
+                            ) : null}
+                            {loadingMore ? 'Loading...' : 'Load More'}
+                        </button>
+                    </div>
                 )}
             </div>
 

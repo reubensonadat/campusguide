@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { CAMPUSES } from '../data/campuses';
+import { cacheClearAll } from '../services/cacheService';
 
 const CampusContext = createContext();
 
@@ -9,7 +10,7 @@ export const CampusProvider = ({ children }) => {
     const LS_CAMPUS_KEY = 'campus_guide_selected_campus';
 
     // Use custom hook or standard useState with lazy initialization
-    const [selectedCampusId, setSelectedCampusId] = useLocalStorage(LS_CAMPUS_KEY, 'ucc');
+    const [selectedCampusId, setSelectedCampusId] = useLocalStorage(LS_CAMPUS_KEY, null);
     const [selectedCampus, setSelectedCampus] = useState(null);
 
     useEffect(() => {
@@ -29,6 +30,7 @@ export const CampusProvider = ({ children }) => {
     const setCampus = (campusId) => {
         if (CAMPUSES.find(c => c.id === campusId)) {
             setSelectedCampusId(campusId);
+            cacheClearAll();
         }
     };
 

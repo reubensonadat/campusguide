@@ -7,6 +7,7 @@ import { getThriftListings } from '../../services/communityService';
 import { ThriftLoader } from '../common/CustomLoaders';
 import { useWishlist } from '../../hooks/useWishlist';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { useCampus } from '../../context/CampusContext';
 import { toast } from 'react-hot-toast';
 
 const handleShareThrift = (e, id) => {
@@ -297,33 +298,51 @@ const ThriftCard = ({ item, toggleWishlist, isWishlisted, getTimeAgo }) => {
 
 /* ─── Main Component ─── */
 const ThriftFeed = () => {
+    const { selectedCampus } = useCampus();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showWishlist, setShowWishlist] = useState(false);
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [thriftPage, setThriftPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const { wishlistItems, toggleWishlist, isWishlisted } = useWishlist();
 
-    const loadListings = async () => {
-        setLoading(true);
-        const { success, data } = await getThriftListings();
+    const loadListings = async (page = 0, append = false) => {
+        const campusId = selectedCampus?.id || '';
+        if (page === 0) setLoading(true);
+        const { success, data, hasMore: more } = await getThriftListings(page, campusId);
         if (success) {
+            if (append) {
+                setItems(prev => [...prev, ...data]);
+            } else {
+                setItems(data);
+                setThriftPage(0);
+            }
+            setHasMore(more);
             const thriftId = new URLSearchParams(window.location.search).get('thriftId');
-            if (thriftId) {
+            if (thriftId && !append) {
                 const sorted = [...data].sort((a, b) => {
                     if (a.id.toString() === thriftId) return -1;
                     if (b.id.toString() === thriftId) return 1;
                     return 0;
                 });
                 setItems(sorted);
-            } else {
-                setItems(data);
             }
         }
-        setLoading(false);
+        if (page === 0) setLoading(false);
     };
 
-    useEffect(() => { loadListings(); }, []);
+    const loadMoreListings = async () => {
+        const nextPage = thriftPage + 1;
+        setThriftPage(nextPage);
+        setLoadingMore(true);
+        await loadListings(nextPage, true);
+        setLoadingMore(false);
+    };
+
+    useEffect(() => { loadListings(0, false); }, [selectedCampus?.id]);
 
     const getTimeAgo = (d) => {
         const mins = Math.floor((new Date() - new Date(d)) / 60000);
@@ -437,6 +456,19 @@ const ThriftFeed = () => {
             </div>
 
             {renderContent()}
+
+            {hasMore && !loading && filteredItems.length > 0 && (
+                <div className="flex justify-center pt-4 pb-2">
+                    <button
+                        onClick={loadMoreListings}
+                        disabled={loadingMore}
+                        className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                        {loadingMore && <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="31.4 31.4" strokeLinecap="round" /></svg>}
+                        {loadingMore ? 'Loading...' : 'Load More'}
+                    </button>
+                </div>
+            )}
 
             {/* Wishlist Bottom Sheet */}
             {showWishlist && (

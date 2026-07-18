@@ -3,16 +3,20 @@ import { getCurrentUser } from './authService';
 
 // --- WHISPERS ---
 
-export const getWhispers = async () => {
+const PAGE_SIZE = 20;
+
+export const getWhispers = async (page = 0) => {
     try {
+        const from = page * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
         const { data, error } = await supabase
             .from('campus_whispers')
             .select('*')
             .order('created_at', { ascending: false })
-            .limit(50);
+            .range(from, to);
 
         if (error) throw error;
-        return { success: true, data };
+        return { success: true, data, hasMore: data.length === PAGE_SIZE };
     } catch (error) {
         console.error('Error fetching whispers:', error);
         return { success: false, error: error.message };
@@ -287,19 +291,23 @@ export const addWhisperComment = async (whisperId, text) => {
 
 // --- THRIFT ---
 
-export const getThriftListings = async () => {
+export const getThriftListings = async (page = 0, campusId = null) => {
     try {
         const today = new Date().toISOString();
-        const { data, error } = await supabase
+        const from = page * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
+        let query = supabase
             .from('thrift_listings')
             .select('*')
             .eq('status', 'ACTIVE')
-            .gte('expires_at', today)
+            .gte('expires_at', today);
+        if (campusId) query = query.eq('campus_id', campusId);
+        const { data, error } = await query
             .order('created_at', { ascending: false })
-            .limit(50);
+            .range(from, to);
 
         if (error) throw error;
-        return { success: true, data };
+        return { success: true, data, hasMore: data.length === PAGE_SIZE };
     } catch (error) {
         console.error('Error fetching thrift listings:', error);
         return { success: false, error: error.message };

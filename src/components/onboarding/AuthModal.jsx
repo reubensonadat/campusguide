@@ -5,6 +5,7 @@ import { Lock, RefreshCw, AlertCircle, X } from 'lucide-react';
 import { restoreFromCloud, markDeviceAsLinked } from '../../services/syncService';
 import { toast } from 'react-hot-toast';
 import { DataLoader } from '../common/CustomLoaders';
+import { useCampus } from '../../context/CampusContext';
 
 // Global event to trigger the auth sheet from anywhere
 export const triggerAuthSheet = (onSuccessCallback) => {
@@ -12,6 +13,8 @@ export const triggerAuthSheet = (onSuccessCallback) => {
 };
 
 export const AuthBottomSheet = () => {
+  const { selectedCampus } = useCampus();
+  const campusShortName = selectedCampus?.shortName || 'CAMPUS';
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState('register'); // 'register' | 'restore'
   const [deviceId, setDeviceId] = useState('');
@@ -34,14 +37,14 @@ export const AuthBottomSheet = () => {
       if (e.detail?.onSuccessCallback) setPendingAction(() => e.detail.onSuccessCallback);
 
       // Prepare Device ID
-      let localId = localStorage.getItem('ucc_device_id') || localStorage.getItem('device_id');
+      let localId = localStorage.getItem('campus_device_id') || localStorage.getItem('ucc_device_id') || localStorage.getItem('device_id');
       if (!localId) {
         const hex = Array.from(crypto.getRandomValues(new Uint8Array(4)))
           .map(b => b.toString(16).padStart(2, '0'))
           .join('')
           .toUpperCase();
-        localId = `UCC-${hex}`;
-        localStorage.setItem('ucc_device_id', localId);
+        localId = `${campusShortName}-${hex}`;
+        localStorage.setItem('campus_device_id', localId);
       }
       setDeviceId(localId);
       setIsOpen(true);
@@ -147,7 +150,7 @@ export const AuthBottomSheet = () => {
               onChange={(e) => mode === 'restore' && setDeviceId(e.target.value.toUpperCase())}
               readOnly={mode === 'register'}
               className={`w-full px-4 py-4 rounded-2xl border-2 ${mode === 'register' ? 'bg-gray-50 border-gray-100 text-gray-500' : 'bg-white border-gray-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-50'} outline-none font-mono text-center font-bold tracking-wider uppercase transition-all`}
-              placeholder="UCC-XXXXXXXX"
+              placeholder="XXXX-XXXXXXXX"
             />
           </div>
 
@@ -203,7 +206,7 @@ export const AuthBottomSheet = () => {
               setError('');
               setPin('');
               if (mode === 'restore') {
-                setDeviceId(localStorage.getItem('ucc_device_id') || '');
+                setDeviceId(localStorage.getItem('campus_device_id') || localStorage.getItem('ucc_device_id') || '');
               } else {
                 setDeviceId('');
               }

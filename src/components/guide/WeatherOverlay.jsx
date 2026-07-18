@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
-
-const CAMPUS_LAT = 5.1158
-const CAMPUS_LNG = -1.2908
+import { useCampus } from '@/context/CampusContext'
 
 const WEATHER_ICONS = {
   clear: '☀️', cloudy: '☁️', overcast: '☁️', fog: '🌫️',
@@ -20,50 +18,32 @@ function getWeatherCategory(code) {
 }
 
 export default function WeatherOverlay({ className, showLegend, legendColors }) {
+  const { selectedCampus } = useCampus()
+  const lat = selectedCampus?.coordinates?.lat
+  const lng = selectedCampus?.coordinates?.lng
   const [weather, setWeather] = useState(null)
 
   useEffect(() => {
     let cancelled = false
     fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${CAMPUS_LAT}&longitude=${CAMPUS_LNG}&current_weather=true&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&timezone=auto`
     )
       .then(r => r.json())
-      .then(data => {
-        if (!cancelled && data.current_weather) {
-          setWeather(data.current_weather)
-        }
-      })
+      .then(data => { if (!cancelled && data?.current_weather) setWeather(data.current_weather) })
       .catch(() => {})
     return () => { cancelled = true }
-  }, [])
+  }, [lat, lng])
 
   if (!weather) return null
 
   const icon = WEATHER_ICONS[getWeatherCategory(weather.weathercode)] || '🌤️'
+  const temp = Math.round(weather.temperature)
 
   return (
-    <div className={className}>
-      <div className="flex flex-col bg-white/90 backdrop-blur-sm rounded-xl shadow-md border border-slate-200/60 overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-2">
-          <span className="text-xl">{icon}</span>
-          <div>
-            <span className="text-sm font-bold text-slate-800">{Math.round(weather.temperature)}°C</span>
-            <span className="text-[10px] font-medium text-slate-500 ml-2 uppercase tracking-wide">
-              Cape Coast
-            </span>
-          </div>
-        </div>
-        {showLegend && legendColors && (
-          <div className="flex items-center gap-2 px-3 pb-2 pt-0 text-[9px] font-medium text-slate-400 border-t border-slate-100/60">
-            <span className="uppercase tracking-wider">Legend</span>
-            {Object.entries(legendColors).map(([type, color]) => (
-              <div key={type} className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: color + '70' }} />
-                <span className="capitalize">{type}</span>
-              </div>
-            ))}
-          </div>
-        )}
+    <div className={`pointer-events-none select-none ${className || ''}`}>
+      <div className="flex items-center gap-1.5 text-[13px] font-semibold text-white/90 drop-shadow-sm">
+        <span className="text-lg">{icon}</span>
+        <span>{temp}°C</span>
       </div>
     </div>
   )

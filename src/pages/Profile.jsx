@@ -12,9 +12,11 @@ import { useNavigate } from 'react-router-dom';
 import { usePremiumAccess, TIERS } from '../hooks/usePremiumAccess';
 import { CustomSettings, CustomProfile, CustomSafetyCheck, CustomCoach, CustomContact } from '../components/common/CustomIcons';
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
-import { AboutIcon } from '../common/CustomTaskIcons';
+import { AboutIcon } from '../components/common/CustomTaskIcons';
 import { useAppContext } from '../context/AppContext';
+import { useCampus } from '../context/CampusContext';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
+import CampusSelectorModal from '../components/common/CampusSelectorModal';
 import { restoreFromCloud } from '../services/syncService';
 import { fetchUserThriftListings } from '../services/thriftService';
 import { toast } from 'react-hot-toast';
@@ -39,6 +41,42 @@ const checkExpiryStatus = (expiresAt) => {
   const isExpired = expiryDate <= today;
   const isExpiringSoon = !isExpired && expiryDate <= inTwoDays;
   return { isExpired, isExpiringSoon };
+};
+
+const CampusSelectorSection = () => {
+  const { selectedCampus } = useCampus();
+  const [showCampusModal, setShowCampusModal] = useState(false);
+
+  return (
+    <>
+      <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden mt-6">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gray-900/10 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+        <div className="flex items-center justify-between group relative z-10">
+          <div className="flex items-center gap-3">
+            {selectedCampus?.logo ? (
+              <img src={selectedCampus.logo} alt={selectedCampus.shortName} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+            ) : (
+              <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+                <span className="font-black text-sm text-gray-600">{selectedCampus?.shortName?.[0] || 'U'}</span>
+              </div>
+            )}
+            <div>
+              <h3 className="text-[17px] font-bold text-gray-900">Your Campus</h3>
+              <p className="text-[13px] text-gray-500 font-medium">{selectedCampus?.name || 'Select a campus'}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowCampusModal(true)}
+            className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all text-gray-600 hover:text-gray-900"
+            aria-label="Change campus"
+          >
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M11.9498 7.94975L10.5356 9.36396L8.00079 6.828L8.00004 20H6.00004L6.00079 6.828L3.46451 9.36396L2.05029 7.94975L7.00004 3L11.9498 7.94975ZM21.9498 16.0503L17 21L12.0503 16.0503L13.4645 14.636L16.0008 17.172L16 4H18L18.0008 17.172L20.5356 14.636L21.9498 16.0503Z"></path></svg>
+          </button>
+        </div>
+      </div>
+      <CampusSelectorModal isOpen={showCampusModal} onClose={() => setShowCampusModal(false)} title="Switch Campus" subtitle="Select a different university to view its content." />
+    </>
+  );
 };
 
 const Profile = () => {
@@ -372,7 +410,7 @@ const Profile = () => {
                 <div className="flex justify-between items-start relative z-10">
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-3">
-                      <img src="/logo.png" alt="UCC" className="w-10 h-10 object-contain rounded-md shadow-sm" />
+                      <img src="/logo.png" alt="Campus Guide" className="w-10 h-10 object-contain rounded-md shadow-sm" />
                       <div>
                         <h3 className="text-white font-black tracking-widest text-sm uppercase leading-tight drop-shadow-sm">Campus Guide</h3>
                         <p className="text-white/80 text-[10px] font-bold uppercase tracking-[0.2em]">Student ID</p>
@@ -548,6 +586,9 @@ const Profile = () => {
               </button>
             </div>
           </div>
+
+          {/* Campus Selector */}
+          <CampusSelectorSection />
 
           {/* Widget Toggles */}
           <WidgetTogglesSection homeWidgets={homeWidgets} onToggle={toggleWidget} />

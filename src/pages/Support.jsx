@@ -11,7 +11,7 @@ import {
   AboutIcon, HeartFeatureIcon, MailFeatureIcon, ChatFeatureIcon,
   FocusModeIcon, GamesFeatureIcon, WeatherFeatureIcon, NotesFeatureIcon,
   CalendarFeatureIcon, ThriftFeatureIcon, WhisperFeatureIcon
-} from '../common/CustomTaskIcons';
+} from '../components/common/CustomTaskIcons';
 import { getSuggestions, addSuggestion, voteForSuggestion, getUserVotes } from '../services/communityService';
 
 const FEATURES = [
@@ -448,7 +448,7 @@ const Support = () => {
                 amount={amount}
                 email={email || 'supporter@campusguide.com'}
                 metadata={{
-                  campusPrefix: selectedCampus?.transactionPrefix || 'UCC',
+                  campusPrefix: selectedCampus?.transactionPrefix || 'GEN',
                   supporterName: name,
                   supporterPhone: phone,
                   supporterMessage: message

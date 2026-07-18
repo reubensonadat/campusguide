@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Lock, LogOut, LayoutDashboard, Megaphone, HelpCircle, MapPin, BookOpen, FileText, Plus, Save, Edit3, ChevronDown, ChevronUp, Send, Radio } from 'lucide-react';
+import { Lock, LogOut, LayoutDashboard, Megaphone, HelpCircle, MapPin, BookOpen, FileText, Plus, Save, Edit3, ChevronDown, ChevronUp, Send, Radio, GraduationCap } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { CAMPUSES } from '../data/campuses';
 
 import { CustomGuide, CustomNavigation } from '../components/common/CustomIcons';
 import { sendBlast, BLAST_SEGMENTS } from '../services/blastService';
@@ -22,6 +23,7 @@ const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useLocalStorage('ucc_admin_auth', false);
   const [passwordInput, setPasswordInput] = useState('');
   const [activeTab, setActiveTab] = useState('moderation');
+  const [adminCampusId, setAdminCampusId] = useState('');
   const [ads, setAds] = useState([]);
   const [lostFoundItems, setLostFoundItems] = useState([]);
   const [thriftItems, setThriftItems] = useState([]);
@@ -60,15 +62,15 @@ const AdminDashboard = () => {
 
   const setTab = (tab) => { setActiveTab(tab); navigate(`/admin/${tab === 'moderation' ? 'moderation' : tab}`); };
 
-  const fetchAds = async () => { setIsLoading(true); const { data } = await supabase.from('advertisements').select('*').order('id', { ascending: false }); if (data) setAds(data); setIsLoading(false); };
-  const fetchLostFound = async () => { setIsLoading(true); const { data } = await supabase.from('lost_and_found').select('*').order('id', { ascending: false }); if (data) setLostFoundItems(data); setIsLoading(false); };
-  const fetchThrift = async () => { setIsLoading(true); const { data } = await supabase.from('thrift_listings').select('*').order('id', { ascending: false }); if (data) setThriftItems(data); setIsLoading(false); };
-  const fetchCampusBuildings = async () => { setIsLoading(true); const { data, error } = await supabase.from('campus_buildings').select('*').order('sort_order', { ascending: true }); if (error) toast.error(error.message); else setCampusBuildings(data || []); setIsLoading(false); };
-  const fetchCampusKnowledge = async () => { setIsLoading(true); const { data, error } = await supabase.from('campus_knowledge').select('*').order('title', { ascending: true }); if (error) toast.error(error.message); else setCampusKnowledge(data || []); setIsLoading(false); };
-  const fetchCampusGuideCards = async () => { setIsLoading(true); const { data, error } = await supabase.from('campus_guide_cards').select('*').order('sort_order', { ascending: true }); if (error) toast.error(error.message); else setCampusGuideCards(data || []); setIsLoading(false); };
+  const fetchAds = async () => { setIsLoading(true); const { data } = await supabase.from('advertisements').select('*').eq('campus_id', adminCampusId).order('id', { ascending: false }); if (data) setAds(data); setIsLoading(false); };
+  const fetchLostFound = async () => { setIsLoading(true); const { data } = await supabase.from('lost_and_found').select('*').eq('campus_id', adminCampusId).order('id', { ascending: false }); if (data) setLostFoundItems(data); setIsLoading(false); };
+  const fetchThrift = async () => { setIsLoading(true); const { data } = await supabase.from('thrift_listings').select('*').eq('campus_id', adminCampusId).order('id', { ascending: false }); if (data) setThriftItems(data); setIsLoading(false); };
+  const fetchCampusBuildings = async () => { setIsLoading(true); const { data, error } = await supabase.from('campus_buildings').select('*').eq('campus_id', adminCampusId).order('sort_order', { ascending: true }); if (error) toast.error(error.message); else setCampusBuildings(data || []); setIsLoading(false); };
+  const fetchCampusKnowledge = async () => { setIsLoading(true); const { data, error } = await supabase.from('campus_knowledge').select('*').eq('campus_id', adminCampusId).order('title', { ascending: true }); if (error) toast.error(error.message); else setCampusKnowledge(data || []); setIsLoading(false); };
+  const fetchCampusGuideCards = async () => { setIsLoading(true); const { data, error } = await supabase.from('campus_guide_cards').select('*').eq('campus_id', adminCampusId).order('sort_order', { ascending: true }); if (error) toast.error(error.message); else setCampusGuideCards(data || []); setIsLoading(false); };
   const fetchCampusData = () => { if (campusDataTab === 'buildings') fetchCampusBuildings(); else if (campusDataTab === 'knowledge') fetchCampusKnowledge(); else fetchCampusGuideCards(); };
 
-  useEffect(() => { if (isAuthenticated) { if (activeTab === 'moderation') fetchAds(); if (activeTab === 'lostfound') fetchLostFound(); if (activeTab === 'thrift') fetchThrift(); if (activeTab === 'campus-data') fetchCampusData(); } }, [isAuthenticated, activeTab, campusDataTab]);
+  useEffect(() => { if (isAuthenticated) { if (activeTab === 'moderation') fetchAds(); if (activeTab === 'lostfound') fetchLostFound(); if (activeTab === 'thrift') fetchThrift(); if (activeTab === 'campus-data') fetchCampusData(); } }, [isAuthenticated, activeTab, campusDataTab, adminCampusId]);
 
   const getTable = () => campusDataTab === 'buildings' ? 'campus_buildings' : campusDataTab === 'knowledge' ? 'campus_knowledge' : 'campus_guide_cards';
 
@@ -126,7 +128,7 @@ const AdminDashboard = () => {
       }
       if (uploadFormData.post_type === 'advertisement') {
         const expiryDate = new Date(); expiryDate.setDate(expiryDate.getDate() + 30);
-        const { error: dbError } = await supabase.from('advertisements').insert([{ title: uploadFormData.title, description: uploadFormData.description, phone_number: formatPhoneNumber(uploadFormData.phone_number), contact_method: uploadFormData.contact_method, contact_url: uploadFormData.contact_url || null, image_url: finalImageUrl, category: uploadFormData.category, package_id: uploadFormData.package_id, status: 'ACTIVE', paystack_reference: `ADMIN_UPLOAD_${Date.now()}_${Math.random().toString(36).substring(2, 6).toUpperCase()}`, expires_at: expiryDate.toISOString() }]);
+        const { error: dbError } = await supabase.from('advertisements').insert([{ campus_id: adminCampusId, title: uploadFormData.title, description: uploadFormData.description, phone_number: formatPhoneNumber(uploadFormData.phone_number), contact_method: uploadFormData.contact_method, contact_url: uploadFormData.contact_url || null, image_url: finalImageUrl, category: uploadFormData.category, package_id: uploadFormData.package_id, status: 'ACTIVE', paystack_reference: `ADMIN_UPLOAD_${Date.now()}_${Math.random().toString(36).substring(2, 6).toUpperCase()}`, expires_at: expiryDate.toISOString() }]);
         if (dbError) throw new Error('DB Error: ' + dbError.message);
       } else {
         let formattedNum = formatPhoneNumber(uploadFormData.phone_number);
@@ -135,7 +137,7 @@ const AdminDashboard = () => {
         else if (uploadFormData.contact_method === 'whatsapp' && formattedNum) actionLink = `https://wa.me/${formattedNum}`;
         else if (uploadFormData.contact_method === 'phone' && formattedNum) actionLink = `tel:+${formattedNum}`;
         if (!actionLink?.trim()) actionLink = null;
-        const { error: dbError } = await supabase.from('announcements').insert([{ title: uploadFormData.title, description: uploadFormData.description, flyer_url: finalImageUrl, action_link: actionLink, action_text: actionLink ? (uploadFormData.contact_method === 'link' ? 'Visit Link' : (uploadFormData.contact_method === 'whatsapp' ? 'WhatsApp' : 'Call')) : null }]);
+        const { error: dbError } = await supabase.from('announcements').insert([{ campus_id: adminCampusId, title: uploadFormData.title, description: uploadFormData.description, flyer_url: finalImageUrl, action_link: actionLink, action_text: actionLink ? (uploadFormData.contact_method === 'link' ? 'Visit Link' : (uploadFormData.contact_method === 'whatsapp' ? 'WhatsApp' : 'Call')) : null }]);
         if (dbError) throw new Error('DB Error: ' + dbError.message);
       }
       toast.success('Published successfully!');
@@ -162,13 +164,27 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row mb-24 md:mb-0">
       <AdminSidebar activeTab={activeTab} onTabChange={setTab} onLogout={logout} />
       <div className="flex-1 p-4 md:p-8 overflow-y-auto w-full">
+        {/* Campus Selector */}
+        <div className="flex items-center gap-3 mb-6 bg-white p-3 rounded-xl shadow-sm border border-gray-100 max-w-xs">
+          <GraduationCap size={18} className="text-gray-400 shrink-0" />
+          <select
+            value={adminCampusId}
+            onChange={e => setAdminCampusId(e.target.value)}
+            className="w-full bg-transparent font-bold text-gray-700 text-sm outline-none"
+          >
+            {CAMPUSES.map(c => (
+              <option key={c.id} value={c.id}>{c.shortName} — {c.name}</option>
+            ))}
+          </select>
+        </div>
+
         {activeTab === 'analytics' && <AnalyticsDashboard />}
         {isLoading && activeTab !== 'analytics' && <div className="text-center py-10 font-bold text-gray-400">Loading data...</div>}
         {!isLoading && activeTab === 'moderation' && <AdModerationPanel ads={ads} onApprove={(id) => updateAdStatus(id, 'ACTIVE')} onReject={(id) => updateAdStatus(id, 'REJECTED')} onDelete={deleteAd} />}
         {!isLoading && activeTab === 'thrift' && <ThriftVerificationPanel thriftItems={thriftItems} isPurging={isPurging} onApprove={(id) => updateThriftStatus(id, 'ACTIVE')} onReject={(id) => updateThriftStatus(id, 'REJECTED')} onDelete={deleteThrift} onPurge={handlePurgeThrift} />}
         {!isLoading && activeTab === 'lostfound' && <LostFoundPanel lostFoundItems={lostFoundItems} onDelete={deleteLostFound} />}
         {activeTab === 'upload' && <UploadAdPanel formData={uploadFormData} isUploading={isUploading} onFormChange={(patch) => setUploadFormData(prev => ({ ...prev, ...patch }))} onImageUpload={handleImageUpload} onRemoveImage={() => setUploadFormData(prev => ({ ...prev, imageFile: null, imagePreview: null }))} onSubmit={handleUploadAdSubmit} />}
-        {activeTab === 'campus-data' && <CampusDataPanel tab={campusDataTab} onTabChange={setCampusDataTab} buildings={campusBuildings} knowledge={campusKnowledge} guideCards={campusGuideCards} isLoading={isLoading} showAddForm={showAddForm} editingItem={editingItem} editForm={editForm} isSaving={isSaving} onAddNew={() => { setShowAddForm(true); setEditingItem({}); setEditForm({ campus_id: 'ucc', is_active: true }); }} onSave={handleCampusDataSave} onCancel={() => { setShowAddForm(false); setEditingItem(null); setEditForm({}); }} onDelete={handleCampusDataDelete} onToggleActive={handleToggleActive} onEditFormChange={(patch) => setEditForm(prev => ({ ...prev, ...patch }))} setShowAddForm={setShowAddForm} setEditingItem={setEditingItem} setEditForm={setEditForm} />}
+        {activeTab === 'campus-data' && <CampusDataPanel tab={campusDataTab} onTabChange={setCampusDataTab} buildings={campusBuildings} knowledge={campusKnowledge} guideCards={campusGuideCards} isLoading={isLoading} showAddForm={showAddForm} editingItem={editingItem} editForm={editForm} isSaving={isSaving} onAddNew={() => { setShowAddForm(true); setEditingItem({}); setEditForm({ campus_id: adminCampusId, is_active: true }); }} onSave={handleCampusDataSave} onCancel={() => { setShowAddForm(false); setEditingItem(null); setEditForm({}); }} onDelete={handleCampusDataDelete} onToggleActive={handleToggleActive} onEditFormChange={(patch) => setEditForm(prev => ({ ...prev, ...patch }))} setShowAddForm={setShowAddForm} setEditingItem={setEditingItem} setEditForm={setEditForm} />}
         {activeTab === 'blast' && <PushBlastPanel blastForm={blastForm} isBlasting={isBlasting} onFormChange={(patch) => setBlastForm(prev => ({ ...prev, ...patch }))} onSubmit={handleSendBlast} />}
       </div>
     </div>

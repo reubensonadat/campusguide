@@ -7,21 +7,21 @@ export const SUPPORT_MODAL_INTERVAL = 5 * 60 * 1000; // 5 minutes in ms
 export const FEEDBACK_MODAL_DELAY = 30 * 60 * 1000; // 30 minutes in ms, per request
 export const MIN_SUPPORT_SHOWS_BEFORE_SURVEY = 6; // Support modal should appear 6 times before survey
 
-// LocalStorage keys
+// LocalStorage keys — uses 'campus_' prefix (generic, not university-specific)
 export const LS_KEYS = {
-  FIRST_VISIT: 'ucc_first_visit',
-  GUIDE_COMPLETION: 'ucc_guide_completion',
-  SUPPORTER_STATUS: 'ucc_supporter_status',
-  LAST_SUPPORT_MODAL_SHOWN: 'ucc_last_support_modal_shown',
-  SUPPORT_SHOWN_COUNT: 'ucc_support_shown_count',
-  FEEDBACK_SUBMITTED: 'ucc_feedback_submitted_v2',
-  TIMETABLE: 'ucc_timetable',
-  BUDGET: 'ucc_budget',
-  GPA: 'ucc_gpa',
-  REMINDERS: 'ucc_reminders',
-  SETTINGS: 'ucc_settings',
-  HOME_WIDGETS: 'ucc_home_widgets',
-  ONBOARDED: 'ucc_onboarded'
+  FIRST_VISIT: 'campus_first_visit',
+  GUIDE_COMPLETION: 'campus_guide_completion',
+  SUPPORTER_STATUS: 'campus_supporter_status',
+  LAST_SUPPORT_MODAL_SHOWN: 'campus_last_support_modal_shown',
+  SUPPORT_SHOWN_COUNT: 'campus_support_shown_count',
+  FEEDBACK_SUBMITTED: 'campus_feedback_submitted_v2',
+  TIMETABLE: 'campus_timetable',
+  BUDGET: 'campus_budget',
+  GPA: 'campus_gpa',
+  REMINDERS: 'campus_reminders',
+  SETTINGS: 'campus_settings',
+  HOME_WIDGETS: 'campus_home_widgets',
+  ONBOARDED: 'campus_onboarded'
 };
 
 // Default home widget visibility

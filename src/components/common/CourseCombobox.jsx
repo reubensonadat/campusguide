@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown } from 'lucide-react';
-import { UCC_COURSES } from '../../data/courses';
+import { CAMPUS_COURSES } from '../../data/courses';
 
 export const CourseCombobox = ({ value, onChange, placeholder = "e.g. BSc. Computer Science" }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,7 +8,7 @@ export const CourseCombobox = ({ value, onChange, placeholder = "e.g. BSc. Compu
   const wrapperRef = useRef(null);
 
   // Filter courses based on search term
-  const filteredCourses = UCC_COURSES.filter(course =>
+  const filteredCourses = CAMPUS_COURSES.filter(course =>
     course.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

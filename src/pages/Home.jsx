@@ -11,6 +11,7 @@ import { useNotifications } from '../context/NotificationContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { useRunwaySimulation } from '../hooks/useRunwaySimulation';
+import { useCampus } from '../context/CampusContext';
 import { supabase } from '../lib/supabase';
 import { getGreeting, formatTime12Hour, getTimeMinutes, renderWeatherSvg, getWeatherIconAndAdvice, TODAY_NAME, TODAY_LABEL } from '../components/home/utils';
 import { getAssignments, getAssignmentsByUrgency, markAssignmentStatus, onAssignmentsChanged } from '../services/assignmentService';
@@ -44,6 +45,7 @@ const Home = () => {
   React.useEffect(() => { const idleId = requestIdleCallback ? requestIdleCallback(() => logAppOpen(), { timeout: 2000 }) : setTimeout(logAppOpen, 1000); return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); }; }, []);
 
   const navigate = useNavigate();
+  const { selectedCampus } = useCampus();
   const { state, actions } = useAppContext();
   const { unreadCount, markAllAsRead: markAllInAppRead } = useNotifications();
   const { deviceId } = useDeviceId();
@@ -291,8 +293,9 @@ const Home = () => {
     const fetchCommunityUpdates = async () => {
       setFetchStatus('loading');
       try {
+        const campusId = selectedCampus?.id || '';
         const [annRes, whisperRes, thriftRes] = await Promise.all([
-          supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(10),
+          supabase.from('announcements').select('*').eq('campus_id', campusId).order('created_at', { ascending: false }).limit(10),
           supabase.from('campus_whispers').select('*').order('created_at', { ascending: false }).limit(10),
           supabase.from('thrift_listings').select('*').order('created_at', { ascending: false }).limit(10)
         ]);
@@ -313,10 +316,11 @@ const Home = () => {
     if (!isDeferredActive) return;
     const fetchAdOrFallback = async () => {
       try {
+        const campusId = selectedCampus?.id || '';
         const { data: adsData } = await supabase.from('advertisements').select('*')
-          .ilike('status', 'active').eq('package_id', 'home_banner').gte('expires_at', new Date().toISOString());
+          .eq('campus_id', campusId).ilike('status', 'active').eq('package_id', 'home_banner').gte('expires_at', new Date().toISOString());
         if (!adsData || adsData.length === 0) {
-          const { data: annFallback } = await supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(1);
+          const { data: annFallback } = await supabase.from('announcements').select('*').eq('campus_id', campusId).order('created_at', { ascending: false }).limit(1);
           if (annFallback && annFallback[0]) setFeaturedContent({ kind: 'announcement', data: annFallback[0] });
           return;
         }
@@ -342,7 +346,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchWeather = async () => {
-      try { const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=5.1165&longitude=-1.2929&current_weather=true'); const data = await res.json(); if (data?.current_weather) setWeatherData(data.current_weather); }
+      try { const wlat = selectedCampus?.coordinates?.lat || 5.1165; const wlng = selectedCampus?.coordinates?.lng || -1.2929; const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${wlat}&longitude=${wlng}&current_weather=true`); const data = await res.json(); if (data?.current_weather) setWeatherData(data.current_weather); }
       catch (err) { console.error("Failed to fetch weather", err); }
     };
     const fetchVerse = async () => {

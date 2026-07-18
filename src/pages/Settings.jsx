@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { useCampus } from '../context/CampusContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { updatePin, restoreLifecycle } from '../services/authService';
 import { restoreFromCloud } from '../services/syncService';
 import OneSignal from 'react-onesignal';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
+import CampusSelectorModal from '../components/common/CampusSelectorModal';
 import { sanitizeGhanaPhone, isValidGhanaPhone } from '../utils/helpers';
 import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
@@ -20,6 +22,41 @@ import BackupRestoreSection from '../components/settings/BackupRestoreSection';
 import ChangePinModal from '../components/settings/ChangePinModal';
 import EditProfileModal from '../components/settings/EditProfileModal';
 import GpaLockModal from '../components/settings/GpaLockModal';
+
+const CampusSelectorSection = () => {
+  const { selectedCampus } = useCampus();
+  const [showCampusModal, setShowCampusModal] = useState(false);
+
+  return (
+    <>
+      <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="flex items-center justify-between group relative z-10">
+          <div className="flex items-center gap-4">
+            {selectedCampus?.logo ? (
+              <img src={selectedCampus.logo} alt={selectedCampus.shortName} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+            ) : (
+              <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+                <span className="font-black text-sm text-gray-600">{selectedCampus?.shortName?.[0] || 'U'}</span>
+              </div>
+            )}
+            <div>
+              <h3 className="text-[15px] font-bold text-gray-900">Your Campus</h3>
+              <p className="text-xs text-gray-400 font-medium mt-0.5">{selectedCampus?.name || 'Select a campus'}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowCampusModal(true)}
+            className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all text-gray-600 hover:text-gray-900"
+            aria-label="Change campus"
+          >
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M11.9498 7.94975L10.5356 9.36396L8.00079 6.828L8.00004 20H6.00004L6.00079 6.828L3.46451 9.36396L2.05029 7.94975L7.00004 3L11.9498 7.94975ZM21.9498 16.0503L17 21L12.0503 16.0503L13.4645 14.636L16.0008 17.172L16 4H18L18.0008 17.172L20.5356 14.636L21.9498 16.0503Z"></path></svg>
+          </button>
+        </div>
+      </div>
+      <CampusSelectorModal isOpen={showCampusModal} onClose={() => setShowCampusModal(false)} title="Switch Campus" subtitle="Select a different university to view its content." />
+    </>
+  );
+};
 
 const Settings = () => {
   useEffect(() => {
@@ -631,6 +668,9 @@ const Settings = () => {
               </button>
             </div>
           </div>
+
+          {/* Campus */}
+          <CampusSelectorSection />
 
           <hr className="border-gray-100" />
 

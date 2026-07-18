@@ -3,6 +3,7 @@ import { ExternalLink, Info, Navigation, Loader2, Search } from 'lucide-react';
 import CampusMapData from './content/ucc/CampusMap';
 import { getKnowledgeForLocation } from './content/ucc/KnowledgeBase';
 import { fetchCampusData, searchGuideCards } from '@/services/campusDataService';
+import { useCampus } from '@/context/CampusContext';
 import { Map, MapControls, MapMarker, MarkerPopup, MarkerContent, MapRoute, DefaultMarkerIcon, MarkerLabel } from '@/components/ui/map';
 import { calculateDistance, truncateRouteByProximity } from '@/utils/navigation';
 import LiveNavigationHUD from './LiveNavigationHUD';
@@ -166,6 +167,8 @@ const POST_COLORS = {
 };
 
 const MapView = () => {
+  const { selectedCampus } = useCampus();
+  const campusId = selectedCampus?.id || '';
   const [knowledgeModalData, setKnowledgeModalData] = useState(null);
   const [dbBuildings, setDbBuildings] = useState(null);
   const [dbKnowledge, setDbKnowledge] = useState({});
@@ -175,10 +178,11 @@ const MapView = () => {
 
   const handleMapLocate = useCallback((coords) => {
     const userLngLat = [coords.longitude, coords.latitude];
-    if (calculateDistance(userLngLat, [-1.290810, 5.115788]) > 10000) { alert('You are currently located off-campus! Your location cannot be mapped inside the university boundaries.'); return; }
+    const campusCoords = selectedCampus?.coordinates || { lat: 5.116774, lng: -1.290948 };
+    if (calculateDistance(userLngLat, [campusCoords.lng, campusCoords.lat]) > 10000) { alert('You are currently located off-campus! Your location cannot be mapped inside the university boundaries.'); return; }
     setUserLocation(userLngLat);
     setViewport(prev => ({ ...prev, center: userLngLat, zoom: 17 }));
-  }, []);
+  }, [selectedCampus]);
 
   const handleLocationSelect = useCallback((loc) => {
     let coords = null;
@@ -190,7 +194,7 @@ const MapView = () => {
     } else {
       const isCoord = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(loc.url);
       let url = loc.url;
-      if (!isCoord && url && !url.startsWith('http')) url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(url.includes('Cape Coast') ? url : `${url} University of Cape Coast`)}`;
+      if (!isCoord && url && !url.startsWith('http')) url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(url)}`;
       if (url) window.open(url, '_blank');
     }
   }, []);
@@ -221,10 +225,10 @@ const MapView = () => {
     let cancelled = false;
     const loadData = async () => {
       try {
-        const data = await fetchCampusData('ucc');
+        const data = await fetchCampusData(campusId);
         if (!cancelled) {
-          if (data.buildings && data.source === 'db') setDbBuildings(data.buildings);
-          if (data.knowledge && data.source === 'db') setDbKnowledge(data.knowledge);
+          if (data.buildings && (data.source === 'db' || data.source === 'static')) setDbBuildings(data.buildings);
+          if (data.knowledge && (data.source === 'db' || data.source === 'static')) setDbKnowledge(data.knowledge);
           if (data.guideCards) setDbGuideCards(data.guideCards);
         }
       } catch (err) { console.warn('[CampusMap] Data fetch failed, using static fallback:', err); if (!cancelled) setDataError('Could not load live campus data. Showing offline map.'); }
@@ -232,7 +236,7 @@ const MapView = () => {
     };
     loadData();
     return () => { cancelled = true; };
-  }, []);
+  }, [campusId]);
 
   const resolvedBuildings = dbBuildings || buildings;
 
@@ -245,7 +249,8 @@ const MapView = () => {
 
   useEffect(() => { return () => { if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current); }; }, []);
 
-  const defaultViewport = { center: [defaultCenter[1], defaultCenter[0]], zoom: 15 };
+  const campusCoords = selectedCampus?.coordinates || { lat: 5.116774, lng: -1.290948 };
+  const defaultViewport = { center: [campusCoords.lng || defaultCenter[1], campusCoords.lat || defaultCenter[0]], zoom: 15 };
   const [viewport, setViewport] = useState(defaultViewport);
 
   // Viewport culling: only render markers within the visible area
