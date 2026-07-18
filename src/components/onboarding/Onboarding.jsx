@@ -70,7 +70,7 @@ const CampusStep = () => {
               }`}
             >
               {campus.logo ? (
-                <img src={campus.logo} alt={campus.shortName} className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                <img src={import.meta.env.BASE_URL + campus.logo.replace(/^\//, '')} alt={campus.shortName} className="w-10 h-10 rounded-lg object-cover shrink-0" />
               ) : (
                 <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                   <span className="text-sm font-black text-gray-600">{campus.shortName[0]}</span>

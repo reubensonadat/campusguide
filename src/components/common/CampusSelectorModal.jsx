@@ -65,7 +65,7 @@ const CampusSelectorModal = ({ isOpen, onClose, title = 'Select Your Campus', su
                                     }`}
                                 >
                                     {campus.logo ? (
-                                        <img src={campus.logo} alt={campus.shortName} className="w-12 h-12 rounded-2xl object-cover shrink-0" />
+                                        <img src={import.meta.env.BASE_URL + campus.logo.replace(/^\//, '')} alt={campus.shortName} className="w-12 h-12 rounded-2xl object-cover shrink-0" />
                                     ) : (
                                         <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-gray-200/70">
                                             <span className="text-sm font-black text-gray-600">{campus.shortName[0]}</span>

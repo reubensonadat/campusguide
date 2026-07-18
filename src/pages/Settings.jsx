@@ -33,7 +33,7 @@ const CampusSelectorSection = () => {
         <div className="flex items-center justify-between group relative z-10">
           <div className="flex items-center gap-4">
             {selectedCampus?.logo ? (
-              <img src={selectedCampus.logo} alt={selectedCampus.shortName} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+              <img src={import.meta.env.BASE_URL + selectedCampus.logo.replace(/^\//, '')} alt={selectedCampus.shortName} className="w-10 h-10 rounded-xl object-cover shrink-0" />
             ) : (
               <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
                 <span className="font-black text-sm text-gray-600">{selectedCampus?.shortName?.[0] || 'U'}</span>
