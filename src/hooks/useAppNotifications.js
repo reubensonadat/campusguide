@@ -1,14 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useNotifications } from '../context/NotificationContext';
 import { useLocalStorage } from './useLocalStorage';
+import { showNotification, isNotificationSupported } from '../services/notificationService';
 
-// Helper to get current day name matching our constants
 const getCurrentDayName = () => {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   return days[new Date().getDay()];
 };
 
-// Helper to convert time string (e.g., "14:30") to minutes from midnight
 const timeToMinutes = (timeStr) => {
   if (!timeStr) return 0;
   const [hours, minutes] = timeStr.split(':').map(Number);
@@ -17,8 +16,7 @@ const timeToMinutes = (timeStr) => {
 
 export const useAppNotifications = () => {
   const { addNotification } = useNotifications();
-  
-  // Use localStorage directly for these background checks
+
   const [courses] = useLocalStorage('ucc_timetable', []);
   const [transactions] = useLocalStorage('ucc_budget', []);
   const [recurringConfig] = useLocalStorage('ucc_budget_recurring', { active: false, amount: '', day: 1, lastTriggered: null });
@@ -26,8 +24,10 @@ export const useAppNotifications = () => {
   const [profile] = useLocalStorage('ucc_profile', { level: '100', semester: '1' });
 
   const notifiedClassesRef = useRef(new Set());
-  const notifiedBudgetRef = useRef(null); // Will store YYYY-MM-DD
-  const notifiedPaydayRef = useRef(null); // Will store YYYY-MM
+  const notifiedBudgetRef = useRef(null);
+  const notifiedPaydayRef = useRef(null);
+
+  const browserOk = isNotificationSupported();
 
   useEffect(() => {
     if (!settings.notifications) return;
@@ -46,28 +46,35 @@ export const useAppNotifications = () => {
           const cSem = course.semester || '1';
           const pLevel = profile.level || '100';
           const pSem = profile.semester || '1';
-
           return course.day === currentDay &&
               String(cLevel) === String(pLevel) &&
               String(cSem) === String(pSem);
         });
-        
+
         todaysCourses.forEach(course => {
           const classStartMinutes = timeToMinutes(course.startTime);
           const timeDiff = classStartMinutes - currentMinutes;
-          
-          // Unique ID per class instance
           const classId = `class-${todayStr}-${course.startTime}-${course.name}`;
 
-          // If class is 25-35 minutes away
           if (timeDiff >= 25 && timeDiff <= 35) {
             if (!notifiedClassesRef.current.has(classId)) {
+              // In-app notification
               addNotification({
                 id: classId,
                 type: 'class',
                 title: `Upcoming Class: ${course.name}`,
                 message: `Starts in about 30 minutes at ${course.location || 'Unknown Location'}`,
               });
+
+              // Browser OS notification (if supported)
+              if (browserOk) {
+                showNotification(`Upcoming Class: ${course.name}`, {
+                  body: `Starts in about 30 minutes at ${course.location || 'Unknown Location'}`,
+                  tag: classId,
+                  requireInteraction: true,
+                });
+              }
+
               notifiedClassesRef.current.add(classId);
             }
           }
@@ -77,7 +84,7 @@ export const useAppNotifications = () => {
       // 2. BUDGET WARNING (< 50 GHC)
       if (Array.isArray(transactions)) {
         const totalBal = transactions.reduce((sum, t) => sum + (t.type === 'income' ? parseFloat(t.amount) : -parseFloat(t.amount)), 0);
-        
+
         if (totalBal < 50 && totalBal >= 0) {
           if (notifiedBudgetRef.current !== todayStr) {
             addNotification({
@@ -86,7 +93,15 @@ export const useAppNotifications = () => {
               title: 'Low Budget Warning',
               message: `Your balance has dropped to GH₵${totalBal.toFixed(2)}. Spend wisely!`,
             });
-            notifiedBudgetRef.current = todayStr; // Only notify once per day
+
+            if (browserOk) {
+              showNotification('Low Budget Warning', {
+                body: `Your balance has dropped to GH₵${totalBal.toFixed(2)}. Spend wisely!`,
+                tag: `budget-low-${todayStr}`,
+              });
+            }
+
+            notifiedBudgetRef.current = todayStr;
           }
         }
       }
@@ -101,20 +116,24 @@ export const useAppNotifications = () => {
               title: "It's Payday! 🎉",
               message: `Your allowance of GH₵${recurringConfig.amount} is due today!`,
             });
-            notifiedPaydayRef.current = currentMonthStr; // Only notify once per month
+
+            if (browserOk) {
+              showNotification("It's Payday! 🎉", {
+                body: `Your allowance of GH₵${recurringConfig.amount} is due today!`,
+                tag: `payday-${currentMonthStr}`,
+              });
+            }
+
+            notifiedPaydayRef.current = currentMonthStr;
           }
         }
       }
     };
 
-    // Run check immediately
     checkNotifications();
-
-    // Run check every minute
     const intervalId = setInterval(checkNotifications, 60000);
-
     return () => clearInterval(intervalId);
-  }, [courses, transactions, recurringConfig, settings.notifications, addNotification]);
+  }, [courses, transactions, recurringConfig, settings.notifications, addNotification, browserOk]);
 
   return null;
 };

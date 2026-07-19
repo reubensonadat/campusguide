@@ -428,10 +428,9 @@ const Home = () => {
     return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); if (footballInterval) clearInterval(footballInterval); };
   }, [homeWidgets, isDeferredActive]);
 
-  const AFFILIATE_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
   const quickActions = [
     { title: 'Campus Map', icon: Map, action: () => navigate('/guide?topic=campus-map') },
-    { title: 'Buy Data', icon: Wifi, action: () => window.open(AFFILIATE_URL, '_blank', 'noopener,noreferrer'), isAffiliate: true },
+    { title: 'Buy Data', icon: Wifi, action: () => navigate('/data') },
     { title: 'Contact Us', icon: MessageCircle, action: () => navigate('/contact') },
     { title: 'Settings', icon: Settings, action: () => navigate('/settings') },
   ];

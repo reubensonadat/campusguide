@@ -34,7 +34,8 @@ const TabBar = () => {
       const activeIndex = displayTabs.findIndex(tab =>
         location.pathname === tab.path ||
         (tab.path === '/tools' && location.pathname.startsWith('/tools/')) ||
-        (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname))
+        (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname)) ||
+        (tab.path === '/' && ['/data'].includes(location.pathname))
       );
       if (activeIndex !== -1 && tabsRef.current[activeIndex]) {
         const el = tabsRef.current[activeIndex];
@@ -94,7 +95,8 @@ const TabBar = () => {
         {displayTabs.map((tab, index) => {
           const isActive = location.pathname === tab.path ||
             (tab.path === '/tools' && location.pathname.startsWith('/tools/')) ||
-            (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname));
+            (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname)) ||
+            (tab.path === '/' && ['/data'].includes(location.pathname));
           const Icon = tab.icon;
 
           return (

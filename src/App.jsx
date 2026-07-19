@@ -1,5 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
-import OneSignal from 'react-onesignal';
+import notificationService from './services/notificationService';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
@@ -12,7 +12,6 @@ import { FocusTimer } from './components/tools/FocusTimer';
 
 import { useSupportModal } from './hooks/useSupportModal';
 import { useSupportTimer } from './hooks/useSupportTimer';
-import { useClassReminders } from './hooks/useClassReminders';
 import { useAppNotifications } from './hooks/useAppNotifications';
 import { useFeedbackTimer } from './hooks/useFeedbackTimer';
 import { useFeedbackModal } from './hooks/useFeedbackModal';
@@ -51,6 +50,7 @@ const PrivacyPolicy = lazy(() => import('./pages/Legal').then(m => ({ default: m
 const TermsOfService = lazy(() => import('./pages/Legal').then(m => ({ default: m.TermsOfService })));
 const LetterGenerator = lazy(() => import('./pages/LetterGenerator').then(m => ({ default: m.LetterGenerator })));
 const RunwayPlanner = lazy(() => import('./pages/RunwayPlanner'));
+const DataMart = lazy(() => import('./pages/DataMart'));
 
 function NavigationObserver() {
   const location = useLocation();
@@ -135,51 +135,27 @@ function AppContent() {
     }
   }, [appColorTheme]);
 
-  // Initialize OneSignal
+  // Initialize OneSignal through the isolated notification service
   useEffect(() => {
-    // Replace this with your actual OneSignal App ID
-    const ONESIGNAL_APP_ID = "03f1b792-2236-43d1-8df3-dccdfc04b5cd";
+    try {
+      const ONESIGNAL_APP_ID = "03f1b792-2236-43d1-8df3-dccdfc04b5cd";
+      if (ONESIGNAL_APP_ID === "YOUR_ONESIGNAL_APP_ID_HERE") return;
 
-    // Only initialize if we have an ID and it hasn't been initialized yet
-    if (ONESIGNAL_APP_ID !== "YOUR_ONESIGNAL_APP_ID_HERE" && !isOneSignalInitialized) {
-      isOneSignalInitialized = true;
-      OneSignal.init({
-        appId: ONESIGNAL_APP_ID,
-        allowLocalhostAsSecureOrigin: true, // Needed for local testing
-        notifyButton: {
-          enable: false, // We will use our own custom toggle in Settings
-        },
-      }).then(() => {
-        // ───────────────────────────────────────────────────────────────────
-        // We intentionally SKIP OneSignal.login(). Calling login() triggers a
-        // 409 Conflict when the external ID is already linked to a different
-        // OneSignal user on the server — and once that user record is tainted,
-        // EVERY subsequent operation (including addTag) fails with
-        // "Op failed (no retry)". login() is only needed for cross-device
-        // identity merging, which we don't use. Blasts target tags + the
-        // "Subscribed Users" segment, both of which work on ANONYMOUS users.
-        // So: set tags directly, never touch the identity API.
-        // ───────────────────────────────────────────────────────────────────
-        if (!window.OneSignal || !window.OneSignal.User) return;
-
-        const localUserId = localStorage.getItem('ucc_user_id');
-        if (localUserId) window.OneSignal.User.addTag("user_id", localUserId);
-
+      notificationService.init(ONESIGNAL_APP_ID).then(() => {
         try {
-          const rawProfile = localStorage.getItem('ucc_profile');
-          if (rawProfile) {
-            const p = JSON.parse(rawProfile);
-            if (p.level) window.OneSignal.User.addTag("level", String(p.level));
-            if (p.course) window.OneSignal.User.addTag("course", String(p.course));
-            if (p.semester) window.OneSignal.User.addTag("semester", String(p.semester));
-          }
-        } catch (e) {
-          console.warn("OneSignal profile tagging skipped:", e);
-        }
-      }).catch(err => {
-        console.warn("OneSignal initialization failed (likely Web Push not configured in dashboard yet):", err);
-      });
-    }
+          const localUserId = localStorage.getItem('ucc_user_id');
+          if (!localUserId) return;
+
+          let profile = {};
+          try {
+            const raw = localStorage.getItem('ucc_profile');
+            if (raw) profile = JSON.parse(raw);
+          } catch {}
+
+          notificationService.tagUser(localUserId, profile);
+        } catch {}
+      }).catch(() => {});
+    } catch {}
   }, []);
 
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
@@ -190,10 +166,7 @@ function AppContent() {
   useFeedbackTimer();
   const { showModal: showFeedback, closeModal: closeFeedback } = useFeedbackModal();
 
-  // Class Reminders Logic
-  useClassReminders();
-
-  // New In-App Notifications Background Worker
+  // Consolidated notifications (in-app + browser OS + server-side push)
   useAppNotifications();
 
   // Recovery: if user is already authenticated but ucc_user_id was never persisted
@@ -251,6 +224,7 @@ function AppContent() {
                 <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
                 <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
                 <Route path="/planner" element={<PageTransition><RunwayPlanner /></PageTransition>} />
+                <Route path="/data" element={<PageTransition><DataMart /></PageTransition>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
@@ -330,8 +304,6 @@ function AppContent() {
     </div>
   );
 }
-
-let isOneSignalInitialized = false;
 
 function App() {
   return (
