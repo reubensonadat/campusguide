@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
-import { Map, Settings, MessageCircle, Wifi, User, Bell, Plus, Calendar } from 'lucide-react';
+import { Map, Settings, MessageCircle, Wifi, User, Bell, Plus, Calendar, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
@@ -18,6 +18,7 @@ import { getAssignments, getAssignmentsByUrgency, markAssignmentStatus, onAssign
 import { getUpcomingAcademicEvents } from '../data/academicCalendar';
 import { getCurrentSemesterInfo } from '../services/academicCalendarService';
 import { getTodayHoliday } from '../services/holidayService';
+import { FRESHER_LIST, GOING_HOME_LIST } from '../data/packingLists';
 import { logAppOpen, getProductivityStats } from '../services/productivityService';
 import { syncToCloud, shouldSyncNow } from '../services/syncService';
 import { triggerConfetti } from '../utils/confetti';
@@ -65,6 +66,26 @@ const Home = () => {
   const [quickNotes, setQuickNotes] = useLocalStorage('ucc_quick_notes', '');
   const [homeWidgetsRaw] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
   const homeWidgets = useMemo(() => ({ ...DEFAULT_HOME_WIDGETS, ...homeWidgetsRaw }), [homeWidgetsRaw]);
+  const [packingCheckedFresher] = useLocalStorage('ucc_packing_list_fresher', {});
+  const [packingCheckedGoingHome] = useLocalStorage('ucc_packing_list_going-home', {});
+  const [packingCheckedComingToSchool] = useLocalStorage('ucc_packing_list_coming-to-school', {});
+
+  const seasonalPacking = useMemo(() => {
+    const month = new Date().getMonth();
+    const goingHomeMonths = [4, 5, 6, 11, 12];
+    const goingToSchoolMonths = [1, 2, 8, 9];
+    if (goingHomeMonths.includes(month)) {
+      const checked = Object.values(packingCheckedGoingHome).filter(Boolean).length;
+      const total = Object.values(GOING_HOME_LIST).reduce((sum, items) => sum + items.length, 0);
+      return { scenario: 'going-home', label: 'Packing to go home?', icon: '🏠', checked, total };
+    }
+    if (goingToSchoolMonths.includes(month)) {
+      const checked = Object.values(packingCheckedFresher).filter(Boolean).length;
+      const total = Object.values(FRESHER_LIST).reduce((sum, items) => sum + items.length, 0);
+      return { scenario: 'fresher', label: checked > total * 0.5 ? 'Restock from home?' : 'Packing for school?', icon: '🎒', checked, total };
+    }
+    return null;
+  }, [packingCheckedFresher, packingCheckedGoingHome, packingCheckedComingToSchool]);
   const [examMode] = useLocalStorage('ucc_exam_mode', false);
   const [notificationsEnabled] = useLocalStorage('ucc_notifications_enabled', true);
 
@@ -531,6 +552,24 @@ const Home = () => {
               navigate={navigate} formatTime12Hour={formatTime12Hour} getIconComponent={getIconComponent} />
           )}
           {homeWidgets.library && <LibraryStatus libraryStatus={libraryStatus} />}
+          {seasonalPacking && (
+            <button onClick={() => navigate('/tools/packing')} className="w-full bg-white rounded-2xl p-4 shadow-sm border border-amber-100 text-left active:scale-[0.98] transition-transform">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 text-lg">
+                  {seasonalPacking.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-gray-900">{seasonalPacking.label}</p>
+                  <p className="text-xs font-medium text-gray-500 mt-0.5">
+                    {seasonalPacking.checked > 0 ? `${seasonalPacking.checked} / ${seasonalPacking.total} items checked` : 'Tap to start packing'}
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  <div className="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg">Open</div>
+                </div>
+              </div>
+            </button>
+          )}
           {homeWidgets.tasks && (
             <UpcomingSection upcomingPlannedTasks={upcomingPlannedTasks} navigate={navigate}
               formatTime12Hour={formatTime12Hour} getIconComponent={getIconComponent} />

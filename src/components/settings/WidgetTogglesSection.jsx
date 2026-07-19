@@ -26,6 +26,7 @@ const coreWidgets = [
   { key: 'calendar', label: 'Academic Calendar', Icon: Calendar },
   { key: 'library', label: 'Library Status', Icon: LibrarySvgIcon },
   { key: 'quickNote', label: 'Quick Note', Icon: StickyNote },
+
 ];
 
 const apiWidgets = [

@@ -7,7 +7,8 @@ import CoolFinds from '../components/tools/CoolFinds';
 import BudgetTracker from '../components/tools/BudgetTracker';
 import PlanYourDay from '../components/tools/PlanYourDay';
 import Assignments from '../components/tools/Assignments';
-import { Library, Cpu, ChevronDown, Calendar, Calculator, ClipboardList, FunctionSquare, Wallet, Sun, Tag } from 'lucide-react';
+import PackingList from '../components/tools/PackingList';
+import { Library, Cpu, ChevronDown, Calendar, Calculator, ClipboardList, FunctionSquare, Wallet, Sun, Tag, Package } from 'lucide-react';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import PageHeader from '../components/common/PageHeader';
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
@@ -20,7 +21,8 @@ const tabs = [
     { id: 'formulas', label: 'Formula Solver', short: 'Formulas', icon: FunctionSquare },
     { id: 'budget', label: 'Budget Tracker', short: 'Budget', icon: Wallet },
     { id: 'plan-day', label: 'Plan Your Day', short: 'Planner', icon: Sun },
-    { id: 'resources', label: 'Cool Finds', short: 'Cool Finds', icon: Tag }
+    { id: 'resources', label: 'Cool Finds', short: 'Cool Finds', icon: Tag },
+    { id: 'packing', label: 'Packing List', short: 'Packing', icon: Package }
 ];
 
 const Tools = () => {
@@ -167,6 +169,7 @@ const Tools = () => {
                         <Route path="budget" element={<BudgetTracker />} />
                         <Route path="plan-day" element={<PlanYourDay />} />
                         <Route path="resources" element={<CoolFinds />} />
+                        <Route path="packing" element={<PackingList />} />
                     </Routes>
                 </div>
 
