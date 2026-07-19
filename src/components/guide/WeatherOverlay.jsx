@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useCampus } from '@/context/CampusContext'
 
-function getWeatherCategory(code) {
+const WIND_THRESHOLD = 30
+
+function getWeatherCategory(code, windSpeed) {
+  if (windSpeed >= WIND_THRESHOLD) return 'windy'
   if (code === 0) return 'clear'
   if (code <= 3) return 'cloudy'
   if (code <= 48) return 'fog'
@@ -15,23 +18,23 @@ function getWeatherCategory(code) {
 const LABELS = {
   clear: 'Sunny', cloudy: 'Cloudy', overcast: 'Overcast',
   fog: 'Foggy', drizzle: 'Rainy', rain: 'Raining',
-  snow: 'Raining', thunderstorm: 'Storm',
+  snow: 'Raining', thunderstorm: 'Storm', windy: 'Windy',
 }
 
 const EMOJIS = {
   sunny: '☀️', cloudy: '☁️', overcast: '☁️', foggy: '🌫️',
-  rainy: '🌦️', raining: '🌧️', storm: '⛈️',
+  rainy: '🌦️', raining: '🌧️', storm: '⛈️', windy: '💨',
 }
 
 const CAT_MAP = {
   clear: 'sunny', cloudy: 'cloudy', overcast: 'overcast',
   fog: 'foggy', drizzle: 'rainy', rain: 'raining',
-  snow: 'raining', thunderstorm: 'storm',
+  snow: 'raining', thunderstorm: 'storm', windy: 'windy',
 }
 
 function WeatherIcon({ cat }) {
   return (
-    <span className="absolute -right-1 -top-1 text-[40px] leading-none select-none pointer-events-none opacity-80">
+    <span className="absolute top-1 right-0.5 text-[40px] leading-none select-none pointer-events-none opacity-80">
       {EMOJIS[CAT_MAP[cat]] || '☀️'}
     </span>
   )
@@ -47,7 +50,7 @@ export default function WeatherOverlay({ className }) {
   useEffect(() => {
     let cancelled = false
     fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,apparent_temperature,weather_code&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`
     )
       .then(r => r.json())
       .then(data => { if (!cancelled && data?.current) setWeather(data.current) })
@@ -57,7 +60,7 @@ export default function WeatherOverlay({ className }) {
 
   if (!weather) return null
 
-  const cat = getWeatherCategory(weather.weather_code)
+  const cat = getWeatherCategory(weather.weather_code, weather.wind_speed_10m)
   const label = LABELS[cat] || 'Clear'
   const temp = Math.round(weather.temperature_2m)
   const tag = selectedCampus?.shortName || selectedCampus?.name || ''
