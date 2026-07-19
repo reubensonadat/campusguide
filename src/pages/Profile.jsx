@@ -359,7 +359,7 @@ const Profile = () => {
   const handleShareApp = async () => {
     const shareData = {
       title: 'Campus Guide',
-      text: "Hey! I'm using the UCC Campus Guide app for my timetable, GPA, and campus updates. Check it out here:",
+      text: "Hey! I'm using the Campus Guide app for my timetable, GPA, and campus updates. Check it out here:",
       url: window.location.origin,
     };
     if (navigator.share) {
@@ -746,7 +746,7 @@ const Profile = () => {
           </div>
 
           <div className="pt-8 pb-4 text-center">
-            <p className="text-xs font-bold text-gray-300 tracking-widest uppercase">UCC Campus Guide v2.0</p>
+            <p className="text-xs font-bold text-gray-300 tracking-widest uppercase">Campus Guide v2.0</p>
           </div>
 
         </div>

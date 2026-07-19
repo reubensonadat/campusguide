@@ -144,7 +144,7 @@ const WishlistOverlay = ({ wishlistItems, items, toggleWishlist, onClose }) => (
                                                     } else if (!wa.startsWith('233') && wa.length === 9) {
                                                         wa = '233' + wa;
                                                     }
-                                                    window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Hello! I saw your "${item.item_name}" on UCC Campus Guide thrift store. Is it still available?`)}`, '_blank');
+window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Hello! I saw your "${item.item_name}" on Campus Guide thrift store. Is it still available?`)}`, '_blank');
                                                 }}
                                                 className="flex items-center gap-1 text-[10px] font-black text-[#25D366] bg-[#25D366]/10 hover:bg-[#25D366] hover:text-white px-2.5 py-1.5 rounded-lg transition-all"
                                             >
@@ -217,7 +217,7 @@ const ThriftCard = ({ item, toggleWishlist, isWishlisted, getTimeAgo }) => {
         } else if (!wa.startsWith('233') && wa.length === 9) {
             wa = '233' + wa;
         }
-        window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Hello! I saw your "${item.item_name}" on UCC Campus Guide thrift store. Is it still available?`)}`, '_blank');
+        window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Hello! I saw your "${item.item_name}" on Campus Guide thrift store. Is it still available?`)}`, '_blank');
     };
 
     return (

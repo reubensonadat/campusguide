@@ -36,7 +36,7 @@ const FeaturedAd = ({ isDeferredActive, featuredContent }) => {
       link = `tel:+${cleanPhone}`;
     } else if (cleanPhone) {
       actionText = d.action_text || 'Message via WhatsApp';
-      link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the UCC Campus Guide app and I'm interested in finding out more.`)}`;
+      link = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello! I saw your advertisement for "${d.title}" on the Campus Guide app and I'm interested in finding out more.`)}`;
     }
   } else {
     actionText = d.action_text || 'Visit Link';

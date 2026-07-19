@@ -51,7 +51,7 @@ const Sidebar = ({ onExpandedChange }) => {
           {/* Logo */}
           <img 
             src="/logo.png" 
-            alt="UCC Campus Guide" 
+            alt="Campus Guide" 
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${isHoveringLogo ? 'opacity-0' : 'opacity-100'}`} 
           />
           {/* Hover Toggle Icon */}

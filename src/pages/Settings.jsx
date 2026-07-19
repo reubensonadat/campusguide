@@ -378,8 +378,8 @@ const Settings = () => {
 
   const handleShareApp = async () => {
     const shareData = {
-      title: 'UCC Campus Guide',
-      text: "Hey! I'm using the UCC Campus Guide app for my timetable, GPA, and campus updates. Check it out here:",
+      title: 'Campus Guide',
+      text: "Hey! I'm using the Campus Guide app for my timetable, GPA, and campus updates. Check it out here:",
       url: window.location.origin,
     };
     if (navigator.share) {
@@ -517,7 +517,7 @@ const Settings = () => {
                   <Share2 size={20} className="text-gray-700" strokeWidth={1.5} />
                   <div>
                     <span className="text-[15px] text-gray-900 font-bold block leading-tight">Invite Friends</span>
-                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Share UCC Campus Guide app link</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5 block leading-none">Share Campus Guide app link</span>
                   </div>
                 </div>
                 <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-950 transition-colors" />
