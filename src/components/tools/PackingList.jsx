@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { Search, ChevronDown, Check, RotateCcw, Package, Download } from 'lucide-react';
-import { toPng } from 'html-to-image';
+import { Search, ChevronDown, Check, RotateCcw, Package, Download, Loader2 } from 'lucide-react';
+import { toBlob } from 'html-to-image';
+import { toast } from 'react-hot-toast';
 import ConfirmModal from '../common/ConfirmModal';
 import { FRESHER_LIST, GOING_HOME_LIST, COMING_TO_SCHOOL_LIST } from '../../data/packingLists';
 
@@ -90,8 +91,13 @@ const PackingList = () => {
   useEffect(() => {
     if (exporting) {
       const scenario = SCENARIOS.find(s => s.id === activeScenario);
-      exportAsImage(contentRef.current, scenario?.label || 'packing-list');
-      setExporting(false);
+      toast.loading('Preparing export...', { id: 'packing-export' });
+      requestAnimationFrame(() => {
+        setTimeout(async () => {
+          await exportAsImage(contentRef.current, scenario?.label || 'packing-list');
+          setExporting(false);
+        }, 100);
+      });
     }
   }, [exporting, activeScenario]);
 
@@ -119,10 +125,11 @@ const PackingList = () => {
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setExporting(true)}
-              className="flex items-center gap-1.5 text-xs font-bold text-gray-600 bg-gray-100 px-3 py-2 rounded-xl hover:bg-gray-200 transition-colors active:scale-95 whitespace-nowrap"
+              disabled={exporting}
+              className="flex items-center gap-1.5 text-xs font-bold text-gray-600 bg-gray-100 px-3 py-2 rounded-xl hover:bg-gray-200 transition-colors active:scale-95 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Download size={14} />
-              Export
+              {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+              {exporting ? 'Exporting...' : 'Export'}
             </button>
             <button
               onClick={() => setShowResetConfirm(true)}
@@ -266,13 +273,27 @@ const PackingList = () => {
 const exportAsImage = async (el, scenarioLabel) => {
   if (!el) return;
   try {
-    const dataUrl = await toPng(el, { backgroundColor: '#ffffff', pixelRatio: 2 });
+    const blob = await toBlob(el, {
+      backgroundColor: '#ffffff',
+      pixelRatio: 1,
+      cacheBust: true,
+      filter: (node) => {
+        if (node instanceof HTMLElement) {
+          if (node.closest && node.closest('[data-export-hide]')) return false;
+        }
+        return true;
+      }
+    });
+    if (!blob) throw new Error('Failed to generate image');
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.download = `packing-list-${scenarioLabel.toLowerCase().replace(/\s+/g, '-')}.png`;
-    link.href = dataUrl;
+    link.href = url;
     link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    toast.success('Export complete!', { id: 'packing-export' });
   } catch (err) {
-    console.error('Export failed:', err);
+    toast.error('Export failed. Try a shorter list.', { id: 'packing-export' });
   }
 };
 
