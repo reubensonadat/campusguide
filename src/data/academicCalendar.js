@@ -42,6 +42,34 @@ export const academicCalendar = [
  * Returns upcoming events sorted by closest date
  * Limits to top N events
  */
+const START_KEYWORDS = ['fresh students report', 'students arrive', 'lectures begin'];
+const END_KEYWORDS = ['students go down'];
+
+export const getPackingSeason = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const upcoming = [];
+
+  for (const event of academicCalendar) {
+    const eventDate = new Date(event.date);
+    eventDate.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
+    const title = event.title.toLowerCase();
+
+    if (Math.abs(diffDays) <= 21) {
+      if (START_KEYWORDS.some(k => title.includes(k))) {
+        upcoming.push({ type: 'start', diffDays, title: event.title, date: event.date });
+      }
+      if (END_KEYWORDS.some(k => title.includes(k))) {
+        upcoming.push({ type: 'end', diffDays, title: event.title, date: event.date });
+      }
+    }
+  }
+
+  upcoming.sort((a, b) => Math.abs(a.diffDays) - Math.abs(b.diffDays));
+  return upcoming[0] || null;
+};
+
 export const getUpcomingAcademicEvents = (limit = 2) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);

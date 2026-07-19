@@ -15,7 +15,7 @@ import { useCampus } from '../context/CampusContext';
 import { supabase } from '../lib/supabase';
 import { getGreeting, formatTime12Hour, getTimeMinutes, renderWeatherSvg, getWeatherIconAndAdvice, TODAY_NAME, TODAY_LABEL } from '../components/home/utils';
 import { getAssignments, getAssignmentsByUrgency, markAssignmentStatus, onAssignmentsChanged } from '../services/assignmentService';
-import { getUpcomingAcademicEvents } from '../data/academicCalendar';
+import { getUpcomingAcademicEvents, getPackingSeason } from '../data/academicCalendar';
 import { getCurrentSemesterInfo } from '../services/academicCalendarService';
 import { getTodayHoliday } from '../services/holidayService';
 import { FRESHER_LIST, GOING_HOME_LIST } from '../data/packingLists';
@@ -71,31 +71,23 @@ const Home = () => {
   const [packingCheckedComingToSchool] = useLocalStorage('ucc_packing_list_coming-to-school', {});
   const [packingSeasonDismissed, setPackingSeasonDismissed] = useLocalStorage('ucc_packing_season_dismissed', null);
 
-  const getSeasonKey = (month) => {
-    const year = new Date().getFullYear();
-    if ([4, 5, 6, 11, 12].includes(month)) return `${year}-end`;
-    if ([1, 2, 8, 9].includes(month)) return `${year}-start`;
-    return null;
-  };
-
   const seasonalPacking = useMemo(() => {
-    const month = new Date().getMonth();
-    const seasonKey = getSeasonKey(month);
-    if (!seasonKey || seasonKey === packingSeasonDismissed) return null;
-    const goingHomeMonths = [4, 5, 6, 11, 12];
-    const goingToSchoolMonths = [1, 2, 8, 9];
-    if (goingHomeMonths.includes(month)) {
+    const packingSeason = getPackingSeason();
+    if (!packingSeason) return null;
+    const seasonKey = `${packingSeason.type}-${packingSeason.date.slice(0, 7)}`;
+    if (seasonKey === packingSeasonDismissed) return null;
+    if (packingSeason.type === 'end') {
       const checked = Object.values(packingCheckedGoingHome).filter(Boolean).length;
       const total = Object.values(GOING_HOME_LIST).reduce((sum, items) => sum + items.length, 0);
-      return { scenario: 'going-home', label: 'Packing to go home?', icon: '🏠', checked, total };
+      return { scenario: 'going-home', label: 'Packing to go home?', icon: '🏠', checked, total, seasonKey };
     }
-    if (goingToSchoolMonths.includes(month)) {
+    if (packingSeason.type === 'start') {
       const checked = Object.values(packingCheckedFresher).filter(Boolean).length;
       const total = Object.values(FRESHER_LIST).reduce((sum, items) => sum + items.length, 0);
-      return { scenario: 'fresher', label: checked > total * 0.5 ? 'Restock from home?' : 'Packing for school?', icon: '🎒', checked, total };
+      return { scenario: 'fresher', label: checked > total * 0.5 ? 'Restock from home?' : 'Packing for school?', icon: '🎒', checked, total, seasonKey };
     }
     return null;
-  }, [packingCheckedFresher, packingCheckedGoingHome, packingCheckedComingToSchool]);
+  }, [packingCheckedFresher, packingCheckedGoingHome, packingCheckedComingToSchool, packingSeasonDismissed]);
   const [examMode] = useLocalStorage('ucc_exam_mode', false);
   const [notificationsEnabled] = useLocalStorage('ucc_notifications_enabled', true);
 
@@ -583,7 +575,7 @@ const Home = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setPackingSeasonDismissed(getSeasonKey(new Date().getMonth()));
+                  setPackingSeasonDismissed(seasonalPacking.seasonKey);
                   toast.success('Packing card dismissed. It will reappear next season.');
                 }}
                 className="absolute top-2 right-2 w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-all"

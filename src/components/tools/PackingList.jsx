@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { Search, ChevronDown, Check, RotateCcw, Package } from 'lucide-react';
+import { Search, ChevronDown, Check, RotateCcw, Package, Download } from 'lucide-react';
+import { toPng } from 'html-to-image';
+import ConfirmModal from '../common/ConfirmModal';
 import { FRESHER_LIST, GOING_HOME_LIST, COMING_TO_SCHOOL_LIST } from '../../data/packingLists';
 
 const SCENARIOS = [
@@ -33,7 +35,10 @@ const PackingList = () => {
   const [checked, setChecked] = useState(() => getInitialChecked('fresher'));
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const searchRef = useRef(null);
+  const contentRef = useRef(null);
 
   const scenarioData = useMemo(() => {
     return SCENARIOS.find(s => s.id === activeScenario)?.data || {};
@@ -82,6 +87,14 @@ const PackingList = () => {
     setChecked({});
   }, []);
 
+  useEffect(() => {
+    if (exporting) {
+      const scenario = SCENARIOS.find(s => s.id === activeScenario);
+      exportAsImage(contentRef.current, scenario?.label || 'packing-list');
+      setExporting(false);
+    }
+  }, [exporting, activeScenario]);
+
   const getCategoryProgress = useCallback(
     (items) => {
       const checkedInCategory = items.filter(item => checked[item]).length;
@@ -103,13 +116,22 @@ const PackingList = () => {
               {checkedCount} / {totalItems} items checked
             </p>
           </div>
-          <button
-            onClick={resetAll}
-            className="flex items-center gap-1.5 text-xs font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl hover:bg-red-100 transition-colors active:scale-95 whitespace-nowrap"
-          >
-            <RotateCcw size={14} />
-            Reset
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setExporting(true)}
+              className="flex items-center gap-1.5 text-xs font-bold text-gray-600 bg-gray-100 px-3 py-2 rounded-xl hover:bg-gray-200 transition-colors active:scale-95 whitespace-nowrap"
+            >
+              <Download size={14} />
+              Export
+            </button>
+            <button
+              onClick={() => setShowResetConfirm(true)}
+              className="flex items-center gap-1.5 text-xs font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl hover:bg-red-100 transition-colors active:scale-95 whitespace-nowrap"
+            >
+              <RotateCcw size={14} />
+              Reset
+            </button>
+          </div>
         </div>
 
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
@@ -142,7 +164,7 @@ const PackingList = () => {
         </div>
       </div>
 
-      <div className="p-6 md:p-8 space-y-3">
+      <div ref={contentRef} className="p-6 md:p-8 space-y-3">
         {filteredCategories.map(({ category, items }) => {
           const { checked: catChecked, total: catTotal } = getCategoryProgress(items);
           const progress = catTotal > 0 ? Math.round((catChecked / catTotal) * 100) : 0;
@@ -227,8 +249,31 @@ const PackingList = () => {
           </div>
         )}
       </div>
+      <ConfirmModal
+        open={showResetConfirm}
+        title="Reset packing list?"
+        message="This will uncheck all items in the current list. This cannot be undone."
+        confirmLabel="Reset All"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={() => { resetAll(); setShowResetConfirm(false); }}
+        onCancel={() => setShowResetConfirm(false)}
+      />
     </div>
   );
+};
+
+const exportAsImage = async (el, scenarioLabel) => {
+  if (!el) return;
+  try {
+    const dataUrl = await toPng(el, { backgroundColor: '#ffffff', pixelRatio: 2 });
+    const link = document.createElement('a');
+    link.download = `packing-list-${scenarioLabel.toLowerCase().replace(/\s+/g, '-')}.png`;
+    link.href = dataUrl;
+    link.click();
+  } catch (err) {
+    console.error('Export failed:', err);
+  }
 };
 
 export default PackingList;
