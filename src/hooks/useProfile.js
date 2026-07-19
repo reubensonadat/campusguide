@@ -10,6 +10,7 @@ const PROFILE_KEY = 'ucc_profile';
 
 const DEFAULT_PROFILE = {
   name: '',
+  phone: '',
   level: '100',
   semester: '1',
   user_id: null,

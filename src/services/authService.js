@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import OneSignal from 'react-onesignal';
+import notificationService from './notificationService';
 
 const DOMAIN = '@campusguide.app';
 
@@ -44,14 +44,7 @@ export const secureDevice = async (deviceId, pin) => {
       // Persist the Auth UUID so thrift and other services can query by user_id
       localStorage.setItem('ucc_user_id', data.user.id);
 
-      // Tag the anonymous OneSignal subscription with the Supabase user ID.
-      // We intentionally skip OneSignal.login() — it triggers a 409 Conflict
-      // when the external ID is already linked to another OneSignal user,
-      // which cascades and breaks ALL tag operations. The user_id TAG alone
-      // is enough for segment-based blast targeting.
-      if (OneSignal.initialized && OneSignal.User) {
-        OneSignal.User.addTag("user_id", data.user.id);
-      }
+      try { notificationService.tagUser(data.user.id); } catch {}
     }
 
     return { success: true, user: data.user };
@@ -86,10 +79,7 @@ export const restoreLifecycle = async (oldDeviceId, pin) => {
     // Persist the Auth UUID so thrift and other services can query by user_id
     localStorage.setItem('ucc_user_id', data.user.id);
 
-    // Tag the anonymous OneSignal subscription (skip login — see note above).
-    if (OneSignal.initialized && OneSignal.User) {
-      OneSignal.User.addTag("user_id", data.user.id);
-    }
+    try { notificationService.tagUser(data.user.id); } catch {}
 
     return { success: true, user: data.user };
   } catch (error) {

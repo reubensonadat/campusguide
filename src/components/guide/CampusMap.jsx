@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { ExternalLink, Info, Navigation, Loader2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import CampusMapData from './content/ucc/CampusMap';
 import { getKnowledgeForLocation } from './content/ucc/KnowledgeBase';
 import { fetchCampusData, searchGuideCards } from '@/services/campusDataService';
@@ -180,7 +181,7 @@ const MapView = () => {
   const handleMapLocate = useCallback((coords) => {
     const userLngLat = [coords.longitude, coords.latitude];
     const campusCoords = selectedCampus?.coordinates;
-    if (campusCoords && calculateDistance(userLngLat, [campusCoords.lng, campusCoords.lat]) > 10000) { alert('You are currently located off-campus! Your location cannot be mapped inside the university boundaries.'); return; }
+    if (campusCoords && calculateDistance(userLngLat, [campusCoords.lng, campusCoords.lat]) > 10000) { toast.error('You are currently located off-campus! Your location cannot be mapped inside the university boundaries.'); return; }
     setUserLocation(userLngLat);
     setViewport(prev => ({ ...prev, center: userLngLat, zoom: 17 }));
   }, [selectedCampus]);
@@ -315,7 +316,7 @@ const MapView = () => {
   }, []);
 
   const handleRouteToLocation = useCallback(async (targetCoords) => {
-    if (!navigator.geolocation) { alert('Geolocation is not supported by your browser'); return; }
+    if (!navigator.geolocation) { toast.error('Geolocation is not supported by your browser'); return; }
     setIsRouting(true);
     navigator.geolocation.getCurrentPosition(async (position) => {
       const startLng = position.coords.longitude, startLat = position.coords.latitude;
@@ -338,10 +339,10 @@ const MapView = () => {
           routeCache.current[cacheKey] = originalRoute;
           setFullRouteData(originalRoute); setActiveRouteData(originalRoute); setIsLiveNavigating(true);
           startLiveTracking(startCoord);
-        } else alert('Could not find a valid walking route to this location.');
-      } catch (error) { console.error('Error fetching route:', error); alert('Error calculating route. Please try again.'); }
+        } else toast.error('Could not find a valid walking route to this location.');
+      } catch (error) { console.error('Error fetching route:', error); toast.error('Error calculating route. Please try again.'); }
       finally { setIsRouting(false); }
-    }, (error) => { console.error('Error getting location:', error); alert('Could not get your current location. Please ensure location services are enabled.'); setIsRouting(false); }, { enableHighAccuracy: true });
+    }, (error) => { console.error('Error getting location:', error); toast.error('Could not get your current location. Please ensure location services are enabled.'); setIsRouting(false); }, { enableHighAccuracy: true });
   }, [startLiveTracking]);
 
   const endNavigation = useCallback(() => {

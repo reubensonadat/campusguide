@@ -426,7 +426,8 @@ const Home = () => {
     let footballInterval = null;
     if (homeWidgets.football) footballInterval = setInterval(fetchFootball, 60000);
     return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); if (footballInterval) clearInterval(footballInterval); };
-  }, [homeWidgets, isDeferredActive]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(homeWidgets), isDeferredActive]);
 
   const quickActions = [
     { title: 'Campus Map', icon: Map, action: () => navigate('/guide?topic=campus-map') },

@@ -8,6 +8,7 @@ import { CAMPUSES } from '../data/campuses';
 
 import { CustomGuide, CustomNavigation } from '../components/common/CustomIcons';
 import { sendBlast, BLAST_SEGMENTS } from '../services/blastService';
+import ConfirmModal from '../components/common/ConfirmModal';
 
 import AdminLoginScreen from '../components/admin/AdminLoginScreen';
 import AdminSidebar from '../components/admin/AdminSidebar';
@@ -48,6 +49,7 @@ const AdminDashboard = () => {
   });
   const [isUploading, setIsUploading] = useState(false);
   const [isPurging, setIsPurging] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
   const [blastForm, setBlastForm] = useState({ headline: '', message: '', segment: 'all', url: '' });
   const [isBlasting, setIsBlasting] = useState(false);
 
@@ -84,20 +86,21 @@ const AdminDashboard = () => {
     } catch (err) { toast.error(err.message); } finally { setIsSaving(false); }
   };
 
-  const handleCampusDataDelete = async (id) => { if (!window.confirm('Delete this item permanently?')) return; const { error } = await supabase.from(getTable()).delete().eq('id', id); if (error) toast.error(error.message); else { toast.success('Deleted'); fetchCampusData(); } };
+  const handleCampusDataDelete = (id) => { setConfirmAction({ title: 'Delete Item', message: 'Delete this item permanently?', handler: async () => { const { error } = await supabase.from(getTable()).delete().eq('id', id); if (error) toast.error(error.message); else { toast.success('Deleted'); fetchCampusData(); } setConfirmAction(null); } }); };
   const handleToggleActive = async (id, currentActive) => { const { error } = await supabase.from(getTable()).update({ is_active: !currentActive }).eq('id', id); if (error) toast.error(error.message); else fetchCampusData(); };
 
   const updateAdStatus = async (id, newStatus) => { const { error } = await supabase.from('advertisements').update({ status: newStatus }).eq('id', id); if (error) toast.error(error.message); else fetchAds(); };
-  const deleteAd = async (id) => { if (!window.confirm('Delete this ad completely?')) return; const { error } = await supabase.from('advertisements').delete().eq('id', id); if (error) toast.error(error.message); else fetchAds(); };
-  const deleteLostFound = async (id) => { if (!window.confirm('Delete this lost/found item?')) return; const { error } = await supabase.from('lost_and_found').delete().eq('id', id); if (error) toast.error(error.message); else fetchLostFound(); };
+  const deleteAd = (id) => { setConfirmAction({ title: 'Delete Ad', message: 'Delete this ad completely?', handler: async () => { const { error } = await supabase.from('advertisements').delete().eq('id', id); if (error) toast.error(error.message); else fetchAds(); setConfirmAction(null); } }); };
+  const deleteLostFound = (id) => { setConfirmAction({ title: 'Delete Item', message: 'Delete this lost/found item?', handler: async () => { const { error } = await supabase.from('lost_and_found').delete().eq('id', id); if (error) toast.error(error.message); else fetchLostFound(); setConfirmAction(null); } }); };
   const updateThriftStatus = async (id, newStatus) => { const { error } = await supabase.from('thrift_listings').update({ status: newStatus }).eq('id', id); if (error) toast.error(error.message); else fetchThrift(); };
-  const deleteThrift = async (id) => { if (!window.confirm('Delete this thrift item completely?')) return; const { error } = await supabase.from('thrift_listings').delete().eq('id', id); if (error) toast.error(error.message); else fetchThrift(); };
+  const deleteThrift = (id) => { setConfirmAction({ title: 'Delete Thrift', message: 'Delete this thrift item completely?', handler: async () => { const { error } = await supabase.from('thrift_listings').delete().eq('id', id); if (error) toast.error(error.message); else fetchThrift(); setConfirmAction(null); } }); };
 
-  const handlePurgeThrift = async () => {
-    if (!window.confirm('Are you sure you want to permanently delete all thrift listings that expired more than 14 days ago, INCLUDING their images from R2 storage? This cannot be undone.')) return;
-    setIsPurging(true);
-    try { const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD; const { data, error } = await supabase.functions.invoke('purge-expired-thrift', { body: { adminPassword } }); if (error) throw error; if (data?.error) throw new Error(data.error); toast.success(data?.message || 'Purged successfully'); fetchThrift(); }
-    catch (err) { toast.error(err.message || 'Failed to purge data'); } finally { setIsPurging(false); }
+  const handlePurgeThrift = () => {
+    setConfirmAction({ title: 'Purge Expired Thrift', message: 'Are you sure you want to permanently delete all thrift listings that expired more than 14 days ago, INCLUDING their images from R2 storage? This cannot be undone.', handler: async () => {
+      setIsPurging(true);
+      try { const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD; const { data, error } = await supabase.functions.invoke('purge-expired-thrift', { body: { adminPassword } }); if (error) throw error; if (data?.error) throw new Error(data.error); toast.success(data?.message || 'Purged successfully'); fetchThrift(); }
+      catch (err) { toast.error(err.message || 'Failed to purge data'); } finally { setIsPurging(false); setConfirmAction(null); }
+    } });
   };
 
   const handleImageUpload = (e) => {
@@ -187,6 +190,16 @@ const AdminDashboard = () => {
         {activeTab === 'campus-data' && <CampusDataPanel tab={campusDataTab} onTabChange={setCampusDataTab} buildings={campusBuildings} knowledge={campusKnowledge} guideCards={campusGuideCards} isLoading={isLoading} showAddForm={showAddForm} editingItem={editingItem} editForm={editForm} isSaving={isSaving} onAddNew={() => { setShowAddForm(true); setEditingItem({}); setEditForm({ campus_id: adminCampusId, is_active: true }); }} onSave={handleCampusDataSave} onCancel={() => { setShowAddForm(false); setEditingItem(null); setEditForm({}); }} onDelete={handleCampusDataDelete} onToggleActive={handleToggleActive} onEditFormChange={(patch) => setEditForm(prev => ({ ...prev, ...patch }))} setShowAddForm={setShowAddForm} setEditingItem={setEditingItem} setEditForm={setEditForm} />}
         {activeTab === 'blast' && <PushBlastPanel blastForm={blastForm} isBlasting={isBlasting} onFormChange={(patch) => setBlastForm(prev => ({ ...prev, ...patch }))} onSubmit={handleSendBlast} />}
       </div>
+      <ConfirmModal
+        open={!!confirmAction}
+        title={confirmAction?.title || 'Confirm'}
+        message={confirmAction?.message || ''}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={() => confirmAction?.handler()}
+        onCancel={() => setConfirmAction(null)}
+      />
     </div>
   );
 };

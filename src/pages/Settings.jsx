@@ -6,13 +6,14 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { updatePin, restoreLifecycle } from '../services/authService';
 import { restoreFromCloud } from '../services/syncService';
-import OneSignal from 'react-onesignal';
+import notificationService from '../services/notificationService';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import CampusSelectorModal from '../components/common/CampusSelectorModal';
 import { sanitizeGhanaPhone, isValidGhanaPhone } from '../utils/helpers';
 import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import { CustomCoach } from '../components/common/CustomIcons';
+import ConfirmModal from '../components/common/ConfirmModal';
 import {
   Trash2, Download, Lock, Moon, User, Share2, Bell, Smartphone,
   Phone, FileText, HelpCircle, ChevronRight, Wifi, Info, Sun
@@ -85,6 +86,7 @@ const Settings = () => {
   const [restoreId, setRestoreId] = useState('');
   const [restorePin, setRestorePin] = useState('');
   const [isRestoring, setIsRestoring] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const [appSettings, setAppSettings] = useLocalStorage('ucc_settings', { push_classes: true, push_whispers: true, data_saver: false });
   const [appColorTheme, setAppColorTheme] = useLocalStorage('ucc_app_color_theme', 'default');
@@ -92,13 +94,7 @@ const Settings = () => {
   const handleToggleSetting = (key) => {
     setAppSettings(prev => {
       const updated = { ...prev, [key]: prev[key] === false ? true : false };
-      try {
-        if (window.OneSignal && window.OneSignal.User) {
-          window.OneSignal.User.addTag(key, updated[key] ? "true" : "false");
-        }
-      } catch (e) {
-        console.warn("OneSignal tag sync failed", e);
-      }
+      try { notificationService.addTag(key, updated[key] ? "true" : "false"); } catch {}
       setTimeout(() => {
         import('../services/syncService').then(({ syncToCloud }) => {
           syncToCloud();
@@ -116,16 +112,14 @@ const Settings = () => {
     const check = () => {
       if (cancelled) return;
       try {
-        if (window.OneSignal && OneSignal.initialized && OneSignal.User && OneSignal.User.PushSubscription) {
-          setSystemNotificationsEnabled(OneSignal.User.PushSubscription.optedIn === true);
-          try {
-            OneSignal.User.PushSubscription.addEventListener('change', (e) => {
-              if (!cancelled) setSystemNotificationsEnabled(e?.current?.optedIn === true);
-            });
-          } catch (_) { }
+        if (notificationService.isPushSupported()) {
+          setSystemNotificationsEnabled(notificationService.getSubscriptionState());
+          notificationService.onSubscriptionChange((enabled) => {
+            if (!cancelled) setSystemNotificationsEnabled(enabled);
+          });
           return;
         }
-      } catch (_) { }
+      } catch {}
       if (++attempts < 20) {
         setTimeout(check, 500);
       }
@@ -137,21 +131,16 @@ const Settings = () => {
   const handleToggleSystemNotifications = async () => {
     try {
       if (systemNotificationsEnabled) {
-        OneSignal.User.PushSubscription.optOut();
+        notificationService.unsubscribe();
         setSystemNotificationsEnabled(false);
         toast.success('System notifications disabled');
       } else {
-        await OneSignal.Notifications.requestPermission();
-        OneSignal.User.PushSubscription.optIn();
+        await notificationService.subscribe();
         setSystemNotificationsEnabled(true);
         toast.success('System notifications enabled!');
       }
     } catch (e) {
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        toast.error('OneSignal cannot run on localhost without configuration. Please test on your live deployed site.');
-      } else {
-        toast.error('Notification system not initialized yet or blocked by browser.');
-      }
+      toast.error(e.message);
     }
   };
 
@@ -368,11 +357,13 @@ const Settings = () => {
   };
 
   const handleClearAllData = () => {
-    if (window.confirm('Are you sure you want to clear all app data? This action cannot be undone.')) {
-      localStorage.clear();
-      toast.success('All data cleared successfully');
-      setTimeout(() => window.location.reload(), 800);
-    }
+    setShowClearConfirm(true);
+  };
+
+  const executeClearAllData = () => {
+    localStorage.clear();
+    toast.success('All data cleared successfully');
+    setTimeout(() => window.location.reload(), 800);
   };
 
   const handleResetCoach = () => {
@@ -754,6 +745,16 @@ const Settings = () => {
         pinConfirmInput={gpaPinConfirmInput}
         onInputChange={handleGpaPinInputChange}
         onSubmit={handleGpaLockSubmit}
+      />
+      <ConfirmModal
+        open={showClearConfirm}
+        title="Clear All Data"
+        message="Are you sure you want to clear all app data? This action cannot be undone."
+        confirmLabel="Clear"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={() => { setShowClearConfirm(false); executeClearAllData(); }}
+        onCancel={() => setShowClearConfirm(false)}
       />
     </div>
   );

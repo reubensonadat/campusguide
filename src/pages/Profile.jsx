@@ -21,7 +21,8 @@ import { restoreFromCloud } from '../services/syncService';
 import { fetchUserThriftListings } from '../services/thriftService';
 import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
-import OneSignal from 'react-onesignal';
+import ConfirmModal from '../components/common/ConfirmModal';
+import notificationService from '../services/notificationService';
 import { CourseCombobox } from '../components/common/CourseCombobox';
 import ListingManageModal from '../components/profile/ListingManageModal';
 import { getProductivityStats } from '../services/productivityService';
@@ -116,31 +117,24 @@ const Profile = () => {
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
 
   useEffect(() => {
-    try {
-      if (window.OneSignal && window.OneSignal.User && window.OneSignal.User.PushSubscription) {
-        setSystemNotificationsEnabled(window.OneSignal.User.PushSubscription.optedIn);
-      }
-    } catch (e) { }
+    if (notificationService.isPushSupported()) {
+      setSystemNotificationsEnabled(notificationService.getSubscriptionState());
+    }
   }, []);
 
   const handleToggleSystemNotifications = async () => {
     try {
       if (systemNotificationsEnabled) {
-        OneSignal.User.PushSubscription.optOut();
+        notificationService.unsubscribe();
         setSystemNotificationsEnabled(false);
         toast.success('System notifications disabled');
       } else {
-        await OneSignal.Notifications.requestPermission();
-        OneSignal.User.PushSubscription.optIn();
+        await notificationService.subscribe();
         setSystemNotificationsEnabled(true);
         toast.success('System notifications enabled!');
       }
     } catch (e) {
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        toast.error('OneSignal cannot run on localhost without configuration.');
-      } else {
-        toast.error('Notification system not initialized yet.');
-      }
+      toast.error(e.message);
     }
   };
 
@@ -152,6 +146,7 @@ const Profile = () => {
   const [gpaPinConfirmInput, setGpaPinConfirmInput] = useState('');
 
   const [formData, setFormData] = useState(profile);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const [thriftListings, setThriftListings] = useState([]);
   const [isLoadingThrift, setIsLoadingThrift] = useState(false);
@@ -342,11 +337,13 @@ const Profile = () => {
   };
 
   const handleClearData = () => {
-    if (window.confirm('Are you sure you want to clear all your app data? This cannot be undone.')) {
-      toast.loading('Clearing data...');
-      localStorage.clear();
-      setTimeout(() => window.location.reload(), 800);
-    }
+    setShowClearConfirm(true);
+  };
+
+  const executeClearData = () => {
+    toast.loading('Clearing data...');
+    localStorage.clear();
+    setTimeout(() => window.location.reload(), 800);
   };
 
   const handleResetCoach = () => {
@@ -797,6 +794,16 @@ const Profile = () => {
       <CoachMarksOverlay
         storageKey="ucc_coach_profile"
         steps={PROFILE_COACH_STEPS}
+      />
+      <ConfirmModal
+        open={showClearConfirm}
+        title="Clear All Data"
+        message="Are you sure you want to clear all your app data? This cannot be undone."
+        confirmLabel="Clear"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={() => { setShowClearConfirm(false); executeClearData(); }}
+        onCancel={() => setShowClearConfirm(false)}
       />
     </>
   );

@@ -4,6 +4,7 @@ import ModalPortal from '../common/ModalPortal';
 import { PaymentButton } from '../payment/PaymentButton';
 import { boostThriftListing, extendThriftListing, markThriftListingAsSold, deleteThriftListing } from '../../services/thriftService';
 import { toast } from 'react-hot-toast';
+import ConfirmModal from '../common/ConfirmModal';
 
 // Same email derivation as authService.js uses for Supabase Auth
 const getPaymentEmail = () => {
@@ -38,6 +39,8 @@ const checkExpiryStatus = (expiresAt) => {
 const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) => {
   const [activeTab, setActiveTab] = useState('details');
   const [selectedBoost, setSelectedBoost] = useState('3days');
+  const [showSoldConfirm, setShowSoldConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   if (!isOpen || !listing) return null;
 
@@ -76,28 +79,32 @@ const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) =>
     }
   };
 
-  const handleMarkAsSold = async () => {
-    if (window.confirm('Mark this item as sold?')) {
-      const { listing: updated, error } = await markThriftListingAsSold(listing.id);
-      if (!error) {
-        toast.success('Marked as sold!');
-        onUpdate(updated);
-      } else {
-        toast.error('Failed to mark as sold');
-      }
+  const handleMarkAsSold = () => {
+    setShowSoldConfirm(true);
+  };
+
+  const executeMarkAsSold = async () => {
+    const { listing: updated, error } = await markThriftListingAsSold(listing.id);
+    if (!error) {
+      toast.success('Marked as sold!');
+      onUpdate(updated);
+    } else {
+      toast.error('Failed to mark as sold');
     }
   };
 
-  const handleDelete = async () => {
-    if (window.confirm('Delete this listing permanently?')) {
-      const { success, error } = await deleteThriftListing(listing.id);
-      if (success) {
-        toast.success('Listing deleted');
-        onDelete(listing.id);
-        onClose();
-      } else {
-        toast.error('Failed to delete listing');
-      }
+  const handleDelete = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const executeDelete = async () => {
+    const { success, error } = await deleteThriftListing(listing.id);
+    if (success) {
+      toast.success('Listing deleted');
+      onDelete(listing.id);
+      onClose();
+    } else {
+      toast.error('Failed to delete listing');
     }
   };
 
@@ -171,6 +178,26 @@ const ListingManageModal = ({ isOpen, onClose, listing, onUpdate, onDelete }) =>
         </div>
       </div>
     </div>
+      <ConfirmModal
+        open={showSoldConfirm}
+        title="Mark as Sold"
+        message="Mark this item as sold?"
+        confirmLabel="Mark as Sold"
+        cancelLabel="Cancel"
+        variant="primary"
+        onConfirm={() => { setShowSoldConfirm(false); executeMarkAsSold(); }}
+        onCancel={() => setShowSoldConfirm(false)}
+      />
+      <ConfirmModal
+        open={showDeleteConfirm}
+        title="Delete Listing"
+        message="Delete this listing permanently?"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={() => { setShowDeleteConfirm(false); executeDelete(); }}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </ModalPortal>
   );
 };

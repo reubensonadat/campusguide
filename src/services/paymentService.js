@@ -15,49 +15,38 @@ const getPaystackKey = () => {
 
 // Load Paystack script dynamically
 let isPaystackLoading = false;
+let loadingResolvers = [];
 export const loadPaystackScript = () => {
   return new Promise((resolve, reject) => {
-    // Check if script is already loaded
     if (window.PaystackPop) {
       resolve(window.PaystackPop);
       return;
     }
 
-    // Check if script is already loading
     if (isPaystackLoading) {
-      // Poll for completion
-      const checkInterval = setInterval(() => {
-        if (window.PaystackPop) {
-          clearInterval(checkInterval);
-          resolve(window.PaystackPop);
-        }
-      }, 100);
-
-      // Timeout after 10 seconds
-      setTimeout(() => {
-        clearInterval(checkInterval);
-        reject(new Error('Paystack script loading timeout'));
-      }, 10000);
-
+      loadingResolvers.push({ resolve, reject });
       return;
     }
 
-    // Set loading flag
     isPaystackLoading = true;
+    loadingResolvers.push({ resolve, reject });
 
-    // Create script element
     const script = document.createElement('script');
     script.src = 'https://js.paystack.co/v1/inline.js';
     script.async = true;
 
     script.onload = () => {
       isPaystackLoading = false;
-      resolve(window.PaystackPop);
+      const resolvers = loadingResolvers;
+      loadingResolvers = [];
+      resolvers.forEach(r => r.resolve(window.PaystackPop));
     };
 
     script.onerror = () => {
       isPaystackLoading = false;
-      reject(new Error('Failed to load Paystack script'));
+      const resolvers = loadingResolvers;
+      loadingResolvers = [];
+      resolvers.forEach(r => r.reject(new Error('Failed to load Paystack script')));
     };
 
     document.head.appendChild(script);
@@ -107,7 +96,6 @@ export const handlePayment = async ({ amount, email, reference, metadata }) => {
         metadata: metadata,
         ...(metadata.customer_phone ? { phone: metadata.customer_phone } : {}),
         callback: function (response) {
-          console.log('Paystack callback:', response);
           if (response.status === 'success') {
             resolve({
               status: 'success',
@@ -121,7 +109,6 @@ export const handlePayment = async ({ amount, email, reference, metadata }) => {
           }
         },
         onClose: function () {
-          console.log('Payment cancelled by user');
           reject(new Error('Payment cancelled by user'));
         }
       });

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, UploadCloud, CheckCircle2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { supabase } from '../../lib/supabase';
 import ModalPortal from '../common/ModalPortal';
 
@@ -27,12 +28,12 @@ const LostFoundModal = ({ isOpen, onClose, onSuccess }) => {
         if (file) {
             const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
             if (!validTypes.includes(file.type)) {
-                alert("Invalid file format. Please upload a JPEG, PNG, or WebP image.");
+                toast.error("Invalid file format. Please upload a JPEG, PNG, or WebP image.");
                 e.target.value = null;
                 return;
             }
             if (file.size > 5 * 1024 * 1024) {
-                alert("File size exceeds 5MB limit.");
+                toast.error("File size exceeds 5MB limit.");
                 e.target.value = null;
                 return;
             }
@@ -53,7 +54,7 @@ const LostFoundModal = ({ isOpen, onClose, onSuccess }) => {
         setIsSubmitting(true);
         try {
             if (localStorage.getItem('ucc_has_posted_lost_found') === 'true') {
-                alert("You can only post one Lost & Found item per device to prevent spam.");
+                toast.error("You can only post one Lost & Found item per device to prevent spam.");
                 setIsSubmitting(false);
                 return;
             }
@@ -132,7 +133,7 @@ const LostFoundModal = ({ isOpen, onClose, onSuccess }) => {
             onClose(); // Close modal
         } catch (error) {
             console.error("Upload error:", error);
-            alert("Failed to submit: " + error.message);
+            toast.error("Failed to submit: " + error.message);
         } finally {
             setIsSubmitting(false);
         }

@@ -8,6 +8,7 @@ import { getCurrentUser } from '../../services/authService';
 import { useCampus } from '../../context/CampusContext';
 import { WhispersLoader } from '../common/CustomLoaders';
 import { Linkify } from '../../utils/linkify';
+import ConfirmModal from '../common/ConfirmModal';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { toBlob } from 'html-to-image';
 import { triggerHaptic } from '../../utils/haptics';
@@ -107,6 +108,7 @@ const WhispersFeed = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [userInteractions, setUserInteractions] = useState({ upvotes: new Set(), downvotes: new Set(), flags: new Set(), emojis: {} });
     const [searchQuery, setSearchQuery] = useState('');
+    const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
     // Simulated online users count (Scales up based on base traffic, caps at 50 to look realistic)
     // Kept stable during the user's session using useMemo
@@ -257,16 +259,21 @@ const WhispersFeed = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this whisper?')) {
-            const { success, error } = await deleteWhisper(id);
-            if (success) {
-                setWhispers(prev => prev.filter(w => w.id !== id));
-                toast.success('Whisper deleted');
-            } else {
-                toast.error(error || 'Failed to delete whisper.');
-            }
+    const handleDelete = (id) => {
+        setDeleteConfirmId(id);
+    };
+
+    const executeDelete = async () => {
+        const id = deleteConfirmId;
+        if (!id) return;
+        const { success, error } = await deleteWhisper(id);
+        if (success) {
+            setWhispers(prev => prev.filter(w => w.id !== id));
+            toast.success('Whisper deleted');
+        } else {
+            toast.error(error || 'Failed to delete whisper.');
         }
+        setDeleteConfirmId(null);
     };
 
     const getTimeAgo = (dateString) => {
@@ -409,6 +416,16 @@ const WhispersFeed = () => {
                     setWhispers(prev => prev.map(w => w.id === id ? { ...w, comment_count: w.comment_count + 1 } : w));
                     setSelectedWhisper(prev => prev ? { ...prev, comment_count: prev.comment_count + 1 } : null);
                 }}
+            />
+            <ConfirmModal
+                open={deleteConfirmId !== null}
+                title="Delete Whisper"
+                message="Are you sure you want to delete this whisper?"
+                confirmLabel="Delete"
+                cancelLabel="Cancel"
+                variant="danger"
+                onConfirm={executeDelete}
+                onCancel={() => setDeleteConfirmId(null)}
             />
         </div>
     );
