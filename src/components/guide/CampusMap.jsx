@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { ExternalLink, Info, Navigation, Loader2, Search } from 'lucide-react';
+import { ExternalLink, Info, Navigation, Loader2 } from 'lucide-react';
 import CampusMapData from './content/ucc/CampusMap';
 import { getKnowledgeForLocation } from './content/ucc/KnowledgeBase';
 import { fetchCampusData, searchGuideCards } from '@/services/campusDataService';
@@ -11,6 +11,7 @@ import CampusSearchSidebar from './CampusSearchSidebar';
 import WeatherOverlay from './WeatherOverlay';
 import KnowledgeModal from './KnowledgeModal';
 import { useMap } from '@/components/ui/map/context';
+import CampusSelectorModal from '../common/CampusSelectorModal';
 
 const CommunityHeatmap = ({ posts, visible }) => {
   const { map, isLoaded } = useMap();
@@ -178,8 +179,8 @@ const MapView = () => {
 
   const handleMapLocate = useCallback((coords) => {
     const userLngLat = [coords.longitude, coords.latitude];
-    const campusCoords = selectedCampus?.coordinates || { lat: 5.116774, lng: -1.290948 };
-    if (calculateDistance(userLngLat, [campusCoords.lng, campusCoords.lat]) > 10000) { alert('You are currently located off-campus! Your location cannot be mapped inside the university boundaries.'); return; }
+    const campusCoords = selectedCampus?.coordinates;
+    if (campusCoords && calculateDistance(userLngLat, [campusCoords.lng, campusCoords.lat]) > 10000) { alert('You are currently located off-campus! Your location cannot be mapped inside the university boundaries.'); return; }
     setUserLocation(userLngLat);
     setViewport(prev => ({ ...prev, center: userLngLat, zoom: 17 }));
   }, [selectedCampus]);
@@ -199,7 +200,29 @@ const MapView = () => {
     }
   }, []);
 
-  const { buildings, openGoogleMaps, getCoordinates, defaultCenter } = useMemo(() => CampusMapData({ onLocationSelect: handleLocationSelect }), [handleLocationSelect]);
+  const { buildings } = useMemo(() => CampusMapData({ onLocationSelect: handleLocationSelect }), [handleLocationSelect]);
+
+  const getCoordinates = useCallback((url) => {
+    if (!url) return null;
+    const coordMatch = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/.exec(url);
+    if (coordMatch) {
+      return [parseFloat(coordMatch[1]), parseFloat(coordMatch[3])];
+    }
+    return null;
+  }, []);
+
+  const openGoogleMaps = useCallback((term) => {
+    const isCoordinates = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(term);
+    let url;
+    if (isCoordinates) {
+      url = `https://www.google.com/maps/search/?api=1&query=${term}`;
+    } else {
+      const campusName = selectedCampus?.name || 'University of Cape Coast';
+      const query = term.includes(campusName) ? term : `${term} ${campusName}`;
+      url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+    window.open(url, '_blank');
+  }, [selectedCampus]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
@@ -219,6 +242,7 @@ const MapView = () => {
   const [sidebarView, setSidebarView] = useState('locations');
   const [showCommunityLayer, setShowCommunityLayer] = useState(true);
   const [selectedCommunityPost, setSelectedCommunityPost] = useState(null);
+  const [campusSwitcherOpen, setCampusSwitcherOpen] = useState(false);
   const watchIdRef = useRef(null);
 
   useEffect(() => {
@@ -231,14 +255,14 @@ const MapView = () => {
           if (data.knowledge && (data.source === 'db' || data.source === 'static')) setDbKnowledge(data.knowledge);
           if (data.guideCards) setDbGuideCards(data.guideCards);
         }
-      } catch (err) { console.warn('[CampusMap] Data fetch failed, using static fallback:', err); if (!cancelled) setDataError('Could not load live campus data. Showing offline map.'); }
+      } catch (err) { console.warn('[CampusMap] Data fetch failed:', err); if (!cancelled) setDataError('Could not load live campus data.'); }
       finally { if (!cancelled) setIsDataLoading(false); }
     };
     loadData();
     return () => { cancelled = true; };
   }, [campusId]);
 
-  const resolvedBuildings = dbBuildings || buildings;
+  const resolvedBuildings = dbBuildings || (selectedCampus?.id === 'ucc' ? buildings : []);
 
   useEffect(() => {
     if (isLiveNavigating && fullRouteData && userLocation) {
@@ -250,8 +274,18 @@ const MapView = () => {
   useEffect(() => { return () => { if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current); }; }, []);
 
   const campusCoords = selectedCampus?.coordinates || { lat: 5.116774, lng: -1.290948 };
-  const defaultViewport = { center: [campusCoords.lng || defaultCenter[1], campusCoords.lat || defaultCenter[0]], zoom: 15 };
+  const defaultViewport = { center: [campusCoords.lng, campusCoords.lat], zoom: 15 };
   const [viewport, setViewport] = useState(defaultViewport);
+
+  useEffect(() => {
+    if (selectedCampus?.coordinates) {
+      setViewport({
+        center: [selectedCampus.coordinates.lng, selectedCampus.coordinates.lat],
+        zoom: 15,
+        transitionDuration: 7000
+      });
+    }
+  }, [selectedCampus]);
 
   // Viewport culling: only render markers within the visible area
   const viewportBounds = useMemo(() => {
@@ -338,8 +372,6 @@ const MapView = () => {
     );
   }, [debouncedSearchTerm]);
 
-  const maxBounds = [[-1.3500, 5.0700], [-1.2200, 5.1600]];
-
   const handleCardSelect = (card) => {
     setKnowledgeModalData({ 
       title: card.fullName || card.title, 
@@ -363,7 +395,7 @@ const MapView = () => {
         </div>
       )}
       <div className="absolute inset-0 z-0 h-full w-full">
-        <Map viewport={viewport} onViewportChange={setViewport} theme="light" className="w-full h-full" maxBounds={maxBounds} minZoom={13} dragRotate={false} touchPitch={false} touchZoomRotate={true} doubleClickZoom={true}>
+        <Map viewport={viewport} onViewportChange={setViewport} theme="light" className="w-full h-full" minZoom={5} dragRotate={false} touchPitch={false} touchZoomRotate={true} doubleClickZoom={true}>
           <MapControls position="top-right" showZoom showCompass show3D showLocate showFullscreen onLocate={handleMapLocate} className="top-[calc(0.5rem_+_env(safe-area-inset-top,0px))] flex-row lg:flex-col" />
           {activeRouteData && <MapRoute coordinates={activeRouteData} color="#3b82f6" width={6} opacity={0.9} />}
           <CommunityHeatmap posts={filteredCommunityPosts} visible={showCommunityLayer} />
@@ -423,7 +455,7 @@ const MapView = () => {
                           const name = loc.fullName.toLowerCase();
                           let data = null;
                           for (const [key, entry] of Object.entries(dbKnowledge)) { if (name.includes(key)) { data = entry; break; } }
-                          if (!data) data = getKnowledgeForLocation(loc.fullName);
+                          if (!data && selectedCampus?.id === 'ucc') data = getKnowledgeForLocation(loc.fullName);
                           setKnowledgeModalData(data || { title: loc.fullName, history: loc.description, architecture: 'No detailed architectural data available for this location yet.', tags: ['Info'], statistics: {} });
                         }} className="w-full text-[12px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-sm">
                           <Info size={14} /> Read More
@@ -566,9 +598,21 @@ const MapView = () => {
           legendColors={POST_COLORS}
         />
 
+        {!isDataLoading && !dataError && resolvedBuildings.length === 0 && selectedCampus?.id !== 'ucc' && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-6 py-5 shadow-lg border border-slate-200 text-center max-w-xs pointer-events-auto">
+              <div className="text-3xl mb-2">🗺️</div>
+              <p className="text-sm font-bold text-slate-700">{selectedCampus?.name}</p>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">Campus map data not available yet. Building coordinates need to be added for this campus.</p>
+            </div>
+          </div>
+        )}
+
         <CampusSearchSidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} sidebarView={sidebarView} setSidebarView={setSidebarView}
           searchTerm={searchTerm} onSearchChange={setSearchTerm} filteredLocations={filteredLocations} getCoordinates={getCoordinates}
           onLocationSelect={handleLocationSelect} filteredGuideCards={filteredGuideCards} dbGuideCards={dbGuideCards} onCardSelect={handleCardSelect} 
+          onCampusSwitchClick={() => setCampusSwitcherOpen(true)}
+          selectedCampus={selectedCampus}
           filteredCommunityPosts={filteredCommunityPosts} onCommunityPostSelect={(post) => {
             setSelectedCommunityPost(post);
             setSelectedLocation(null);
@@ -576,6 +620,7 @@ const MapView = () => {
             if (window.innerWidth < 1024) setIsMobileMenuOpen(false);
           }}
         />
+        <CampusSelectorModal isOpen={campusSwitcherOpen} onClose={() => setCampusSwitcherOpen(false)} />
       </div>
 
       <KnowledgeModal data={knowledgeModalData} onClose={() => setKnowledgeModalData(null)} />

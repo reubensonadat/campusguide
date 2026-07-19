@@ -22,7 +22,7 @@ const getGuideCardIcon = (icon) => {
   }
 };
 
-const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarView, setSidebarView, searchTerm, onSearchChange, filteredLocations, getCoordinates, onLocationSelect, filteredGuideCards, dbGuideCards, onCardSelect, filteredCommunityPosts = [], onCommunityPostSelect }) => {
+const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarView, setSidebarView, searchTerm, onSearchChange, filteredLocations, getCoordinates, onLocationSelect, filteredGuideCards, dbGuideCards, onCardSelect, filteredCommunityPosts = [], onCommunityPostSelect, onCampusSwitchClick, selectedCampus }) => {
   const cards = searchTerm ? filteredGuideCards : dbGuideCards;
 
   return (
@@ -33,6 +33,15 @@ const CampusSearchSidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen, sidebarVie
       ${isMobileMenuOpen ? 'top-20 lg:top-4' : 'h-auto lg:top-4 lg:h-auto'}
     `}>
       <div className="px-3 py-3 bg-white flex-shrink-0 relative border-b border-slate-100 flex items-center gap-2">
+        <button onClick={onCampusSwitchClick}
+          className="shrink-0 p-2 rounded-xl transition-all flex items-center gap-1.5 bg-slate-50 text-slate-500 border border-slate-200 hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200"
+          title="Switch Campus">
+          {selectedCampus?.logo ? (
+            <img src={import.meta.env.BASE_URL + selectedCampus.logo.replace(/^\//, '')} alt={selectedCampus.shortName} className="w-5 h-5 rounded-lg object-cover shrink-0" />
+          ) : (
+            <span className="text-[10px] font-black">{selectedCampus?.shortName?.[0] || '?'}</span>
+          )}
+        </button>
         <button onClick={() => setSidebarView(sidebarView === 'guide_cards' ? 'locations' : 'guide_cards')}
           className={`shrink-0 p-2 rounded-xl transition-all flex items-center gap-1.5 ${sidebarView === 'guide_cards' ? 'bg-primary-50 text-primary-700 border border-primary-200 shadow-sm' : 'bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100'}`}
           title="Toggle Guide Cards">
