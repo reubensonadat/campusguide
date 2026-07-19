@@ -187,6 +187,7 @@ const PackingList = () => {
                     return (
                       <label
                         key={item}
+                        onClick={() => toggleItem(item)}
                         className={`flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer transition-all ${
                           isChecked
                             ? 'bg-white/70 text-gray-500 line-through'
