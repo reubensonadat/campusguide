@@ -59,7 +59,7 @@ const FeaturedAd = ({ isDeferredActive, featuredContent }) => {
             {isAd ? 'SPONSORED' : 'OFFICIAL'}
           </span>
           <h4 className="text-base font-bold text-gray-900">{d.title}</h4>
-          <p className={`text-sm text-gray-500 leading-relaxed whitespace-pre-wrap ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
+          <p className={`text-sm text-gray-500 leading-relaxed whitespace-pre-wrap break-words ${!isFeaturedExpanded ? 'line-clamp-3' : ''}`}>
             {d.description || d.content}
           </p>
           <div className="flex items-center justify-between mt-1">

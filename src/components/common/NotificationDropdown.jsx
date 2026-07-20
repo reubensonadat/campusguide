@@ -58,7 +58,7 @@ const CommunityCard = ({ item, onMarkRead, onNavigate, isRead }) => {
           {item.title || item.item_name ||
             (item.updateType === 'whisper' ? 'Campus Whisper' : 'New Update')}
         </p>
-        <p className={`text-xs font-medium line-clamp-2 mt-0.5 leading-snug ${isRead ? 'text-gray-400 dark:text-gray-500' : 'text-gray-500 dark:text-gray-400'}`}>
+        <p className={`text-xs font-medium line-clamp-2 mt-0.5 leading-snug break-words ${isRead ? 'text-gray-400 dark:text-gray-500' : 'text-gray-500 dark:text-gray-400'}`}>
           {item.description || item.content || item.text || ''}
         </p>
         <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-1">

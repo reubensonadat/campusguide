@@ -179,16 +179,16 @@ const PackingList = () => {
     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden">
       <div className="p-6 md:p-8 border-b border-gray-100 bg-slate-50">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <Package size={24} className="text-primary-500" />
-              Packing List
+          <div className="min-w-0 flex-1">
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2 truncate">
+              <Package size={24} className="text-primary-500 flex-shrink-0" />
+              <span className="truncate">Packing List</span>
             </h2>
-            <p className="text-sm font-medium text-slate-500 mt-1">
+            <p className="text-sm font-medium text-slate-500 mt-1 truncate">
               {checkedCount} / {totalItems} items checked
             </p>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <button
               onClick={() => setExporting(true)}
               disabled={exporting}
