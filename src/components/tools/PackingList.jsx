@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { Search, ChevronDown, Check, RotateCcw, Package, Download, Loader2 } from 'lucide-react';
+import { Search, ChevronDown, Check, RotateCcw, Package, Download, Loader2, Plus, X, Lightbulb, Edit3 } from 'lucide-react';
 import { toBlob } from 'html-to-image';
 import { toast } from 'react-hot-toast';
 import ConfirmModal from '../common/ConfirmModal';
@@ -11,7 +11,23 @@ const SCENARIOS = [
   { id: 'coming-to-school', label: 'Coming to School', icon: '📚', data: COMING_TO_SCHOOL_LIST },
 ];
 
-const LS_PREFIX = 'ucc_packing_list_';
+const LS_PREFIX = 'campus_packing_list_';
+const LS_CUSTOM = 'campus_packing_custom_';
+
+const getCustomItems = (scenarioId) => {
+  try {
+    const saved = localStorage.getItem(`${LS_CUSTOM}${scenarioId}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return [];
+};
+
+const saveCustomItems = (scenarioId, items) => {
+  localStorage.setItem(`${LS_CUSTOM}${scenarioId}`, JSON.stringify(items));
+};
 
 const getInitialChecked = (scenarioId) => {
   try {
@@ -36,45 +52,68 @@ const PackingList = () => {
   const [checked, setChecked] = useState(() => getInitialChecked('fresher'));
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [customItems, setCustomItems] = useState(() => getCustomItems('fresher'));
+  const [myListInput, setMyListInput] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [exporting, setExporting] = useState(false);
   const searchRef = useRef(null);
   const contentRef = useRef(null);
+  const myListRef = useRef(null);
 
   const scenarioData = useMemo(() => {
     return SCENARIOS.find(s => s.id === activeScenario)?.data || {};
   }, [activeScenario]);
 
+  const allBuiltInItems = useMemo(() => {
+    const items = new Set();
+    for (const list of Object.values(scenarioData)) {
+      for (const item of list) items.add(item);
+    }
+    return [...items];
+  }, [scenarioData]);
+
   const flatItems = useMemo(() => flattenItems(scenarioData), [scenarioData]);
 
   const filteredCategories = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return Object.entries(scenarioData).map(([category, items]) => ({ category, items }));
-    }
+    const merged = Object.entries(scenarioData).map(([category, items]) => ({
+      category,
+      items: [...items],
+    }));
+    if (!searchQuery.trim()) return merged;
     const q = searchQuery.toLowerCase().trim();
-    return Object.entries(scenarioData)
-      .map(([category, items]) => ({
+    return merged
+      .map(({ category, items }) => ({
         category,
         items: items.filter(item => item.toLowerCase().includes(q)),
       }))
       .filter(({ items }) => items.length > 0);
   }, [scenarioData, searchQuery]);
 
-  const totalItems = useMemo(() => flatItems.length, [flatItems]);
+  const totalItems = useMemo(() => flatItems.length + customItems.length, [flatItems, customItems]);
   const checkedCount = useMemo(
-    () => flatItems.filter(({ item }) => checked[item]).length,
-    [flatItems, checked]
+    () => flatItems.filter(({ item }) => checked[item]).length + customItems.filter(i => checked[i]).length,
+    [flatItems, checked, customItems]
   );
 
   useEffect(() => {
     setChecked(getInitialChecked(activeScenario));
+    setCustomItems(getCustomItems(activeScenario));
     setExpandedCategories({});
     setSearchQuery('');
+    setMyListInput('');
+    setSuggestions([]);
+    setShowSuggestions(false);
   }, [activeScenario]);
 
   useEffect(() => {
     localStorage.setItem(`${LS_PREFIX}${activeScenario}`, JSON.stringify(checked));
   }, [checked, activeScenario]);
+
+  useEffect(() => {
+    saveCustomItems(activeScenario, customItems);
+  }, [customItems, activeScenario]);
 
   const toggleItem = useCallback((item) => {
     setChecked(prev => ({ ...prev, [item]: !prev[item] }));
@@ -84,8 +123,35 @@ const PackingList = () => {
     setExpandedCategories(prev => ({ ...prev, [category]: !prev[category] }));
   }, []);
 
+  const updateSuggestions = useCallback((value) => {
+    if (!value.trim()) { setSuggestions([]); setShowSuggestions(false); return; }
+    const q = value.toLowerCase();
+    const matches = allBuiltInItems.filter(i => i.toLowerCase().includes(q) && !customItems.includes(i) && i.toLowerCase() !== q);
+    setSuggestions(matches.slice(0, 8));
+    setShowSuggestions(matches.length > 0);
+  }, [allBuiltInItems, customItems]);
+
+  const addToMyList = useCallback((item) => {
+    const text = item || myListInput.trim();
+    if (!text || customItems.includes(text)) return;
+    setCustomItems(prev => [...prev, text]);
+    setMyListInput('');
+    setSuggestions([]);
+    setShowSuggestions(false);
+  }, [myListInput, customItems]);
+
+  const removeFromMyList = useCallback((item) => {
+    setCustomItems(prev => prev.filter(i => i !== item));
+    setChecked(prev => {
+      const next = { ...prev };
+      delete next[item];
+      return next;
+    });
+  }, []);
+
   const resetAll = useCallback(() => {
     setChecked({});
+    setCustomItems([]);
   }, []);
 
   useEffect(() => {
@@ -172,6 +238,63 @@ const PackingList = () => {
       </div>
 
       <div ref={contentRef} className="p-6 md:p-8 space-y-3">
+        {!searchQuery && (
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 shadow-sm border border-amber-200/50">
+            <div className="flex items-center gap-2 mb-3">
+              <Edit3 size={16} className="text-amber-600" />
+              <h3 className="font-black text-amber-900 text-sm">My List</h3>
+            </div>
+            <div className="relative">
+              <input
+                ref={myListRef}
+                type="text"
+                value={myListInput}
+                onChange={(e) => { setMyListInput(e.target.value); updateSuggestions(e.target.value); }}
+                onKeyDown={(e) => { if (e.key === 'Enter') addToMyList(); }}
+                placeholder="Type an item and press Enter..."
+                className="w-full bg-white border border-amber-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition-all"
+              />
+              {showSuggestions && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden">
+                  {suggestions.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => { addToMyList(s); myListRef.current?.focus(); }}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors text-left"
+                    >
+                      <Lightbulb size={14} className="text-amber-400 flex-shrink-0" />
+                      <span>{s}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {customItems.length > 0 && (
+              <div className="mt-3 space-y-1">
+                {customItems.map(item => (
+                  <div key={item} className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 group">
+                    <label
+                      onClick={() => toggleItem(item)}
+                      className="flex-1 flex items-center gap-2 cursor-pointer"
+                    >
+                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all ${checked[item] ? 'bg-gray-900 border-gray-900 text-white' : 'border-gray-300 bg-white'}`}>
+                        {checked[item] && <Check size={10} strokeWidth={3} />}
+                      </div>
+                      <span className={`text-sm font-medium ${checked[item] ? 'line-through text-gray-400' : 'text-gray-700'}`}>{item}</span>
+                    </label>
+                    <button
+                      onClick={() => removeFromMyList(item)}
+                      className="p-1 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {filteredCategories.map(({ category, items }) => {
           const { checked: catChecked, total: catTotal } = getCategoryProgress(items);
           const progress = catTotal > 0 ? Math.round((catChecked / catTotal) * 100) : 0;

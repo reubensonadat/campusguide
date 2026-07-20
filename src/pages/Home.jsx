@@ -66,10 +66,10 @@ const Home = () => {
   const [quickNotes, setQuickNotes] = useLocalStorage('ucc_quick_notes', '');
   const [homeWidgetsRaw] = useLocalStorage(LS_KEYS.HOME_WIDGETS, DEFAULT_HOME_WIDGETS);
   const homeWidgets = useMemo(() => ({ ...DEFAULT_HOME_WIDGETS, ...homeWidgetsRaw }), [homeWidgetsRaw]);
-  const [packingCheckedFresher] = useLocalStorage('ucc_packing_list_fresher', {});
-  const [packingCheckedGoingHome] = useLocalStorage('ucc_packing_list_going-home', {});
-  const [packingCheckedComingToSchool] = useLocalStorage('ucc_packing_list_coming-to-school', {});
-  const [packingSeasonDismissed, setPackingSeasonDismissed] = useLocalStorage('ucc_packing_season_dismissed', null);
+  const [packingCheckedFresher] = useLocalStorage('campus_packing_list_fresher', {});
+  const [packingCheckedGoingHome] = useLocalStorage('campus_packing_list_going-home', {});
+  const [packingCheckedComingToSchool] = useLocalStorage('campus_packing_list_coming-to-school', {});
+  const [packingSeasonDismissed, setPackingSeasonDismissed] = useLocalStorage('campus_packing_season_dismissed', null);
 
   const seasonalPacking = useMemo(() => {
     const packingSeason = getPackingSeason();
