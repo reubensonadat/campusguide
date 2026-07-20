@@ -37,7 +37,7 @@ const CourseCardList = ({ displayCourses, onEdit, onDelete, emptyMessage }) => {
             </div>
           </div>
           <button onClick={(e) => { e.stopPropagation(); onDelete(course.id); }}
-            className="ml-3 p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 flex-shrink-0" title="Remove course">
+            className="ml-3 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all flex-shrink-0" title="Remove course">
             <Trash2 size={16} />
           </button>
         </div>

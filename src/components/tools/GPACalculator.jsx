@@ -7,6 +7,7 @@ import { GRADE_POINTS, GRADE_RANGES } from '../../utils/constants';
 import { getGradeFromScore } from '../../utils/helpers';
 import { triggerAuthSheet } from '../onboarding/AuthModal';
 import { toast } from 'react-hot-toast';
+import ConfirmModal from '../common/ConfirmModal';
 import GPATrendGraph from './GPATrendGraph';
 import GraduationTargetSolver from './GraduationTargetSolver';
 import GpaVaultLock from './GpaVaultLock';
@@ -37,6 +38,7 @@ const GPACalculator = () => {
   const activeTermIndex = TERMS.indexOf(activeTerm) >= 0 ? TERMS.indexOf(activeTerm) : 0;
   const [activeLevel, activeSemester] = activeTerm.split('_');
 
+  const [courseToDelete, setCourseToDelete] = useState(null);
   const [newCourse, setNewCourse] = useState({
     name: '', creditHours: 3, score: '', isDetailed: false, examWeight: 60, examScore: '',
     assessments: [{ id: Date.now(), name: 'Quiz 1', score: '', max: 20 }, { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }],
@@ -154,7 +156,7 @@ const GPACalculator = () => {
               <CardContent>
                 <CourseGradeForm showAddForm={showAddForm} setShowAddForm={setShowAddForm} newCourse={newCourse} setNewCourse={setNewCourse} handleAddCourse={handleAddCourse} />
                 <CourseCardList displayCourses={displayCourses} onEdit={(c) => { setNewCourse({ ...c, isDetailed: c.isDetailed || false, examWeight: c.examWeight || 60, examScore: c.examScore || '', assessments: c.assessments || [{ id: Date.now(), name: 'Quiz 1', score: '', max: 20 }, { id: Date.now() + 1, name: 'Assignment 1', score: '', max: 20 }] }); setShowAddForm(true); }}
-                  onDelete={handleDeleteCourse} emptyMessage="Add courses to your Timetable first. They will automatically appear here for GPA tracking." />
+                  onDelete={(id) => setCourseToDelete(id)} emptyMessage="Add courses to your Timetable first. They will automatically appear here for GPA tracking." />
               </CardContent>
             </Card>
           </div>
@@ -176,6 +178,16 @@ const GPACalculator = () => {
           </div>
         </div>
       </div>
+      <ConfirmModal
+        open={!!courseToDelete}
+        title="Delete course?"
+        message="This will remove the course from your GPA calculation. You can add it back later."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={() => { if (courseToDelete) handleDeleteCourse(courseToDelete); setCourseToDelete(null); }}
+        onCancel={() => setCourseToDelete(null)}
+      />
     </div>
   );
 };
