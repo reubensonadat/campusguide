@@ -99,6 +99,17 @@ function AppContent() {
     return () => window.removeEventListener('SYNC_CONFLICT', handleSyncConflict);
   }, []);
 
+  useEffect(() => {
+    const preventNativeMenu = (e) => {
+      const tag = e.target?.tagName?.toLowerCase()
+      if (tag !== 'input' && tag !== 'textarea') {
+        e.preventDefault()
+      }
+    }
+    document.addEventListener('contextmenu', preventNativeMenu, { passive: false })
+    return () => document.removeEventListener('contextmenu', preventNativeMenu)
+  }, [])
+
   const handleResolveConflict = (action) => {
     if (action === 'restore') {
       import('./services/syncService').then(({ restoreFromCloud }) => {
