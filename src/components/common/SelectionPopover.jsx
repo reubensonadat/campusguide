@@ -68,6 +68,14 @@ export default function SelectionPopover() {
   }, [show])
 
   useEffect(() => {
+    const preventNativeMenu = (e) => {
+      const tag = e.target?.tagName?.toLowerCase()
+      if (tag !== 'input' && tag !== 'textarea') {
+        e.preventDefault()
+      }
+    }
+    document.addEventListener('contextmenu', preventNativeMenu, { passive: false })
+
     const onMouseUp = () => {
       setTimeout(handleSelection, 10)
     }
@@ -87,6 +95,7 @@ export default function SelectionPopover() {
     document.addEventListener('touchend', onTouchEnd)
 
     return () => {
+      document.removeEventListener('contextmenu', preventNativeMenu)
       document.removeEventListener('mouseup', onMouseUp)
       document.removeEventListener('keyup', onKeyUp)
       document.removeEventListener('touchend', onTouchEnd)
