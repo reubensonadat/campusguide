@@ -24,6 +24,7 @@ import { SupportModal } from './components/payment/SupportModal';
 import FeedbackModal from './components/common/FeedbackSurveyModal';
 import PWAInstallButton from './components/common/PWAInstallButton';
 import CustomCursor from './components/common/CustomCursor';
+import SelectionPopover from './components/common/SelectionPopover';
 import { PageSkeleton } from './components/common/Skeleton';
 
 
@@ -201,6 +202,7 @@ function AppContent() {
   return (
     <div className="min-h-screen flex bg-gray-50/50 overflow-x-hidden">
       <CustomCursor />
+      <SelectionPopover />
       <Sidebar onExpandedChange={setIsSidebarExpanded} />
 
       <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>
