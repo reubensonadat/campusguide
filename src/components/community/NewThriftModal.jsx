@@ -80,7 +80,7 @@ const NewThriftModal = ({ isOpen, onClose }) => {
         setCheckingLimit(true);
         const userId = localStorage.getItem('ucc_user_id');
         if (userId) {
-            const { canPost, count, error, limitReason } = await canPostThriftListing(userId);
+            const { canPost, count, error, limitReason, maxActive, maxDaily } = await canPostThriftListing(userId);
             setCheckingLimit(false);
             
             if (error) {
@@ -90,15 +90,15 @@ const NewThriftModal = ({ isOpen, onClose }) => {
             
             if (!canPost) {
                 if (limitReason === 'TOTAL') {
-                    toast.error('You have reached the maximum of 5 active listings. Please mark old items as sold or delete them from your profile before posting new ones.', { duration: 6000 });
+                    toast.error(`You have reached the maximum of ${maxActive} active listings. Please mark old items as sold or delete them from your profile before posting new ones.`, { duration: 6000 });
                 } else {
-                    toast.error(`You've reached your daily limit of 2 thrift listings. Try again tomorrow.`);
+                    toast.error(`You've reached your daily limit of ${maxDaily} thrift listings. Try again tomorrow.`);
                 }
                 return;
             }
             
             if (count > 0 && limitReason !== 'TOTAL') {
-                toast.success(`You have ${2 - count} posting(s) remaining today.`);
+                toast.success(`You have ${maxDaily - count} posting(s) remaining today.`);
             }
         } else {
             setCheckingLimit(false);

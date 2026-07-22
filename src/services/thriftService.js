@@ -36,7 +36,8 @@ export const fetchUserThriftListings = async (userId) => {
 };
 
 /**
- * Checks if user can post a new thrift listing (max 2 per day)
+ * Checks if user can post a new thrift listing
+ * Free: 10 active max, 2/day — Supporters: 25 active max, 5/day
  */
 export const canPostThriftListing = async (userId) => {
   try {
@@ -45,47 +46,36 @@ export const canPostThriftListing = async (userId) => {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const { data, error } = await supabase
-      .from('thrift_listings')
-      .select('id')
-      .eq('user_id', userId)
-      .gte('created_at', today.toISOString())
-      .lt('created_at', tomorrow.toISOString());
+    const [dailyRes, totalRes, userRes] = await Promise.all([
+      supabase.from('thrift_listings').select('id').eq('user_id', userId)
+        .gte('created_at', today.toISOString()).lt('created_at', tomorrow.toISOString()),
+      supabase.from('thrift_listings').select('id').eq('user_id', userId)
+        .eq('status', 'ACTIVE').eq('is_sold', false),
+      supabase.from('users').select('is_supporter').eq('id', userId).single()
+    ]);
 
-    if (error) {
-      console.error('Error checking thrift listing count:', error);
-      return { canPost: false, error: error.message, count: 0 };
+    if (dailyRes.error || totalRes.error) {
+      console.error('Error checking thrift listing count:', dailyRes.error || totalRes.error);
+      return { canPost: false, error: 'Failed to check listings.', count: 0 };
     }
 
-    const { data: totalData, error: totalError } = await supabase
-      .from('thrift_listings')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('status', 'ACTIVE')
-      .eq('is_sold', false);
+    const isSupporter = userRes.data?.is_supporter || false;
+    const maxActive = isSupporter ? 25 : 10;
+    const maxDaily = isSupporter ? 5 : 2;
 
-    if (totalError) {
-      console.error('Error checking total active listings:', totalError);
-      return { canPost: false, error: totalError.message, count: 0 };
-    }
+    const dailyCount = dailyRes.data ? dailyRes.data.length : 0;
+    const totalCount = totalRes.data ? totalRes.data.length : 0;
 
-    const dailyCount = data ? data.length : 0;
-    const totalCount = totalData ? totalData.length : 0;
-
-    if (totalCount >= 5) {
-      return {
-        canPost: false,
-        error: null,
-        count: dailyCount,
-        limitReason: 'TOTAL'
-      };
+    if (totalCount >= maxActive) {
+      return { canPost: false, error: null, count: dailyCount, limitReason: 'TOTAL', maxActive, maxDaily };
     }
 
     return {
-      canPost: dailyCount < 2,
+      canPost: dailyCount < maxDaily,
       error: null,
       count: dailyCount,
-      limitReason: dailyCount >= 2 ? 'DAILY' : null
+      limitReason: dailyCount >= maxDaily ? 'DAILY' : null,
+      maxActive, maxDaily
     };
   } catch (error) {
     console.error('Error in canPostThriftListing:', error);
