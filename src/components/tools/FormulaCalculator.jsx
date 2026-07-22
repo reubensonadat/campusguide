@@ -1,15 +1,23 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { formulasData } from '../../data/formulas';
+import { formulaLearning } from '../../data/formulaLearning';
 import { Modal } from '../common/Modal';
 import { CustomGuide, CustomTools, CustomCommunity, CustomProfile, CustomSettings } from '../common/CustomIcons';
 import { FormulaLoaderIcon } from '../common/CustomLoaders';
 import { usePremiumAccess } from '../../hooks/usePremiumAccess';
 import { triggerUpgradeModal } from '../common/PremiumGate';
+import LearningModePanel from './LearningModePanel';
 import {
   Play, RotateCcw, Lightbulb,
   Search, X, ArrowRight, AlertTriangle, CheckCircle2,
   Heart, Loader2, Database
 } from 'lucide-react';
+
+const BookOpenIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M21 18H6C5.44772 18 5 18.4477 5 19C5 19.5523 5.44772 20 6 20H21V22H6C4.34315 22 3 20.6569 3 19V4C3 2.89543 3.89543 2 5 2H21V18ZM16 9V7H8V9H16Z" />
+  </svg>
+);
 
 // Variables that accept comma-separated text input instead of numbers
 const isTextVariable = (variable) => ['data', 'xdata', 'ydata'].includes(variable?.id);
@@ -86,6 +94,8 @@ const FormulaCalculator = () => {
   const [selectedUnits, setSelectedUnits] = useState({});
   const { isSupporter } = usePremiumAccess();
   
+  const [learningMode, setLearningMode] = useState(false);
+
   const [favorites, setFavorites] = useState(() => {
     try {
       const saved = localStorage.getItem('formula-favorites');
@@ -157,6 +167,7 @@ const FormulaCalculator = () => {
     setResult(null);
     setSolveFor(null);
     setMode('auto');
+    setLearningMode(false);
   };
 
   const handleCloseModal = () => {
@@ -165,6 +176,7 @@ const FormulaCalculator = () => {
     setSelectedUnits({});
     setResult(null);
     setSolveFor(null);
+    setLearningMode(false);
   };
 
   // When user selects "Solve For" a target, clear inputs and set mode
@@ -404,6 +416,36 @@ const FormulaCalculator = () => {
               </code>
             </div>
 
+            {/* ── Mode Tabs: Solve | Learn ── */}
+            <div className="flex rounded-xl bg-gray-100/70 p-0.5 border border-gray-200/50">
+              <button
+                onClick={() => setLearningMode(false)}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${
+                  !learningMode
+                    ? 'bg-white text-gray-800 shadow-sm'
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                <Play className="w-3.5 h-3.5" />
+                Solve
+              </button>
+              <button
+                onClick={() => setLearningMode(true)}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${
+                  learningMode
+                    ? 'bg-white text-gray-800 shadow-sm'
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                <BookOpenIcon className="w-3.5 h-3.5" />
+                Learn
+              </button>
+            </div>
+
+            {learningMode ? (
+              <LearningModePanel learning={formulaLearning[modalFormula.id]} />
+            ) : (
+              <>
             {/* Solve For Selector */}
             <div>
               <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
@@ -632,6 +674,8 @@ const FormulaCalculator = () => {
                   </div>
                 )}
               </div>
+            )}
+              </>
             )}
           </div>
         )}

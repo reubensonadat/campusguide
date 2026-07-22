@@ -6810,5 +6810,1376 @@ export const formulasData = [
         }
       }
     ]
+  },
+  {
+    category: "Quantum Mechanics",
+    formulas: [
+      {
+        id: "schrodinger-1d", name: "Time-Independent Schrödinger Equation (1D)",
+        description: "The fundamental equation of quantum mechanics describing the wavefunction of a particle in a potential.",
+        equation: "-ħ²/(2m) d²ψ/dx² + Vψ = Eψ",
+        variables: [
+          { id: "E", label: "Energy (E)", unit: "eV" },
+          { id: "m", label: "Particle Mass (m)", unit: "kg" },
+          { id: "L", label: "Well Width (L)", unit: "nm" }
+        ],
+        calculate: ({ E, m, L }) => {
+          const hBar = 1.054571817e-34; const eV = 1.602176634e-19;
+          if (E === undefined && m !== undefined && L !== undefined) {
+            const Lm = L * 1e-9;
+            const e = (Math.pow(hBar, 2) * Math.pow(Math.PI, 2)) / (2 * m * Math.pow(Lm, 2));
+            return { result: `E₁ = ${(e/eV).toExponential(4)} eV`, steps: `E₁ = π²ħ²/(2mL²) = ${(e/eV).toExponential(4)} eV` };
+          }
+          if (m === undefined && E !== undefined && L !== undefined) {
+            if (E === 0) return { result: "Error: E=0", steps: "" };
+            const Lm = L * 1e-9; const eJ = E * eV;
+            const mass = (Math.pow(hBar, 2) * Math.pow(Math.PI, 2)) / (2 * eJ * Math.pow(Lm, 2));
+            return { result: `m = ${mass.toExponential(4)} kg`, steps: `m = π²ħ²/(2EL²)` };
+          }
+        }
+      },
+      {
+        id: "heisenberg-uncertainty", name: "Heisenberg Uncertainty Principle",
+        description: "Fundamental limit on the precision with which conjugate variables can be simultaneously known.",
+        equation: "Δx·Δp ≥ ħ/2",
+        variables: [
+          { id: "dx", label: "Position Uncertainty (Δx)", unit: "nm" },
+          { id: "dp", label: "Momentum Uncertainty (Δp)", unit: "kg·m/s" }
+        ],
+        calculate: ({ dx, dp }) => {
+          const hBar = 1.054571817e-34;
+          if (dx === undefined && dp !== undefined) {
+            if (dp === 0) return { result: "Error: Δp=0", steps: "" };
+            const res = (hBar / 2) / dp;
+            return { result: `Δx ≥ ${(res*1e9).toExponential(4)} nm`, steps: `Δx ≥ ħ/(2Δp) = ${(res*1e9).toExponential(4)} nm` };
+          }
+          if (dp === undefined && dx !== undefined) {
+            if (dx === 0) return { result: "Error: Δx=0", steps: "" };
+            const res = (hBar / 2) / (dx * 1e-9);
+            return { result: `Δp ≥ ${res.toExponential(4)} kg·m/s`, steps: `Δp ≥ ħ/(2Δx) = ${res.toExponential(4)} kg·m/s` };
+          }
+        }
+      },
+      {
+        id: "compton-effect", name: "Compton Scattering",
+        description: "Wavelength shift of X-rays scattered by electrons.",
+        equation: "Δλ = h/(mₑc)(1 - cosθ)",
+        variables: [
+          { id: "dlambda", label: "Wavelength Shift (Δλ)", unit: "pm" },
+          { id: "theta", label: "Scattering Angle (θ)", unit: "°" }
+        ],
+        calculate: ({ dlambda, theta }) => {
+          const h = 6.62607015e-34; const me = 9.1093837e-31; const c = 299792458;
+          const comp = h / (me * c);
+          if (dlambda === undefined && theta !== undefined) {
+            const res = comp * (1 - Math.cos(theta * Math.PI / 180));
+            return { result: `Δλ = ${(res*1e12).toFixed(4)} pm`, steps: `Compton wavelength = ${(comp*1e12).toFixed(4)} pm` };
+          }
+          if (theta === undefined && dlambda !== undefined) {
+            const ratio = (dlambda * 1e-12) / comp;
+            if (Math.abs(ratio) > 2) return { result: "Error: Δλ exceeds maximum 2×Compton", steps: "" };
+            const ang = Math.acos(1 - ratio) * 180 / Math.PI;
+            return { result: `θ = ${ang.toFixed(4)}°`, steps: `cosθ = 1 - Δλ/λc = ${(1-ratio).toFixed(4)}` };
+          }
+        }
+      },
+      {
+        id: "photoelectric", name: "Photoelectric Effect",
+        description: "Einstein's equation for electron emission from a metal surface by photons.",
+        equation: "Eₖ = hf - φ",
+        variables: [
+          { id: "Ek", label: "Kinetic Energy (Eₖ)", unit: "eV" },
+          { id: "f", label: "Photon Frequency (f)", unit: "Hz" },
+          { id: "phi", label: "Work Function (φ)", unit: "eV" }
+        ],
+        calculate: ({ Ek, f, phi }) => {
+          const h = 4.135667696e-15;
+          if (Ek === undefined && f !== undefined && phi !== undefined) {
+            const r = h * f - phi;
+            return { result: `Eₖ = ${r.toExponential(4)} eV`, steps: `Eₖ = hf - φ = ${(h*f).toExponential(4)} - ${phi}` };
+          }
+          if (f === undefined && Ek !== undefined && phi !== undefined) {
+            if (h === 0) return { result: "Error", steps: "" };
+            const r = (Ek + phi) / h;
+            return { result: `f = ${r.toExponential(4)} Hz`, steps: `f = (Eₖ + φ)/h` };
+          }
+          if (phi === undefined && Ek !== undefined && f !== undefined) {
+            const r = h * f - Ek;
+            return { result: `φ = ${r.toExponential(4)} eV`, steps: `φ = hf - Eₖ` };
+          }
+        }
+      },
+      {
+        id: "de-broglie", name: "De Broglie Wavelength",
+        description: "Wavelength associated with a massive particle in quantum mechanics.",
+        equation: "λ = h/p",
+        variables: [
+          { id: "lambda", label: "Wavelength (λ)", unit: "nm" },
+          { id: "p", label: "Momentum (p)", unit: "kg·m/s" },
+          { id: "v", label: "Velocity (v)", unit: "m/s" },
+          { id: "m", label: "Mass (m)", unit: "kg" }
+        ],
+        calculate: ({ lambda, p, v, m }) => {
+          const h = 6.62607015e-34;
+          if (lambda === undefined && p !== undefined) {
+            if (p === 0) return { result: "Error: p=0", steps: "" };
+            return { result: `λ = ${(h/p*1e9).toExponential(4)} nm`, steps: `h/p = ${h}/${p}` };
+          }
+          if (p === undefined && lambda !== undefined) {
+            if (lambda === 0) return { result: "Error: λ=0", steps: "" };
+            return { result: `p = ${(h/(lambda*1e-9)).toExponential(4)} kg·m/s`, steps: `h/λ` };
+          }
+          if (lambda === undefined && v !== undefined && m !== undefined) {
+            if (v === 0 || m === 0) return { result: "Error", steps: "" };
+            const pCalc = m * v;
+            return { result: `λ = ${(h/pCalc*1e9).toExponential(4)} nm`, steps: `λ = h/(mv) = h/(${m}×${v})` };
+          }
+        }
+      }
+    ]
+  },
+  {
+    category: "Nuclear & Particle Physics",
+    formulas: [
+      {
+        id: "radioactive-decay", name: "Radioactive Decay Law",
+        description: "Exponential decay of radioactive nuclei over time.",
+        equation: "N = N₀e^(-λt)",
+        variables: [
+          { id: "N", label: "Remaining Nuclei (N)", unit: "" },
+          { id: "N0", label: "Initial Nuclei (N₀)", unit: "" },
+          { id: "lambda", label: "Decay Constant (λ)", unit: "s⁻¹" },
+          { id: "t", label: "Time (t)", unit: "s" }
+        ],
+        calculate: ({ N, N0, lambda, t }) => {
+          if (N === undefined && N0 !== undefined && lambda !== undefined && t !== undefined) {
+            const r = N0 * Math.exp(-lambda * t);
+            return { result: `N = ${r.toExponential(4)}`, steps: `N = N₀e^(-λt) = ${N0}×exp(-${lambda}×${t})` };
+          }
+          if (lambda === undefined && N !== undefined && N0 !== undefined && t !== undefined) {
+            if (t === 0) return { result: "Error: t=0", steps: "" };
+            return { result: `λ = ${(-Math.log(N/N0)/t).toExponential(4)} s⁻¹`, steps: `λ = -ln(N/N₀)/t` };
+          }
+          if (t === undefined && N !== undefined && N0 !== undefined && lambda !== undefined) {
+            if (lambda === 0) return { result: "Error: λ=0", steps: "" };
+            return { result: `t = ${(-Math.log(N/N0)/lambda).toExponential(4)} s`, steps: `t = -ln(N/N₀)/λ` };
+          }
+        }
+      },
+      {
+        id: "half-life", name: "Half-Life",
+        description: "Time required for half of a radioactive substance to decay.",
+        equation: "T₁/₂ = ln(2)/λ",
+        variables: [
+          { id: "Thalf", label: "Half-Life (T₁/₂)", unit: "s" },
+          { id: "lambda", label: "Decay Constant (λ)", unit: "s⁻¹" }
+        ],
+        calculate: ({ Thalf, lambda }) => {
+          if (Thalf === undefined && lambda !== undefined) {
+            if (lambda === 0) return { result: "Error: λ=0", steps: "" };
+            return { result: `T₁/₂ = ${(Math.LN2 / lambda).toExponential(4)} s`, steps: `ln2 / ${lambda}` };
+          }
+          if (lambda === undefined && Thalf !== undefined) {
+            if (Thalf === 0) return { result: "Error: T₁/₂=0", steps: "" };
+            return { result: `λ = ${(Math.LN2 / Thalf).toExponential(4)} s⁻¹`, steps: `ln2 / ${Thalf}` };
+          }
+        }
+      },
+      {
+        id: "mass-energy", name: "Mass-Energy Equivalence",
+        description: "Einstein's equation relating mass and energy.",
+        equation: "E = mc²",
+        variables: [
+          { id: "E", label: "Energy (E)", unit: "J" },
+          { id: "m", label: "Mass (m)", unit: "kg" }
+        ],
+        calculate: ({ E, m }) => {
+          const c2 = Math.pow(299792458, 2);
+          if (E === undefined && m !== undefined) return { result: `E = ${(m * c2).toExponential(4)} J`, steps: `${m} × (3×10⁸)²` };
+          if (m === undefined && E !== undefined) {
+            if (c2 === 0) return { result: "Error", steps: "" };
+            return { result: `m = ${(E / c2).toExponential(4)} kg`, steps: `${E} / c²` };
+          }
+        }
+      },
+      {
+        id: "binding-energy", name: "Nuclear Binding Energy",
+        description: "Energy required to disassemble a nucleus into its constituent protons and neutrons.",
+        equation: "B = (Zmp + Nmn - m_nucleus)c²",
+        variables: [
+          { id: "B", label: "Binding Energy (B)", unit: "MeV" },
+          { id: "Z", label: "Proton Number (Z)", unit: "" },
+          { id: "N", label: "Neutron Number (N)", unit: "" },
+          { id: "mass", label: "Nuclear Mass", unit: "u" }
+        ],
+        calculate: ({ B, Z, N, mass }) => {
+          const mp = 1.007276466621; const mn = 1.00866491588; const uMeV = 931.49410242;
+          if (B === undefined && Z !== undefined && N !== undefined && mass !== undefined) {
+            const dm = Z * mp + N * mn - mass;
+            return { result: `B = ${(dm * uMeV).toFixed(4)} MeV`, steps: `Δm = Z·mp + N·mn - m = ${dm.toFixed(6)} u` };
+          }
+        }
+      }
+    ]
+  },
+  {
+    category: "Linear Algebra",
+    formulas: [
+      {
+        id: "matrix-multiply", name: "2×2 Matrix Multiplication",
+        description: "Product of two 2×2 matrices.",
+        equation: "C = A × B",
+        variables: [
+          { id: "a11", label: "A₁₁", unit: "" }, { id: "a12", label: "A₁₂", unit: "" },
+          { id: "a21", label: "A₂₁", unit: "" }, { id: "a22", label: "A₂₂", unit: "" },
+          { id: "b11", label: "B₁₁", unit: "" }, { id: "b12", label: "B₁₂", unit: "" },
+          { id: "b21", label: "B₂₁", unit: "" }, { id: "b22", label: "B₂₂", unit: "" }
+        ],
+        calculate: (v) => {
+          const { a11, a12, a21, a22, b11, b12, b21, b22 } = v;
+          const all = [a11,a12,a21,a22,b11,b12,b21,b22];
+          if (all.some(x => x === undefined)) return { result: "Enter all 8 values", steps: "" };
+          const c11 = a11*b11 + a12*b21; const c12 = a11*b12 + a12*b22;
+          const c21 = a21*b11 + a22*b21; const c22 = a21*b12 + a22*b22;
+          return { result: `[[${c11.toFixed(2)}, ${c12.toFixed(2)}], [${c21.toFixed(2)}, ${c22.toFixed(2)}]]`, steps: [`C₁₁ = ${a11}×${b11} + ${a12}×${b21} = ${c11}`, `C₁₂ = ${a11}×${b12} + ${a12}×${b22} = ${c12}`, `C₂₁ = ${a21}×${b11} + ${a22}×${b21} = ${c21}`, `C₂₂ = ${a21}×${b12} + ${a22}×${b22} = ${c22}`] };
+        }
+      },
+      {
+        id: "det-2x2", name: "Determinant of 2×2 Matrix",
+        description: "Scalar value that encodes the volume scaling factor of the linear transformation.",
+        equation: "det(A) = ad - bc",
+        variables: [
+          { id: "a", label: "a", unit: "" }, { id: "b", label: "b", unit: "" },
+          { id: "c", label: "c", unit: "" }, { id: "d", label: "d", unit: "" }
+        ],
+        calculate: ({ a, b, c, d }) => {
+          if ([a,b,c,d].some(x => x === undefined)) return { result: "Enter all 4 values", steps: "" };
+          return { result: `det = ${(a*d - b*c).toFixed(4)}`, steps: `(${a}×${d}) - (${b}×${c}) = ${(a*d).toFixed(4)} - ${(b*c).toFixed(4)}` };
+        }
+      },
+      {
+        id: "inv-2x2", name: "Inverse of 2×2 Matrix",
+        description: "Computes the inverse of a 2×2 matrix A⁻¹ = 1/det × adj(A).",
+        equation: "A⁻¹ = 1/(ad-bc) × [[d, -b],[-c, a]]",
+        variables: [
+          { id: "a", label: "a", unit: "" }, { id: "b", label: "b", unit: "" },
+          { id: "c", label: "c", unit: "" }, { id: "d", label: "d", unit: "" }
+        ],
+        calculate: ({ a, b, c, d }) => {
+          if ([a,b,c,d].some(x => x === undefined)) return { result: "Enter all 4 values", steps: "" };
+          const det = a*d - b*c;
+          if (det === 0) return { result: "Matrix is singular (det=0)", steps: "" };
+          const inv = [[(d/det).toFixed(4), (-b/det).toFixed(4)], [(-c/det).toFixed(4), (a/det).toFixed(4)]];
+          return { result: `[[${inv[0][0]}, ${inv[0][1]}], [${inv[1][0]}, ${inv[1][1]}]]`, steps: [`det = ${det.toFixed(4)}`, `A⁻¹ = 1/det × [[d, -b], [-c, a]]`] };
+        }
+      },
+      {
+        id: "eigenvalues-2x2", name: "Eigenvalues of 2×2 Matrix",
+        description: "Eigenvalues λ satisfying det(A - λI) = 0 for a 2×2 matrix.",
+        equation: "λ = (tr ± √(tr² - 4det))/2",
+        variables: [
+          { id: "a", label: "a", unit: "" }, { id: "b", label: "b", unit: "" },
+          { id: "c", label: "c", unit: "" }, { id: "d", label: "d", unit: "" }
+        ],
+        calculate: ({ a, b, c, d }) => {
+          if ([a,b,c,d].some(x => x === undefined)) return { result: "Enter all 4 values", steps: "" };
+          const tr = a + d; const det = a*d - b*c;
+          const disc = tr*tr - 4*det;
+          if (disc < 0) {
+            const re = (tr/2).toFixed(4); const im = (Math.sqrt(-disc)/2).toFixed(4);
+            return { result: `λ₁ = ${re} + ${im}i, λ₂ = ${re} - ${im}i`, steps: [`tr = ${tr}, det = ${det}`, `Discriminant = ${disc.toFixed(4)} < 0 → complex`] };
+          }
+          const l1 = ((tr + Math.sqrt(disc))/2).toFixed(4); const l2 = ((tr - Math.sqrt(disc))/2).toFixed(4);
+          return { result: `λ₁ = ${l1}, λ₂ = ${l2}`, steps: [`tr = ${tr}, det = ${det}`, `λ = (${tr} ± √${disc.toFixed(4)})/2`] };
+        }
+      },
+      {
+        id: "dot-product", name: "Dot Product (3D)",
+        description: "Scalar product of two 3D vectors.",
+        equation: "a·b = a₁b₁ + a₂b₂ + a₃b₃",
+        variables: [
+          { id: "a1", label: "a₁", unit: "" }, { id: "a2", label: "a₂", unit: "" }, { id: "a3", label: "a₃", unit: "" },
+          { id: "b1", label: "b₁", unit: "" }, { id: "b2", label: "b₂", unit: "" }, { id: "b3", label: "b₃", unit: "" }
+        ],
+        calculate: ({ a1, a2, a3, b1, b2, b3 }) => {
+          if ([a1,a2,a3,b1,b2,b3].some(x => x === undefined)) return { result: "Enter all 6 values", steps: "" };
+          const dp = a1*b1 + a2*b2 + a3*b3;
+          return { result: `a·b = ${dp.toFixed(4)}`, steps: [`${a1}×${b1} + ${a2}×${b2} + ${a3}×${b3}`] };
+        }
+      },
+      {
+        id: "cross-product", name: "Cross Product (3D)",
+        description: "Vector product of two 3D vectors, perpendicular to both.",
+        equation: "a×b = (a₂b₃-a₃b₂, a₃b₁-a₁b₃, a₁b₂-a₂b₁)",
+        variables: [
+          { id: "a1", label: "a₁", unit: "" }, { id: "a2", label: "a₂", unit: "" }, { id: "a3", label: "a₃", unit: "" },
+          { id: "b1", label: "b₁", unit: "" }, { id: "b2", label: "b₂", unit: "" }, { id: "b3", label: "b₃", unit: "" }
+        ],
+        calculate: ({ a1, a2, a3, b1, b2, b3 }) => {
+          if ([a1,a2,a3,b1,b2,b3].some(x => x === undefined)) return { result: "Enter all 6 values", steps: "" };
+          const x = a2*b3 - a3*b2; const y = a3*b1 - a1*b3; const z = a1*b2 - a2*b1;
+          return { result: `(${x.toFixed(4)}, ${y.toFixed(4)}, ${z.toFixed(4)})`, steps: [`x = ${a2}×${b3} - ${a3}×${b2} = ${x}`, `y = ${a3}×${b1} - ${a1}×${b3} = ${y}`, `z = ${a1}×${b2} - ${a2}×${b1} = ${z}`] };
+        }
+      }
+    ]
+  },
+  {
+    category: "Differential Equations",
+    formulas: [
+      {
+        id: "separable-ode", name: "Separable ODE",
+        description: "A differential equation of the form dy/dx = f(x)g(y) solved by separation of variables.",
+        equation: "∫ dy/g(y) = ∫ f(x) dx + C",
+        variables: [
+          { id: "f", label: "f(x)", unit: "" },
+          { id: "g", label: "g(y)", unit: "" }
+        ],
+        calculate: ({ f, g }) => {
+          if (f === undefined || g === undefined) return { result: "Enter f(x) and g(y) coefficients", steps: "" };
+          return { result: `Solution: separate and integrate. ∫dy/${g} = ∫${f}dx + C`, steps: ["1. Separate: dy/g(y) = f(x)dx", "2. Integrate both sides", "3. Add constant C"] };
+        }
+      },
+      {
+        id: "linear-1st-order", name: "First-Order Linear ODE",
+        description: "General solution of dy/dx + P(x)y = Q(x) using integrating factor.",
+        equation: "y = e^(-∫Pdx) ∫(Q·e^(∫Pdx))dx",
+        variables: [
+          { id: "P", label: "P(x)", unit: "" },
+          { id: "Q", label: "Q(x)", unit: "" }
+        ],
+        calculate: ({ P, Q }) => {
+          if (P === undefined || Q === undefined) return { result: "Enter P(x) and Q(x) coefficients", steps: "" };
+          const mu = `exp(${P}x)`; const sol = `y = 1/${mu} × ∫${Q}·${mu} dx`;
+          return { result: `μ(x) = ${mu}, y = ${sol} + C`, steps: ["1. Compute integrating factor μ = e^(∫Pdx)", `2. μ = ${mu}`, `3. y = 1/μ ∫ μQ dx`] };
+        }
+      },
+      {
+        id: "euler-method", name: "Euler's Method (Numerical)",
+        description: "Approximate solution to an ODE using forward Euler stepping.",
+        equation: "y_{n+1} = y_n + h·f(x_n, y_n)",
+        variables: [
+          { id: "y0", label: "Initial y(0)", unit: "" },
+          { id: "h", label: "Step Size (h)", unit: "" },
+          { id: "steps", label: "Number of Steps", unit: "" }
+        ],
+        calculate: ({ y0, h, steps }) => {
+          if ([y0, h, steps].some(x => x === undefined)) return { result: "Enter initial y, step size h, and number of steps", steps: "" };
+          const vals = [y0]; let y = y0;
+          for (let i = 0; i < steps; i++) { y += h * y; vals.push(y); }
+          return { result: `yₙ = [${vals.map(v=>v.toFixed(4)).join(', ')}]`, steps: [`Forward Euler: y₁ = y₀ + h·y₀ = ${y0} + ${h}×${y0}`] };
+        }
+      },
+      {
+        id: "char-eqn-2nd-order", name: "Characteristic Equation (2nd Order ODE)",
+        description: "Solves ay'' + by' + cy = 0 using characteristic equation ar² + br + c = 0.",
+        equation: "r = (-b ± √(b² - 4ac))/(2a)",
+        variables: [
+          { id: "a", label: "Coefficient a", unit: "" },
+          { id: "b", label: "Coefficient b", unit: "" },
+          { id: "c", label: "Coefficient c", unit: "" }
+        ],
+        calculate: ({ a, b, c }) => {
+          if ([a, b, c].some(x => x === undefined)) return { result: "Enter a, b, c", steps: "" };
+          if (a === 0) return { result: "Not 2nd order (a=0)", steps: "" };
+          const disc = b*b - 4*a*c;
+          if (disc > 0) {
+            const r1 = (-b + Math.sqrt(disc))/(2*a); const r2 = (-b - Math.sqrt(disc))/(2*a);
+            return { result: `r₁ = ${r1.toFixed(4)}, r₂ = ${r2.toFixed(4)}`, steps: [`Discriminant = ${disc.toFixed(4)} > 0`, `y = C₁e^(${r1.toFixed(4)}x) + C₂e^(${r2.toFixed(4)}x)`] };
+          }
+          if (disc === 0) {
+            const r = -b/(2*a);
+            return { result: `r = ${r.toFixed(4)} (repeated)`, steps: [`Discriminant = 0`, `y = (C₁ + C₂x)e^(${r.toFixed(4)}x)`] };
+          }
+          const re = (-b/(2*a)).toFixed(4); const im = (Math.sqrt(-disc)/(2*a)).toFixed(4);
+          return { result: `r = ${re} ± ${im}i`, steps: [`Discriminant = ${disc.toFixed(4)} < 0`, `y = e^(${re}x)(C₁cos(${im}x) + C₂sin(${im}x))`] };
+        }
+      }
+    ]
+  },
+  {
+    category: "Complex Analysis",
+    formulas: [
+      {
+        id: "cauchy-riemann", name: "Cauchy-Riemann Equations",
+        description: "Necessary and sufficient conditions for a complex function to be analytic.",
+        equation: "∂u/∂x = ∂v/∂y, ∂u/∂y = -∂v/∂x",
+        variables: [
+          { id: "ux", label: "∂u/∂x", unit: "" },
+          { id: "vy", label: "∂v/∂y", unit: "" },
+          { id: "uy", label: "∂u/∂y", unit: "" },
+          { id: "vx", label: "∂v/∂x", unit: "" }
+        ],
+        calculate: ({ ux, vy, uy, vx }) => {
+          if ([ux, vy, uy, vx].some(x => x === undefined)) return { result: "Enter all 4 partial derivatives", steps: "" };
+          const c1 = Math.abs(ux - vy) < 1e-9; const c2 = Math.abs(uy + vx) < 1e-9;
+          if (c1 && c2) return { result: "Analytic ✓ (C-R equations satisfied)", steps: [`∂u/∂x = ${ux} = ∂v/∂y = ${vy}`, `∂u/∂y = ${uy} = -∂v/∂x = ${-vx}`] };
+          return { result: "Not analytic ✗", steps: [`∂u/∂x (${ux}) ≠ ∂v/∂y (${vy}) or ∂u/∂y (${uy}) ≠ -∂v/∂x (${-vx})`] };
+        }
+      },
+      {
+        id: "euler-formula", name: "Euler's Formula",
+        description: "Relates complex exponentials to trigonometric functions.",
+        equation: "e^(iθ) = cosθ + i·sinθ",
+        variables: [
+          { id: "theta", label: "Angle (θ)", unit: "°" }
+        ],
+        calculate: ({ theta }) => {
+          if (theta === undefined) return { result: "Enter an angle θ", steps: "" };
+          const rad = theta * Math.PI / 180;
+          const re = Math.cos(rad); const im = Math.sin(rad);
+          return { result: `e^(i·${theta}°) = ${re.toFixed(4)} + i·${im.toFixed(4)}`, steps: [`cos(${theta}°) = ${re.toFixed(4)}`, `sin(${theta}°) = ${im.toFixed(4)}`] };
+        }
+      },
+      {
+        id: "demoivre", name: "De Moivre's Theorem",
+        description: "Raises a complex number in polar form to a power.",
+        equation: "(cosθ + i·sinθ)^n = cos(nθ) + i·sin(nθ)",
+        variables: [
+          { id: "theta", label: "Angle (θ)", unit: "°" },
+          { id: "n", label: "Power (n)", unit: "" }
+        ],
+        calculate: ({ theta, n }) => {
+          if (theta === undefined || n === undefined) return { result: "Enter angle θ and power n", steps: "" };
+          const rad = theta * Math.PI / 180 * n;
+          const re = Math.cos(rad); const im = Math.sin(rad);
+          return { result: `(${re.toFixed(4)} + ${im.toFixed(4)}i)`, steps: [`cos(${n}×${theta}°) + i·sin(${n}×${theta}°)`] };
+        }
+      }
+    ]
+  },
+  {
+    category: "Organic Chemistry",
+    formulas: [
+      {
+        id: "degree-unsaturation", name: "Degree of Unsaturation (DU)",
+        description: "Number of rings and pi bonds in an organic molecule from its molecular formula.",
+        equation: "DU = (2C + 2 + N - H - X)/2",
+        variables: [
+          { id: "DU", label: "Degree of Unsaturation", unit: "" },
+          { id: "C", label: "Carbon (C)", unit: "" },
+          { id: "H", label: "Hydrogen (H)", unit: "" },
+          { id: "N", label: "Nitrogen (N)", unit: "" },
+          { id: "X", label: "Halogen (X)", unit: "" }
+        ],
+        calculate: ({ DU, C, H, N, X }) => {
+          if (DU === undefined && C !== undefined && H !== undefined) {
+            const n = N || 0; const x = X || 0;
+            const r = (2*C + 2 + n - H - x)/2;
+            return { result: `DU = ${r.toFixed(2)}`, steps: [`(2×${C} + 2 + ${n} - ${H} - ${x})/2 = ${r.toFixed(2)}`] };
+          }
+        }
+      },
+      {
+        id: "hdi-index", name: "Hydrogen Deficiency Index",
+        description: "Alternative name for degree of unsaturation, used in spectroscopy.",
+        equation: "HDI = (2C + 2 - H)/2",
+        variables: [
+          { id: "HDI", label: "Hydrogen Deficiency Index", unit: "" },
+          { id: "C", label: "Carbon Atoms", unit: "" },
+          { id: "H", label: "Hydrogen Atoms", unit: "" }
+        ],
+        calculate: ({ HDI, C, H }) => {
+          if (HDI === undefined && C !== undefined && H !== undefined) {
+            const r = (2*C + 2 - H)/2;
+            return { result: `HDI = ${r.toFixed(2)}`, steps: [`(2×${C} + 2 - ${H})/2`] };
+          }
+        }
+      },
+      {
+        id: "ee-optical-purity", name: "Enantiomeric Excess (Optical Purity)",
+        description: "Measures the excess of one enantiomer over the racemic mixture.",
+        equation: "ee% = |[R] - [S]| / ([R] + [S]) × 100",
+        variables: [
+          { id: "ee", label: "Enantiomeric Excess (ee)", unit: "%" },
+          { id: "R", label: "Concentration of R", unit: "" },
+          { id: "S", label: "Concentration of S", unit: "" }
+        ],
+        calculate: ({ ee, R, S }) => {
+          if (ee === undefined && R !== undefined && S !== undefined) {
+            const total = R + S; if (total === 0) return { result: "Error: zero total", steps: "" };
+            return { result: `ee = ${(Math.abs(R-S)/total*100).toFixed(2)}%`, steps: [`|${R} - ${S}| / (${R} + ${S}) × 100`] };
+          }
+        }
+      }
+    ]
+  },
+  {
+    category: "Physical Chemistry",
+    formulas: [
+      {
+        id: "arrhenius", name: "Arrhenius Equation",
+        description: "Temperature dependence of reaction rates.",
+        equation: "k = A·e^(-Ea/(RT))",
+        variables: [
+          { id: "k", label: "Rate Constant (k)", unit: "s⁻¹" },
+          { id: "A", label: "Pre-exponential Factor (A)", unit: "s⁻¹" },
+          { id: "Ea", label: "Activation Energy (Ea)", unit: "kJ/mol" },
+          { id: "T", label: "Temperature (T)", unit: "K" }
+        ],
+        calculate: ({ k, A, Ea, T }) => {
+          const R = 8.314462618;
+          if (k === undefined && A !== undefined && Ea !== undefined && T !== undefined) {
+            const r = A * Math.exp(-Ea * 1000 / (R * T));
+            return { result: `k = ${r.toExponential(4)} s⁻¹`, steps: [`k = A·e^(-Ea/RT) = ${A}×exp(-${Ea}×10³/(${R}×${T}))`] };
+          }
+          if (Ea === undefined && k !== undefined && A !== undefined && T !== undefined) {
+            if (k <= 0 || A <= 0) return { result: "Error: k and A must be > 0", steps: "" };
+            const ea = -Math.log(k / A) * R * T / 1000;
+            return { result: `Ea = ${ea.toFixed(4)} kJ/mol`, steps: [`Ea = -RT·ln(k/A)`] };
+          }
+        }
+      },
+      {
+        id: "vanthoff", name: "Van't Hoff Equation",
+        description: "Relates equilibrium constant to temperature change.",
+        equation: "ln(K₂/K₁) = -ΔH/R (1/T₂ - 1/T₁)",
+        variables: [
+          { id: "K1", label: "K at T₁", unit: "" },
+          { id: "K2", label: "K at T₂", unit: "" },
+          { id: "T1", label: "Temperature T₁", unit: "K" },
+          { id: "T2", label: "Temperature T₂", unit: "K" },
+          { id: "dH", label: "Enthalpy Change (ΔH)", unit: "kJ/mol" }
+        ],
+        calculate: ({ K1, K2, T1, T2, dH }) => {
+          const R = 8.314462618;
+          const kn = [K1, K2, T1, T2, dH].filter(x => x !== undefined).length;
+          if (kn < 4) return { result: "Need at least 4 of 5 values", steps: "" };
+          if (dH === undefined && K1 !== undefined && K2 !== undefined && T1 !== undefined && T2 !== undefined) {
+            const r = -R * Math.log(K2/K1) / (1/T2 - 1/T1) / 1000;
+            return { result: `ΔH = ${r.toFixed(4)} kJ/mol`, steps: [`ΔH = -R·ln(K₂/K₁) / (1/T₂ - 1/T₁)`] };
+          }
+          if (K2 === undefined && K1 !== undefined && T1 !== undefined && T2 !== undefined && dH !== undefined) {
+            const r = K1 * Math.exp(-dH * 1000 / R * (1/T2 - 1/T1));
+            return { result: `K₂ = ${r.toExponential(4)}`, steps: [`K₂ = K₁·exp(-ΔH/R(1/T₂-1/T₁))`] };
+          }
+        }
+      },
+      {
+        id: "clausius-clapeyron", name: "Clausius-Clapeyron Equation",
+        description: "Vapor pressure as a function of temperature.",
+        equation: "ln(P₂/P₁) = -ΔH_vap/R (1/T₂ - 1/T₁)",
+        variables: [
+          { id: "P1", label: "Pressure P₁", unit: "Pa" },
+          { id: "P2", label: "Pressure P₂", unit: "Pa" },
+          { id: "T1", label: "Temperature T₁", unit: "K" },
+          { id: "T2", label: "Temperature T₂", unit: "K" },
+          { id: "dHvap", label: "ΔH_vap", unit: "kJ/mol" }
+        ],
+        calculate: ({ P1, P2, T1, T2, dHvap }) => {
+          const R = 8.314462618;
+          if (dHvap === undefined && P1 !== undefined && P2 !== undefined && T1 !== undefined && T2 !== undefined) {
+            const r = -R * Math.log(P2/P1) / (1/T2 - 1/T1) / 1000;
+            return { result: `ΔH_vap = ${r.toFixed(4)} kJ/mol`, steps: [`ln(P₂/P₁) = ${Math.log(P2/P1).toFixed(4)}`] };
+          }
+          if (P2 === undefined && P1 !== undefined && T1 !== undefined && T2 !== undefined && dHvap !== undefined) {
+            const r = P1 * Math.exp(-dHvap * 1000 / R * (1/T2 - 1/T1));
+            return { result: `P₂ = ${r.toExponential(4)} Pa`, steps: [`P₂ = P₁·exp(-ΔH_vap/R(1/T₂-1/T₁))`] };
+          }
+        }
+      },
+      {
+        id: "nernst", name: "Nernst Equation",
+        description: "Electrode potential under non-standard conditions.",
+        equation: "E = E° - RT/(nF) ln(Q)",
+        variables: [
+          { id: "E", label: "Cell Potential (E)", unit: "V" },
+          { id: "E0", label: "Standard Potential (E°)", unit: "V" },
+          { id: "n", label: "Electrons Transferred (n)", unit: "" },
+          { id: "Q", label: "Reaction Quotient (Q)", unit: "" }
+        ],
+        calculate: ({ E, E0, n, Q }) => {
+          const R = 8.314462618; const F = 96485.33212;
+          if (E === undefined && E0 !== undefined && n !== undefined && Q !== undefined) {
+            if (n === 0 || Q <= 0) return { result: "Error: n>0, Q>0", steps: "" };
+            const r = E0 - (R * 298.15)/(n * F) * Math.log(Q);
+            return { result: `E = ${r.toFixed(4)} V`, steps: [`E = ${E0} - (RT/${n}F)·ln(${Q})`] };
+          }
+          if (Q === undefined && E !== undefined && E0 !== undefined && n !== undefined) {
+            const r = Math.exp((E0 - E) * n * F / (R * 298.15));
+            return { result: `Q = ${r.toExponential(4)}`, steps: [`Q = exp((E°-E)nF/RT)`] };
+          }
+        }
+      }
+    ]
+  },
+  {
+    category: "Analytical Chemistry",
+    formulas: [
+      {
+        id: "beer-lambert", name: "Beer-Lambert Law",
+        description: "Absorbance is proportional to concentration and path length.",
+        equation: "A = εcl",
+        variables: [
+          { id: "A", label: "Absorbance (A)", unit: "" },
+          { id: "eps", label: "Molar Absorptivity (ε)", unit: "L·mol⁻¹·cm⁻¹" },
+          { id: "c", label: "Concentration (c)", unit: "mol/L" },
+          { id: "l", label: "Path Length (l)", unit: "cm" }
+        ],
+        calculate: ({ A, eps, c, l }) => {
+          const known = [A, eps, c, l].filter(x => x !== undefined).length;
+          if (known < 3) return { result: "Need at least 3 of 4 values", steps: "" };
+          if (A === undefined && eps !== undefined && c !== undefined && l !== undefined) return { result: `A = ${(eps*c*l).toFixed(4)}`, steps: `${eps}×${c}×${l}` };
+          if (c === undefined && A !== undefined && eps !== undefined && l !== undefined) {
+            if (eps === 0 || l === 0) return { result: "Error: ε=0 or l=0", steps: "" };
+            return { result: `c = ${(A/(eps*l)).toExponential(4)} mol/L`, steps: `A/(εl) = ${A}/(${eps}×${l})` };
+          }
+          if (eps === undefined && A !== undefined && c !== undefined && l !== undefined) {
+            if (c === 0 || l === 0) return { result: "Error: c=0 or l=0", steps: "" };
+            return { result: `ε = ${(A/(c*l)).toExponential(4)} L·mol⁻¹·cm⁻¹`, steps: `A/(cl)` };
+          }
+        }
+      },
+      {
+        id: "henderson-hasselbalch", name: "Henderson-Hasselbalch Equation",
+        description: "pH of a buffer solution from pKa and ratio of conjugate base to acid.",
+        equation: "pH = pKa + log([A⁻]/[HA])",
+        variables: [
+          { id: "pH", label: "pH", unit: "" },
+          { id: "pKa", label: "pKa", unit: "" },
+          { id: "ratio", label: "[A⁻]/[HA] Ratio", unit: "" }
+        ],
+        calculate: ({ pH, pKa, ratio }) => {
+          const known = [pH, pKa, ratio].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (pH === undefined && pKa !== undefined && ratio !== undefined) {
+            if (ratio <= 0) return { result: "Error: ratio must be > 0", steps: "" };
+            return { result: `pH = ${(pKa + Math.log10(ratio)).toFixed(4)}`, steps: [`${pKa} + log₁₀(${ratio})`] };
+          }
+          if (ratio === undefined && pH !== undefined && pKa !== undefined) return { result: `[A⁻]/[HA] = ${Math.pow(10, pH - pKa).toExponential(4)}`, steps: [`10^(${pH} - ${pKa})`] };
+          if (pKa === undefined && pH !== undefined && ratio !== undefined) {
+            if (ratio <= 0) return { result: "Error: ratio ≤ 0", steps: "" };
+            return { result: `pKa = ${(pH - Math.log10(ratio)).toFixed(4)}`, steps: [`${pH} - log₁₀(${ratio})`] };
+          }
+        }
+      },
+      {
+        id: "titration-equivalence", name: "Titration Equivalence Point",
+        description: "Volume of titrant needed to reach the equivalence point.",
+        equation: "C₁V₁ = C₂V₂",
+        variables: [
+          { id: "C1", label: "Concentration of Analyte (C₁)", unit: "mol/L" },
+          { id: "V1", label: "Volume of Analyte (V₁)", unit: "mL" },
+          { id: "C2", label: "Concentration of Titrant (C₂)", unit: "mol/L" },
+          { id: "V2", label: "Volume of Titrant (V₂)", unit: "mL" }
+        ],
+        calculate: ({ C1, V1, C2, V2 }) => {
+          const known = [C1, V1, C2, V2].filter(x => x !== undefined).length;
+          if (known < 3) return { result: "Need at least 3 of 4 values", steps: "" };
+          if (C1 === undefined && V1 !== undefined && C2 !== undefined && V2 !== undefined) return { result: `C₁ = ${(C2*V2/V1).toExponential(4)} mol/L`, steps: `C₂V₂/V₁` };
+          if (V1 === undefined && C1 !== undefined && C2 !== undefined && V2 !== undefined) return { result: `V₁ = ${(C2*V2/C1).toFixed(4)} mL`, steps: `C₂V₂/C₁` };
+          if (C2 === undefined && C1 !== undefined && V1 !== undefined && V2 !== undefined) return { result: `C₂ = ${(C1*V1/V2).toExponential(4)} mol/L`, steps: `C₁V₁/V₂` };
+          if (V2 === undefined && C1 !== undefined && V1 !== undefined && C2 !== undefined) return { result: `V₂ = ${(C1*V1/C2).toFixed(4)} mL`, steps: `C₁V₁/C₂` };
+        }
+      },
+      {
+        id: "delta-g", name: "Gibbs Free Energy",
+        description: "Spontaneity of a reaction at constant temperature and pressure.",
+        equation: "ΔG = ΔH - TΔS",
+        variables: [
+          { id: "dG", label: "Gibbs Free Energy (ΔG)", unit: "kJ/mol" },
+          { id: "dH", label: "Enthalpy Change (ΔH)", unit: "kJ/mol" },
+          { id: "T", label: "Temperature (T)", unit: "K" },
+          { id: "dS", label: "Entropy Change (ΔS)", unit: "kJ/(mol·K)" }
+        ],
+        calculate: ({ dG, dH, T, dS }) => {
+          const known = [dG, dH, T, dS].filter(x => x !== undefined).length;
+          if (known < 3) return { result: "Need at least 3 of 4 values", steps: "" };
+          if (dG === undefined && dH !== undefined && T !== undefined && dS !== undefined) return { result: `ΔG = ${(dH - T*dS).toFixed(4)} kJ/mol`, steps: [`${dH} - ${T}×${dS}`] };
+          if (dS === undefined && dG !== undefined && dH !== undefined && T !== undefined) {
+            if (T === 0) return { result: "Error: T=0", steps: "" };
+            return { result: `ΔS = ${((dH - dG)/T).toExponential(4)} kJ/(mol·K)`, steps: `(ΔH - ΔG)/T` };
+          }
+        }
+      }
+    ]
+  },
+  {
+    category: "Electrical Engineering",
+    formulas: [
+      {
+        id: "ohms-law", name: "Ohm's Law",
+        description: "Voltage equals current times resistance in a DC circuit.",
+        equation: "V = IR",
+        variables: [
+          { id: "V", label: "Voltage (V)", unit: "V" },
+          { id: "I", label: "Current (I)", unit: "A" },
+          { id: "R", label: "Resistance (R)", unit: "Ω" }
+        ],
+        calculate: ({ V, I, R }) => {
+          const known = [V, I, R].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (V === undefined && I !== undefined && R !== undefined) return { result: `V = ${(I*R).toFixed(4)} V`, steps: `${I}×${R}` };
+          if (I === undefined && V !== undefined && R !== undefined) { if (R===0) return { result: "Error: R=0", steps: "" }; return { result: `I = ${(V/R).toFixed(4)} A`, steps: `${V}/${R}` }; }
+          if (R === undefined && V !== undefined && I !== undefined) { if (I===0) return { result: "Error: I=0", steps: "" }; return { result: `R = ${(V/I).toFixed(4)} Ω`, steps: `${V}/${I}` }; }
+        }
+      },
+      {
+        id: "kirchhoff-current", name: "Kirchhoff's Current Law (KCL)",
+        description: "Sum of currents entering a node equals the sum leaving.",
+        equation: "ΣI_in = ΣI_out",
+        variables: [
+          { id: "I1", label: "Current I₁", unit: "A" },
+          { id: "I2", label: "Current I₂", unit: "A" },
+          { id: "I3", label: "Current I₃", unit: "A" }
+        ],
+        calculate: ({ I1, I2, I3 }) => {
+          if ([I1, I2, I3].some(x => x === undefined)) return { result: "Enter all 3 currents", steps: "" };
+          const sum = I1 + I2 + I3;
+          return { result: `ΣI = ${sum.toFixed(4)} A ${Math.abs(sum) < 1e-9 ? '✓ (KCL satisfied)' : '✗ (not zero)'}`, steps: [`${I1} + ${I2} + ${I3} = ${sum.toFixed(4)} A`] };
+        }
+      },
+      {
+        id: "power-ac", name: "AC Power (Single Phase)",
+        description: "Real power in an AC circuit with phase angle.",
+        equation: "P = VI·cosφ",
+        variables: [
+          { id: "P", label: "Real Power (P)", unit: "W" },
+          { id: "V", label: "RMS Voltage (V)", unit: "V" },
+          { id: "I", label: "RMS Current (I)", unit: "A" },
+          { id: "cosphi", label: "Power Factor (cosφ)", unit: "" }
+        ],
+        calculate: ({ P, V, I, cosphi }) => {
+          const known = [P, V, I, cosphi].filter(x => x !== undefined).length;
+          if (known < 3) return { result: "Need at least 3 of 4 values", steps: "" };
+          if (P === undefined && V !== undefined && I !== undefined && cosphi !== undefined) return { result: `P = ${(V*I*cosphi).toFixed(2)} W`, steps: `${V}×${I}×${cosphi}` };
+          if (cosphi === undefined && P !== undefined && V !== undefined && I !== undefined) {
+            if (V === 0 || I === 0) return { result: "Error: V=0 or I=0", steps: "" };
+            return { result: `cosφ = ${(P/(V*I)).toFixed(4)}`, steps: `P/(VI)` };
+          }
+        }
+      },
+      {
+        id: "resonance-rlc", name: "RLC Resonance Frequency",
+        description: "Frequency at which the impedance of an RLC circuit is purely resistive.",
+        equation: "f = 1/(2π√(LC))",
+        variables: [
+          { id: "f", label: "Resonance Frequency (f)", unit: "Hz" },
+          { id: "L", label: "Inductance (L)", unit: "H" },
+          { id: "C", label: "Capacitance (C)", unit: "F" }
+        ],
+        calculate: ({ f, L, C }) => {
+          const known = [f, L, C].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (f === undefined && L !== undefined && C !== undefined) {
+            if (L === 0 || C === 0) return { result: "Error: LC=0", steps: "" };
+            return { result: `f = ${(1/(2*Math.PI*Math.sqrt(L*C))).toFixed(2)} Hz`, steps: `1/(2π√(${L}×${C}))` };
+          }
+          if (L === undefined && f !== undefined && C !== undefined) {
+            if (f === 0 || C === 0) return { result: "Error", steps: "" };
+            return { result: `L = ${(1/(4*Math.PI*Math.PI*f*f*C)).toExponential(4)} H`, steps: `1/(4π²f²C)` };
+          }
+          if (C === undefined && f !== undefined && L !== undefined) {
+            if (f === 0 || L === 0) return { result: "Error", steps: "" };
+            return { result: `C = ${(1/(4*Math.PI*Math.PI*f*f*L)).toExponential(4)} F`, steps: `1/(4π²f²L)` };
+          }
+        }
+      }
+    ]
+  },
+  {
+    category: "Civil & Structural Engineering",
+    formulas: [
+      {
+        id: "bending-stress", name: "Bending Stress (Beams)",
+        description: "Stress at a point in a beam cross-section due to bending moment.",
+        equation: "σ = My/I",
+        variables: [
+          { id: "sigma", label: "Bending Stress (σ)", unit: "MPa" },
+          { id: "M", label: "Bending Moment (M)", unit: "kN·m" },
+          { id: "y", label: "Distance from Neutral Axis (y)", unit: "mm" },
+          { id: "I", label: "Moment of Inertia (I)", unit: "mm⁴" }
+        ],
+        calculate: ({ sigma, M, y, I }) => {
+          const known = [sigma, M, y, I].filter(x => x !== undefined).length;
+          if (known < 3) return { result: "Need at least 3 of 4 values", steps: "" };
+          const M_Nmm = M * 1e6; const y_mm = y; const I_mm4 = I;
+          if (sigma === undefined && M !== undefined && y !== undefined && I !== undefined) {
+            if (I === 0) return { result: "Error: I=0", steps: "" };
+            return { result: `σ = ${(M_Nmm * y_mm / I_mm4).toFixed(4)} MPa`, steps: `My/I = (${M_Nmm}×${y_mm})/${I_mm4}` };
+          }
+          if (M === undefined && sigma !== undefined && y !== undefined && I !== undefined) {
+            if (y === 0) return { result: "Error: y=0", steps: "" };
+            return { result: `M = ${(sigma * I_mm4 / y_mm / 1e6).toFixed(4)} kN·m`, steps: `σI/y` };
+          }
+        }
+      },
+      {
+        id: "deflection-beam", name: "Beam Deflection (Simply Supported, Point Load)",
+        description: "Maximum deflection of a simply supported beam under a central point load.",
+        equation: "δ = PL³/(48EI)",
+        variables: [
+          { id: "delta", label: "Max Deflection (δ)", unit: "mm" },
+          { id: "P", label: "Point Load (P)", unit: "kN" },
+          { id: "L", label: "Span Length (L)", unit: "m" },
+          { id: "E", label: "Young's Modulus (E)", unit: "GPa" },
+          { id: "I", label: "Moment of Inertia (I)", unit: "mm⁴" }
+        ],
+        calculate: ({ delta, P, L, E, I }) => {
+          const known = [delta, P, L, E, I].filter(x => x !== undefined).length;
+          if (known < 4) return { result: "Need at least 4 of 5 values", steps: "" };
+          if (delta === undefined) {
+            if (I === 0 || E === 0) return { result: "Error: EI=0", steps: "" };
+            const P_N = P * 1000; const L_mm = L * 1000;
+            const d = (P_N * Math.pow(L_mm, 3)) / (48 * E * 1e9 * I);
+            return { result: `δ = ${(d*1000).toFixed(4)} mm`, steps: `PL³/(48EI)` };
+          }
+        }
+      },
+      {
+        id: "young-modulus", name: "Young's Modulus (Stress-Strain)",
+        description: "Ratio of tensile stress to tensile strain in the elastic region.",
+        equation: "E = σ/ε",
+        variables: [
+          { id: "E", label: "Young's Modulus (E)", unit: "GPa" },
+          { id: "sigma", label: "Stress (σ)", unit: "MPa" },
+          { id: "eps", label: "Strain (ε)", unit: "" }
+        ],
+        calculate: ({ E, sigma, eps }) => {
+          const known = [E, sigma, eps].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (E === undefined && sigma !== undefined && eps !== undefined) { if (eps === 0) return { result: "Error: ε=0", steps: "" }; return { result: `E = ${(sigma/eps/1000).toFixed(4)} GPa`, steps: `${sigma}/${eps}` }; }
+          if (sigma === undefined && E !== undefined && eps !== undefined) return { result: `σ = ${(E*1000*eps).toFixed(4)} MPa`, steps: `${E}×${eps}` };
+          if (eps === undefined && E !== undefined && sigma !== undefined) { if (E === 0) return { result: "Error: E=0", steps: "" }; return { result: `ε = ${(sigma/(E*1000)).toExponential(4)}`, steps: `${sigma}/${E}` }; }
+        }
+      },
+      {
+        id: "safety-factor", name: "Factor of Safety",
+        description: "Ratio of ultimate strength to allowable stress.",
+        equation: "FoS = σ_ult / σ_allow",
+        variables: [
+          { id: "FoS", label: "Factor of Safety", unit: "" },
+          { id: "sU", label: "Ultimate Strength (σ_ult)", unit: "MPa" },
+          { id: "sA", label: "Allowable Stress (σ_allow)", unit: "MPa" }
+        ],
+        calculate: ({ FoS, sU, sA }) => {
+          const known = [FoS, sU, sA].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (FoS === undefined && sU !== undefined && sA !== undefined) { if (sA === 0) return { result: "Error: σ_allow=0", steps: "" }; return { result: `FoS = ${(sU/sA).toFixed(4)}`, steps: `${sU}/${sA}` }; }
+          if (sA === undefined && FoS !== undefined && sU !== undefined) { if (FoS === 0) return { result: "Error: FoS=0", steps: "" }; return { result: `σ_allow = ${(sU/FoS).toFixed(4)} MPa`, steps: `${sU}/${FoS}` }; }
+          if (sU === undefined && FoS !== undefined && sA !== undefined) return { result: `σ_ult = ${(FoS*sA).toFixed(4)} MPa`, steps: `${FoS}×${sA}` };
+        }
+      }
+    ]
+  },
+  {
+    category: "Computer Science & Algorithms",
+    formulas: [
+      {
+        id: "big-o-complexity", name: "Big-O Complexity Classifier",
+        description: "Classifies the time complexity of an algorithm based on input size and operations.",
+        equation: "T(n) = O(f(n))",
+        variables: [
+          { id: "n", label: "Input Size (n)", unit: "" },
+          { id: "ops", label: "Operations Count", unit: "" }
+        ],
+        calculate: ({ n, ops }) => {
+          if (n === undefined || ops === undefined) return { result: "Enter n and operations count", steps: "" };
+          const ratios = [
+            { name: "O(1)", fn: 1 }, { name: "O(log n)", fn: Math.log2(n) },
+            { name: "O(n)", fn: n }, { name: "O(n log n)", fn: n * Math.log2(n) },
+            { name: "O(n²)", fn: n*n }, { name: "O(n³)", fn: n*n*n },
+            { name: "O(2ⁿ)", fn: Math.pow(2, n) }
+          ];
+          const closest = ratios.reduce((a, b) => Math.abs(a.fn - ops) < Math.abs(b.fn - ops) ? a : b);
+          return { result: `T(${n}) ≈ ${closest.name}`, steps: [`With n=${n}, ${ops} ops ≈ ${closest.name}`] };
+        }
+      },
+      {
+        id: "hamming-distance", name: "Hamming Distance",
+        description: "Number of positions at which two strings of equal length differ.",
+        equation: "d(x, y) = Σ(xᵢ ≠ yᵢ)",
+        variables: [
+          { id: "s1", label: "String 1", unit: "" },
+          { id: "s2", label: "String 2", unit: "" }
+        ],
+        calculate: ({ s1, s2 }) => {
+          if (s1 === undefined || s2 === undefined) return { result: "Enter both strings", steps: "" };
+          const str1 = String(s1), str2 = String(s2);
+          if (str1.length !== str2.length) return { result: "Strings must be equal length", steps: "" };
+          let dist = 0;
+          for (let i = 0; i < str1.length; i++) if (str1[i] !== str2[i]) dist++;
+          return { result: `d = ${dist}`, steps: [`"${str1}" vs "${str2}" → ${dist} differences`] };
+        }
+      },
+      {
+        id: "binary-search", name: "Binary Search Comparisons",
+        description: "Maximum comparisons needed to find an element in a sorted array of size n.",
+        equation: "C = ⌊log₂(n)⌋ + 1",
+        variables: [
+          { id: "C", label: "Max Comparisons", unit: "" },
+          { id: "n", label: "Array Size (n)", unit: "" }
+        ],
+        calculate: ({ C, n }) => {
+          if (C === undefined && n !== undefined) {
+            if (n <= 0) return { result: "n must be > 0", steps: "" };
+            return { result: `C = ${Math.floor(Math.log2(n)) + 1}`, steps: [`⌊log₂(${n})⌋ + 1 = ${Math.floor(Math.log2(n)) + 1}`] };
+          }
+          if (n === undefined && C !== undefined) {
+            if (C <= 0) return { result: "C must be > 0", steps: "" };
+            return { result: `n ≤ ${Math.pow(2, C) - 1}`, steps: [`Max n for ${C} comparisons = 2^${C} - 1 = ${Math.pow(2, C) - 1}`] };
+          }
+        }
+      },
+      {
+        id: "entropy-shannon", name: "Shannon Entropy",
+        description: "Average information content of a random variable.",
+        equation: "H = -Σ pᵢ log₂(pᵢ)",
+        variables: [
+          { id: "p1", label: "Probability p₁", unit: "" },
+          { id: "p2", label: "Probability p₂", unit: "" }
+        ],
+        calculate: ({ p1, p2 }) => {
+          if (p1 === undefined || p2 === undefined) return { result: "Enter both probabilities", steps: "" };
+          const total = p1 + p2;
+          if (Math.abs(total - 1) > 1e-9) return { result: "Probabilities must sum to 1", steps: "" };
+          if (p1 <= 0 || p2 <= 0) return { result: "Probabilities must be > 0", steps: "" };
+          const H = -(p1 * Math.log2(p1) + p2 * Math.log2(p2));
+          return { result: `H = ${H.toFixed(4)} bits`, steps: [`-(${p1}·log₂(${p1}) + ${p2}·log₂(${p2}))`] };
+        }
+      }
+    ]
+  },
+  {
+    category: "Networking & Communications",
+    formulas: [
+      {
+        id: "shannon-capacity", name: "Shannon-Hartley Channel Capacity",
+        description: "Maximum data rate of a communication channel with noise.",
+        equation: "C = B·log₂(1 + S/N)",
+        variables: [
+          { id: "C", label: "Channel Capacity (C)", unit: "bps" },
+          { id: "B", label: "Bandwidth (B)", unit: "Hz" },
+          { id: "SNR", label: "Signal-to-Noise Ratio (linear)", unit: "" }
+        ],
+        calculate: ({ C, B, SNR }) => {
+          const known = [C, B, SNR].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (C === undefined && B !== undefined && SNR !== undefined) {
+            if (SNR <= 0) return { result: "Error: SNR must be > 0", steps: "" };
+            return { result: `C = ${(B * Math.log2(1 + SNR)).toExponential(4)} bps`, steps: `${B}·log₂(1+${SNR})` };
+          }
+          if (SNR === undefined && C !== undefined && B !== undefined) {
+            if (B === 0) return { result: "Error: B=0", steps: "" };
+            return { result: `S/N = ${(Math.pow(2, C/B) - 1).toExponential(4)}`, steps: `2^(C/B) - 1` };
+          }
+        }
+      },
+      {
+        id: "nyquist-bitrate", name: "Nyquist Bit Rate (Noiseless)",
+        description: "Maximum bit rate of a noiseless channel with given bandwidth and signal levels.",
+        equation: "R = 2B·log₂(L)",
+        variables: [
+          { id: "R", label: "Bit Rate (R)", unit: "bps" },
+          { id: "B", label: "Bandwidth (B)", unit: "Hz" },
+          { id: "L", label: "Signal Levels (L)", unit: "" }
+        ],
+        calculate: ({ R, B, L }) => {
+          const known = [R, B, L].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (R === undefined && B !== undefined && L !== undefined) { if (L <= 1) return { result: "Error: L must be ≥ 2", steps: "" }; return { result: `R = ${(2*B*Math.log2(L)).toExponential(4)} bps`, steps: `2×${B}×log₂(${L})` }; }
+          if (L === undefined && R !== undefined && B !== undefined) { if (B === 0) return { result: "Error: B=0", steps: "" }; return { result: `L = ${Math.pow(2, R/(2*B)).toFixed(0)} levels`, steps: `2^(R/(2B))` }; }
+        }
+      },
+      {
+        id: "crc-check", name: "Cyclic Redundancy Check (CRC Concept)",
+        description: "Computes the remainder of polynomial division for error detection.",
+        equation: "T(x) = M(x)·xⁿ / G(x)",
+        variables: [
+          { id: "data", label: "Data Bits", unit: "" },
+          { id: "divisor", label: "Divisor Polynomial", unit: "" }
+        ],
+        calculate: ({ data, divisor }) => {
+          if (data === undefined || divisor === undefined) return { result: "Enter data bits and divisor", steps: "" };
+          return { result: "CRC: Append (k-1) zeros to data, divide by divisor modulo-2, remainder is checksum.", steps: [`Data: ${data}`, `Divisor: ${divisor}`, `Append ${(String(divisor).length - 1)} zeros → perform XOR division`] };
+        }
+      }
+    ]
+  },
+  {
+    category: "Data Science & Machine Learning",
+    formulas: [
+      {
+        id: "euclidean-distance", name: "Euclidean Distance (n-D)",
+        description: "Straight-line distance between two points in n-dimensional space.",
+        equation: "d = √(Σ(xᵢ - yᵢ)²)",
+        variables: [
+          { id: "x", label: "Point x (comma-separated)", unit: "" },
+          { id: "y", label: "Point y (comma-separated)", unit: "" }
+        ],
+        calculate: ({ x, y }) => {
+          if (x === undefined || y === undefined) return { result: "Enter points as comma-separated values", steps: "" };
+          const xArr = String(x).split(',').map(Number); const yArr = String(y).split(',').map(Number);
+          if (xArr.length !== yArr.length || xArr.some(isNaN) || yArr.some(isNaN)) return { result: "Invalid input: arrays must be same length and numeric", steps: "" };
+          const sumSq = xArr.reduce((acc, xi, i) => acc + Math.pow(xi - yArr[i], 2), 0);
+          return { result: `d = ${Math.sqrt(sumSq).toFixed(4)}`, steps: [`√(${xArr.map((xi, i) => `(${xi}-${yArr[i]})²`).join('+')})`] };
+        }
+      },
+      {
+        id: "pearson-correlation", name: "Pearson Correlation Coefficient",
+        description: "Measures linear correlation between two variables, ranging from -1 to 1.",
+        equation: "r = Σ((xᵢ-μₓ)(yᵢ-μᵧ)) / √(Σ(xᵢ-μₓ)²·Σ(yᵢ-μᵧ)²)",
+        variables: [
+          { id: "x", label: "x values (comma-separated)", unit: "" },
+          { id: "y", label: "y values (comma-separated)", unit: "" }
+        ],
+        calculate: ({ x, y }) => {
+          if (x === undefined || y === undefined) return { result: "Enter comma-separated values", steps: "" };
+          const xArr = String(x).split(',').map(Number); const yArr = String(y).split(',').map(Number);
+          if (xArr.length !== yArr.length || xArr.length < 2) return { result: "Arrays must be same length and have ≥ 2 points", steps: "" };
+          const n = xArr.length;
+          const mx = xArr.reduce((a, b) => a + b, 0) / n; const my = yArr.reduce((a, b) => a + b, 0) / n;
+          let num = 0, dx2 = 0, dy2 = 0;
+          for (let i = 0; i < n; i++) { const dx = xArr[i] - mx; const dy = yArr[i] - my; num += dx * dy; dx2 += dx * dx; dy2 += dy * dy; }
+          if (dx2 === 0 || dy2 === 0) return { result: "r = 0 (no variance)", steps: "" };
+          return { result: `r = ${(num / Math.sqrt(dx2 * dy2)).toFixed(4)}`, steps: [`μₓ = ${mx.toFixed(4)}, μᵧ = ${my.toFixed(4)}`] };
+        }
+      },
+      {
+        id: "bayes-theorem", name: "Bayes' Theorem",
+        description: "Posterior probability of an event given prior knowledge and evidence.",
+        equation: "P(A|B) = P(B|A)·P(A) / P(B)",
+        variables: [
+          { id: "PAgB", label: "P(A|B)", unit: "" },
+          { id: "PBgA", label: "P(B|A)", unit: "" },
+          { id: "PA", label: "P(A)", unit: "" },
+          { id: "PB", label: "P(B)", unit: "" }
+        ],
+        calculate: ({ PAgB, PBgA, PA, PB }) => {
+          const known = [PAgB, PBgA, PA, PB].filter(x => x !== undefined).length;
+          if (known < 3) return { result: "Need at least 3 of 4 probabilities", steps: "" };
+          if (PAgB === undefined && PBgA !== undefined && PA !== undefined && PB !== undefined) {
+            if (PB === 0) return { result: "Error: P(B)=0", steps: "" };
+            return { result: `P(A|B) = ${(PBgA * PA / PB).toFixed(4)}`, steps: `(${PBgA}×${PA})/${PB}` };
+          }
+          if (PBgA === undefined && PAgB !== undefined && PA !== undefined && PB !== undefined) {
+            if (PA === 0) return { result: "Error: P(A)=0", steps: "" };
+            return { result: `P(B|A) = ${(PAgB * PB / PA).toFixed(4)}`, steps: `(${PAgB}×${PB})/${PA}` };
+          }
+        }
+      },
+      {
+        id: "silhouette-score", name: "Silhouette Score",
+        description: "Evaluates clustering quality; ranges from -1 to 1.",
+        equation: "s = (b - a) / max(a, b)",
+        variables: [
+          { id: "a", label: "Mean intra-cluster distance (a)", unit: "" },
+          { id: "b", label: "Mean nearest-cluster distance (b)", unit: "" },
+          { id: "s", label: "Silhouette Score (s)", unit: "" }
+        ],
+        calculate: ({ a, b, s }) => {
+          const known = [a, b, s].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (s === undefined && a !== undefined && b !== undefined) {
+            const mx = Math.max(a, b); if (mx === 0) return { result: "Error: max(a,b)=0", steps: "" };
+            return { result: `s = ${((b - a) / mx).toFixed(4)}`, steps: `(${b} - ${a}) / ${mx}` };
+          }
+          if (b === undefined && a !== undefined && s !== undefined) {
+            return { result: `b = ${(a + (s < 0 ? s : s) * a) / (1 - (s < 0 ? s : s))}`, steps: "b = a(s+1)/(s-1) for s<0 or b = a(1+s)/(1-s) for s>0" };
+          }
+        }
+      },
+      {
+        id: "gini-impurity", name: "Gini Impurity",
+        description: "Measure of how often a randomly chosen element would be incorrectly labeled.",
+        equation: "G = Σ pᵢ·(1 - pᵢ) = 1 - Σ pᵢ²",
+        variables: [
+          { id: "p1", label: "Class Probability p₁", unit: "" },
+          { id: "p2", label: "Class Probability p₂", unit: "" }
+        ],
+        calculate: ({ p1, p2 }) => {
+          if (p1 === undefined || p2 === undefined) return { result: "Enter both class probabilities", steps: "" };
+          const total = p1 + p2;
+          if (Math.abs(total - 1) > 1e-9) return { result: "Probabilities must sum to 1", steps: "" };
+          const g = 1 - (p1*p1 + p2*p2);
+          return { result: `Gini = ${g.toFixed(4)}`, steps: [`1 - (${p1}² + ${p2}²) = 1 - ${(p1*p1 + p2*p2).toFixed(4)}`] };
+        }
+      }
+    ]
+  },
+  {
+    category: "Geology & Earth Science",
+    formulas: [
+      {
+        id: "richter-scale", name: "Richter Scale (Earthquake Magnitude)",
+        description: "Logarithmic measure of earthquake energy released.",
+        equation: "M = log₁₀(A) - log₁₀(A₀)",
+        variables: [
+          { id: "M", label: "Magnitude (M)", unit: "" },
+          { id: "A", label: "Amplitude (A)", unit: "mm" },
+          { id: "A0", label: "Reference Amplitude (A₀)", unit: "mm" }
+        ],
+        calculate: ({ M, A, A0 }) => {
+          const known = [M, A, A0].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (M === undefined && A !== undefined && A0 !== undefined) { if (A0 <= 0 || A <= 0) return { result: "Error: amplitudes must be > 0", steps: "" }; return { result: `M = ${(Math.log10(A) - Math.log10(A0)).toFixed(2)}`, steps: `log₁₀(${A}) - log₁₀(${A0})` }; }
+          if (A === undefined && M !== undefined && A0 !== undefined) { if (A0 <= 0) return { result: "Error: A₀ must be > 0", steps: "" }; return { result: `A = ${(A0 * Math.pow(10, M)).toFixed(4)} mm`, steps: `${A0}×10^${M}` }; }
+        }
+      },
+      {
+        id: "darcys-law", name: "Darcy's Law (Groundwater Flow)",
+        description: "Flow rate of groundwater through porous media.",
+        equation: "Q = K·A·(dh/dL)",
+        variables: [
+          { id: "Q", label: "Flow Rate (Q)", unit: "m³/s" },
+          { id: "K", label: "Hydraulic Conductivity (K)", unit: "m/s" },
+          { id: "A", label: "Cross-Sectional Area (A)", unit: "m²" },
+          { id: "dh", label: "Head Difference (Δh)", unit: "m" },
+          { id: "L", label: "Flow Path Length (L)", unit: "m" }
+        ],
+        calculate: ({ Q, K, A, dh, L }) => {
+          const known = [Q, K, A, dh, L].filter(x => x !== undefined).length;
+          if (known < 4) return { result: "Need at least 4 of 5 values", steps: "" };
+          if (Q === undefined && K !== undefined && A !== undefined && dh !== undefined && L !== undefined) { if (L === 0) return { result: "Error: L=0", steps: "" }; return { result: `Q = ${(K*A*dh/L).toExponential(4)} m³/s`, steps: `K·A·Δh/L` }; }
+        }
+      }
+    ]
+  },
+  {
+    category: "Economics & Finance",
+    formulas: [
+      {
+        id: "price-elasticity", name: "Price Elasticity of Demand",
+        description: "Measures responsiveness of quantity demanded to price changes.",
+        equation: "Ed = (%ΔQ) / (%ΔP)",
+        variables: [
+          { id: "Ed", label: "Elasticity (Ed)", unit: "" },
+          { id: "pctQ", label: "% Change in Quantity", unit: "" },
+          { id: "pctP", label: "% Change in Price", unit: "" }
+        ],
+        calculate: ({ Ed, pctQ, pctP }) => {
+          const known = [Ed, pctQ, pctP].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (Ed === undefined && pctQ !== undefined && pctP !== undefined) { if (pctP === 0) return { result: "Error: %ΔP=0", steps: "" }; return { result: `Ed = ${(pctQ/pctP).toFixed(4)}`, steps: `${pctQ}/${pctP}` }; }
+          if (pctQ === undefined && Ed !== undefined && pctP !== undefined) return { result: `%ΔQ = ${(Ed*pctP).toFixed(4)}%`, steps: `${Ed}×${pctP}` };
+          if (pctP === undefined && Ed !== undefined && pctQ !== undefined) { if (Ed === 0) return { result: "Error: Ed=0", steps: "" }; return { result: `%ΔP = ${(pctQ/Ed).toFixed(4)}%`, steps: `${pctQ}/${Ed}` }; }
+        }
+      },
+      {
+        id: "compound-growth", name: "Compound Annual Growth Rate (CAGR)",
+        description: "Geometric mean annual growth rate over a period.",
+        equation: "CAGR = (FV/PV)^(1/t) - 1",
+        variables: [
+          { id: "CAGR", label: "CAGR", unit: "" },
+          { id: "FV", label: "Future Value (FV)", unit: "GH¢" },
+          { id: "PV", label: "Present Value (PV)", unit: "GH¢" },
+          { id: "t", label: "Number of Years (t)", unit: "" }
+        ],
+        calculate: ({ CAGR, FV, PV, t }) => {
+          const known = [CAGR, FV, PV, t].filter(x => x !== undefined).length;
+          if (known < 3) return { result: "Need at least 3 of 4 values", steps: "" };
+          if (CAGR === undefined && FV !== undefined && PV !== undefined && t !== undefined) { if (t === 0 || PV === 0) return { result: "Error", steps: "" }; return { result: `CAGR = ${(Math.pow(FV/PV, 1/t) - 1).toFixed(4)}`, steps: `(${FV}/${PV})^(1/${t}) - 1` }; }
+          if (FV === undefined && CAGR !== undefined && PV !== undefined && t !== undefined) return { result: `FV = ${(PV * Math.pow(1+CAGR, t)).toFixed(4)} GH¢`, steps: `${PV}×(1+${CAGR})^${t}` };
+          if (PV === undefined && CAGR !== undefined && FV !== undefined && t !== undefined) return { result: `PV = ${(FV / Math.pow(1+CAGR, t)).toFixed(4)} GH¢`, steps: `${FV}/(1+${CAGR})^${t}` };
+        }
+      },
+      {
+        id: "gini-coeff", name: "Gini Coefficient",
+        description: "Measure of statistical dispersion representing income inequality.",
+        equation: "G = 1 - Σ(Xᵢ - Xᵢ₋₁)(Yᵢ + Yᵢ₋₁)",
+        variables: [
+          { id: "G", label: "Gini Coefficient", unit: "" },
+          { id: "popShare", label: "Population share (0-1)", unit: "" },
+          { id: "incShare", label: "Income share (0-1)", unit: "" }
+        ],
+        calculate: ({ G, popShare, incShare }) => {
+          if (G === undefined && popShare !== undefined && incShare !== undefined) {
+            const pops = String(popShare).split(',').map(Number); const incs = String(incShare).split(',').map(Number);
+            if (pops.length !== incs.length) return { result: "Arrays must be same length", steps: "" };
+            let gini = 0; let cumPop = 0; let cumInc = 0;
+            for (let i = 0; i < pops.length; i++) { const newCumPop = cumPop + pops[i]; const newCumInc = cumInc + incs[i]; gini += (newCumPop - cumPop) * (newCumInc + cumInc); cumPop = newCumPop; cumInc = newCumInc; }
+            return { result: `G = ${(1 - gini).toFixed(4)}`, steps: [`Gini computed from Lorenz curve`] };
+          }
+        }
+      }
+    ]
+  },
+  {
+    category: "Astronomy & Cosmology",
+    formulas: [
+      {
+        id: "redshift", name: "Redshift (Cosmological)",
+        description: "Measured shift in spectral lines due to the expansion of the universe.",
+        equation: "z = (λ_obs - λ_rest) / λ_rest",
+        variables: [
+          { id: "z", label: "Redshift (z)", unit: "" },
+          { id: "lObs", label: "Observed Wavelength (λ_obs)", unit: "nm" },
+          { id: "lRest", label: "Rest Wavelength (λ_rest)", unit: "nm" }
+        ],
+        calculate: ({ z, lObs, lRest }) => {
+          const known = [z, lObs, lRest].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (z === undefined && lObs !== undefined && lRest !== undefined) { if (lRest === 0) return { result: "Error: λ_rest=0", steps: "" }; return { result: `z = ${((lObs - lRest)/lRest).toFixed(4)}`, steps: `(${lObs} - ${lRest})/${lRest}` }; }
+          if (lObs === undefined && z !== undefined && lRest !== undefined) return { result: `λ_obs = ${((1+z)*lRest).toFixed(4)} nm`, steps: `(1+${z})×${lRest}` }; }
+      },
+      {
+        id: "hubbles-law", name: "Hubble's Law",
+        description: "Recession velocity of a galaxy is proportional to its distance.",
+        equation: "v = H₀·d",
+        variables: [
+          { id: "v", label: "Recession Velocity (v)", unit: "km/s" },
+          { id: "d", label: "Distance (d)", unit: "Mpc" },
+          { id: "H0", label: "Hubble Constant (H₀)", unit: "km/s/Mpc" }
+        ],
+        calculate: ({ v, d, H0 }) => {
+          const H0_def = 67.4;
+          const known = [v, d].filter(x => x !== undefined).length;
+          if (known < 1) return { result: "Enter at least 1 value", steps: "" };
+          if (v === undefined && d !== undefined) { const H = H0 || H0_def; return { result: `v = ${(H*d).toFixed(2)} km/s`, steps: `${H}×${d}` }; }
+          if (d === undefined && v !== undefined) { const H = H0 || H0_def; if (H === 0) return { result: "Error: H₀=0", steps: "" }; return { result: `d = ${(v/H).toFixed(2)} Mpc`, steps: `${v}/${H}` }; }
+        }
+      },
+      {
+        id: "luminosity-distance", name: "Luminosity Distance",
+        description: "Distance to a star from its apparent and absolute magnitudes.",
+        equation: "d = 10^((m - M + 5)/5) pc",
+        variables: [
+          { id: "d", label: "Distance (d)", unit: "pc" },
+          { id: "m", label: "Apparent Magnitude (m)", unit: "" },
+          { id: "M", label: "Absolute Magnitude (M)", unit: "" }
+        ],
+        calculate: ({ d, m, M }) => {
+          const known = [d, m, M].filter(x => x !== undefined).length;
+          if (known < 2) return { result: "Need at least 2 of 3 values", steps: "" };
+          if (d === undefined && m !== undefined && M !== undefined) return { result: `d = ${Math.pow(10, (m - M + 5)/5).toExponential(4)} pc`, steps: `10^((${m} - ${M} + 5)/5)` };
+          if (M === undefined && d !== undefined && m !== undefined) { if (d <= 0) return { result: "Error: d must be > 0", steps: "" }; return { result: `M = ${(m - 5*Math.log10(d) + 5).toFixed(4)}`, steps: `m - 5log₁₀(d) + 5` }; }
+        }
+      }
+    ]
+  },
+  {
+    category: "Biochemistry & Molecular Biology",
+    formulas: [
+      {
+        id: "michaelis-menten", name: "Michaelis-Menten Kinetics",
+        description: "Rate of enzyme-catalyzed reactions as a function of substrate concentration.",
+        equation: "v = Vmax·[S] / (Km + [S])",
+        variables: [
+          { id: "v", label: "Reaction Velocity (v)", unit: "µM/min" },
+          { id: "Vmax", label: "Max Velocity (Vmax)", unit: "µM/min" },
+          { id: "S", label: "Substrate Concentration [S]", unit: "µM" },
+          { id: "Km", label: "Michaelis Constant (Km)", unit: "µM" }
+        ],
+        calculate: ({ v, Vmax, S, Km }) => {
+          const known = [v, Vmax, S, Km].filter(x => x !== undefined).length;
+          if (known < 3) return { result: "Need at least 3 of 4 values", steps: "" };
+          if (v === undefined && Vmax !== undefined && S !== undefined && Km !== undefined) { const denom = Km + S; if (denom === 0) return { result: "Error: denom=0", steps: "" }; return { result: `v = ${(Vmax * S / denom).toFixed(4)} µM/min`, steps: `(${Vmax}×${S})/(${Km}+${S})` }; }
+          if (Km === undefined && v !== undefined && Vmax !== undefined && S !== undefined) { if (v === 0) return { result: "Error: v=0", steps: "" }; return { result: `Km = ${((Vmax*S/v) - S).toFixed(4)} µM`, steps: `(Vmax·[S]/v) - [S]` }; }
+          if (Vmax === undefined && v !== undefined && S !== undefined && Km !== undefined) { if (S === 0) return { result: "Error: [S]=0", steps: "" }; return { result: `Vmax = ${(v*(Km+S)/S).toFixed(4)} µM/min`, steps: `v(Km+[S])/[S]` }; }
+        }
+      },
+      {
+        id: "dna-gc-content", name: "DNA GC Content",
+        description: "Percentage of guanine-cytosine base pairs in a DNA sequence.",
+        equation: "GC% = (G + C) / (A + T + G + C) × 100",
+        variables: [
+          { id: "GC", label: "GC Content", unit: "%" },
+          { id: "A", label: "Adenine Count", unit: "" },
+          { id: "T", label: "Thymine Count", unit: "" },
+          { id: "G", label: "Guanine Count", unit: "" },
+          { id: "C", label: "Cytosine Count", unit: "" }
+        ],
+        calculate: ({ GC, A, T, G, C }) => {
+          if (GC === undefined && A !== undefined && T !== undefined && G !== undefined && C !== undefined) {
+            const total = A + T + G + C; if (total === 0) return { result: "Error: total=0", steps: "" };
+            return { result: `GC% = ${((G+C)/total*100).toFixed(2)}%`, steps: `(${G}+${C})/(${A}+${T}+${G}+${C})×100` };
+          }
+        }
+      },
+      {
+        id: "charged-aa", name: "Protein Net Charge (Henderson-Hasselbalch)",
+        description: "Net charge of a protein at a given pH based on its ionizable groups.",
+        equation: "Q = Σ (z/(1+10^(z(pH-pK))))",
+        variables: [
+          { id: "pH", label: "Solution pH", unit: "" },
+          { id: "pKa", label: "pKa of ionizable group", unit: "" },
+          { id: "z", label: "Charge of group when protonated", unit: "" }
+        ],
+        calculate: ({ pH, pKa, z }) => {
+          if (pH === undefined || pKa === undefined || z === undefined) return { result: "Enter pH, pKa, and charge z", steps: "" };
+          const charge = z / (1 + Math.pow(10, z * (pH - pKa)));
+          return { result: `Fractional charge = ${charge.toFixed(4)}`, steps: [`z/(1+10^(z(pH-pKa))) = ${z}/(1+10^(${z}×(${pH}-${pKa})))`] };
+        }
+      },
+      {
+        id: "cell-potential", name: "Membrane Potential (Nernst)",
+        description: "Equilibrium potential of an ion across a membrane.",
+        equation: "E = RT/(zF) · ln([out]/[in])",
+        variables: [
+          { id: "E", label: "Equilibrium Potential (E)", unit: "mV" },
+          { id: "z", label: "Ion Valence (z)", unit: "" },
+          { id: "ratio", label: "[out]/[in] Ratio", unit: "" }
+        ],
+        calculate: ({ E, z, ratio }) => {
+          if (E === undefined && z !== undefined && ratio !== undefined) {
+            if (z === 0 || ratio <= 0) return { result: "Error", steps: "" };
+            const e = (8.314 * 310.15) / (z * 96485) * Math.log(ratio) * 1000;
+            return { result: `E = ${e.toFixed(2)} mV`, steps: [`RT/(zF)·ln(${ratio}) = ${e.toFixed(2)} mV`] };
+          }
+          if (ratio === undefined && E !== undefined && z !== undefined) {
+            if (z === 0) return { result: "Error: z=0", steps: "" };
+            const rat = Math.exp(E * z * 96485 / (8.314 * 310.15 * 1000));
+            return { result: `[out]/[in] = ${rat.toExponential(4)}`, steps: [`exp(zEF/RT)`] };
+          }
+        }
+      }
+    ]
+  },
+  {
+    category: "Control Systems & Signal Processing",
+    formulas: [
+      {
+        id: "laplace-transform", name: "Laplace Transform (Unit Step)",
+        description: "Transforms a time-domain function into the s-domain for control analysis.",
+        equation: "L{f(t)} = F(s) = ∫f(t)·e^(-st)dt",
+        variables: [
+          { id: "a", label: "Coefficient (a)", unit: "" }
+        ],
+        calculate: ({ a }) => {
+          if (a === undefined) return { result: "Enter coefficient a", steps: "" };
+          return { result: `L{e^(${a}t)} = 1/(s - ${a})`, steps: [`Standard Laplace transform of e^(at) → 1/(s - a)`] };
+        }
+      },
+      {
+        id: "transfer-function", name: "First-Order Transfer Function",
+        description: "Standard form of a first-order system response.",
+        equation: "G(s) = K / (τs + 1)",
+        variables: [
+          { id: "K", label: "Steady-State Gain (K)", unit: "" },
+          { id: "tau", label: "Time Constant (τ)", unit: "s" }
+        ],
+        calculate: ({ K, tau }) => {
+          if (K === undefined || tau === undefined) return { result: "Enter K and τ", steps: "" };
+          return { result: `G(s) = ${K} / (${tau}s + 1)`, steps: [`DC gain: ${K}`, `Time constant: ${tau} s`, `Settling time (2%): ${(4*tau).toFixed(2)} s`] };
+        }
+      },
+      {
+        id: "fourier-series", name: "Fourier Series (Square Wave)",
+        description: "Fourier series representation of a square wave with odd harmonics.",
+        equation: "f(t) = (4/π) Σ sin((2k-1)ωt)/(2k-1)",
+        variables: [
+          { id: "n", label: "Number of Harmonics", unit: "" }
+        ],
+        calculate: ({ n }) => {
+          if (n === undefined) return { result: "Enter number of harmonics", steps: "" };
+          if (n < 1) return { result: "n must be ≥ 1", steps: "" };
+          const terms = [];
+          for (let k = 1; k <= n; k++) terms.push(`${k===1?'':(k%2===0?' + ':' - ')}sin(${(2*k-1)}ωt)/${(2*k-1)}`);
+          return { result: `f(t) = 4/π [${terms.join('')}]`, steps: [`Square wave includes odd harmonics 1, 3, 5, ..., ${2*n-1}`] };
+        }
+      },
+      {
+        id: "pid-tuning", name: "PID Controller (Ziegler-Nichols)",
+        description: "Tuning parameters for a PID controller based on ultimate gain and period.",
+        equation: "Kp = 0.6·Ku, Ti = 0.5·Tu, Td = 0.125·Tu",
+        variables: [
+          { id: "Ku", label: "Ultimate Gain (Ku)", unit: "" },
+          { id: "Tu", label: "Ultimate Period (Tu)", unit: "s" }
+        ],
+        calculate: ({ Ku, Tu }) => {
+          if (Ku === undefined || Tu === undefined) return { result: "Enter Ku and Tu", steps: "" };
+          return { result: `Kp = ${(0.6*Ku).toFixed(4)}, Ti = ${(0.5*Tu).toFixed(4)}, Td = ${(0.125*Tu).toFixed(4)}`, steps: [`P: Kp = 0.6×${Ku} = ${(0.6*Ku).toFixed(4)}`, `I: Ti = 0.5×${Tu} = ${(0.5*Tu).toFixed(4)}`, `D: Td = 0.125×${Tu} = ${(0.125*Tu).toFixed(4)}`] };
+        }
+      }
+    ]
   }
 ];
