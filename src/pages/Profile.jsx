@@ -101,6 +101,7 @@ const Profile = () => {
     level: '',
     semester: '1',
     student_id: '',
+    username: '',
     avatarUrl: `https://api.dicebear.com/9.x/avataaars/svg?seed=UCCStudent&backgroundColor=cce1eb,99c3d6`
   });
 
@@ -206,10 +207,16 @@ const Profile = () => {
     }
     setProfile(formData);
     setIsEditModalOpen(false);
-    triggerAuthSheet(() => {
-      import('../services/syncService').then(({ triggerBackgroundSync }) => {
-        triggerBackgroundSync();
-      });
+    triggerAuthSheet(async () => {
+      const userId = localStorage.getItem('ucc_user_id');
+      if (userId && formData.username) {
+        try {
+          const { supabase } = await import('../lib/supabase');
+          await supabase.from('users').upsert({ id: userId, username: formData.username }, { onConflict: 'id' });
+        } catch {}
+      }
+      const { triggerBackgroundSync } = await import('../services/syncService');
+      triggerBackgroundSync();
     });
   };
 
@@ -451,6 +458,11 @@ const Profile = () => {
                     <p className="text-white/90 text-[10px] sm:text-xs font-bold uppercase tracking-wider drop-shadow-sm break-words line-clamp-2 leading-snug">
                       {profile.course || 'Course'} {profile.level && `  L${profile.level}`} {profile.semester && ` Sem ${profile.semester}`}
                     </p>
+                    {profile.username && (
+                      <p className="text-white/60 text-[10px] sm:text-xs font-mono font-bold drop-shadow-sm mt-0.5">
+                        @{profile.username}
+                      </p>
+                    )}
                     <div className="mt-1.5 flex items-center gap-1.5 opacity-80">
                       <Fingerprint size={12} className="text-white/70" />
                       <span className="text-white font-mono font-bold text-[9px] uppercase tracking-[0.2em] drop-shadow-sm">

@@ -116,10 +116,9 @@ export async function updateWhisperViewCount(whisperId) {
   }
 }
 
-// Auto-flush on page unload
+// Auto-flush on page hide (visibilitychange is bfcache-safe vs beforeunload)
 if (typeof window !== 'undefined') {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flushBuffer();
   });
-  window.addEventListener('beforeunload', () => flushBuffer());
 }

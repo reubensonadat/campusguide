@@ -140,7 +140,9 @@ const Leaderboards = () => {
                                                     {getRankIcon(idx)}
                                                 </div>
                                             </div>
-                                            <span className="font-bold text-gray-800 text-sm">{user.name}</span>
+                                            <div>
+                                              <span className="font-bold text-gray-800 text-sm">{user.username ? `@${user.username}` : user.name}</span>
+                                            </div>
                                         </div>
                                         <div className="bg-white px-2.5 py-1 rounded-lg border border-gray-100 shadow-sm flex items-center gap-1.5">
                                             <Star size={12} className={idx === 0 ? "text-primary-500 fill-current" : "text-gray-400"} />

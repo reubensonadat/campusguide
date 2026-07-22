@@ -46,10 +46,13 @@
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Fira Sans','Droid Sans','Helvetica Neue',sans-serif;background:#f0f2f8;color:#1f2937;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
     #root{min-height:100vh;display:flex;flex-direction:column}
 
-    #app-shell{display:flex;min-height:100vh}
+    /* Skeleton shell overlay — covers the viewport until React is ready */
+    #skeleton-shell{position:fixed;inset:0;z-index:999999;display:flex;flex-direction:column;background:#f0f2f8;overflow:hidden;transition:opacity .35s ease,visibility .35s ease}
+    #skeleton-shell.fade-out{opacity:0;visibility:hidden;pointer-events:none}
 
     /* Sidebar - Desktop only */
     .shell-sb{display:none;position:fixed;left:0;top:0;bottom:0;width:220px;background:#fff;border-right:1px solid #f3f4f6;z-index:40;flex-direction:column}
+    #skeleton-shell>.shell-sb{position:absolute}
     @media(min-width:768px){.shell-sb{display:flex}}
     .shell-sb-hdr{height:76px;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid #f3f4f6;flex-shrink:0}
     .shell-sb-logo{width:40px;height:40px;border-radius:12px;overflow:hidden;flex-shrink:0}
@@ -92,6 +95,7 @@
 
     /* Tab Bar - Mobile only */
     .shell-tb{display:flex;position:fixed;bottom:0;left:0;right:0;padding:8px 12px calc(12px + env(safe-area-inset-bottom,0px));z-index:50}
+    #skeleton-shell>.shell-tb{position:absolute;bottom:0}
     @media(min-width:768px){.shell-tb{display:none}}
     .shell-tb-inner{background:#fff;border-radius:16px;padding:0 8px;height:62px;display:flex;align-items:center;justify-content:space-around;width:100%;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1)}
     .shell-tb-tab{height:40px;width:44px;border-radius:12px;background:#f3f4f6}
@@ -102,65 +106,63 @@
 </head>
 
 <body>
-  <div id="root">
-    <!-- App Shell Skeleton - instantly paints the app layout -->
-    <div id="app-shell">
-      <!-- Sidebar (Desktop) -->
-      <div class="shell-sb">
-        <div class="shell-sb-hdr">
-          <div class="shell-sb-logo"><img src="/logo.png" alt="Campus Guide" /></div>
-          <div class="shell-sb-title">Campus Guide</div>
-        </div>
-        <div class="shell-sb-nav">
-          <div class="shell-sb-item active"><div class="shell-sb-dot active shell-pulse" style="background:#ffffff50"></div><div class="shell-sb-label active" style="background:rgba(255,255,255,0.5)"></div></div>
-          <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
-          <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
-          <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
-          <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
-        </div>
-        <div class="shell-sb-ftr"><div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div></div>
+  <!-- App Shell Skeleton - fixed overlay, fades out when React mounts -->
+  <div id="skeleton-shell">
+    <!-- Sidebar (Desktop) -->
+    <div class="shell-sb">
+      <div class="shell-sb-hdr">
+        <div class="shell-sb-logo"><img src="/logo.png" alt="Campus Guide" /></div>
+        <div class="shell-sb-title">Campus Guide</div>
       </div>
+      <div class="shell-sb-nav">
+        <div class="shell-sb-item active"><div class="shell-sb-dot active shell-pulse" style="background:#ffffff50"></div><div class="shell-sb-label active" style="background:rgba(255,255,255,0.5)"></div></div>
+        <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
+        <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
+        <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
+        <div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div>
+      </div>
+      <div class="shell-sb-ftr"><div class="shell-sb-item"><div class="shell-sb-dot shell-pulse"></div><div class="shell-sb-label shell-pulse"></div></div></div>
+    </div>
 
-      <!-- Content -->
-      <div class="shell-ct">
-        <!-- Header section -->
-        <div class="shell-hdr">
-          <div class="shell-hdr-bg"></div>
-          <div class="shell-hdr-top">
-            <div class="shell-hdr-brand"><img src="/logo.png" alt="" /><span>Campus Guide</span></div>
-            <div class="shell-hdr-actions"><div class="shell-hdr-icon shell-pulse"></div><div class="shell-hdr-icon shell-pulse"></div></div>
-          </div>
-          <div class="shell-greeting">
-            <div class="shell-greeting-l1 shell-pulse"></div>
-            <div class="shell-greeting-l2 shell-pulse"></div>
-          </div>
-          <div class="shell-widgets">
-            <div class="shell-wdgt shell-pulse" style="width:80px"></div>
-            <div class="shell-wdgt shell-pulse" style="width:64px"></div>
-            <div class="shell-wdgt shell-pulse" style="width:64px"></div>
-          </div>
+    <!-- Content -->
+    <div class="shell-ct">
+      <div class="shell-hdr">
+        <div class="shell-hdr-bg"></div>
+        <div class="shell-hdr-top">
+          <div class="shell-hdr-brand"><img src="/logo.png" alt="" /><span>Campus Guide</span></div>
+          <div class="shell-hdr-actions"><div class="shell-hdr-icon shell-pulse"></div><div class="shell-hdr-icon shell-pulse"></div></div>
         </div>
-
-        <!-- Card skeletons -->
-        <div class="shell-body">
-          <div class="shell-card"><div class="shell-card-line shell-pulse"></div><div class="shell-card-line shell-pulse"></div><div class="shell-card-line shell-card-line-sm shell-pulse"></div></div>
-          <div class="shell-card"><div class="shell-card-line shell-pulse"></div><div class="shell-card-line shell-pulse"></div></div>
-          <div class="shell-card"><div class="shell-card-line shell-pulse" style="width:40%"></div><div class="shell-card-line shell-pulse" style="width:80%"></div></div>
+        <div class="shell-greeting">
+          <div class="shell-greeting-l1 shell-pulse"></div>
+          <div class="shell-greeting-l2 shell-pulse"></div>
+        </div>
+        <div class="shell-widgets">
+          <div class="shell-wdgt shell-pulse" style="width:80px"></div>
+          <div class="shell-wdgt shell-pulse" style="width:64px"></div>
+          <div class="shell-wdgt shell-pulse" style="width:64px"></div>
         </div>
       </div>
 
-      <!-- Tab Bar (Mobile) -->
-      <div class="shell-tb">
-        <div class="shell-tb-inner">
-          <div class="shell-tb-tab shell-pulse"></div>
-          <div class="shell-tb-tab shell-pulse"></div>
-          <div class="shell-tb-tab shell-pulse"></div>
-          <div class="shell-tb-tab shell-pulse"></div>
-          <div class="shell-tb-tab shell-pulse"></div>
-        </div>
+      <div class="shell-body">
+        <div class="shell-card"><div class="shell-card-line shell-pulse"></div><div class="shell-card-line shell-pulse"></div><div class="shell-card-line shell-card-line-sm shell-pulse"></div></div>
+        <div class="shell-card"><div class="shell-card-line shell-pulse"></div><div class="shell-card-line shell-pulse"></div></div>
+        <div class="shell-card"><div class="shell-card-line shell-pulse" style="width:40%"></div><div class="shell-card-line shell-pulse" style="width:80%"></div></div>
+      </div>
+    </div>
+
+    <!-- Tab Bar (Mobile) -->
+    <div class="shell-tb">
+      <div class="shell-tb-inner">
+        <div class="shell-tb-tab shell-pulse"></div>
+        <div class="shell-tb-tab shell-pulse"></div>
+        <div class="shell-tb-tab shell-pulse"></div>
+        <div class="shell-tb-tab shell-pulse"></div>
+        <div class="shell-tb-tab shell-pulse"></div>
       </div>
     </div>
   </div>
+
+  <div id="root"></div>
 
   <script type="module" src="/src/main.jsx"></script>
 

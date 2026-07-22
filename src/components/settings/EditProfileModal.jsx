@@ -1,11 +1,46 @@
-import React from 'react';
-import { Edit3 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Edit3, Check, X, Loader2 } from 'lucide-react';
 import { CourseCombobox } from '../common/CourseCombobox';
 import { AvatarBuilder } from '../profile/AvatarBuilder';
 import { sanitizeGhanaPhone } from '../../utils/helpers';
 import ModalPortal from '../common/ModalPortal';
 
+const checkUsername = async (username) => {
+  if (!username || username.length < 3) return null;
+  try {
+    const { supabase } = await import('../../lib/supabase');
+    const { data } = await supabase
+      .from('users')
+      .select('username')
+      .eq('username', username)
+      .maybeSingle();
+    return !data;
+  } catch { return null; }
+};
+
 const EditProfileModal = ({ isOpen, onClose, formData, onFormChange, onSave, onAvatarOpen, isAvatarOpen, onAvatarSelect, isSaving }) => {
+  const [usernameStatus, setUsernameStatus] = useState(null);
+  const [checking, setChecking] = useState(false);
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) { setUsernameStatus(null); setChecking(false); }
+  }, [isOpen]);
+
+  const handleUsernameChange = (val) => {
+    const clean = val.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    onFormChange({ username: clean });
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!clean || clean.length < 3) { setUsernameStatus(null); return; }
+    setChecking(true);
+    debounceRef.current = setTimeout(async () => {
+      const available = await checkUsername(clean);
+      if (available === null) setUsernameStatus('error');
+      else setUsernameStatus(available ? 'available' : 'taken');
+      setChecking(false);
+    }, 400);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -32,6 +67,28 @@ const EditProfileModal = ({ isOpen, onClose, formData, onFormChange, onSave, onA
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Full Name</label>
                 <input type="text" value={formData.name} onChange={e => onFormChange({ name: e.target.value })} placeholder="Enter your name" className="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Username <span className="text-gray-300 font-normal normal-case tracking-normal">(optional)</span></label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-mono text-base font-medium">@</span>
+                  <input
+                    type="text"
+                    value={formData.username || ''}
+                    onChange={e => handleUsernameChange(e.target.value)}
+                    placeholder="username"
+                    maxLength={20}
+                    className="w-full pl-9 pr-11 py-4 bg-white border border-gray-200 rounded-xl text-base font-medium focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-mono"
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    {checking && <Loader2 size={18} className="text-gray-300 animate-spin" />}
+                    {!checking && usernameStatus === 'available' && <Check size={18} className="text-emerald-500" />}
+                    {!checking && usernameStatus === 'taken' && <X size={18} className="text-red-400" />}
+                  </div>
+                </div>
+                {usernameStatus === 'taken' && <p className="text-xs text-red-400 font-medium pl-1">Username taken</p>}
+                {usernameStatus === 'available' && <p className="text-xs text-emerald-500 font-medium pl-1">Available!</p>}
+                {formData.username && formData.username.length > 0 && formData.username.length < 3 && <p className="text-xs text-gray-400 font-medium pl-1">Min 3 characters</p>}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">

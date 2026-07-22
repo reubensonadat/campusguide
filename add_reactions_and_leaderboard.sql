@@ -74,91 +74,91 @@ BEGIN
     anon_users AS (
       -- Use last 3 chars of device_id (e.g. UCC-103F0084 → UCC-084)
       -- This is recognizable to the user but NOT the full login ID
-      SELECT id, avatar_url,
+      SELECT id, avatar_url, username,
         'UCC-' || upper(right(coalesce(device_id, id::text), 3)) as anon_name
       FROM public.users
     ),
     
     top_scholars AS (
-      SELECT u.anon_name as name, u.avatar_url, count(a.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(a.id)::int as score
       FROM public.user_assignments a
       JOIN anon_users u ON u.id = a.user_id
       WHERE a.status = 'submitted'
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     ),
     
     top_procrastinators AS (
-      SELECT u.anon_name as name, u.avatar_url, count(a.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(a.id)::int as score
       FROM public.user_assignments a
       JOIN anon_users u ON u.id = a.user_id
       WHERE a.status IN ('late', 'pending')
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     ),
     
     top_executors AS (
-      SELECT u.anon_name as name, u.avatar_url, count(t.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(t.id)::int as score
       FROM public.user_tasks t
       JOIN anon_users u ON u.id = t.user_id
       WHERE t.status = 'completed'
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     ),
     
     top_planners AS (
-      SELECT u.anon_name as name, u.avatar_url, count(t.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(t.id)::int as score
       FROM public.user_tasks t
       JOIN anon_users u ON u.id = t.user_id
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     ),
     
     top_busy_bees AS (
-      SELECT u.anon_name as name, u.avatar_url, count(t.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(t.id)::int as score
       FROM public.user_timetable t
       JOIN anon_users u ON u.id = t.user_id
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     ),
     
     top_whisperers AS (
-      SELECT u.anon_name as name, u.avatar_url, count(w.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(w.id)::int as score
       FROM public.campus_whispers w
       JOIN anon_users u ON u.id = w.user_id
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     ),
     
     top_yappers AS (
-      SELECT u.anon_name as name, u.avatar_url, count(c.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(c.id)::int as score
       FROM public.whisper_comments c
       JOIN anon_users u ON u.id = c.user_id
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     ),
     
     top_critics AS (
-      SELECT u.anon_name as name, u.avatar_url, count(i.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(i.id)::int as score
       FROM public.whisper_interactions i
       JOIN anon_users u ON u.id = i.user_id
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     ),
     
     top_entrepreneurs AS (
-      SELECT u.anon_name as name, u.avatar_url, count(l.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(l.id)::int as score
       FROM public.thrift_listings l
       JOIN anon_users u ON u.id = l.user_id
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     ),
     
     top_samaritans AS (
-      SELECT u.anon_name as name, u.avatar_url, count(l.id)::int as score
+      SELECT u.anon_name as name, u.avatar_url, u.username, count(l.id)::int as score
       FROM public.lost_and_found l
       JOIN anon_users u ON u.id = l.user_id
-      GROUP BY u.anon_name, u.avatar_url
+      GROUP BY u.anon_name, u.avatar_url, u.username
       ORDER BY score DESC LIMIT 3
     )
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Copy, Search, Check } from 'lucide-react'
+import UniversalLookupModal from './UniversalLookupModal'
 
 // ─── constants ───────────────────────────────────────────────────────────────
 const LONG_PRESS_MS  = 450   // how long to hold before popover shows
@@ -44,6 +45,7 @@ export default function SelectionPopover() {
     text: '',
     copied: false,
   })
+  const [lookupText, setLookupText] = useState(null)
   const popoverRef   = useRef(null)
   const timerRef     = useRef(null)
   const startPosRef  = useRef({ x: 0, y: 0 })
@@ -180,22 +182,14 @@ export default function SelectionPopover() {
     setTimeout(close, 900)
   }
 
-  const handleSearch = () => {
+  const handleLookUp = () => {
     close()
-    // Navigate to the app's guide search
-    const ev = new CustomEvent('APP_SEARCH', { detail: { query: state.text } })
-    window.dispatchEvent(ev)
-    // Fallback: push to guide route if event not caught
-    setTimeout(() => {
-      if (window.location.pathname !== '/guide') {
-        window.history.pushState({}, '', `/guide?q=${encodeURIComponent(state.text)}`)
-        window.dispatchEvent(new PopStateEvent('popstate'))
-      }
-    }, 50)
+    setLookupText(state.text)
   }
 
   // ── render ──
   return (
+    <>
     <AnimatePresence>
       {state.show && (
         <motion.div
@@ -229,14 +223,22 @@ export default function SelectionPopover() {
           <div className="w-px h-6 bg-black/10 dark:bg-white/10 shrink-0" />
 
           <button
-            onPointerDown={handleSearch}
+            onPointerDown={handleLookUp}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl active:bg-black/5 dark:active:bg-white/10 transition-colors text-black/80 dark:text-white/90 font-medium text-sm whitespace-nowrap"
           >
             <Search className="w-4 h-4" strokeWidth={2.5} />
-            Search
+            Look Up
           </button>
         </motion.div>
       )}
     </AnimatePresence>
+
+      {lookupText && (
+        <UniversalLookupModal
+          query={lookupText}
+          onClose={() => setLookupText(null)}
+        />
+      )}
+    </>
   )
 }

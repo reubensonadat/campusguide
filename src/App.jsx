@@ -203,6 +203,28 @@ function AppContent() {
     return () => { if (requestIdleCallback) cancelIdleCallback(idleId); else clearTimeout(idleId); };
   }, []);
 
+  // ── App shell skeleton fade-out (no flash transition) ──
+  useEffect(() => {
+    const shell = document.getElementById('skeleton-shell');
+    if (shell) {
+      shell.classList.add('fade-out');
+      setTimeout(() => { try { shell.remove(); } catch {} }, 400);
+    }
+  }, []);
+
+  // ── bfcache / background state persistence ──
+  useEffect(() => {
+    const save = () => {
+      if (document.visibilityState === 'hidden') {
+        try {
+          sessionStorage.setItem('ucc_last_path', window.location.pathname + window.location.search);
+        } catch {}
+      }
+    };
+    document.addEventListener('visibilitychange', save);
+    return () => document.removeEventListener('visibilitychange', save);
+  }, []);
+
   // Onboarding
   const {
     showOnboarding,
