@@ -85,6 +85,12 @@ const WhisperCommentsModal = ({ isOpen, onClose, whisper, onCommentAdded }) => {
         }
     };
 
+    useEffect(() => {
+      if (!isOpen || !whisper) return
+      document.body.style.overflow = 'hidden'
+      return () => { document.body.style.overflow = '' }
+    }, [isOpen, whisper])
+
     if (!isOpen || !whisper) return null;
 
     return (

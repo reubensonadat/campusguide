@@ -44,6 +44,12 @@ const NewWhisperModal = ({ isOpen, onClose }) => {
         }
     };
 
+    useEffect(() => {
+      if (!isOpen) return
+      document.body.style.overflow = 'hidden'
+      return () => { document.body.style.overflow = '' }
+    }, [isOpen])
+
     if (!isOpen) return null;
 
     return (

@@ -75,7 +75,12 @@ const getCleanDescription = (rawDesc) => {
 };
 
 /* ─── Wishlist Overlay ─── */
-const WishlistOverlay = ({ wishlistItems, items, toggleWishlist, onClose, onSelectItem }) => (
+const WishlistOverlay = ({ wishlistItems, items, toggleWishlist, onClose, onSelectItem }) => {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+  return (
     <div className="fixed inset-0 z-[70] flex flex-col" onClick={onClose}>
         {/* Dim backdrop */}
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
@@ -176,10 +181,17 @@ const WishlistOverlay = ({ wishlistItems, items, toggleWishlist, onClose, onSele
             </div>
         </div>
     </div>
-);
+    );
+};
 
 /* ─── Thrift Detail Modal ─── */
 const ThriftDetailModal = ({ item, onClose, toggleWishlist, isWishlisted }) => {
+    useEffect(() => {
+      if (!item) return
+      document.body.style.overflow = 'hidden'
+      return () => { document.body.style.overflow = '' }
+    }, [item])
+
     if (!item) return null;
 
     const parts = item.description?.split('\nLocation: ') || [];

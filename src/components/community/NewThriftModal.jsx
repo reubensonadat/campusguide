@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { X, UploadCloud, Tag, Image, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { createThriftListing, canPostThriftListing } from '../../services/thriftService';
@@ -189,6 +189,12 @@ const NewThriftModal = ({ isOpen, onClose }) => {
         setImagePreview(null);
         onClose();
     };
+
+    useEffect(() => {
+      if (!isOpen) return
+      document.body.style.overflow = 'hidden'
+      return () => { document.body.style.overflow = '' }
+    }, [isOpen])
 
     if (!isOpen) return null;
 
