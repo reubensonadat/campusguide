@@ -42,6 +42,29 @@
   }
 }
 
+/* ── Prevent Native Browser Long-Press Popups & Double-Tap Highlighting ── */
+* {
+  -webkit-touch-callout: none; /* Disable native iOS/Android callout popup on long press */
+  -webkit-tap-highlight-color: transparent; /* Remove tap flash overlay on mobile */
+}
+
+body, html {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  touch-action: manipulation; /* Prevent browser double-tap zoom hijacking */
+}
+
+/* Allow text selection explicitly inside inputs and textareas */
+input, textarea, [contenteditable="true"], .selectable, .select-text {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
 :root {
   /* Campus Blue (Default) */
   --primary-50: 240 247 250;
@@ -348,30 +371,30 @@ p, h1, h2, h3, h4, h5, h6, article, input, textarea {
 @keyframes floatUpAndFade {
   0% {
     opacity: 0;
-    transform: translateY(0) scale(0.5) rotate(0deg);
+    transform: translate3d(0, 0, 0) scale(0.6) rotate(0deg);
   }
-  10% {
-    opacity: 1;
-    transform: translateY(-10vh) scale(1.2) rotate(10deg);
+  15% {
+    opacity: 0.95;
+    transform: translate3d(0, -60px, 0) scale(1.15) rotate(-6deg);
   }
-  50% {
+  65% {
     opacity: 0.8;
-    transform: translateY(-35vh) scale(1) rotate(-15deg);
+    transform: translate3d(var(--float-dx, 20px), -240px, 0) scale(1) rotate(8deg);
   }
   100% {
     opacity: 0;
-    transform: translateY(-70vh) scale(0.8) rotate(20deg);
+    transform: translate3d(var(--float-dx, -20px), -360px, 0) scale(0.75) rotate(-12deg);
   }
 }
 
 .floating-emoji {
-  position: fixed; /* Fixed so it floats across the whole screen */
-  bottom: 0; /* Start at the bottom of the screen */
+  position: fixed;
+  bottom: 80px;
   pointer-events: none;
-  animation: floatUpAndFade 5s ease-out forwards;
-  z-index: 9999;
-  text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  animation: floatUpAndFade 3.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 99999;
   will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .emoji-reaction-btn {

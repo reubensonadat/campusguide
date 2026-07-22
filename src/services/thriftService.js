@@ -1,26 +1,38 @@
 import { supabase } from '../lib/supabase';
+import { withCache, ONE_HOUR_TTL, cacheInvalidatePrefix } from './cacheService';
+
+/**
+ * Clears all cached thrift listings and user item stats
+ */
+export const clearThriftCache = () => {
+  cacheInvalidatePrefix('thrift_');
+};
 
 /**
  * Fetches user's thrift listings
  */
 export const fetchUserThriftListings = async (userId) => {
-  try {
-    const { data, error } = await supabase
-      .from('thrift_listings')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+  if (!userId) return { listings: [], error: null };
+  const cacheKey = `thrift_user_listings_${userId}`;
+  return await withCache(cacheKey, async () => {
+    try {
+      const { data, error } = await supabase
+        .from('thrift_listings')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching thrift listings:', error);
+      if (error) {
+        console.error('Error fetching thrift listings:', error);
+        return { listings: [], error: error.message };
+      }
+
+      return { listings: data || [], error: null };
+    } catch (error) {
+      console.error('Error in fetchUserThriftListings:', error);
       return { listings: [], error: error.message };
     }
-
-    return { listings: data || [], error: null };
-  } catch (error) {
-    console.error('Error in fetchUserThriftListings:', error);
-    return { listings: [], error: error.message };
-  }
+  }, ONE_HOUR_TTL);
 };
 
 /**
@@ -131,15 +143,15 @@ export const createThriftListing = async (listing) => {
         is_sold: false,
         extension_count: 0
       }])
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('Error creating thrift listing:', error);
       return { listing: null, error: error.message };
     }
 
-    return { listing: data, error: null };
+    clearThriftCache();
+    return { listing: data ? data[0] : null, error: null };
   } catch (error) {
     console.error('Error in createThriftListing:', error);
     return { listing: null, error: error.message };
@@ -161,6 +173,7 @@ export const deleteThriftListing = async (listingId) => {
       return { success: false, error: error.message };
     }
 
+    clearThriftCache();
     return { success: true, error: null };
   } catch (error) {
     console.error('Error in deleteThriftListing:', error);
@@ -173,16 +186,34 @@ export const deleteThriftListing = async (listingId) => {
  */
 export const boostThriftListing = async (listingId, days) => {
   try {
-    // Calculate expiry date
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + days);
+    const now = new Date();
+    const featuredUntil = new Date(now);
+    featuredUntil.setDate(featuredUntil.getDate() + days);
+
+    // Also extend expires_at so boosted items stay visible in the feed
+    const { data: current } = await supabase
+      .from('thrift_listings')
+      .select('expires_at')
+      .eq('id', listingId)
+      .single();
+
+    let newExpiresAt = null;
+    if (current?.expires_at) {
+      const currentExpiry = new Date(current.expires_at);
+      if (currentExpiry < featuredUntil) {
+        newExpiresAt = featuredUntil.toISOString();
+      }
+    }
     
+    const updateFields = {
+      is_featured: true,
+      featured_until: featuredUntil.toISOString()
+    };
+    if (newExpiresAt) updateFields.expires_at = newExpiresAt;
+
     const { data, error } = await supabase
       .from('thrift_listings')
-      .update({ 
-        is_featured: true,
-        featured_until: expiryDate.toISOString()
-      })
+      .update(updateFields)
       .eq('id', listingId)
       .select()
       .single();
@@ -192,6 +223,7 @@ export const boostThriftListing = async (listingId, days) => {
       return { listing: null, error: error.message };
     }
 
+    clearThriftCache();
     return { listing: data, error: null };
   } catch (error) {
     console.error('Error in boostThriftListing:', error);
@@ -200,37 +232,32 @@ export const boostThriftListing = async (listingId, days) => {
 };
 
 /**
- * Fetches all thrift listings, ordered by featured status first, then by date
+ * Fetches all thrift listings, ordered by featured status first, then by date (Cached 1 Hour)
  */
 const THRIFT_PAGE_SIZE = 20;
 
 export const fetchAllThriftListings = async (page = 0, campusId = null) => {
-  try {
-    const today = new Date().toISOString();
-    const from = page * THRIFT_PAGE_SIZE;
-    const to = from + THRIFT_PAGE_SIZE - 1;
-    let query = supabase
-      .from('thrift_listings')
-      .select('*')
-      .eq('status', 'ACTIVE')
-      .gte('expires_at', today);
-    if (campusId) query = query.eq('campus_id', campusId);
-    const { data, error } = await query
-      .order('is_featured', { ascending: false })
-      .order('featured_until', { ascending: true, nullsFirst: false })
-      .order('created_at', { ascending: false })
-      .range(from, to);
+  const cacheKey = `thrift_feed_p${page}_c${campusId || 'all'}`;
+  return await withCache(cacheKey, async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_feed_thrift_listings', {
+          p_page: page,
+          p_page_size: THRIFT_PAGE_SIZE,
+          p_campus_id: campusId || null
+        });
 
-    if (error) {
-      console.error('Error fetching all thrift listings:', error);
+      if (error) {
+        console.error('Error fetching all thrift listings:', error);
+        return { listings: [], error: error.message, hasMore: false };
+      }
+
+      return { listings: data || [], error: null, hasMore: (data || []).length === THRIFT_PAGE_SIZE };
+    } catch (error) {
+      console.error('Error in fetchAllThriftListings:', error);
       return { listings: [], error: error.message, hasMore: false };
     }
-
-    return { listings: data || [], error: null, hasMore: (data || []).length === THRIFT_PAGE_SIZE };
-  } catch (error) {
-    console.error('Error in fetchAllThriftListings:', error);
-    return { listings: [], error: error.message, hasMore: false };
-  }
+  }, ONE_HOUR_TTL);
 };
 
 /**
@@ -275,6 +302,7 @@ export const extendThriftListing = async (listingId, days = 7) => {
       return { listing: null, error: error.message };
     }
 
+    clearThriftCache();
     return { listing: data, error: null };
   } catch (error) {
     console.error('Error in extendThriftListing:', error);
@@ -302,11 +330,41 @@ export const markThriftListingAsSold = async (listingId) => {
       return { listing: null, error: error.message };
     }
 
+    clearThriftCache();
     return { listing: data, error: null };
   } catch (error) {
     console.error('Error in markThriftListingAsSold:', error);
     return { listing: null, error: error.message };
   }
+};
+
+/**
+ * Fetches thrift listings with their analytics stats (Cached 1 Hour)
+ */
+export const fetchUserThriftListingsWithStats = async (userId) => {
+  if (!userId) return { listings: [], stats: {}, error: null };
+  const cacheKey = `thrift_user_stats_${userId}`;
+  return await withCache(cacheKey, async () => {
+    try {
+      const { listings, error } = await fetchUserThriftListings(userId);
+      if (error || !listings.length) return { listings: listings || [], stats: {}, error };
+
+      const ids = listings.map(l => l.id);
+      const { data: statsData, error: statsError } = await supabase
+        .from('thrift_item_stats')
+        .select('*')
+        .in('thrift_id', ids);
+
+      if (statsError) console.error('Error fetching thrift stats:', statsError);
+
+      const stats = {};
+      (statsData || []).forEach(s => { stats[s.thrift_id] = s; });
+      return { listings, stats, error: null };
+    } catch (error) {
+      console.error('Error in fetchUserThriftListingsWithStats:', error);
+      return { listings: [], stats: {}, error: error.message };
+    }
+  }, ONE_HOUR_TTL);
 };
 
 /**

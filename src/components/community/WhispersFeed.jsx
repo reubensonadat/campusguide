@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUp, ArrowDown, MessageSquare, Flag, Loader2, Trash2, RefreshCw, Search, X, Share2 } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { ArrowUp, ArrowDown, MessageSquare, Flag, Loader2, Trash2, RefreshCw, Search, X, Share2, ChevronDown } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import NewWhisperModal from './NewWhisperModal';
 import WhisperCommentsModal from './WhisperCommentsModal';
@@ -12,6 +13,7 @@ import ConfirmModal from '../common/ConfirmModal';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { toBlob } from 'html-to-image';
 import { triggerHaptic } from '../../utils/haptics';
+import { updateWhisperViewCount } from '../../services/analyticsService';
 
 const downloadFallback = (blob, id, toastId) => {
     const url = URL.createObjectURL(blob);
@@ -97,18 +99,19 @@ const handleShareWhisper = async (e, whisper) => {
 
 const WhispersFeed = () => {
     const { selectedCampus } = useCampus();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedWhisper, setSelectedWhisper] = useState(null);
     const [whispers, setWhispers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedWhisper, setSelectedWhisper] = useState(null);
+    const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+    const [sortBy, setSortBy] = useState('new');
+    const [isSortOpen, setIsSortOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [whisperPage, setWhisperPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-    const [sortBy, setSortBy] = useState('new');
     const [currentUser, setCurrentUser] = useState(null);
     const [userInteractions, setUserInteractions] = useState({ upvotes: new Set(), downvotes: new Set(), flags: new Set(), emojis: {} });
-    const [searchQuery, setSearchQuery] = useState('');
-    const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
     // Simulated online users count (Scales up based on base traffic, caps at 50 to look realistic)
     // Kept stable during the user's session using useMemo
@@ -311,44 +314,71 @@ const WhispersFeed = () => {
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto">
-            <div className="flex justify-between items-end mb-4">
+            {/* Header & Title Section */}
+            <div className="mb-4 space-y-2.5">
+                {/* Title & Status Badge */}
                 <div>
-                    <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                        Campus Whispers
-                        <div className="flex items-center gap-1.5 bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
+                    <h2 className="text-xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
+                        <span>Campus Whispers</span>
+                        <div className="flex items-center gap-1.5 bg-green-50 px-2 py-0.5 rounded-full border border-green-100/80">
                             <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                             <span className="text-[10px] font-black text-green-700 uppercase tracking-wider whitespace-nowrap">
                                 {simulatedOnlineCount} Online
                             </span>
                         </div>
                     </h2>
-                    <p className="text-sm text-gray-500 font-medium mb-3">100% Anonymous. Spill the tea.</p>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setSortBy('new')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${sortBy === 'new' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                        >
-                            New
-                        </button>
-                        <button
-                            onClick={() => setSortBy('top')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${sortBy === 'top' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                        >
-                            Top Score
-                        </button>
-                        <button
-                            onClick={loadWhispers}
-                            disabled={loading}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors flex items-center gap-1 disabled:opacity-50"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}><path d="M5.46257 4.43262C7.21556 2.91688 9.5007 2 12 2C17.5228 2 22 6.47715 22 12C22 14.1361 21.3302 16.1158 20.1892 17.7406L17 12H20C20 7.58172 16.4183 4 12 4C9.84982 4 7.89777 4.84827 6.46023 6.22842L5.46257 4.43262ZM18.5374 19.5674C16.7844 21.0831 14.4993 22 12 22C6.47715 22 2 17.5228 2 12C2 9.86386 2.66979 7.88416 3.8108 6.25944L7 12H4C4 16.4183 7.58172 20 12 20C14.1502 20 16.1022 19.1517 17.5398 17.7716L18.5374 19.5674Z"></path></svg>
-                            Refresh
-                        </button>
-                    </div>
+                    <p className="text-xs text-gray-500 font-medium mt-0.5">100% Anonymous. Spill the tea.</p>
                 </div>
-                <button onClick={() => setIsModalOpen(true)} className="bg-gray-900 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-md hover:bg-black transition-colors mb-1">
-                    + Whisper
-                </button>
+
+                {/* Action Controls Line: Filter Dropdown (Left) & + Whisper Button (Right) */}
+                <div className="flex items-center justify-between gap-2 pt-1">
+                    {/* Compact Filter Dropdown */}
+                    <div className="relative inline-block">
+                        <button
+                            onClick={() => setIsSortOpen(!isSortOpen)}
+                            className="px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all flex items-center gap-1.5 border border-gray-200/80 active:scale-95"
+                        >
+                            <span>{sortBy === 'new' ? '✨ Latest' : '🔥 Top Score'}</span>
+                            <ChevronDown size={14} className={`text-gray-500 transition-transform duration-200 ${isSortOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {isSortOpen && (
+                            <>
+                                <div className="fixed inset-0 z-20" onClick={() => setIsSortOpen(false)} />
+                                <div className="absolute left-0 mt-1 z-30 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 w-44 animate-in fade-in zoom-in-95 duration-150">
+                                    <button
+                                        onClick={() => { setSortBy('new'); setIsSortOpen(false); }}
+                                        className={`w-full text-left px-3.5 py-2 text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors ${sortBy === 'new' ? 'text-primary-600 bg-primary-50/50' : 'text-gray-700'}`}
+                                    >
+                                        ✨ Latest Whispers
+                                    </button>
+                                    <button
+                                        onClick={() => { setSortBy('top'); setIsSortOpen(false); }}
+                                        className={`w-full text-left px-3.5 py-2 text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors ${sortBy === 'top' ? 'text-primary-600 bg-primary-50/50' : 'text-gray-700'}`}
+                                    >
+                                        🔥 Top Score
+                                    </button>
+                                    <div className="my-1 border-t border-gray-100" />
+                                    <button
+                                        onClick={() => { loadWhispers(); setIsSortOpen(false); }}
+                                        disabled={loading}
+                                        className="w-full text-left px-3.5 py-2 text-xs font-bold flex items-center gap-2 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-3.5 h-3.5 text-gray-500 ${loading ? "animate-spin" : ""}`}><path d="M5.46257 4.43262C7.21556 2.91688 9.5007 2 12 2C17.5228 2 22 6.47715 22 12C22 14.1361 21.3302 16.1158 20.1892 17.7406L17 12H20C20 7.58172 16.4183 4 12 4C9.84982 4 7.89777 4.84827 6.46023 6.22842L5.46257 4.43262ZM18.5374 19.5674C16.7844 21.0831 14.4993 22 12 22C6.47715 22 2 17.5228 2 12C2 9.86386 2.66979 7.88416 3.8108 6.25944L7 12H4C4 16.4183 7.58172 20 12 20C14.1502 20 16.1022 19.1517 17.5398 17.7716L18.5374 19.5674Z"></path></svg>
+                                        Refresh Feed
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+
+                    <button 
+                        onClick={() => setIsModalOpen(true)} 
+                        className="bg-gray-900 text-white px-3.5 py-1.5 rounded-xl font-extrabold text-xs shadow-sm hover:bg-black transition-all active:scale-95 whitespace-nowrap flex items-center gap-1 shrink-0"
+                    >
+                        <span>+ Whisper</span>
+                    </button>
+                </div>
             </div>
 
             {/* Search bar */}
@@ -434,6 +464,17 @@ const WhispersFeed = () => {
 /* ─── Animated Whisper Card ─── */
 const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract, onEmojiReaction, onDelete, onComment, getTimeAgo }) => {
     const { ref, isVisible } = useScrollReveal({ threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+    const trackedView = React.useRef(false);
+
+    React.useEffect(() => {
+        if (isVisible && !trackedView.current) {
+            trackedView.current = true;
+            if (currentUser?.id !== whisper.user_id) {
+                updateWhisperViewCount(whisper.id);
+            }
+        }
+    }, [isVisible, whisper.id, currentUser?.id, whisper.user_id]);
+
     const delay = Math.min(index * 70, 350);
     const pressTimer = React.useRef(null);
     const [floatingEmojis, setFloatingEmojis] = useState([]);
@@ -443,26 +484,27 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
         e.stopPropagation();
         if (emojiLock) return;
 
-        // Trigger floating animation (50 emojis)
+        // Trigger smooth floating reaction animation (12 lightweight particles)
         const baseId = Date.now();
-        const newEmojis = Array.from({ length: 50 }).map((_, i) => ({
+        const newEmojis = Array.from({ length: 12 }).map((_, i) => ({
             id: `${baseId}-${i}`,
             emoji,
-            left: `${10 + Math.random() * 80}%`, // Spread across the screen horizontally
-            delay: `${Math.random() * 2}s`, // Stagger start times
-            duration: `${3 + Math.random() * 2}s`, // Different speeds
-            size: `${1.5 + Math.random() * 2}rem` // Random sizes
+            left: `${15 + Math.random() * 70}%`,
+            delay: `${Math.random() * 0.5}s`,
+            duration: `${2.8 + Math.random() * 0.8}s`,
+            size: `${1.2 + Math.random() * 0.5}rem`,
+            dx: `${(Math.random() - 0.5) * 60}px`
         }));
 
         setFloatingEmojis(prev => [...prev, ...newEmojis]);
 
         setTimeout(() => {
             setFloatingEmojis(prev => prev.filter(item => !item.id.startsWith(`${baseId}-`)));
-        }, 7500); // Remove after longest animation finishes
+        }, 3200);
 
-        // Lock for 5 seconds
+        // Lock for 3 seconds
         setEmojiLock(true);
-        setTimeout(() => setEmojiLock(false), 5000);
+        setTimeout(() => setEmojiLock(false), 3000);
 
         onEmojiReaction(whisper.id, emoji);
     };
@@ -506,20 +548,26 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
                         : 'bg-white border-gray-100 hover:border-primary-100'
                     }`}
             >
-                {floatingEmojis.map(f => (
-                    <div
-                        key={f.id}
-                        className="floating-emoji"
-                        style={{
-                            left: f.left,
-                            fontSize: f.size,
-                            animationDuration: f.duration,
-                            animationDelay: f.delay
-                        }}
-                    >
-                        {f.emoji}
-                    </div>
-                ))}
+                {floatingEmojis.length > 0 && createPortal(
+                    <div className="fixed inset-0 pointer-events-none z-[99999] overflow-hidden">
+                        {floatingEmojis.map(f => (
+                            <div
+                                key={f.id}
+                                className="floating-emoji"
+                                style={{
+                                    left: f.left,
+                                    fontSize: f.size,
+                                    animationDuration: f.duration,
+                                    animationDelay: f.delay,
+                                    '--float-dx': f.dx
+                                }}
+                            >
+                                {f.emoji}
+                            </div>
+                        ))}
+                    </div>,
+                    document.body
+                )}
                 <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-2">
                         <span className={`text-xs font-bold px-2 py-1 rounded-md ${isTrending ? 'text-orange-600 bg-orange-100/50' : 'text-primary-500 bg-primary-50'}`}>
@@ -538,6 +586,15 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
                     </div>
                     <div className="flex items-center gap-3">
                         <span className="text-xs text-gray-400 font-medium">{getTimeAgo(whisper.created_at)}</span>
+                        {currentUser?.id === whisper.user_id && whisper.view_count > 0 && (
+                            <span className="text-[10px] text-gray-300 font-medium flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
+                                    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                                    <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" />
+                                </svg>
+                                {whisper.view_count}
+                            </span>
+                        )}
                         <button
                             onClick={(e) => { e.stopPropagation(); onInteract(whisper.id, 'FLAG'); }}
                             className={`${userInteractions.flags.has(whisper.id) ? 'text-red-500 cursor-default' : 'text-gray-300 hover:text-red-500'} transition-colors`}
@@ -550,29 +607,29 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
                 <p className="text-gray-800 text-lg font-medium leading-relaxed mb-4 whitespace-pre-wrap break-words">
                     <Linkify text={whisper.text} />
                 </p>
-                <div className="whisper-action-row flex items-center justify-between border-t border-gray-50 pt-3 mt-2">
-                    <div className="flex items-center gap-2 flex-wrap">
+                <div className="whisper-action-row flex items-center justify-between gap-1 sm:gap-2 border-t border-gray-50 pt-2.5 mt-2 flex-wrap sm:flex-nowrap">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                         {/* Vote Pill */}
-                        <div className="flex items-center gap-1 bg-gray-50/80 rounded-full px-1 py-1 border border-gray-100/50">
+                        <div className="flex items-center gap-0.5 bg-gray-50/80 rounded-full px-1 py-0.5 border border-gray-100/50">
                             <button
                                 onClick={(e) => { e.stopPropagation(); onInteract(whisper.id, 'UPVOTE'); }}
-                                className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.upvotes.has(whisper.id) ? 'text-green-600 bg-white cursor-default' : 'text-gray-400 hover:text-green-600 hover:bg-white'}`}
+                                className={`p-1 rounded-full transition-colors ${userInteractions.upvotes.has(whisper.id) ? 'text-green-600 bg-white shadow-xs' : 'text-gray-400 hover:text-green-600'}`}
                             >
-                                <ArrowUp size={16} strokeWidth={3} />
+                                <ArrowUp size={14} strokeWidth={3} />
                             </button>
-                            <span className="text-sm font-black text-gray-700 min-w-[20px] text-center">
+                            <span className="text-xs font-black text-gray-700 min-w-[16px] text-center">
                                 {whisper.upvotes - whisper.downvotes}
                             </span>
                             <button
                                 onClick={(e) => { e.stopPropagation(); onInteract(whisper.id, 'DOWNVOTE'); }}
-                                className={`p-1.5 rounded-full transition-colors shadow-sm ${userInteractions.downvotes.has(whisper.id) ? 'text-red-500 bg-white cursor-default' : 'text-gray-400 hover:text-red-500 hover:bg-white'}`}
+                                className={`p-1 rounded-full transition-colors ${userInteractions.downvotes.has(whisper.id) ? 'text-red-500 bg-white shadow-xs' : 'text-gray-400 hover:text-red-500'}`}
                             >
-                                <ArrowDown size={16} strokeWidth={3} />
+                                <ArrowDown size={14} strokeWidth={3} />
                             </button>
                         </div>
 
                         {/* Emojis Pill */}
-                        <div className="flex items-center bg-gray-50/50 rounded-full px-1 py-0.5 border border-gray-50">
+                        <div className="flex items-center bg-gray-50/50 rounded-full px-0.5 py-0.5 border border-gray-50">
                             {['😂', '😲', '😡', '🔥'].map(emoji => {
                                 const count = whisper.reactions?.[emoji] || 0;
                                 const hasReacted = userInteractions.emojis?.[whisper.id]?.has(emoji);
@@ -581,41 +638,42 @@ const WhisperCard = ({ whisper, index, userInteractions, currentUser, onInteract
                                         key={emoji}
                                         disabled={emojiLock}
                                         onClick={(e) => handleEmojiClick(e, emoji)}
-                                        className={`emoji-reaction-btn flex items-center gap-0.5 px-2 py-1 rounded-full text-[11px] font-bold transition-all ${hasReacted
-                                                ? 'bg-primary-50 text-primary-700 scale-110 shadow-sm'
-                                                : 'text-gray-400 hover:bg-white hover:text-gray-600 hover:shadow-sm hover:scale-105'
+                                        className={`emoji-reaction-btn flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold transition-all ${hasReacted
+                                                ? 'bg-primary-50 text-primary-700 scale-105 shadow-sm'
+                                                : 'text-gray-400 hover:bg-white hover:text-gray-600'
                                             }`}
                                     >
-                                        <span className="text-sm">{emoji}</span>
+                                        <span className="text-xs">{emoji}</span>
                                         {count > 0 && <span>{count}</span>}
                                     </button>
                                 );
                             })}
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+
+                    <div className="flex items-center gap-1 shrink-0 ml-auto">
                         {currentUser?.id === whisper.user_id && (
                             <button
                                 onClick={(e) => { e.stopPropagation(); onDelete(whisper.id); }}
-                                className="p-1.5 text-gray-300 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                                className="p-1 text-gray-300 hover:text-red-500 transition-colors rounded-full"
                                 title="Delete whisper"
                             >
-                                <Trash2 size={16} />
+                                <Trash2 size={15} />
                             </button>
                         )}
                         <button
                             onClick={(e) => { e.stopPropagation(); handleShareWhisper(e, whisper); }}
-                            className="p-1.5 text-gray-400 hover:text-primary-600 transition-colors rounded-full hover:bg-primary-50"
+                            className="p-1 text-gray-400 hover:text-primary-600 transition-colors rounded-full"
                             title="Share whisper"
                         >
-                            <Share2 size={16} />
+                            <Share2 size={15} />
                         </button>
                         <button
                             onClick={(e) => { e.stopPropagation(); onComment(whisper); }}
-                            className="flex items-center gap-1.5 text-gray-400 hover:text-primary-600 transition-colors text-sm font-bold px-3 py-1.5 rounded-full hover:bg-primary-50"
+                            className="flex items-center gap-1 text-gray-500 hover:text-primary-600 transition-colors text-xs font-bold px-2.5 py-1 rounded-full bg-gray-50 hover:bg-primary-50 shrink-0"
                         >
-                            <MessageSquare size={16} />
-                            {whisper.comment_count}
+                            <MessageSquare size={14} />
+                            <span>{whisper.comment_count}</span>
                         </button>
                     </div>
                 </div>

@@ -524,6 +524,10 @@ const Profile = () => {
                   className="w-full text-center text-xs font-bold text-gray-400 hover:text-gray-600 py-1">
                   Browse all thrift items →
                 </button>
+                <button onClick={() => navigate('/my-thrift')}
+                  className="w-full text-center text-xs font-bold text-primary-600 hover:text-primary-700 py-1">
+                  Full Management & Analytics →
+                </button>
               </div>
             ) : (
               <div className="border border-dashed border-gray-200 rounded-xl p-6 text-center">

@@ -52,6 +52,7 @@ const TermsOfService = lazy(() => import('./pages/Legal').then(m => ({ default: 
 const LetterGenerator = lazy(() => import('./pages/LetterGenerator').then(m => ({ default: m.LetterGenerator })));
 const RunwayPlanner = lazy(() => import('./pages/RunwayPlanner'));
 const DataMart = lazy(() => import('./pages/DataMart'));
+const MyThriftItems = lazy(() => import('./pages/MyThriftItems'));
 
 function NavigationObserver() {
   const location = useLocation();
@@ -238,6 +239,7 @@ function AppContent() {
                 <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
                 <Route path="/planner" element={<PageTransition><RunwayPlanner /></PageTransition>} />
                 <Route path="/data" element={<PageTransition><DataMart /></PageTransition>} />
+                <Route path="/my-thrift" element={<PageTransition><MyThriftItems /></PageTransition>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

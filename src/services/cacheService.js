@@ -29,9 +29,10 @@
 const CACHE_PREFIX  = 'ucc_cache_';
 const DEFAULT_TTL   = 24 * 60 * 60 * 1000; // 24 hours in ms
 const SHORT_TTL     = 2  * 60 * 60 * 1000; //  2 hours  in ms  (for time-sensitive data)
+const ONE_HOUR_TTL  = 1  * 60 * 60 * 1000; //  1 hour   in ms  (for thrift feeds & user items)
 const LONG_TTL      = 7  * 24 * 60 * 60 * 1000; // 7 days (near-static data like map buildings)
 
-export { DEFAULT_TTL, SHORT_TTL, LONG_TTL };
+export { DEFAULT_TTL, SHORT_TTL, ONE_HOUR_TTL, LONG_TTL };
 
 // ── Low-level get/set ─────────────────────────────────────────────────────────
 
@@ -95,6 +96,20 @@ export const cacheAge = (key) => {
 export const cacheInvalidate = (key) => {
     try {
         localStorage.removeItem(CACHE_PREFIX + key);
+    } catch { /* silent */ }
+};
+
+/**
+ * Delete all cache entries matching a key prefix.
+ */
+export const cacheInvalidatePrefix = (prefix) => {
+    try {
+        const toRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && k.startsWith(CACHE_PREFIX + prefix)) toRemove.push(k);
+        }
+        toRemove.forEach(k => localStorage.removeItem(k));
     } catch { /* silent */ }
 };
 
