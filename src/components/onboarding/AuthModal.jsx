@@ -131,7 +131,7 @@ export const AuthBottomSheet = () => {
         <p className="text-gray-500 font-medium mb-8 leading-relaxed">
           {mode === 'register' 
             ? 'To save your information, please secure your device with a 6-digit PIN. You will use this PIN if you ever lose your phone.' 
-            : 'Enter your old Device ID and your 6-digit PIN to download your saved data to this phone.'}
+            : 'Enter your old Device ID (e.g. UCC-XXXXXXXX) or your username and your 6-digit PIN to download your saved data to this phone.'}
         </p>
 
         {error && (
@@ -143,14 +143,14 @@ export const AuthBottomSheet = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Your Device ID</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Device ID or Username</label>
             <input
               type="text"
               value={deviceId}
-              onChange={(e) => mode === 'restore' && setDeviceId(e.target.value.toUpperCase())}
+              onChange={(e) => mode === 'restore' && setDeviceId(e.target.value)}
               readOnly={mode === 'register'}
-              className={`w-full px-4 py-4 rounded-2xl border-2 ${mode === 'register' ? 'bg-gray-50 border-gray-100 text-gray-500' : 'bg-white border-gray-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-50'} outline-none font-mono text-center font-bold tracking-wider uppercase transition-all`}
-              placeholder="XXXX-XXXXXXXX"
+              className={`w-full px-4 py-4 rounded-2xl border-2 ${mode === 'register' ? 'bg-gray-50 border-gray-100 text-gray-500' : 'bg-white border-gray-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-50'} outline-none text-center font-bold tracking-wider transition-all`}
+              placeholder="UCC-XXXXXXXX or your username"
             />
           </div>
 

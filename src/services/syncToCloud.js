@@ -53,6 +53,7 @@ export async function syncToCloud({ force = false } = {}) {
         .from('users')
         .update({
           name: profile.name || null,
+          username: profile.username || null,
           phone_number: sanitizeGhanaPhone(profile.phone) || null,
           course: profile.course || null,
           level: profile.level || null,

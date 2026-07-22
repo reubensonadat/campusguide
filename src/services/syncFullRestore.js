@@ -44,10 +44,11 @@ export async function restoreFromCloud() {
       }
     }
 
-    const { data: userProfile } = await supabase.from('users').select('name, phone_number, course, level, current_semester, avatar_url, student_id').single();
+    const { data: userProfile } = await supabase.from('users').select('name, username, phone_number, course, level, current_semester, avatar_url, student_id').single();
     if (userProfile) {
       const profile = JSON.parse(localStorage.getItem('ucc_profile') || '{}');
       if (userProfile.name) profile.name = userProfile.name;
+      if (userProfile.username) profile.username = userProfile.username;
       if (userProfile.phone_number) profile.phone = sanitizeGhanaPhone(userProfile.phone_number);
       if (userProfile.course) profile.course = userProfile.course;
       if (userProfile.level) profile.level = userProfile.level;

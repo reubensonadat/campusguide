@@ -55,15 +55,38 @@ export const secureDevice = async (deviceId, pin) => {
 };
 
 /**
+ * Resolves the sign-in identifier: if the input looks like a device ID (has a hyphen),
+ * use it directly. Otherwise treat it as a username and look up the device_id from DB.
+ */
+const resolveDeviceId = async (input) => {
+  const trimmed = input.trim();
+  if (trimmed.includes('-')) return trimmed.toUpperCase();
+  // Treat as username — query the public.users table
+  const { data, error } = await supabase
+    .from('users')
+    .select('device_id')
+    .eq('username', trimmed.toLowerCase().replace(/[^a-z0-9_]/g, ''))
+    .maybeSingle();
+  if (error || !data?.device_id) return null;
+  return data.device_id;
+};
+
+/**
  * Restores the user's lifecycle onto a new device.
- * Logs in via Supabase Auth using their old ID and PIN.
+ * Accepts either a Device ID (e.g. UCC-XXXXXXXX) or a username.
+ * Logs in via Supabase Auth using the resolved device ID and PIN.
  */
 export const restoreLifecycle = async (oldDeviceId, pin) => {
   if (!oldDeviceId || !pin) {
-    return { success: false, error: 'Device ID and PIN required.' };
+    return { success: false, error: 'Device ID or username and PIN required.' };
   }
 
-  const cleanId = oldDeviceId.replace(/\s+/g, '').toLowerCase();
+  const resolvedId = await resolveDeviceId(oldDeviceId);
+  if (!resolvedId) {
+    return { success: false, error: 'Could not find that Device ID or username. Check your spelling and try again.' };
+  }
+
+  const cleanId = resolvedId.replace(/\s+/g, '').toLowerCase();
   const syntheticEmail = `${cleanId}${DOMAIN}`;
 
   try {
@@ -75,7 +98,7 @@ export const restoreLifecycle = async (oldDeviceId, pin) => {
     if (error) throw error;
 
     // Save the old device ID locally so the app adopts it
-    localStorage.setItem('ucc_device_id', oldDeviceId.toUpperCase());
+    localStorage.setItem('ucc_device_id', resolvedId);
     // Persist the Auth UUID so thrift and other services can query by user_id
     localStorage.setItem('ucc_user_id', data.user.id);
 
