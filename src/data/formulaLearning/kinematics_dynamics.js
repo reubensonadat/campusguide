@@ -1,4 +1,4 @@
-anexport const kinematics_dynamics = {
+export const kinematics_dynamics = {
   "kinematics-v": {
     "intuition": "Velocity‑Time equations describe how an object's final velocity depends on its initial velocity, constant acceleration, and elapsed time.",
     "variableBreakdown": [

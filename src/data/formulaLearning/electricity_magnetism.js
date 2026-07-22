@@ -1,23 +1,23 @@
 export const electricity_magnetism = {
   "rc-circuit": {
     "variableBreakdown": [
-      { "name": "R", "description": "Resistance in ohms (\u03a9)", "unit": "\u03a9", "context": "Resistance of resistor in RC circuit" },
-      { "name": "C", "description": "Capacitance in farads (F)", "unit": "F", "context": "Capacitance of capacitor in RC circuit" }
+      {"name": "R", "description": "Resistance in ohms (\u03a9)", "unit": "\u03a9", "context": "Resistance of resistor in RC circuit"},
+      {"name": "C", "description": "Capacitance in farads (F)", "unit": "F", "context": "Capacitance of capacitor in RC circuit"}
     ],
     "solvingLogic": [
-      "Use time constant \\(\\tau = RC\\) to determine charging/discharging behavior",
-      "For charging: \\(V(t) = V_0(1 - e^{-t/\\tau})\\)",
-      "For discharging: \\(V(t) = V_0 e^{-t/\\tau}\\)"
+      "Use time constant \(\tau = RC\) to determine charging/discharging behavior",
+      "For charging: \(V(t) = V_0(1 - e^{-t/\tau})\)",
+      "For discharging: \(V(t) = V_0 e^{-t/\tau}\)"
     ],
     "edgeCases": [
       "At t=0, capacitor acts as short circuit",
-      "As t=\\infty, capacitor acts as open circuit"
+      "As t=\infty, capacitor acts as open circuit"
     ],
     "walkthroughExample": {
-      "problem": "An RC circuit has R=2\\Omega and C=5\\muF. Calculate voltage across capacitor after 1ms when connected to 12V battery.",
+      "problem": "An RC circuit has R=2\u03a9 and C=5\u03bcmicro F. Calculate voltage across capacitor after 1ms when connected to 12V battery.",
       "solution": [
-        "Calculate time constant: \\(\\tau = 2\\Omega \\times 5\\times10^{-6}F = 10^{-3}s\\)",
-        "Voltage: \\(V(0.001s) = 12V(1 - e^{-1}) = 12V(1 - 0.368) = 7.58V\\)"
+        "Calculate time constant: \(\tau = 2\u03a9 \u00d7 5\u03bcmicro F = 10^{-3}s\)",
+        "Voltage: \(V(0.001s) = 12V(1 - e^{-1}) = 12V(1 - 0.368) = 7.58V\)"
       ]
     },
     "commonTraps": [
@@ -27,23 +27,23 @@ export const electricity_magnetism = {
   },
   "rlc-impedance": {
     "variableBreakdown": [
-      { "name": "R", "description": "Resistance in ohms (\u03a9)", "unit": "\u03a9", "context": "Resistance in RLC series circuit" },
-      { "name": "L", "description": "Inductance in henrys (H)", "unit": "H", "context": "Inductance in RLC circuit" },
-      { "name": "C", "description": "Capacitance in farads (F)", "unit": "F", "context": "Capacitance in RLC circuit" }
+      {"name": "R", "description": "Resistance in ohms (\u03a9)", "unit": "\u03a9", "context": "Resistance in RLC series circuit"},
+      {"name": "L", "description": "Inductance in henrys (H)", "unit": "H", "context": "Inductance in RLC circuit"},
+      {"name": "C", "description": "Capacitance in farads (F)", "unit": "F", "context": "Capacitance in RLC circuit"}
     ],
     "solvingLogic": [
-      "Calculate impedance: \\(Z = \\sqrt{R^2 + (X_L - X_C)^2}\\)",
-      "Reactance formulas: \\(X_L = 2\\pi fL\\), \\(X_C = \\frac{1}{2\\pi fC}\\)"
+      "Calculate impedance: \(Z = \sqrt{R^2 + (X_L - X_C)^2}\)",
+      "Reactance formulas: \(X_L = 2\pi fL\), \(X_C = \frac{1}{2\pi fC}\)"
     ],
     "edgeCases": [
-      "At resonance: \\(X_L = X_C\\)",
-      "DC case: \\(X_C = 0\\)"
+      "At resonance: \(X_L = X_C\)",
+      "DC case: \(X_C = 0\)"
     ],
     "walkthroughExample": {
-      "problem": "Calculate impedance of RLC circuit with R=10\\Omega, L=0.1H, C=100\\muF at 60Hz.",
+      "problem": "Calculate impedance of RLC circuit with R=10\u03a9, L=0.1H, C=100\u03bcmicro F at 60Hz.",
       "solution": [
-        "Calculate reactances: \\(X_L = 2\\pi(60)(0.1) = 37.7\\Omega\\), \\(X_C = \\frac{1}{2\\pi(60)(100\\times10^{-6})} = 26.5\\Omega\\)",
-        "Impedance: \\(Z = \\sqrt{10^2 + (37.7 - 26.5)^2} = 19.4\\Omega\\)"
+        "Calculate reactances: \(X_L = 2\pi(60)(0.1) = 37.7\u03a9\), \(X_C = \frac{1}{2\pi(60)(100\u03bcmicro F)} = 26.5\u03a9\)",
+        "Impedance: \(Z = \sqrt{10^2 + (37.7 - 26.5)^2} = 19.4\u03a9\)"
       ]
     },
     "commonTraps": [
@@ -53,23 +53,23 @@ export const electricity_magnetism = {
   },
   "ohms-law": {
     "variableBreakdown": [
-      { "name": "V", "description": "Voltage in volts (V)", "unit": "V", "context": "Potential difference across resistor" },
-      { "name": "I", "description": "Current in amperes (A)", "unit": "A", "context": "Current through resistor" },
-      { "name": "R", "description": "Resistance in ohms (\u03a9)", "unit": "\u03a9", "context": "Resistance value" }
+      {"name": "V", "description": "Voltage in volts (V)", "unit": "V", "context": "Potential difference across resistor"},
+      {"name": "I", "description": "Current in amperes (A)", "unit": "A", "context": "Current through resistor"},
+      {"name": "R", "description": "Resistance in ohms (\u03a9)", "unit": "\u03a9", "context": "Resistance value"}
     ],
     "solvingLogic": [
-      "Use \\(V = IR\\) to solve for unknown variable",
-      "Power calculation: \\(P = VI = I^2R\\)"
+      "Use \(V = IR\) to solve for unknown variable",
+      "Power calculation: \(P = VI = I^2R\)"
     ],
     "edgeCases": [
       "Zero resistance: Short circuit",
       "Infinite resistance: Open circuit"
     ],
     "walkthroughExample": {
-      "problem": "A 12V battery is connected to a 4\\Omega resistor. Calculate current and power dissipation.",
+      "problem": "A 12V battery is connected to a 4\u03a9 resistor. Calculate current and power dissipation.",
       "solution": [
-        "Current: \\(I = \\frac{12V}{4\\Omega} = 3A\\)",
-        "Power: \\(P = 12V \\times 3A = 36W\\)"
+        "Current: \(I = \frac{12V}{4\u03a9} = 3A\)",
+        "Power: \(P = 12V \u00d7 3A = 36W\)"
       ]
     },
     "commonTraps": [
@@ -79,12 +79,12 @@ export const electricity_magnetism = {
   },
   "coulombs-law": {
     "variableBreakdown": [
-      { "name": "q_1", "description": "Charge 1 in coulombs (C)", "unit": "C", "context": "Point charge 1" },
-      { "name": "q_2", "description": "Charge 2 in coulombs (C)", "unit": "C", "context": "Point charge 2" },
-      { "name": "r", "description": "Distance between charges in meters (m)", "unit": "m", "context": "Separation distance" }
+      {"name": "q_1", "description": "Charge 1 in coulombs (C)", "unit": "C", "context": "Point charge 1"},
+      {"name": "q_2", "description": "Charge 2 in coulombs (C)", "unit": "C", "context": "Point charge 2"},
+      {"name": "r", "description": "Distance between charges in meters (m)", "unit": "m", "context": "Separation distance"}
     ],
     "solvingLogic": [
-      "Use \\(F = k\\frac{|q_1 q_2|}{r^2}\\)",
+      "Use \(F = k\frac{|q_1 q_2|}{r^2}\)",
       "Direction determined by charge signs"
     ],
     "edgeCases": [
@@ -92,9 +92,9 @@ export const electricity_magnetism = {
       "Zero charge: No force"
     ],
     "walkthroughExample": {
-      "problem": "Calculate force between 2\\muC and 5\\muC charges 0.3m apart.",
+      "problem": "Calculate force between 2\u03bcmicro C and 5\u03bcmicro C charges 0.3m apart.",
       "solution": [
-        "\\(F = (8.99\\times10^9)\\frac{(2\\times10^{-6})(5\\times10^{-6})}{(0.3)^2} = 0.999N\\)"
+        "\(F = (8.99\u00d710^9)\frac{(2\u03bcmicro C)(5\u03bcmicro C)}{(0.3)^2} = 0.999N\)"
       ]
     },
     "commonTraps": [
@@ -104,46 +104,46 @@ export const electricity_magnetism = {
   },
   "capacitor-energy": {
     "variableBreakdown": [
-      { "name": "C", "description": "Capacitance in farads (F)", "unit": "F", "context": "Capacitor value" },
-      { "name": "V", "description": "Voltage across capacitor in volts (V)", "unit": "V", "context": "Potential difference" }
+      {"name": "C", "description": "Capacitance in farads (F)", "unit": "F", "context": "Capacitor value"},
+      {"name": "V", "description": "Voltage across capacitor in volts (V)", "unit": "V", "context": "Potential difference"}
     ],
     "solvingLogic": [
-      "Energy stored: \\(U = \\frac{1}{2}CV^2\\)",
-      "Charge relation: \\(Q = CV\\)"
+      "Energy stored: \(U = \frac{1}{2}CV^2\)",
+      "Charge relation: \(Q = CV\)"
     ],
     "edgeCases": [
       "Zero voltage: No energy stored",
       "Infinite capacitance: Energy approaches infinity"
     ],
     "walkthroughExample": {
-      "problem": "Calculate energy stored in 10\\muF capacitor charged to 100V.",
+      "problem": "Calculate energy stored in 10\u03bcmicro F capacitor charged to 100V.",
       "solution": [
-        "\\(U = \\frac{1}{2}(10\\times10^{-6})(100)^2 = 0.05J\\)"
+        "\(U = \frac{1}{2}(10\u03bcmicro F)(100)^2 = 0.05J\)"
       ]
     },
     "commonTraps": [
-      "Using \\(CV\\) instead of \\(\\frac{1}{2}CV^2\\)",
+      "Using \(CV\) instead of \(\frac{1}{2}CV^2\)",
       "Confusing energy with charge"
     ]
   },
   "biot-savart": {
     "variableBreakdown": [
-      { "name": "I", "description": "Current in amperes (A)", "unit": "A", "context": "Current in wire" },
-      { "name": "dL", "description": "Differential length element in meters (m)", "unit": "m", "context": "Wire segment length" },
-      { "name": "r", "description": "Distance from wire to point in meters (m)", "unit": "m", "context": "Radial distance" }
+      {"name": "I", "description": "Current in amperes (A)", "unit": "A", "context": "Current in wire"},
+      {"name": "dL", "description": "Differential length element in meters (m)", "unit": "m", "context": "Wire segment length"},
+      {"name": "r", "description": "Distance from wire to point in meters (m)", "unit": "m", "context": "Radial distance"}
     ],
     "solvingLogic": [
-      "Integrate \\(d\\vec{B} = \\frac{\\mu_0}{4\\pi} \\frac{I d\\vec{L} \\times \\hat{r}}{r^2}\\)",
+      "Integrate \(d\vec{B} = \frac{\mu_0}{4\pi} \frac{I d\vec{L} \times \hat{r}}{r^2}\)",
       "Direction via right-hand rule"
     ],
     "edgeCases": [
-      "Infinite straight wire: Field \\(B = \\frac{\\mu_0 I}{2\\pi r}\\)",
-      "Circular loop: Field at center \\(B = \\frac{\\mu_0 I}{2R}\\)"
+      "Infinite straight wire: Field \(B = \frac{\mu_0 I}{2\pi r}\)",
+      "Circular loop: Field at center \(B = \frac{\mu_0 I}{2R}\)"
     ],
     "walkthroughExample": {
       "problem": "Calculate magnetic field at center of circular loop with I=2A, R=0.5m.",
       "solution": [
-        "\\(B = \\frac{(4\\pi\\times10^{-7})(2)}{2(0.5)} = 2.51\\times10^{-6}T\\)"
+        "\(B = \frac{(4\pi\times10^{-7})(2)}{2(0.5)} = 2.51\times10^{-6}T\)"
       ]
     },
     "commonTraps": [
