@@ -58,6 +58,7 @@ const TimetableDayCard = ({ day, courses, selectedDayFilter, onSelectCourse }) =
           return (
             <button
               key={course.id}
+              id={`course-card-${course.id}`}
               type="button"
               onClick={() => onSelectCourse(course)}
               className="flex w-full items-start gap-3 rounded-[22px] border border-slate-100 bg-white p-2 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"

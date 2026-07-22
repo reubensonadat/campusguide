@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, BookOpen, Calendar, Globe, X, ExternalLink, Ruler, Package, Clock, CheckSquare, FileText, User, Tag, MessageCircle, Megaphone, Store } from 'lucide-react';
@@ -8,21 +8,28 @@ import { academicCalendar } from '../../data/academicCalendar';
 import { formulasData } from '../../data/formulas';
 import { FRESHER_LIST } from '../../data/packingLists';
 
+const CATEGORY_RANK = [
+  'buildings', 'courses', 'campuses',
+  'timetable', 'assignments', 'tasks',
+  'thrift', 'whispers', 'announcements', 'ads',
+  'calendar', 'formulas', 'packing', 'users',
+];
+
 const CATEGORY_CONFIG = {
-  courses: { icon: BookOpen, label: 'Courses', color: 'text-indigo-600', bg: 'bg-indigo-50' },
-  campuses: { icon: MapPin, label: 'Campuses', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  buildings: { icon: MapPin, label: 'Buildings', color: 'text-blue-600', bg: 'bg-blue-50' },
-  calendar: { icon: Calendar, label: 'Academic Calendar', color: 'text-amber-600', bg: 'bg-amber-50' },
-  formulas: { icon: Ruler, label: 'Formulas', color: 'text-purple-600', bg: 'bg-purple-50' },
-  packing: { icon: Package, label: 'Packing Lists', color: 'text-pink-600', bg: 'bg-pink-50' },
-  timetable: { icon: Clock, label: 'Timetable', color: 'text-cyan-600', bg: 'bg-cyan-50' },
-  assignments: { icon: CheckSquare, label: 'Assignments', color: 'text-orange-600', bg: 'bg-orange-50' },
-  tasks: { icon: FileText, label: 'Tasks', color: 'text-rose-600', bg: 'bg-rose-50' },
-  users: { icon: User, label: 'Users', color: 'text-violet-600', bg: 'bg-violet-50' },
-  thrift: { icon: Tag, label: 'Thrift Store', color: 'text-rose-600', bg: 'bg-rose-50' },
-  whispers: { icon: MessageCircle, label: 'Whispers', color: 'text-pink-600', bg: 'bg-pink-50' },
-  announcements: { icon: Megaphone, label: 'Announcements', color: 'text-orange-600', bg: 'bg-orange-50' },
-  ads: { icon: Store, label: 'Businesses', color: 'text-teal-600', bg: 'bg-teal-50' },
+  courses: { icon: BookOpen, label: 'Courses', color: 'text-primary-600', bg: 'bg-primary-50' },
+  campuses: { icon: MapPin, label: 'Campuses', color: 'text-primary-600', bg: 'bg-primary-50' },
+  buildings: { icon: MapPin, label: 'Buildings', color: 'text-primary-600', bg: 'bg-primary-50' },
+  calendar: { icon: Calendar, label: 'Academic Calendar', color: 'text-primary-600', bg: 'bg-primary-50' },
+  formulas: { icon: Ruler, label: 'Formulas', color: 'text-primary-600', bg: 'bg-primary-50' },
+  packing: { icon: Package, label: 'Packing Lists', color: 'text-primary-600', bg: 'bg-primary-50' },
+  timetable: { icon: Clock, label: 'Timetable', color: 'text-primary-600', bg: 'bg-primary-50' },
+  assignments: { icon: CheckSquare, label: 'Assignments', color: 'text-primary-600', bg: 'bg-primary-50' },
+  tasks: { icon: FileText, label: 'Tasks', color: 'text-primary-600', bg: 'bg-primary-50' },
+  users: { icon: User, label: 'Users', color: 'text-primary-600', bg: 'bg-primary-50' },
+  thrift: { icon: Tag, label: 'Thrift Store', color: 'text-primary-600', bg: 'bg-primary-50' },
+  whispers: { icon: MessageCircle, label: 'Whispers', color: 'text-primary-600', bg: 'bg-primary-50' },
+  announcements: { icon: Megaphone, label: 'Announcements', color: 'text-primary-600', bg: 'bg-primary-50' },
+  ads: { icon: Store, label: 'Businesses', color: 'text-primary-600', bg: 'bg-primary-50' },
 };
 
 const searchCourses = (q) => {
@@ -116,12 +123,23 @@ const searchUserData = (q) => {
   return results;
 };
 
+const sortCategories = (cats) => {
+  return cats.sort((a, b) => {
+    const ai = CATEGORY_RANK.indexOf(a.key);
+    const bi = CATEGORY_RANK.indexOf(b.key);
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+  });
+};
+
+const DB_CACHE = {};
+
 const UniversalLookupModal = ({ query, onClose }) => {
   const navigate = useNavigate();
   const [dbResults, setDbResults] = useState(null);
   const [dbLoading, setDbLoading] = useState(false);
   const [inputValue, setInputValue] = useState(query || '');
   const [activeQuery, setActiveQuery] = useState(query || '');
+  const debounceRef = useRef(null);
 
   useEffect(() => {
     if (query) {
@@ -134,10 +152,44 @@ const UniversalLookupModal = ({ query, onClose }) => {
     return { ...searchLocalData(activeQuery), ...searchUserData(activeQuery) };
   }, [activeQuery]);
 
+  const debouncedSearch = useCallback((value) => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setActiveQuery(value);
+    }, 300);
+  }, []);
+
   useEffect(() => {
-    if (!activeQuery?.trim()) return;
+    return () => clearTimeout(debounceRef.current);
+  }, []);
+
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setInputValue(val);
+    if (!val.trim()) {
+      setActiveQuery('');
+      setDbResults(null);
+      return;
+    }
+    debouncedSearch(val);
+  };
+
+  useEffect(() => {
+    if (!activeQuery?.trim()) {
+      setDbResults(null);
+      setDbLoading(false);
+      return;
+    }
     let cancelled = false;
     setDbLoading(true);
+
+    const cacheKey = activeQuery.toLowerCase();
+
+    if (DB_CACHE[cacheKey]) {
+      setDbResults(DB_CACHE[cacheKey]);
+      setDbLoading(false);
+      return;
+    }
 
     (async () => {
       try {
@@ -217,6 +269,7 @@ const UniversalLookupModal = ({ query, onClose }) => {
             id: a.id, image: a.image_url,
           }));
         }
+        DB_CACHE[cacheKey] = Object.keys(results).length > 0 ? results : {};
         if (!cancelled) setDbResults(Object.keys(results).length > 0 ? results : {});
       } catch {
         if (!cancelled) setDbResults({});
@@ -228,16 +281,16 @@ const UniversalLookupModal = ({ query, onClose }) => {
   }, [activeQuery]);
 
   const allCategories = useMemo(() => {
-    const cats = [];
+    const catMap = {};
     for (const [key, items] of Object.entries(localResults)) {
-      if (items.length > 0) cats.push({ key, items });
+      if (items.length > 0) catMap[key] = items;
     }
     if (dbResults) {
       for (const [key, items] of Object.entries(dbResults)) {
-        if (items.length > 0 && !cats.find(c => c.key === key)) cats.push({ key, items });
+        if (items.length > 0 && !catMap[key]) catMap[key] = items;
       }
     }
-    return cats;
+    return sortCategories(Object.entries(catMap).map(([key, items]) => ({ key, items })));
   }, [localResults, dbResults]);
 
   const totalResults = useMemo(() => {
@@ -261,19 +314,19 @@ const UniversalLookupModal = ({ query, onClose }) => {
         navigate(`/planner?date=${item.meta}`);
         break;
       case 'formulas':
-        navigate(`/tools?formula=${item.id}`);
+        navigate(`/tools/formulas?formula=${item.id}`);
         break;
       case 'packing':
-        navigate(`/tools?tab=packing`);
+        navigate(`/tools/packing`);
         break;
       case 'timetable':
-        navigate(`/tools?tab=timetable&highlight=${item.id}`);
+        navigate(`/tools/timetable?highlight=${item.id}`);
         break;
       case 'assignments':
-        navigate(`/tools?tab=assignments`);
+        navigate(`/tools/assignments`);
         break;
       case 'tasks':
-        navigate(`/tools?tab=planner`);
+        navigate(`/tools/plan-day?taskId=${item.id}`);
         break;
       case 'users':
         navigate(`/profile`);
@@ -298,32 +351,21 @@ const UniversalLookupModal = ({ query, onClose }) => {
     window.open(`https://www.google.com/search?q=${encodeURIComponent(activeQuery)}`, '_blank', 'noopener');
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const val = inputValue.trim();
-    if (val) setActiveQuery(val);
-  };
-
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-    if (!e.target.value.trim()) {
-      setActiveQuery('');
-      setDbResults(null);
-    }
-  };
-
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = '' };
   }, []);
 
   return createPortal(
-    <div className="fixed inset-0 z-[2147483647] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="w-full sm:w-[90vw] sm:max-w-lg max-h-[90vh] flex flex-col bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 overflow-hidden">
+    <div className="fixed inset-0 z-[2147483647] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="w-full sm:w-[90vw] sm:max-w-lg max-h-[90vh] flex flex-col bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 overflow-hidden"
+        onClick={e => e.stopPropagation()}>
+
         {/* Header */}
         <div className="flex items-center gap-3 p-5 border-b border-gray-100 flex-shrink-0">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center shrink-0">
-            <Search size={18} className="text-indigo-600" />
+          <div className="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center shrink-0">
+            <Search size={18} className="text-primary-600" />
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="text-lg font-black text-gray-900">Look Up</h2>
@@ -338,22 +380,20 @@ const UniversalLookupModal = ({ query, onClose }) => {
           </button>
         </div>
 
-        {/* Search Input (shown when no query or when opened from nav) */}
-        {!query && (
-          <div className="px-4 pt-3 pb-1 flex-shrink-0">
-            <form onSubmit={handleSearch} className="relative">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              <input
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}
-                placeholder="Search courses, buildings, people..."
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition-colors"
-                autoFocus
-              />
-            </form>
+        {/* Search Input - always shown */}
+        <div className="px-4 pt-3 pb-1 flex-shrink-0">
+          <div className="relative">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+              placeholder="Search courses, buildings, people..."
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-400 focus:bg-white transition-colors"
+              autoFocus
+            />
           </div>
-        )}
+        </div>
 
         {/* Results */}
         <div className="flex-1 overflow-y-auto p-4 pt-3 pb-6 space-y-5">
@@ -363,7 +403,7 @@ const UniversalLookupModal = ({ query, onClose }) => {
                 <Search size={24} className="text-gray-300" />
               </div>
               <p className="text-sm font-bold text-gray-900 mb-1">No results found</p>
-              <p className="text-xs text-gray-500 mb-5">Nothing in the app matches your selection.</p>
+              <p className="text-xs text-gray-500 mb-5">Nothing in the app matches your search.</p>
               <button
                 onClick={handleGoogleSearch}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all active:scale-95 shadow-md"
@@ -385,8 +425,8 @@ const UniversalLookupModal = ({ query, onClose }) => {
 
           {!activeQuery && (
             <div className="text-center py-14">
-              <div className="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-4">
-                <Search size={28} className="text-indigo-400" />
+              <div className="w-16 h-16 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-4">
+                <Search size={28} className="text-primary-400" />
               </div>
               <p className="text-sm font-bold text-gray-900 mb-1">What are you looking for?</p>
               <p className="text-xs text-gray-500">Type above to search across courses, campus buildings, your schedule, and more.</p>
@@ -394,7 +434,7 @@ const UniversalLookupModal = ({ query, onClose }) => {
           )}
 
           {allCategories.map(({ key, items }) => {
-            const config = CATEGORY_CONFIG[key] || { icon: Search, label: key, color: 'text-gray-600', bg: 'bg-gray-50' };
+            const config = CATEGORY_CONFIG[key] || { icon: Search, label: key, color: 'text-primary-600', bg: 'bg-primary-50' };
             const Icon = config.icon;
             return (
               <div key={key}>
@@ -403,7 +443,6 @@ const UniversalLookupModal = ({ query, onClose }) => {
                     <Icon size={12} className={config.color} />
                   </div>
                   <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{config.label}</span>
-                  <span className="text-[10px] font-bold text-gray-300 ml-auto">{items.length}</span>
                 </div>
                 <div className="space-y-1.5">
                   {items.map((item, idx) => (

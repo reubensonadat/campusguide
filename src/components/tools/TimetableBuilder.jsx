@@ -88,6 +88,22 @@ const TimetableBuilder = () => {
     setNewCourse(prev => ({ ...prev, academic_year: activeLevel, semester: activeSemester }));
   }, [activeLevel, activeSemester]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const highlightId = params.get('highlight');
+    if (highlightId) {
+      setTimeout(() => {
+        const el = document.getElementById(`course-card-${highlightId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.style.transition = 'box-shadow 0.3s, transform 0.3s';
+          el.style.boxShadow = '0 0 0 3px var(--primary-500)';
+          setTimeout(() => { el.style.boxShadow = ''; }, 3000);
+        }
+      }, 500);
+    }
+  }, []);
+
   const handleEnableNotifications = async () => {
     const granted = await requestNotificationPermission();
     setNotificationsEnabled(granted);

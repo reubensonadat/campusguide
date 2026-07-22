@@ -24,6 +24,26 @@ const PlanYourDay = () => {
     const [conflictingClass, setConflictingClass] = useState(null);
 
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const taskId = params.get('taskId');
+        if (taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                setSelectedDate(task.date);
+                setTimeout(() => {
+                    const el = document.getElementById(`task-item-${taskId}`);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        el.style.transition = 'box-shadow 0.3s, transform 0.3s';
+                        el.style.boxShadow = '0 0 0 3px var(--primary-500)';
+                        setTimeout(() => { el.style.boxShadow = ''; }, 3000);
+                    }
+                }, 500);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
         const needsBackfill = tasks.some(t => !t.academic_year || !t.semester);
         if (!needsBackfill) return;
 
@@ -353,13 +373,14 @@ const PlanYourDay = () => {
                 ) : (
                     <div className="space-y-3">
                         {todaysTasks.map(task => (
+                            <div key={task.id} id={`task-item-${task.id}`}>
                             <TaskItem
-                                key={task.id}
                                 task={task}
                                 onToggle={toggleTaskStatus}
                                 onEdit={handleEditTask}
                                 onDelete={confirmDelete}
                             />
+                            </div>
                         ))}
                     </div>
                 )}
