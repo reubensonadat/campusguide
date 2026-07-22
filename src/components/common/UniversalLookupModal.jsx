@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, BookOpen, Calendar, Globe, X, ExternalLink, Ruler, Package, Clock, CheckSquare, FileText, User, Loader2 } from 'lucide-react';
+import { Search, MapPin, BookOpen, Calendar, Globe, X, ExternalLink, Ruler, Package, Clock, CheckSquare, FileText, User, Tag, MessageCircle, Megaphone, Store } from 'lucide-react';
 import { CAMPUS_COURSES } from '../../data/courses';
 import { CAMPUSES } from '../../data/campuses';
 import { academicCalendar } from '../../data/academicCalendar';
@@ -19,6 +19,10 @@ const CATEGORY_CONFIG = {
   assignments: { icon: CheckSquare, label: 'Assignments', color: 'text-orange-600', bg: 'bg-orange-50' },
   tasks: { icon: FileText, label: 'Tasks', color: 'text-rose-600', bg: 'bg-rose-50' },
   users: { icon: User, label: 'Users', color: 'text-violet-600', bg: 'bg-violet-50' },
+  thrift: { icon: Tag, label: 'Thrift Store', color: 'text-rose-600', bg: 'bg-rose-50' },
+  whispers: { icon: MessageCircle, label: 'Whispers', color: 'text-pink-600', bg: 'bg-pink-50' },
+  announcements: { icon: Megaphone, label: 'Announcements', color: 'text-orange-600', bg: 'bg-orange-50' },
+  ads: { icon: Store, label: 'Businesses', color: 'text-teal-600', bg: 'bg-teal-50' },
 };
 
 const searchCourses = (q) => {
@@ -138,7 +142,7 @@ const UniversalLookupModal = ({ query, onClose }) => {
     (async () => {
       try {
         const { supabase } = await import('../../lib/supabase');
-        const [buildingsRes, usersRes] = await Promise.all([
+        const [buildingsRes, usersRes, thriftRes, whispersRes, annRes, adsRes] = await Promise.all([
           supabase.from('campus_buildings')
             .select('full_name, short_form, category, description')
             .or(`full_name.ilike.%${activeQuery}%,short_form.ilike.%${activeQuery}%`)
@@ -148,6 +152,29 @@ const UniversalLookupModal = ({ query, onClose }) => {
             .select('username, name, avatar_url')
             .ilike('username', `%${activeQuery}%`)
             .not('username', 'is', null)
+            .limit(5),
+          supabase.from('thrift_listings')
+            .select('id, item_name, price, description, image_url, created_at')
+            .eq('status', 'ACTIVE')
+            .eq('is_sold', false)
+            .or(`item_name.ilike.%${activeQuery}%,description.ilike.%${activeQuery}%`)
+            .order('created_at', { ascending: false })
+            .limit(5),
+          supabase.from('campus_whispers')
+            .select('id, text, created_at')
+            .ilike('text', `%${activeQuery}%`)
+            .order('created_at', { ascending: false })
+            .limit(5),
+          supabase.from('announcements')
+            .select('id, title, description, created_at')
+            .or(`title.ilike.%${activeQuery}%,description.ilike.%${activeQuery}%`)
+            .order('created_at', { ascending: false })
+            .limit(5),
+          supabase.from('advertisements')
+            .select('id, title, description, category, image_url, price')
+            .ilike('status', 'active')
+            .or(`title.ilike.%${activeQuery}%,description.ilike.%${activeQuery}%,category.ilike.%${activeQuery}%`)
+            .order('created_at', { ascending: false })
             .limit(5)
         ]);
         const results = {};
@@ -160,6 +187,34 @@ const UniversalLookupModal = ({ query, onClose }) => {
         if (usersRes.data?.length > 0) {
           results.users = usersRes.data.map(u => ({
             type: 'users', label: `@${u.username}`, meta: u.name || '',
+          }));
+        }
+        if (thriftRes.data?.length > 0) {
+          results.thrift = thriftRes.data.map(t => ({
+            type: 'thrift', label: t.item_name,
+            meta: `GH₵${t.price}${t.description ? ' · ' + t.description.slice(0, 60) : ''}`,
+            id: t.id, image: t.image_url,
+          }));
+        }
+        if (whispersRes.data?.length > 0) {
+          results.whispers = whispersRes.data.map(w => ({
+            type: 'whispers', label: w.text.slice(0, 80) + (w.text.length > 80 ? '...' : ''),
+            meta: new Date(w.created_at).toLocaleDateString(),
+            id: w.id,
+          }));
+        }
+        if (annRes.data?.length > 0) {
+          results.announcements = annRes.data.map(a => ({
+            type: 'announcements', label: a.title,
+            meta: a.description ? a.description.slice(0, 80) + (a.description.length > 80 ? '...' : '') : '',
+            id: a.id,
+          }));
+        }
+        if (adsRes.data?.length > 0) {
+          results.ads = adsRes.data.map(a => ({
+            type: 'ads', label: a.title,
+            meta: `${a.category || ''}${a.price ? ' · GH₵' + a.price : ''}`,
+            id: a.id, image: a.image_url,
           }));
         }
         if (!cancelled) setDbResults(Object.keys(results).length > 0 ? results : {});
@@ -222,6 +277,18 @@ const UniversalLookupModal = ({ query, onClose }) => {
         break;
       case 'users':
         navigate(`/profile`);
+        break;
+      case 'thrift':
+        navigate(`/community?tab=thrift`);
+        break;
+      case 'whispers':
+        navigate(`/community?tab=whispers`);
+        break;
+      case 'announcements':
+        navigate(`/`);
+        break;
+      case 'ads':
+        navigate(`/community?tab=ads`);
         break;
     }
   };

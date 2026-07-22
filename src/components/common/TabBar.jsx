@@ -125,13 +125,13 @@ const TabBar = ({ onLookup }) => {
         })}
 
         {/* Search / Look Up trigger */}
-        <div className="w-px h-6 bg-gray-100 shrink-0" />
+        <div className="w-px h-5 bg-gray-100 shrink-0" />
         <button
           onClick={() => onLookup?.()}
-          className="relative z-10 flex flex-row items-center justify-center w-10 h-10 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-gray-400 transition-colors focus:outline-none"
+          className="relative z-10 flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-gray-400 transition-colors focus:outline-none"
           aria-label="Look Up"
         >
-          <Search size={18} strokeWidth={2.5} />
+          <Search size={14} strokeWidth={2.5} />
         </button>
       </div>
     </div>
