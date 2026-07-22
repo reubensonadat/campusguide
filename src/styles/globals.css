@@ -42,23 +42,23 @@
   }
 }
 
-/* ── Prevent Native Browser Long-Press Popups & Double-Tap Highlighting ── */
-* {
-  -webkit-touch-callout: none; /* Disable native iOS/Android callout popup on long press */
-  -webkit-tap-highlight-color: transparent; /* Remove tap flash overlay on mobile */
+/* ── Prevent Native Browser Long-Press Popups & Text Selection Handles ── */
+*, *::before, *::after {
+  -webkit-touch-callout: none !important; /* Disable native iOS/Android callout popup on long press */
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important; /* Remove tap flash overlay on mobile */
 }
 
 body, html {
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   touch-action: manipulation; /* Prevent browser double-tap zoom hijacking */
 }
 
-/* Allow text selection explicitly inside inputs and textareas */
-input, textarea, [contenteditable="true"], .selectable, .select-text {
+/* Allow text selection explicitly inside inputs, textareas, or elements with .selectable / .select-text */
+input, textarea, [contenteditable="true"], .selectable, .select-text, input *, textarea * {
   -webkit-user-select: text !important;
   -moz-user-select: text !important;
   -ms-user-select: text !important;

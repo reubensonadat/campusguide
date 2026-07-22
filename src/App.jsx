@@ -101,15 +101,22 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
-    const preventNativeMenu = (e) => {
-      const tag = e.target?.tagName?.toLowerCase()
-      if (tag !== 'input' && tag !== 'textarea') {
-        e.preventDefault()
+    const preventSelection = (e) => {
+      const tag = e.target?.tagName?.toLowerCase();
+      const isInput = tag === 'input' || tag === 'textarea' || e.target?.isContentEditable || e.target?.closest('.select-text, .selectable');
+      if (!isInput) {
+        if (e.type === 'selectstart' || e.type === 'contextmenu') {
+          e.preventDefault();
+        }
       }
-    }
-    document.addEventListener('contextmenu', preventNativeMenu, { passive: false })
-    return () => document.removeEventListener('contextmenu', preventNativeMenu)
-  }, [])
+    };
+    document.addEventListener('contextmenu', preventSelection, { passive: false });
+    document.addEventListener('selectstart', preventSelection, { passive: false });
+    return () => {
+      document.removeEventListener('contextmenu', preventSelection);
+      document.removeEventListener('selectstart', preventSelection);
+    };
+  }, []);
 
   const handleResolveConflict = (action) => {
     if (action === 'restore') {

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomContact, CustomSettings, CustomMegaphone } from './CustomIcons';
+import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomContact, CustomSettings, CustomMegaphone, CustomDataPortal, CustomThriftStore } from './CustomIcons';
 import { AboutIcon } from './CustomTaskIcons';
 
 const TabBar = () => {
@@ -26,6 +26,10 @@ const TabBar = () => {
     displayTabs[4] = { id: 'advertise', label: 'Advertise', icon: CustomMegaphone, path: '/advertise' };
   } else if (location.pathname === '/support') {
     displayTabs[4] = { id: 'about', label: 'About', icon: AboutIcon, path: '/support' };
+  } else if (['/data', '/data-mart'].includes(location.pathname)) {
+    displayTabs[4] = { id: 'data', label: 'Data', icon: CustomDataPortal, path: location.pathname };
+  } else if (['/my-thrift'].includes(location.pathname)) {
+    displayTabs[4] = { id: 'thrift', label: 'Thrift', icon: CustomThriftStore, path: location.pathname };
   }
 
   useEffect(() => {
@@ -35,7 +39,8 @@ const TabBar = () => {
         location.pathname === tab.path ||
         (tab.path === '/tools' && location.pathname.startsWith('/tools/')) ||
         (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname)) ||
-        (tab.path === '/' && ['/data'].includes(location.pathname))
+        (tab.id === 'data' && ['/data', '/data-mart'].includes(location.pathname)) ||
+        (tab.id === 'thrift' && ['/my-thrift'].includes(location.pathname))
       );
       if (activeIndex !== -1 && tabsRef.current[activeIndex]) {
         const el = tabsRef.current[activeIndex];
@@ -96,7 +101,8 @@ const TabBar = () => {
           const isActive = location.pathname === tab.path ||
             (tab.path === '/tools' && location.pathname.startsWith('/tools/')) ||
             (tab.id === 'settings' && ['/settings', '/privacy', '/terms'].includes(location.pathname)) ||
-            (tab.path === '/' && ['/data'].includes(location.pathname));
+            (tab.id === 'data' && ['/data', '/data-mart'].includes(location.pathname)) ||
+            (tab.id === 'thrift' && ['/my-thrift'].includes(location.pathname));
           const Icon = tab.icon;
 
           return (

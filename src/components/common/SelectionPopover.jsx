@@ -68,6 +68,49 @@ export default function SelectionPopover() {
   }, [show])
 
   useEffect(() => {
+    let pressTimer = null
+    let startX = 0
+    let startY = 0
+
+    const onTouchStart = (e) => {
+      const touch = e.touches[0]
+      if (!touch) return
+      startX = touch.clientX
+      startY = touch.clientY
+
+      const target = e.target
+      const isInput = target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA' || target?.isContentEditable
+      if (isInput) return
+
+      pressTimer = setTimeout(() => {
+        const text = window.getSelection()?.toString()?.trim() || target?.innerText?.slice(0, 120)?.trim()
+        if (text) {
+          let x = startX - 100
+          let y = startY - 60
+          if (x < 12) x = 12
+          if (x + 200 > window.innerWidth - 12) x = window.innerWidth - 212
+          if (y < 40) y = startY + 20
+
+          setPosition({ x, y })
+          setSelectedText(text)
+          setShow(true)
+        }
+      }, 400)
+    }
+
+    const onTouchMove = (e) => {
+      const touch = e.touches[0]
+      if (!touch) return
+      if (Math.abs(touch.clientX - startX) > 10 || Math.abs(touch.clientY - startY) > 10) {
+        if (pressTimer) clearTimeout(pressTimer);
+      }
+    }
+
+    const onTouchEnd = () => {
+      if (pressTimer) clearTimeout(pressTimer);
+      setTimeout(handleSelection, 100)
+    }
+
     const onMouseUp = () => {
       setTimeout(handleSelection, 10)
     }
@@ -78,18 +121,18 @@ export default function SelectionPopover() {
       }
     }
 
-    const onTouchEnd = () => {
-      setTimeout(handleSelection, 150)
-    }
-
+    document.addEventListener('touchstart', onTouchStart, { passive: true })
+    document.addEventListener('touchmove', onTouchMove, { passive: true })
+    document.addEventListener('touchend', onTouchEnd, { passive: true })
     document.addEventListener('mouseup', onMouseUp)
     document.addEventListener('keyup', onKeyUp)
-    document.addEventListener('touchend', onTouchEnd)
 
     return () => {
+      document.removeEventListener('touchstart', onTouchStart)
+      document.removeEventListener('touchmove', onTouchMove)
+      document.removeEventListener('touchend', onTouchEnd)
       document.removeEventListener('mouseup', onMouseUp)
       document.removeEventListener('keyup', onKeyUp)
-      document.removeEventListener('touchend', onTouchEnd)
     }
   }, [handleSelection])
 
