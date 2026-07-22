@@ -39,12 +39,23 @@ const Modal = ({
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
+      window.__modalScrollY = scrollY;
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      const sy = window.__modalScrollY || 0;
+      window.__modalScrollY = undefined;
+      window.scrollTo(0, sy);
     };
   }, [isOpen, onClose]);
 
