@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, BookOpen, Calendar, Globe, X, ExternalLink, Ruler, Package, Clock, CheckSquare, FileText, User } from 'lucide-react';
+import { Search, MapPin, BookOpen, Calendar, Globe, X, ExternalLink, Ruler, Package, Clock, CheckSquare, FileText, User, Loader2 } from 'lucide-react';
 import { CAMPUS_COURSES } from '../../data/courses';
 import { CAMPUSES } from '../../data/campuses';
 import { academicCalendar } from '../../data/academicCalendar';
@@ -76,6 +76,7 @@ const searchPacking = (q) => {
 };
 
 const searchLocalData = (q) => {
+  if (!q?.trim()) return {};
   const results = {};
   for (const item of searchCourses(q)) { if (!results[item.type]) results[item.type] = []; results[item.type].push(item); }
   for (const item of searchCampuses(q)) { if (!results[item.type]) results[item.type] = []; results[item.type].push(item); }
@@ -86,13 +87,14 @@ const searchLocalData = (q) => {
 };
 
 const searchUserData = (q) => {
+  if (!q?.trim()) return {};
   const lower = q.toLowerCase();
   const results = {};
 
   try {
     const timetable = JSON.parse(localStorage.getItem('ucc_timetable') || '[]');
     const matches = timetable.filter(t => (t.name || '').toLowerCase().includes(lower) || (t.location || '').toLowerCase().includes(lower) || (t.lecturer || '').toLowerCase().includes(lower));
-    if (matches.length > 0) results.timetable = matches.slice(0, 4).map(t => ({ type: 'timetable', label: t.name, meta: `${t.day} ${t.startTime || ''}${t.location ? ' · ' + t.location : ''}`, id: t.id }));
+    if (matches.length > 0) results.timetable = matches.slice(0, 4).map(t => ({ type: 'timetable', label: t.name, meta: `${t.day} ${t.startTime || ''}${t.location ? ' · ' + t.location : ''}`, time: t.startTime, id: t.id }));
   } catch {}
 
   try {
@@ -114,15 +116,22 @@ const UniversalLookupModal = ({ query, onClose }) => {
   const navigate = useNavigate();
   const [dbResults, setDbResults] = useState(null);
   const [dbLoading, setDbLoading] = useState(false);
-
-  const localResults = useMemo(() => {
-    if (!query?.trim()) return {};
-    const combined = { ...searchLocalData(query), ...searchUserData(query) };
-    return combined;
-  }, [query]);
+  const [inputValue, setInputValue] = useState(query || '');
+  const [activeQuery, setActiveQuery] = useState(query || '');
 
   useEffect(() => {
-    if (!query?.trim()) return;
+    if (query) {
+      setInputValue(query);
+      setActiveQuery(query);
+    }
+  }, [query]);
+
+  const localResults = useMemo(() => {
+    return { ...searchLocalData(activeQuery), ...searchUserData(activeQuery) };
+  }, [activeQuery]);
+
+  useEffect(() => {
+    if (!activeQuery?.trim()) return;
     let cancelled = false;
     setDbLoading(true);
 
@@ -132,12 +141,12 @@ const UniversalLookupModal = ({ query, onClose }) => {
         const [buildingsRes, usersRes] = await Promise.all([
           supabase.from('campus_buildings')
             .select('full_name, short_form, category, description')
-            .or(`full_name.ilike.%${query}%,short_form.ilike.%${query}%`)
+            .or(`full_name.ilike.%${activeQuery}%,short_form.ilike.%${activeQuery}%`)
             .eq('is_active', true)
             .limit(5),
           supabase.from('users')
             .select('username, name, avatar_url')
-            .ilike('username', `%${query}%`)
+            .ilike('username', `%${activeQuery}%`)
             .not('username', 'is', null)
             .limit(5)
         ]);
@@ -161,7 +170,7 @@ const UniversalLookupModal = ({ query, onClose }) => {
     })();
 
     return () => { cancelled = true; };
-  }, [query]);
+  }, [activeQuery]);
 
   const allCategories = useMemo(() => {
     const cats = [];
@@ -203,7 +212,7 @@ const UniversalLookupModal = ({ query, onClose }) => {
         navigate(`/tools?tab=packing`);
         break;
       case 'timetable':
-        navigate(`/tools?tab=timetable`);
+        navigate(`/tools?tab=timetable&highlight=${item.id}`);
         break;
       case 'assignments':
         navigate(`/tools?tab=assignments`);
@@ -219,102 +228,149 @@ const UniversalLookupModal = ({ query, onClose }) => {
 
   const handleGoogleSearch = () => {
     onClose();
-    window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank', 'noopener');
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(activeQuery)}`, '_blank', 'noopener');
   };
 
-  if (!query?.trim()) return null;
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const val = inputValue.trim();
+    if (val) setActiveQuery(val);
+  };
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+    if (!e.target.value.trim()) {
+      setActiveQuery('');
+      setDbResults(null);
+    }
+  };
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = '' };
+  }, []);
 
   return createPortal(
-    <div className="fixed inset-0 z-[2147483647]">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose} />
-      <div className="absolute inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
-        <div className="w-full sm:w-[90vw] sm:max-w-lg max-h-[85vh] flex flex-col bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 pb-[env(safe-area-inset-bottom)] pointer-events-auto overflow-hidden">
-          <div className="flex items-center justify-between p-5 border-b border-gray-100 flex-shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center">
-                <Search size={18} className="text-indigo-600" />
+    <div className="fixed inset-0 z-[2147483647] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
+      <div className="w-full sm:w-[90vw] sm:max-w-lg max-h-[90vh] flex flex-col bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center gap-3 p-5 border-b border-gray-100 flex-shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center shrink-0">
+            <Search size={18} className="text-indigo-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-black text-gray-900">Look Up</h2>
+            {activeQuery ? (
+              <p className="text-sm text-gray-500 font-medium mt-0.5 truncate">"{activeQuery}"</p>
+            ) : (
+              <p className="text-xs text-gray-400 font-medium mt-0.5">Search anything on Campus Guide</p>
+            )}
+          </div>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors shrink-0">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Search Input (shown when no query or when opened from nav) */}
+        {!query && (
+          <div className="px-4 pt-3 pb-1 flex-shrink-0">
+            <form onSubmit={handleSearch} className="relative">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                placeholder="Search courses, buildings, people..."
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition-colors"
+                autoFocus
+              />
+            </form>
+          </div>
+        )}
+
+        {/* Results */}
+        <div className="flex-1 overflow-y-auto p-4 pt-3 pb-6 space-y-5">
+          {activeQuery && allCategories.length === 0 && !dbLoading && (
+            <div className="text-center py-10">
+              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                <Search size={24} className="text-gray-300" />
               </div>
-              <div>
-                <h2 className="text-lg font-black text-gray-900">Look Up</h2>
-                <p className="text-sm text-gray-500 font-medium mt-0.5 truncate max-w-[260px] sm:max-w-sm">"{query}"</p>
-              </div>
+              <p className="text-sm font-bold text-gray-900 mb-1">No results found</p>
+              <p className="text-xs text-gray-500 mb-5">Nothing in the app matches your selection.</p>
+              <button
+                onClick={handleGoogleSearch}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all active:scale-95 shadow-md"
+              >
+                <Globe size={16} />
+                Search on Google
+              </button>
             </div>
-            <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors">
-              <X size={20} />
-            </button>
-          </div>
+          )}
 
-          <div className="flex-1 overflow-y-auto p-4 pt-3 pb-6 space-y-4">
-            {allCategories.length === 0 && !dbLoading && (
-              <div className="text-center py-10">
-                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                  <Search size={24} className="text-gray-400" />
-                </div>
-                <p className="text-sm font-bold text-gray-900 mb-1">No results found</p>
-                <p className="text-xs text-gray-500 mb-5">Nothing in the app matches your selection.</p>
-                <button
-                  onClick={handleGoogleSearch}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all active:scale-95"
-                >
-                  <Globe size={16} />
-                  Search on Google
-                </button>
+          {activeQuery && allCategories.length === 0 && dbLoading && (
+            <div className="text-center py-10">
+              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                <Search size={24} className="text-gray-300" />
               </div>
-            )}
+              <p className="text-sm font-bold text-gray-400">Searching...</p>
+            </div>
+          )}
 
-            {allCategories.length === 0 && dbLoading && (
-              <div className="text-center py-10">
-                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4 animate-pulse">
-                  <Search size={24} className="text-gray-300" />
-                </div>
-                <p className="text-sm font-bold text-gray-400">Searching...</p>
+          {!activeQuery && (
+            <div className="text-center py-14">
+              <div className="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-4">
+                <Search size={28} className="text-indigo-400" />
               </div>
-            )}
+              <p className="text-sm font-bold text-gray-900 mb-1">What are you looking for?</p>
+              <p className="text-xs text-gray-500">Type above to search across courses, campus buildings, your schedule, and more.</p>
+            </div>
+          )}
 
-            {allCategories.map(({ key, items }) => {
-              const config = CATEGORY_CONFIG[key] || { icon: Search, label: key, color: 'text-gray-600', bg: 'bg-gray-50' };
-              const Icon = config.icon;
-              return (
-                <div key={key}>
-                  <div className="flex items-center gap-2 mb-2 px-1">
-                    <Icon size={14} className={config.color} />
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{config.label}</span>
-                    <span className="text-[10px] font-bold text-gray-300 ml-auto">{items.length}</span>
+          {allCategories.map(({ key, items }) => {
+            const config = CATEGORY_CONFIG[key] || { icon: Search, label: key, color: 'text-gray-600', bg: 'bg-gray-50' };
+            const Icon = config.icon;
+            return (
+              <div key={key}>
+                <div className="flex items-center gap-2 mb-2.5 px-1">
+                  <div className={`w-6 h-6 rounded-lg ${config.bg} flex items-center justify-center`}>
+                    <Icon size={12} className={config.color} />
                   </div>
-                  <div className="space-y-1">
-                    {items.map((item, idx) => (
-                      <button
-                        key={`${key}-${idx}`}
-                        onClick={() => handleResultClick(item)}
-                        className="w-full flex items-center gap-3 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all active:scale-[0.98] text-left"
-                      >
-                        <div className={`w-8 h-8 rounded-xl ${config.bg} flex items-center justify-center shrink-0`}>
-                          <Icon size={14} className={config.color} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="block text-sm font-bold text-gray-900 truncate">{item.label}</span>
-                          {item.meta && <span className="block text-xs text-gray-400 truncate mt-0.5">{item.meta}</span>}
-                        </div>
-                        <ExternalLink size={14} className="text-gray-300 shrink-0" />
-                      </button>
-                    ))}
-                  </div>
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{config.label}</span>
+                  <span className="text-[10px] font-bold text-gray-300 ml-auto">{items.length}</span>
                 </div>
-              );
-            })}
-
-            {totalResults > 0 && (
-              <div className="pt-2">
-                <button
-                  onClick={handleGoogleSearch}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-dashed border-gray-200 text-gray-500 hover:text-gray-900 hover:border-gray-300 font-bold text-sm transition-all active:scale-[0.98]"
-                >
-                  <Globe size={16} />
-                  Search "{query}" on Google
-                </button>
+                <div className="space-y-1.5">
+                  {items.map((item, idx) => (
+                    <button
+                      key={`${key}-${idx}`}
+                      onClick={() => handleResultClick(item)}
+                      className="w-full flex items-center gap-3.5 p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 hover:shadow-sm transition-all active:scale-[0.98] text-left border border-transparent hover:border-gray-200"
+                    >
+                      <div className={`w-9 h-9 rounded-xl ${config.bg} flex items-center justify-center shrink-0`}>
+                        <Icon size={15} className={config.color} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="block text-sm font-bold text-gray-900 truncate">{item.label}</span>
+                        {item.meta && <span className="block text-xs text-gray-400 truncate mt-0.5">{item.meta}</span>}
+                      </div>
+                      <ExternalLink size={14} className="text-gray-300 shrink-0" />
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
-          </div>
+            );
+          })}
+
+          {activeQuery && totalResults > 0 && (
+            <div className="pt-1">
+              <button
+                onClick={handleGoogleSearch}
+                className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-gray-900 hover:bg-black text-white font-bold text-sm transition-all active:scale-[0.98] shadow-md"
+              >
+                <Globe size={16} />
+                Search "{activeQuery}" on Google
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>,

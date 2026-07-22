@@ -25,6 +25,7 @@ import FeedbackModal from './components/common/FeedbackSurveyModal';
 import PWAInstallButton from './components/common/PWAInstallButton';
 import CustomCursor from './components/common/CustomCursor';
 import SelectionPopover from './components/common/SelectionPopover';
+import UniversalLookupModal from './components/common/UniversalLookupModal';
 import { PageSkeleton } from './components/common/Skeleton';
 
 
@@ -178,6 +179,8 @@ function AppContent() {
     } catch {}
   }, []);
 
+  const [lookupQuery, setLookupQuery] = useState(null);
+
   const { showModal, closeModal, handlePaymentSuccess } = useSupportModal();
   const { resetTimer } = useSupportTimer();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -244,7 +247,7 @@ function AppContent() {
     <div className="min-h-screen flex bg-gray-50/50 overflow-x-hidden">
       <CustomCursor />
       <SelectionPopover />
-      <Sidebar onExpandedChange={setIsSidebarExpanded} />
+      <Sidebar onExpandedChange={setIsSidebarExpanded} onLookup={() => setLookupQuery('')} />
 
       <div className={`flex-1 min-w-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarExpanded ? 'md:ml-[220px]' : 'md:ml-[64px]'}`}>
         <ErrorBoundary>
@@ -275,7 +278,7 @@ function AppContent() {
           </AnimatePresence>
         </ErrorBoundary>
 
-        <TabBar />
+        <TabBar onLookup={() => setLookupQuery('')} />
       </div>
 
       {/* Global Overlays & Modals OUTSIDE the flex layout */}
@@ -308,6 +311,13 @@ function AppContent() {
         />
 
         <AuthBottomSheet />
+
+        {lookupQuery !== null && (
+          <UniversalLookupModal
+            query={lookupQuery}
+            onClose={() => setLookupQuery(null)}
+          />
+        )}
 
         {syncConflict && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">

@@ -82,24 +82,22 @@ const MyThriftItems = () => {
     setListings(prev => prev.map(l => l.id === updated.id ? updated : l));
   };
 
-  const handleMarkSold = async () => {
-    const id = confirmAction?.payload;
+  const handleMarkSold = async (id) => {
     if (!id) return;
+    setConfirmAction(null);
     const { listing: updated } = await markThriftListingAsSold(id);
     if (updated) setListings(prev => prev.map(l => l.id === id ? updated : l));
-    setConfirmAction(null);
     toast.success('Marked as sold!');
   };
 
-  const handleDelete = async () => {
-    const id = confirmAction?.payload;
+  const handleDelete = async (id) => {
     if (!id) return;
+    setConfirmAction(null);
     const { success } = await deleteThriftListing(id);
     if (success) {
       setListings(prev => prev.filter(l => l.id !== id));
       if (expandedId === id) setExpandedId(null);
     }
-    setConfirmAction(null);
     toast.success('Listing deleted');
   };
 
@@ -282,11 +280,11 @@ const MyThriftItems = () => {
                       {/* Actions */}
                       <div className="flex gap-2">
                         {!listing.is_sold && (
-                          <button onClick={() => setConfirmAction({ title: 'Mark as Sold', message: 'Mark this item as sold?', label: 'Mark as Sold', handler: handleMarkSold, payload: listing.id })} className="flex-1 py-2.5 rounded-xl font-bold text-xs bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 transition-all flex items-center justify-center gap-1.5">
+                          <button onClick={() => setConfirmAction({ title: 'Mark as Sold', message: 'Mark this item as sold?', label: 'Mark as Sold', handler: () => handleMarkSold(listing.id) })} className="flex-1 py-2.5 rounded-xl font-bold text-xs bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 transition-all flex items-center justify-center gap-1.5">
                             <Check size={14} /> Sold
                           </button>
                         )}
-                        <button onClick={() => setConfirmAction({ title: 'Delete Listing', message: 'Delete this listing permanently?', label: 'Delete', variant: 'danger', handler: handleDelete, payload: listing.id })} className="flex-1 py-2.5 rounded-xl font-bold text-xs bg-white text-rose-600 border border-rose-100 hover:bg-rose-50 transition-all flex items-center justify-center gap-1.5">
+                        <button onClick={() => setConfirmAction({ title: 'Delete Listing', message: 'Delete this listing permanently?', label: 'Delete', variant: 'danger', handler: () => handleDelete(listing.id) })} className="flex-1 py-2.5 rounded-xl font-bold text-xs bg-white text-rose-600 border border-rose-100 hover:bg-rose-50 transition-all flex items-center justify-center gap-1.5">
                           <Trash2 size={14} /> Delete
                         </button>
                       </div>

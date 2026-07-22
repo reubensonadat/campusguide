@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomContact, CustomSettings, CustomMegaphone, CustomDataPortal, CustomThriftStore } from './CustomIcons';
 import { AboutIcon } from './CustomTaskIcons';
 
-const TabBar = () => {
+const TabBar = ({ onLookup }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
@@ -122,6 +123,16 @@ const TabBar = () => {
             </button>
           );
         })}
+
+        {/* Search / Look Up trigger */}
+        <div className="w-px h-6 bg-gray-100 shrink-0" />
+        <button
+          onClick={() => onLookup?.()}
+          className="relative z-10 flex flex-row items-center justify-center w-10 h-10 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-gray-400 transition-colors focus:outline-none"
+          aria-label="Look Up"
+        >
+          <Search size={18} strokeWidth={2.5} />
+        </button>
       </div>
     </div>
   );

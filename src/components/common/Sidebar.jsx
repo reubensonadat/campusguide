@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { CustomHome, CustomGuide, CustomTools, CustomProfile, CustomCommunity, CustomSettings } from './CustomIcons';
-import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import MagneticButton from './MagneticButton';
 
-const Sidebar = ({ onExpandedChange }) => {
+const Sidebar = ({ onExpandedChange, onLookup }) => {
   const [isExpanded, setIsExpanded] = useLocalStorage('ucc_sidebar_expanded', true);
   const [isHoveringLogo, setIsHoveringLogo] = useState(false);
   const location = useLocation();
@@ -102,8 +102,27 @@ const Sidebar = ({ onExpandedChange }) => {
         })}
       </nav>
 
+      {/* Search / Look Up */}
+      <div className="px-3 pb-1.5">
+        <MagneticButton as="button" onClick={() => onLookup?.()}
+          className="w-full flex items-center px-2.5 h-[44px] rounded-xl transition-all duration-200 group focus:outline-none text-gray-500 hover:bg-indigo-50 hover:text-indigo-600"
+          title={!isExpanded ? 'Look Up' : ''}
+        >
+          <div className="flex-shrink-0 flex items-center justify-center w-6 h-6">
+            <Search size={20} className="group-hover:text-indigo-600 transition-colors" />
+          </div>
+          <span
+            className={`ml-3 text-sm font-bold whitespace-nowrap transition-all duration-300 ${
+              isExpanded ? 'opacity-100 translate-x-0 w-auto' : 'opacity-0 -translate-x-2 w-0 overflow-hidden'
+            }`}
+          >
+            Look Up
+          </span>
+        </MagneticButton>
+      </div>
+
       {/* Settings Footer */}
-      <div className="p-3 border-t border-gray-100 mt-auto">
+      <div className="p-3 border-t border-gray-100">
         <MagneticButton as="button" onClick={() => navigate('/settings')}
           className={`w-full flex items-center px-2.5 h-[44px] rounded-xl transition-all duration-200 group focus:outline-none ${
             ['/settings', '/privacy', '/terms'].includes(location.pathname)
