@@ -1,142 +1,107 @@
 export const geology_earth_science = {
   "richter-scale": {
-  "intuition": "Richter Scale (Earthquake Magnitude) calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "M",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Magnitude",
-      "commonTraps": "Molar mass (g/mol) vs central mass (kg) � check magnitude."
-    },
-    {
-      "id": "A",
-      "siUnit": "mm",
-      "altUnits": "",
-      "description": "Amplitude",
-      "commonTraps": "Area (m�), amplitude (m), and mass number all use A � context matters."
-    },
-    {
-      "id": "A0",
-      "siUnit": "mm",
-      "altUnits": "",
-      "description": "Reference Amplitude",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown M using Richter Scale (Earthquake Magnitude) with: M = 10, A = 10, A0 = 10.",
-    "solution": [
-      "Identify known quantities and the target (M).",
-      "Write the formula and solve for M.",
-      "Substitute the values: M = 10, A = 10, A0 = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "The Richter scale is logarithmic. A magnitude 6 earthquake isn't just '1 step worse' than a magnitude 5—it physically shakes the ground 10 TIMES harder, and releases 32 TIMES more energy! A magnitude 9 earthquake doesn't knock over a building; it physically moves the entire coastline of Japan by 8 feet.",
+    "variableBreakdown": [
+      {
+        "id": "M",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Richter Magnitude (M)",
+        "commonTraps": "Has no units."
+      },
+      {
+        "id": "A",
+        "siUnit": "mm",
+        "altUnits": "μm",
+        "description": "Measured Amplitude (A)",
+        "commonTraps": "The maximum physical height of the wave drawn by the seismograph needle."
+      },
+      {
+        "id": "A0",
+        "siUnit": "mm",
+        "altUnits": "μm",
+        "description": "Standard Amplitude (A₀)",
+        "commonTraps": "A baseline reference value for a 'zero magnitude' earthquake at the same distance."
+      }
     ],
-    "answer": "M = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Divide the measured amplitude (A) by the standard baseline amplitude (A₀).",
+      "2. Take the Log (base 10) of that ratio."
+    ],
+    "edgeCases": [
+      {
+        "title": "Negative Magnitude",
+        "description": "Can an earthquake have a magnitude of -1.0? Yes! Because the scale is logarithmic, an earthquake with an amplitude 10 times smaller than the A₀ baseline will mathematically output a magnitude of -1.0. These microquakes happen millions of times a day."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "A seismograph records an amplitude (A) that is 10,000 times larger than the baseline (A₀). Find the magnitude.",
+      "solution": [
+        "Ratio (A/A₀) = 10,000.",
+        "Log10(10000) = 4."
+      ],
+      "answer": "Magnitude = 4.0"
+    }
+  },
 
   "darcys-law": {
-  "intuition": "Darcy's Law (Groundwater Flow) calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "Q",
-      "siUnit": "m³/s",
-      "altUnits": "",
-      "description": "Flow Rate",
-      "commonTraps": "Heat (J), charge (C), and flow rate (m�/s) � verify units."
-    },
-    {
-      "id": "K",
-      "siUnit": "m/s",
-      "altUnits": "",
-      "description": "Hydraulic Conductivity",
-      "commonTraps": "Equilibrium constant (dimensionless) vs thermal conductivity (W/(m�K))."
-    },
-    {
-      "id": "A",
-      "siUnit": "m²",
-      "altUnits": "",
-      "description": "Cross-Sectional Area",
-      "commonTraps": "Area (m�), amplitude (m), and mass number all use A � context matters."
-    },
-    {
-      "id": "dh",
-      "siUnit": "m",
-      "altUnits": "",
-      "description": "Head Difference",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "L",
-      "siUnit": "m",
-      "altUnits": "",
-      "description": "Flow Path Length",
-      "commonTraps": "Length (m), inductance (H), or angular momentum (kg�m�/s) � context-specific."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown Q using Darcy's Law (Groundwater Flow) with: Q = 10, K = 9.8, A = 10.",
-    "solution": [
-      "Identify known quantities and the target (Q).",
-      "Write the formula and solve for Q.",
-      "Substitute the values: Q = 10, K = 9.8, A = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Darcy's Law governs groundwater. It explains exactly how fast water will flow through an underground aquifer. Flow rate depends on how porous the dirt is, how thick the pipe is, and how steeply the water table is sloping underground.",
+    "variableBreakdown": [
+      {
+        "id": "Q",
+        "siUnit": "m³/s",
+        "altUnits": "",
+        "description": "Discharge Rate (Q)",
+        "commonTraps": "The total volume of water flowing per second."
+      },
+      {
+        "id": "K",
+        "siUnit": "m/s",
+        "altUnits": "",
+        "description": "Hydraulic Conductivity (K)",
+        "commonTraps": "How easily water moves through the material. Gravel has a massive K. Solid clay has a K near zero."
+      },
+      {
+        "id": "A",
+        "siUnit": "m²",
+        "altUnits": "",
+        "description": "Cross-Sectional Area",
+        "commonTraps": "The total 'window' size the water is flowing through."
+      },
+      {
+        "id": "dh",
+        "siUnit": "m",
+        "altUnits": "",
+        "description": "Change in Head (Δh)",
+        "commonTraps": "The drop in water elevation (pressure difference)."
+      },
+      {
+        "id": "L",
+        "siUnit": "m",
+        "altUnits": "",
+        "description": "Length of Flow (L)",
+        "commonTraps": "How far the water has to travel through the dirt."
+      }
     ],
-    "answer": "Q = computed result (run Solve mode to see the exact value)"
+    "solvingLogic": [
+      "1. Divide Δh by L to find the 'Hydraulic Gradient' (the steepness of the underground hill).",
+      "2. Multiply the gradient by the Area (A).",
+      "3. Multiply by Conductivity (K).",
+      "4. The formula technically has a negative sign because water flows downhill (from high head to low head), but usually we just care about the absolute flow rate."
+    ],
+    "edgeCases": [
+      {
+        "title": "Artesian Wells",
+        "description": "If water is trapped between two solid layers of clay (K = 0) and flows down a mountain, immense pressure builds up. If you drill a hole into this aquifer, the 'Change in Head' is so extreme that water will explode out of the ground straight up into the air without a pump!"
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "An aquifer has K = 0.01 m/s. Area is 50 m². It drops 2m in elevation over a distance of 10m. Find flow rate.",
+      "solution": [
+        "Gradient (Δh/L) = 2 / 10 = 0.2.",
+        "Q = (0.01) × (50) × (0.2) = 0.1."
+      ],
+      "answer": "Q = 0.1 m³/s"
+    }
   }
-},
-
 };

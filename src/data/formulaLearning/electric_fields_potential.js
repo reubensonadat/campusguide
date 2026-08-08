@@ -1,401 +1,297 @@
 export const electric_fields_potential = {
   "electric-field": {
-  "intuition": "Electric Field (Point Charge) calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "E",
-      "siUnit": "N/C",
-      "altUnits": "",
-      "description": "Electric Field",
-      "commonTraps": "Energy (J) and electric field (N/C or V/m) both use E."
-    },
-    {
-      "id": "Q",
-      "siUnit": "C",
-      "altUnits": "",
-      "description": "Charge",
-      "commonTraps": "Heat (J), charge (C), and flow rate (m�/s) � verify units."
-    },
-    {
-      "id": "r",
-      "siUnit": "m",
-      "altUnits": "",
-      "description": "Distance",
-      "commonTraps": "Radius must be in meters for standard physics formulas."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown E using Electric Field (Point Charge) with: E = 10, Q = 10, r = 5.",
-    "solution": [
-      "Identify known quantities and the target (E).",
-      "Write the formula and solve for E.",
-      "Substitute the values: E = 10, Q = 10, r = 5.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "The Electric Field of a point charge describes the force field it creates in the space around it. The field strength is directly proportional to the charge and decreases with the square of the distance.",
+    "variableBreakdown": [
+      {
+        "id": "E",
+        "siUnit": "N/C",
+        "altUnits": "V/m",
+        "description": "Electric Field Magnitude (E)",
+        "commonTraps": "The field is a vector; this formula only gives magnitude."
+      },
+      {
+        "id": "Q",
+        "siUnit": "C",
+        "altUnits": "",
+        "description": "Charge (Q)",
+        "commonTraps": "Use the source charge Q, not a test charge."
+      },
+      {
+        "id": "r",
+        "siUnit": "m",
+        "altUnits": "",
+        "description": "Distance (r)",
+        "commonTraps": "Forgetting to square the distance in the denominator."
+      }
     ],
-    "answer": "E = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Identify the known variables.",
+      "2. Ensure Q is in Coulombs and r is in meters.",
+      "3. Use k ≈ 8.988 × 10⁹ N·m²/C².",
+      "4. To solve for E, use E = k|Q| / r²."
+    ],
+    "edgeCases": [
+      {
+        "title": "Distance is Zero",
+        "description": "At r = 0, the electric field approaches infinity."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Calculate the electric field at 2 m from a 4 μC charge.",
+      "solution": [
+        "Q = 4 × 10⁻⁶ C, r = 2 m.",
+        "E = kQ / r² = (8.988 × 10⁹)(4 × 10⁻⁶) / 4 = 8988 N/C."
+      ],
+      "answer": "E ≈ 8988 N/C"
+    }
+  },
 
   "electric-potential": {
-  "intuition": "Electric Potential calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "V",
-      "siUnit": "V",
-      "altUnits": "",
-      "description": "Electric Potential",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "Q",
-      "siUnit": "C",
-      "altUnits": "",
-      "description": "Charge",
-      "commonTraps": "Heat (J), charge (C), and flow rate (m�/s) � verify units."
-    },
-    {
-      "id": "r",
-      "siUnit": "m",
-      "altUnits": "",
-      "description": "Distance",
-      "commonTraps": "Radius must be in meters for standard physics formulas."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown V using Electric Potential with: V = 12, Q = 10, r = 5.",
-    "solution": [
-      "Identify known quantities and the target (V).",
-      "Write the formula and solve for V.",
-      "Substitute the values: V = 12, Q = 10, r = 5.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Electric Potential (voltage) from a point charge describes the potential energy per unit charge at a specific location. It scales inversely with distance.",
+    "variableBreakdown": [
+      {
+        "id": "V",
+        "siUnit": "V",
+        "altUnits": "J/C",
+        "description": "Electric Potential (V)",
+        "commonTraps": "Potential is a scalar; it can be negative depending on the charge."
+      },
+      {
+        "id": "Q",
+        "siUnit": "C",
+        "altUnits": "",
+        "description": "Charge (Q)",
+        "commonTraps": "The sign of Q determines the sign of V."
+      },
+      {
+        "id": "r",
+        "siUnit": "m",
+        "altUnits": "",
+        "description": "Distance (r)",
+        "commonTraps": "Do not square the distance."
+      }
     ],
-    "answer": "V = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Identify knowns and verify units.",
+      "2. Use k ≈ 8.988 × 10⁹ N·m²/C².",
+      "3. To solve for V, use V = kQ / r."
+    ],
+    "edgeCases": [
+      {
+        "title": "Negative Charge",
+        "description": "If Q is negative, V is negative."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Find the electric potential 0.5 m away from a -2 μC charge.",
+      "solution": [
+        "Q = -2 × 10⁻⁶ C, r = 0.5 m.",
+        "V = (8.988 × 10⁹)(-2 × 10⁻⁶) / 0.5 = -35952 V."
+      ],
+      "answer": "V ≈ -35952 V"
+    }
+  },
 
   "parallel-plate-cap": {
-  "intuition": "Parallel Plate Capacitor calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "C",
-      "siUnit": "F",
-      "altUnits": "",
-      "description": "Capacitance",
-      "commonTraps": "Capacitance (farads) and concentration (mol/L) share symbol C � check units."
-    },
-    {
-      "id": "A",
-      "siUnit": "m²",
-      "altUnits": "",
-      "description": "Plate Area",
-      "commonTraps": "Area (m�), amplitude (m), and mass number all use A � context matters."
-    },
-    {
-      "id": "d",
-      "siUnit": "m",
-      "altUnits": "",
-      "description": "Plate Separation",
-      "commonTraps": "Ensure consistent distance units. Convert all inputs to the same unit system."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown C using Parallel Plate Capacitor with: C = 0.001, A = 10, d = 5.",
-    "solution": [
-      "Identify known quantities and the target (C).",
-      "Write the formula and solve for C.",
-      "Substitute the values: C = 0.001, A = 10, d = 5.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "The Parallel Plate Capacitor formula determines capacitance based purely on the physical geometry of the plates and the material between them.",
+    "variableBreakdown": [
+      {
+        "id": "C",
+        "siUnit": "F",
+        "altUnits": "",
+        "description": "Capacitance (C)",
+        "commonTraps": "Typically very small (microfarads or picofarads)."
+      },
+      {
+        "id": "A",
+        "siUnit": "m²",
+        "altUnits": "",
+        "description": "Plate Area (A)",
+        "commonTraps": "Convert cm² to m² (divide by 10,000)."
+      },
+      {
+        "id": "d",
+        "siUnit": "m",
+        "altUnits": "",
+        "description": "Plate Separation (d)",
+        "commonTraps": "Convert mm to m."
+      }
     ],
-    "answer": "C = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Identify the knowns (C, A, or d).",
+      "2. Use ε₀ ≈ 8.854 × 10⁻¹² F/m.",
+      "3. To solve for C, use C = ε₀A / d."
+    ],
+    "edgeCases": [
+      {
+        "title": "Zero Separation",
+        "description": "If d = 0, plates touch and short out."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Find C for 0.05 m² plates separated by 2 mm.",
+      "solution": [
+        "A = 0.05, d = 0.002.",
+        "C = ε₀(0.05)/0.002 = 2.21 × 10⁻¹⁰ F."
+      ],
+      "answer": "C ≈ 221 pF"
+    }
+  },
 
   "resistivity": {
-  "intuition": "Resistance from Resistivity calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "R",
-      "siUnit": "Ω",
-      "altUnits": "",
-      "description": "Resistance",
-      "commonTraps": "Gas constant R = 8.314 J/(mol�K). Do not confuse with electrical resistance."
-    },
-    {
-      "id": "rho",
-      "siUnit": "Ω·m",
-      "altUnits": "",
-      "description": "Resistivity",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "L",
-      "siUnit": "m",
-      "altUnits": "",
-      "description": "Length",
-      "commonTraps": "Length (m), inductance (H), or angular momentum (kg�m�/s) � context-specific."
-    },
-    {
-      "id": "A",
-      "siUnit": "m²",
-      "altUnits": "",
-      "description": "Cross-section Area",
-      "commonTraps": "Area (m�), amplitude (m), and mass number all use A � context matters."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown R using Resistance from Resistivity with: R = 10, rho = 10, L = 5.",
-    "solution": [
-      "Identify known quantities and the target (R).",
-      "Write the formula and solve for R.",
-      "Substitute the values: R = 10, rho = 10, L = 5.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Resistivity connects the material property (ρ) to the actual physical resistance of a wire, depending on its length and cross-sectional area.",
+    "variableBreakdown": [
+      {
+        "id": "R",
+        "siUnit": "Ω",
+        "altUnits": "",
+        "description": "Resistance (R)",
+        "commonTraps": "Make sure to measure the entire length of the conductor."
+      },
+      {
+        "id": "rho",
+        "siUnit": "Ω·m",
+        "altUnits": "",
+        "description": "Resistivity (ρ)",
+        "commonTraps": "Intrinsic to the material, often temperature dependent."
+      },
+      {
+        "id": "L",
+        "siUnit": "m",
+        "altUnits": "",
+        "description": "Length (L)",
+        "commonTraps": "Ensure it is in meters."
+      },
+      {
+        "id": "A",
+        "siUnit": "m²",
+        "altUnits": "",
+        "description": "Cross-sectional Area (A)",
+        "commonTraps": "Area must be in m². For a circular wire, A = πr²."
+      }
     ],
-    "answer": "R = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Identify knowns.",
+      "2. Make sure A is in m².",
+      "3. R = ρL / A."
+    ],
+    "edgeCases": [
+      {
+        "title": "Thick Wire",
+        "description": "Very large area makes resistance negligible."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Find R for a copper wire (ρ=1.68×10⁻⁸) 10m long with A=2×10⁻⁶ m².",
+      "solution": [
+        "R = (1.68×10⁻⁸)(10) / (2×10⁻⁶) = 0.084 Ω."
+      ],
+      "answer": "R = 0.084 Ω"
+    }
+  },
 
   "series-parallel-cap": {
-  "intuition": "Series/Parallel Capacitance calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "type",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "0=Series, 1=Parallel",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "c1",
-      "siUnit": "F",
-      "altUnits": "",
-      "description": "C₁",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "c2",
-      "siUnit": "F",
-      "altUnits": "",
-      "description": "C₂",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "c3",
-      "siUnit": "F",
-      "altUnits": "",
-      "description": "C₃",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown type using Series/Parallel Capacitance with: type = 10, c1 = 0.001, c2 = 0.001.",
-    "solution": [
-      "Identify known quantities and the target (type).",
-      "Write the formula and solve for type.",
-      "Substitute the values: type = 10, c1 = 0.001, c2 = 0.001.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Capacitors in parallel add up directly, while capacitors in series add up inversely.",
+    "variableBreakdown": [
+      {
+        "id": "type",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "0=Series, 1=Parallel",
+        "commonTraps": "Ensure you select the right configuration."
+      },
+      {
+        "id": "c1",
+        "siUnit": "F",
+        "altUnits": "",
+        "description": "Capacitor 1",
+        "commonTraps": "Must be in the same units."
+      },
+      {
+        "id": "c2",
+        "siUnit": "F",
+        "altUnits": "",
+        "description": "Capacitor 2",
+        "commonTraps": "Must be in the same units."
+      },
+      {
+        "id": "c3",
+        "siUnit": "F",
+        "altUnits": "",
+        "description": "Capacitor 3",
+        "commonTraps": "Must be in the same units."
+      }
     ],
-    "answer": "type = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Check the type.",
+      "2. For Parallel: C_eq = C1 + C2 + C3.",
+      "3. For Series: 1/C_eq = 1/C1 + 1/C2 + 1/C3."
+    ],
+    "edgeCases": [
+      {
+        "title": "One Zero Capacitor",
+        "description": "In series, a zero capacitance breaks the circuit."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Find equivalent capacitance of 2F and 3F in parallel.",
+      "solution": [
+        "Type = 1 (Parallel).",
+        "C_eq = 2 + 3 = 5 F."
+      ],
+      "answer": "C_eq = 5 F"
+    }
+  },
 
   "motional-emf": {
-  "intuition": "Motional EMF calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "emf",
-      "siUnit": "V",
-      "altUnits": "",
-      "description": "Induced EMF",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "B",
-      "siUnit": "T",
-      "altUnits": "",
-      "description": "Magnetic Field",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "L",
-      "siUnit": "m",
-      "altUnits": "",
-      "description": "Conductor Length",
-      "commonTraps": "Length (m), inductance (H), or angular momentum (kg�m�/s) � context-specific."
-    },
-    {
-      "id": "v",
-      "siUnit": "m/s",
-      "altUnits": "",
-      "description": "Velocity",
-      "commonTraps": "Velocity is a vector; direction matters. Use consistent sign conventions."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown emf using Motional EMF with: emf = 12, B = 10, L = 5.",
-    "solution": [
-      "Identify known quantities and the target (emf).",
-      "Write the formula and solve for emf.",
-      "Substitute the values: emf = 12, B = 10, L = 5.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Motional EMF describes the voltage generated across a conductor moving through a magnetic field.",
+    "variableBreakdown": [
+      {
+        "id": "emf",
+        "siUnit": "V",
+        "altUnits": "",
+        "description": "Induced EMF",
+        "commonTraps": "The EMF is generated only if velocity is perpendicular to the B-field."
+      },
+      {
+        "id": "B",
+        "siUnit": "T",
+        "altUnits": "",
+        "description": "Magnetic Field",
+        "commonTraps": "Ensure it is in Tesla."
+      },
+      {
+        "id": "L",
+        "siUnit": "m",
+        "altUnits": "",
+        "description": "Conductor Length",
+        "commonTraps": "Must be the length inside the magnetic field."
+      },
+      {
+        "id": "v",
+        "siUnit": "m/s",
+        "altUnits": "",
+        "description": "Velocity",
+        "commonTraps": "Ensure it is in m/s."
+      }
     ],
-    "answer": "emf = computed result (run Solve mode to see the exact value)"
+    "solvingLogic": [
+      "1. Identify known variables.",
+      "2. Check units.",
+      "3. Use formula: EMF = B · L · v."
+    ],
+    "edgeCases": [
+      {
+        "title": "Parallel Motion",
+        "description": "If velocity is parallel to B-field, no EMF is induced."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Find EMF of a 2m rod moving at 5m/s in a 0.1T field.",
+      "solution": [
+        "EMF = B·L·v = (0.1)(2)(5) = 1 V."
+      ],
+      "answer": "EMF = 1 V"
+    }
   }
-},
-
 };

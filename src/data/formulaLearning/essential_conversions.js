@@ -1,254 +1,140 @@
 export const essential_conversions = {
   "temp-conversion": {
-  "intuition": "Temperature Conversion calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "C",
-      "siUnit": "°C",
-      "altUnits": "",
-      "description": "Celsius",
-      "commonTraps": "Capacitance (farads) and concentration (mol/L) share symbol C � check units."
-    },
-    {
-      "id": "F",
-      "siUnit": "°F",
-      "altUnits": "",
-      "description": "Fahrenheit",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "K",
-      "siUnit": "K",
-      "altUnits": "",
-      "description": "Kelvin",
-      "commonTraps": "Equilibrium constant (dimensionless) vs thermal conductivity (W/(m�K))."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown C using Temperature Conversion with: C = 10, F = 10, K = 300.",
-    "solution": [
-      "Identify known quantities and the target (C).",
-      "Write the formula and solve for C.",
-      "Substitute the values: C = 10, F = 10, K = 300.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Fahrenheit is scaled for humans (0 is freezing outside, 100 is your body temp). Celsius is scaled for water (0 is ice, 100 is steam). Kelvin is the absolute, immovable bedrock of the universe (0 means atoms literally stop vibrating entirely).",
+    "variableBreakdown": [
+      { "id": "C", "siUnit": "°C", "description": "Celsius" },
+      { "id": "F", "siUnit": "°F", "description": "Fahrenheit" },
+      { "id": "K", "siUnit": "K", "description": "Kelvin", "commonTraps": "Notice there is no 'degree' symbol. It is just 'Kelvin'." }
     ],
-    "answer": "C = computed result (run Solve mode to see the exact value)"
-  }
-},
-
+    "solvingLogic": [ "C to K: Add 273.15.", "C to F: Multiply by 1.8, then add 32." ],
+    "edgeCases": [ { "title": "Minus 40", "description": "-40 is the exact point where the Fahrenheit and Celsius scales perfectly cross over. -40°C is exactly equal to -40°F." } ],
+    "walkthroughExample": { "problem": "Convert 20°C to F.", "solution": ["20 × 1.8 = 36", "36 + 32 = 68"], "answer": "68°F (Room temp)" }
+  },
   "speed-distance-time": {
-  "intuition": "Speed / Distance / Time calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "v",
-      "siUnit": "m/s",
-      "altUnits": "",
-      "description": "Speed",
-      "commonTraps": "Velocity is a vector; direction matters. Use consistent sign conventions."
-    },
-    {
-      "id": "d",
-      "siUnit": "m",
-      "altUnits": "",
-      "description": "Distance",
-      "commonTraps": "Ensure consistent distance units. Convert all inputs to the same unit system."
-    },
-    {
-      "id": "t",
-      "siUnit": "s",
-      "altUnits": "",
-      "description": "Time",
-      "commonTraps": "Use consistent time units throughout � convert minutes/hours to seconds."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown v using Speed / Distance / Time with: v = 9.8, d = 5, t = 2.",
-    "solution": [
-      "Identify known quantities and the target (v).",
-      "Write the formula and solve for v.",
-      "Substitute the values: v = 9.8, d = 5, t = 2.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "v = d/t",
+    "variableBreakdown": [
+      { "id": "v", "siUnit": "m/s" },
+      { "id": "d", "siUnit": "m" },
+      { "id": "t", "siUnit": "s" }
     ],
-    "answer": "v = computed result (run Solve mode to see the exact value)"
-  }
-},
-
+    "solvingLogic": ["Divide distance by time"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "100m in 10s", "solution": ["100/10"], "answer": "10 m/s" }
+  },
   "photon-energy": {
-  "intuition": "Photon Energy calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "E",
-      "siUnit": "eV",
-      "altUnits": "",
-      "description": "Energy",
-      "commonTraps": "Energy (J) and electric field (N/C or V/m) both use E."
-    },
-    {
-      "id": "f",
-      "siUnit": "Hz",
-      "altUnits": "",
-      "description": "Frequency",
-      "commonTraps": "Do not confuse frequency with focal length � check the context and units (Hz vs m)."
-    },
-    {
-      "id": "lambda",
-      "siUnit": "nm",
-      "altUnits": "",
-      "description": "Wavelength",
-      "commonTraps": "Wavelength must be in meters. Convert from nm by multiplying by 10??."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown E using Photon Energy with: E = 2, f = 50, lambda = 500.",
-    "solution": [
-      "Identify known quantities and the target (E).",
-      "Write the formula and solve for E.",
-      "Substitute the values: E = 2, f = 50, lambda = 500.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "E = hf",
+    "variableBreakdown": [
+      { "id": "E", "siUnit": "J" },
+      { "id": "f", "siUnit": "Hz" },
+      { "id": "lambda", "siUnit": "m" }
     ],
-    "answer": "E = computed result (run Solve mode to see the exact value)"
-  }
-},
-
+    "solvingLogic": ["Multiply freq by Planck constant"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "f=2", "solution": ["2h"], "answer": "2h J" }
+  },
   "mass-defect": {
-  "intuition": "Mass Defect & Binding Energy calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "Z",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Protons",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "N",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Neutrons",
-      "commonTraps": "Number of turns, population size, or normal force � depends on context."
-    },
-    {
-      "id": "M",
-      "siUnit": "u",
-      "altUnits": "",
-      "description": "Actual Mass",
-      "commonTraps": "Molar mass (g/mol) vs central mass (kg) � check magnitude."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown Z using Mass Defect & Binding Energy with: Z = 10, N = 10, M = 10.",
-    "solution": [
-      "Identify known quantities and the target (Z).",
-      "Write the formula and solve for Z.",
-      "Substitute the values: Z = 10, N = 10, M = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Nucleus weighs less than its parts.",
+    "variableBreakdown": [
+      { "id": "Z", "siUnit": "" },
+      { "id": "N", "siUnit": "" },
+      { "id": "M", "siUnit": "amu" }
     ],
-    "answer": "Z = computed result (run Solve mode to see the exact value)"
+    "solvingLogic": ["(Z*mp + N*mn) - M"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "Theoretical 10, Actual 9", "solution": ["10-9"], "answer": "1" }
+  },
+  "tip_split_calculator": {
+    "intuition": "Dinner math.",
+    "variableBreakdown": [
+      { "id": "Each", "siUnit": "$" },
+      { "id": "Bill", "siUnit": "$" },
+      { "id": "TipPct", "siUnit": "%" },
+      { "id": "People", "siUnit": "" }
+    ],
+    "solvingLogic": ["(Bill * Tip) / People"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "$100, 20% tip, 2 people", "solution": ["120 / 2"], "answer": "$60 each" }
+  },
+  "loan_amortization_monthly": {
+    "intuition": "Monthly mortgage.",
+    "variableBreakdown": [
+      { "id": "M", "siUnit": "$" },
+      { "id": "P", "siUnit": "$" },
+      { "id": "r", "siUnit": "%" },
+      { "id": "n", "siUnit": "months" }
+    ],
+    "solvingLogic": ["Complex compounding formula."],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "Test", "solution": ["Math"], "answer": "Result" }
+  },
+  "currency_conversion": {
+    "intuition": "Forex math.",
+    "variableBreakdown": [ { "id": "Conv", "siUnit": "$" }, { "id": "Amt", "siUnit": "$" }, { "id": "Rate", "siUnit": "" } ],
+    "solvingLogic": ["Amt * Rate"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "$10 at 1.5 rate", "solution": ["10 * 1.5"], "answer": "15" }
+  },
+  "fuel_cost_calculator": {
+    "intuition": "Gas math.",
+    "variableBreakdown": [
+      { "id": "Cost", "siUnit": "$" },
+      { "id": "Dist", "siUnit": "mi" },
+      { "id": "Eff", "siUnit": "mpg" },
+      { "id": "Price", "siUnit": "$/gal" }
+    ],
+    "solvingLogic": ["(Dist / Eff) * Price"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "100mi, 25mpg, $3/gal", "solution": ["(100/25)*3"], "answer": "$12" }
+  },
+  "age_calculator": {
+    "intuition": "Calculate age.",
+    "variableBreakdown": [
+      { "id": "Years", "siUnit": "" }, { "id": "BY", "siUnit": "" }, { "id": "BM", "siUnit": "" }, { "id": "BD", "siUnit": "" }
+    ],
+    "solvingLogic": ["Diff dates"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "2024 - 2000", "solution": ["24"], "answer": "24 years" }
+  },
+  "gpa_projection": {
+    "intuition": "CGPA math.",
+    "variableBreakdown": [
+      { "id": "NewCGPA", "siUnit": "" }, { "id": "OldCGPA", "siUnit": "" }, { "id": "OldCr", "siUnit": "" }, { "id": "SemGPA", "siUnit": "" }, { "id": "SemCr", "siUnit": "" }
+    ],
+    "solvingLogic": ["Weighted avg"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "Test", "solution": ["Math"], "answer": "Result" }
+  },
+  "savings_goal": {
+    "intuition": "Savings math.",
+    "variableBreakdown": [ { "id": "Monthly", "siUnit": "$" }, { "id": "Goal", "siUnit": "$" }, { "id": "Months", "siUnit": "" } ],
+    "solvingLogic": ["Goal / Months"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "$1000 in 10 months", "solution": ["1000/10"], "answer": "$100" }
+  },
+  "compound_growth": {
+    "intuition": "Investment math.",
+    "variableBreakdown": [
+      { "id": "FV", "siUnit": "$" }, { "id": "PV", "siUnit": "$" }, { "id": "r", "siUnit": "%" }, { "id": "n", "siUnit": "years" }
+    ],
+    "solvingLogic": ["PV * (1+r)^n"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "Test", "solution": ["Math"], "answer": "Result" }
+  },
+  "unit_price_comparison": {
+    "intuition": "Grocery math.",
+    "variableBreakdown": [
+      { "id": "UP1", "siUnit": "$" }, { "id": "P1", "siUnit": "$" }, { "id": "Q1", "siUnit": "" },
+      { "id": "UP2", "siUnit": "$" }, { "id": "P2", "siUnit": "$" }, { "id": "Q2", "siUnit": "" }
+    ],
+    "solvingLogic": ["P / Q"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "Test", "solution": ["Math"], "answer": "Result" }
+  },
+  "salary_tax_estimator": {
+    "intuition": "Tax math.",
+    "variableBreakdown": [ { "id": "TakeHome", "siUnit": "$" }, { "id": "Salary", "siUnit": "$" }, { "id": "TaxRate", "siUnit": "%" } ],
+    "solvingLogic": ["Salary * (1 - Rate)"],
+    "edgeCases": [],
+    "walkthroughExample": { "problem": "$100k, 20%", "solution": ["100k * 0.8"], "answer": "80k" }
   }
-},
-
 };

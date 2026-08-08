@@ -1,191 +1,138 @@
 export const astronomy_cosmology = {
   "redshift": {
-  "intuition": "Redshift (Cosmological) calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "z",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Redshift",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "lObs",
-      "siUnit": "nm",
-      "altUnits": "",
-      "description": "Observed Wavelength",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "lRest",
-      "siUnit": "nm",
-      "altUnits": "",
-      "description": "Rest Wavelength",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown z using Redshift (Cosmological) with: z = 10, lObs = 500, lRest = 500.",
-    "solution": [
-      "Identify known quantities and the target (z).",
-      "Write the formula and solve for z.",
-      "Substitute the values: z = 10, lObs = 500, lRest = 500.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Redshift is the Doppler effect for light. Just like an ambulance siren sounds lower pitched as it drives away from you, a galaxy flying away from Earth physically stretches the light waves it emits. The 'Redshift (z)' is a direct measure of how severely the light has been stretched into the red part of the spectrum.",
+    "variableBreakdown": [
+      {
+        "id": "z",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Redshift (z)",
+        "commonTraps": "It is unitless. A higher number means it's moving away faster."
+      },
+      {
+        "id": "lObs",
+        "siUnit": "nm",
+        "altUnits": "m",
+        "description": "Observed Wavelength",
+        "commonTraps": "The wavelength measured by a telescope on Earth."
+      },
+      {
+        "id": "lRest",
+        "siUnit": "nm",
+        "altUnits": "m",
+        "description": "Rest Wavelength",
+        "commonTraps": "The true, original wavelength emitted by the star (known from lab experiments)."
+      }
     ],
-    "answer": "z = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Subtract the Rest Wavelength from the Observed Wavelength (lObs - lRest).",
+      "2. Divide the result by the Rest Wavelength."
+    ],
+    "edgeCases": [
+      {
+        "title": "Blueshift (Negative z)",
+        "description": "If a galaxy is flying TOWARDS us (like the Andromeda Galaxy is currently doing), the light gets squished instead of stretched. The observed wavelength will be smaller than the rest wavelength, resulting in a negative 'z' value. This is called Blueshift."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Hydrogen normally emits light at 656 nm (Rest). We observe a galaxy emitting this line at 688 nm. Find the Redshift.",
+      "solution": [
+        "Change: 688 - 656 = 32.",
+        "Divide by Rest: 32 / 656 ≈ 0.0487."
+      ],
+      "answer": "z ≈ 0.0487"
+    }
+  },
 
   "hubbles-law": {
-  "intuition": "Hubble's Law calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "v",
-      "siUnit": "km/s",
-      "altUnits": "",
-      "description": "Recession Velocity",
-      "commonTraps": "Velocity is a vector; direction matters. Use consistent sign conventions."
-    },
-    {
-      "id": "d",
-      "siUnit": "Mpc",
-      "altUnits": "",
-      "description": "Distance",
-      "commonTraps": "Ensure consistent distance units. Convert all inputs to the same unit system."
-    },
-    {
-      "id": "H0",
-      "siUnit": "km/s/Mpc",
-      "altUnits": "",
-      "description": "Hubble Constant",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown v using Hubble's Law with: v = 10, d = 10, H0 = 10.",
-    "solution": [
-      "Identify known quantities and the target (v).",
-      "Write the formula and solve for v.",
-      "Substitute the values: v = 10, d = 10, H0 = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Edwin Hubble made the most terrifying discovery in human history: the universe is actively exploding. Every galaxy is flying away from us. Hubble's Law proves that the further away a galaxy is, the FASTER it is flying away, meaning space itself is expanding like a balloon.",
+    "variableBreakdown": [
+      {
+        "id": "v",
+        "siUnit": "km/s",
+        "altUnits": "",
+        "description": "Recessional Velocity (v)",
+        "commonTraps": "How fast the galaxy is flying away from Earth."
+      },
+      {
+        "id": "d",
+        "siUnit": "Mpc",
+        "altUnits": "",
+        "description": "Distance (d)",
+        "commonTraps": "Measured in Megaparsecs (1 Mpc is about 3.26 million light-years)."
+      },
+      {
+        "id": "H0",
+        "siUnit": "km/s/Mpc",
+        "altUnits": "",
+        "description": "Hubble Constant (H₀)",
+        "commonTraps": "The rate of universal expansion (currently estimated around 70 km/s/Mpc)."
+      }
     ],
-    "answer": "v = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Multiply the Distance to the galaxy by the Hubble Constant."
+    ],
+    "edgeCases": [
+      {
+        "title": "Faster than Light?",
+        "description": "Because velocity increases with distance, galaxies that are incredibly far away (beyond the 'Hubble Horizon') are actually receding from us FASTER than the speed of light! This doesn't violate Einstein's laws, because the galaxies aren't moving THROUGH space; the space BETWEEN us is expanding."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "A galaxy is 100 Mpc away. H₀ is 70 km/s/Mpc. How fast is it moving away?",
+      "solution": [
+        "v = 100 × 70 = 7000."
+      ],
+      "answer": "v = 7,000 km/s"
+    }
+  },
 
   "luminosity-distance": {
-  "intuition": "Luminosity Distance calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "d",
-      "siUnit": "pc",
-      "altUnits": "",
-      "description": "Distance",
-      "commonTraps": "Ensure consistent distance units. Convert all inputs to the same unit system."
-    },
-    {
-      "id": "m",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Apparent Magnitude",
-      "commonTraps": "Mass must be in kilograms for SI calculations."
-    },
-    {
-      "id": "M",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Absolute Magnitude",
-      "commonTraps": "Molar mass (g/mol) vs central mass (kg) � check magnitude."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown d using Luminosity Distance with: d = 10, m = 10, M = 10.",
-    "solution": [
-      "Identify known quantities and the target (d).",
-      "Write the formula and solve for d.",
-      "Substitute the values: d = 10, m = 10, M = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "The 'Distance Modulus' formula is how astronomers measure the universe. If you know exactly how bright a star TRULY is (Absolute Magnitude), and you measure how dim it APPEARS from Earth (Apparent Magnitude), you can perfectly calculate how many parsecs away it must be.",
+    "variableBreakdown": [
+      {
+        "id": "d",
+        "siUnit": "pc",
+        "altUnits": "",
+        "description": "Distance in Parsecs",
+        "commonTraps": "A parsec is 3.26 light years."
+      },
+      {
+        "id": "m",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Apparent Magnitude (m)",
+        "commonTraps": "How bright it looks to us. A HIGHER number means it is DIMMER!"
+      },
+      {
+        "id": "M",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Absolute Magnitude (M)",
+        "commonTraps": "How bright the star actually is if it were exactly 10 parsecs away."
+      }
     ],
-    "answer": "d = computed result (run Solve mode to see the exact value)"
+    "solvingLogic": [
+      "1. Subtract Absolute Magnitude from Apparent Magnitude (m - M).",
+      "2. Add 5 to that result.",
+      "3. Divide by 5.",
+      "4. Raise 10 to that power: 10^(result)."
+    ],
+    "edgeCases": [
+      {
+        "title": "Perfect 10",
+        "description": "If a star is exactly 10 parsecs away from Earth, its Apparent Magnitude (m) and Absolute Magnitude (M) are perfectly equal. (m - M) becomes 0, the exponent is (0+5)/5 = 1. And 10¹ is exactly 10!"
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "A star has an apparent magnitude of 15 and an absolute magnitude of 5. Find its distance.",
+      "solution": [
+        "m - M = 15 - 5 = 10.",
+        "Add 5: 10 + 5 = 15.",
+        "Divide by 5: 15 / 5 = 3.",
+        "10³ = 1000."
+      ],
+      "answer": "d = 1,000 parsecs"
+    }
   }
-},
-
 };

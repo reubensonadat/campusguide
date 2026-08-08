@@ -352,19 +352,19 @@ const UniversalLookupModal = ({ query, onClose }) => {
   };
 
   useEffect(() => {
-    const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose?.();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      window.scrollTo(0, scrollY);
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = originalOverflow;
     };
-  }, []);
+  }, [onClose]);
 
   return createPortal(
     <div className="fixed inset-0 z-[2147483647] flex items-end sm:items-start sm:pt-[10vh] justify-center bg-black/40 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200"

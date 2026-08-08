@@ -1,205 +1,157 @@
 export const organic_chemistry = {
   "degree-unsaturation": {
-  "intuition": "Degree of Unsaturation (DU) calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "DU",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Degree of Unsaturation",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "C",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Carbon",
-      "commonTraps": "Capacitance (farads) and concentration (mol/L) share symbol C � check units."
-    },
-    {
-      "id": "H",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Hydrogen",
-      "commonTraps": "Enthalpy (J) vs magnetic field (A/m) vs height (m)."
-    },
-    {
-      "id": "N",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Nitrogen",
-      "commonTraps": "Number of turns, population size, or normal force � depends on context."
-    },
-    {
-      "id": "X",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Halogen",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown DU using Degree of Unsaturation (DU) with: DU = 10, C = 10, H = 10.",
-    "solution": [
-      "Identify known quantities and the target (DU).",
-      "Write the formula and solve for DU.",
-      "Substitute the values: DU = 10, C = 10, H = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "The Degree of Unsaturation (or HDI) tells you immediately if a mystery molecule has rings or double bonds hidden inside it. Every time you bend a carbon chain into a ring, or add a double bond, you are forced to 'delete' two Hydrogen atoms from the molecule. This formula just counts the missing Hydrogens.",
+    "variableBreakdown": [
+      {
+        "id": "DU",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Degree of Unsaturation",
+        "commonTraps": "Also called Hydrogen Deficiency Index (HDI)."
+      },
+      {
+        "id": "C",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Number of Carbons",
+        "commonTraps": "Forms the backbone."
+      },
+      {
+        "id": "H",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Number of Hydrogens",
+        "commonTraps": "The atoms being deleted to make rings/bonds."
+      },
+      {
+        "id": "N",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Number of Nitrogens",
+        "commonTraps": "Nitrogen forms 3 bonds, so it accidentally 'adds' a hydrogen space. You must subtract it."
+      },
+      {
+        "id": "X",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Number of Halogens",
+        "commonTraps": "Fluorine, Chlorine, Bromine. They act exactly like Hydrogens, so you add them."
+      }
     ],
-    "answer": "DU = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Start with Carbons (C) + 1.",
+      "2. Subtract half of the Hydrogens (H/2).",
+      "3. Subtract half of the Halogens (X/2).",
+      "4. ADD half of the Nitrogens (N/2)."
+    ],
+    "edgeCases": [
+      {
+        "title": "Ignoring Oxygen",
+        "description": "Notice that Oxygen (O) is completely missing from the formula! Because Oxygen forms exactly 2 bonds, you can seamlessly slide it into the middle of any carbon chain without altering the hydrogen count at all. You just ignore it completely."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "A molecule has the formula C₆H₆ (Benzene). Find the Degree of Unsaturation.",
+      "solution": [
+        "C + 1 = 6 + 1 = 7.",
+        "Subtract H/2 = 6 / 2 = 3.",
+        "7 - 3 = 4."
+      ],
+      "answer": "DU = 4 (Meaning Benzene has 1 ring and 3 double bonds!)"
+    }
+  },
 
   "hdi-index": {
-  "intuition": "Hydrogen Deficiency Index calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "HDI",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Hydrogen Deficiency Index",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "C",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Carbon Atoms",
-      "commonTraps": "Capacitance (farads) and concentration (mol/L) share symbol C � check units."
-    },
-    {
-      "id": "H",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Hydrogen Atoms",
-      "commonTraps": "Enthalpy (J) vs magnetic field (A/m) vs height (m)."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown HDI using Hydrogen Deficiency Index with: HDI = 10, C = 10, H = 10.",
-    "solution": [
-      "Identify known quantities and the target (HDI).",
-      "Write the formula and solve for HDI.",
-      "Substitute the values: HDI = 10, C = 10, H = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "This is the exact same concept as the Degree of Unsaturation, just presented with a slightly different layout used in some textbooks. It answers the exact same question: 'How many missing pairs of Hydrogen are there?'",
+    "variableBreakdown": [
+      {
+        "id": "HDI",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Hydrogen Deficiency Index",
+        "commonTraps": ""
+      },
+      {
+        "id": "C",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Number of Carbons",
+        "commonTraps": ""
+      },
+      {
+        "id": "H",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Effective Hydrogens",
+        "commonTraps": "Calculated by doing: Actual Hydrogens + Halogens - Nitrogens."
+      }
     ],
-    "answer": "HDI = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Calculate the 'Maximum' possible hydrogens if the chain was completely straight: (2C + 2).",
+      "2. Subtract the 'Effective' hydrogens (H).",
+      "3. Divide the result by 2."
+    ],
+    "edgeCases": [
+      {
+        "title": "Triple Bonds",
+        "description": "A single triple bond (alkyne) deletes FOUR hydrogens (two pairs). Therefore, a single triple bond contributes exactly '2' to the HDI."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Formula is C₄H₈. Find HDI.",
+      "solution": [
+        "Max Hydrogens = (2 × 4) + 2 = 10.",
+        "Missing = 10 - 8 = 2.",
+        "Divide by 2 = 1."
+      ],
+      "answer": "HDI = 1 (It has exactly one double bond or one ring)"
+    }
+  },
 
   "ee-optical-purity": {
-  "intuition": "Enantiomeric Excess (Optical Purity) calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "ee",
-      "siUnit": "%",
-      "altUnits": "",
-      "description": "Enantiomeric Excess",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "R",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Concentration of R",
-      "commonTraps": "Gas constant R = 8.314 J/(mol�K). Do not confuse with electrical resistance."
-    },
-    {
-      "id": "S",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Concentration of S",
-      "commonTraps": "Entropy (J/K) vs Svedberg unit vs slope � context dependent."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown ee using Enantiomeric Excess (Optical Purity) with: ee = 5, R = 10, S = 10.",
-    "solution": [
-      "Identify known quantities and the target (ee).",
-      "Write the formula and solve for ee.",
-      "Substitute the values: ee = 5, R = 10, S = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Enantiomeric Excess (ee) is a crucial metric in pharmaceuticals. Many drug molecules are 'handed' (like a left and right glove). The right-handed drug might cure your headache, while the left-handed version is completely toxic! This formula measures how 'pure' a batch of chemicals is, to make sure you didn't accidentally mix the two.",
+    "variableBreakdown": [
+      {
+        "id": "ee",
+        "siUnit": "%",
+        "altUnits": "",
+        "description": "Enantiomeric Excess",
+        "commonTraps": "An 'ee' of 0% means you have exactly a 50/50 mix (a Racemic mixture). This is very bad for drugs."
+      },
+      {
+        "id": "R",
+        "siUnit": "%",
+        "altUnits": "moles",
+        "description": "Amount of R Enantiomer",
+        "commonTraps": "Right-handed molecule."
+      },
+      {
+        "id": "S",
+        "siUnit": "%",
+        "altUnits": "moles",
+        "description": "Amount of S Enantiomer",
+        "commonTraps": "Left-handed molecule."
+      }
     ],
-    "answer": "ee = computed result (run Solve mode to see the exact value)"
+    "solvingLogic": [
+      "1. Take the absolute difference between the two amounts: |R - S|.",
+      "2. Divide by the total amount (R + S).",
+      "3. Multiply by 100 to get a percentage."
+    ],
+    "edgeCases": [
+      {
+        "title": "Optical Rotation",
+        "description": "Because left and right-handed molecules look perfectly identical to standard chemistry tests, the only way to measure them is to shine polarized light through the beaker. The 'R' molecules rotate the light clockwise, and the 'S' molecules rotate it counter-clockwise. The 'ee' is literally just how far the light twisted!"
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "A drug batch contains 90% of the active R enantiomer and 10% of the toxic S enantiomer. Find the 'ee'.",
+      "solution": [
+        "Difference: |90 - 10| = 80.",
+        "Total: 90 + 10 = 100.",
+        "Ratio: 80 / 100 = 80%."
+      ],
+      "answer": "ee = 80% (You have an 80% excess of pure R, and the remaining 20% is perfectly canceled out as a 50/50 mix)"
+    }
   }
-},
-
 };

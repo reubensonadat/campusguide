@@ -1,163 +1,119 @@
 export const statistics = {
   "mean-std": {
-  "intuition": "Mean & Standard Deviation calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "data",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Data",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown data using Mean & Standard Deviation with: data = 10.",
-    "solution": [
-      "Identify known quantities and the target (data).",
-      "Write the formula and solve for data.",
-      "Substitute the values: data = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Mean is the exact balancing point of all your data (the center of gravity). Standard deviation tells you how 'fat' or 'skinny' your data is—a low deviation means everything is clumped tightly around the average, while a high deviation means the data is wildly scattered.",
+    "variableBreakdown": [
+      {
+        "id": "data",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Dataset",
+        "commonTraps": "A list of numbers (e.g., [2, 4, 4, 4, 5, 5, 7, 9])."
+      }
     ],
-    "answer": "data = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Calculate the Mean: Add all numbers together and divide by how many numbers there are.",
+      "2. For each number, subtract the mean and square the result (this prevents negatives from canceling out positives).",
+      "3. Find the average of those squared differences (this is the Variance).",
+      "4. Take the square root of the Variance to get the Standard Deviation."
+    ],
+    "edgeCases": [
+      {
+        "title": "Sample vs Population",
+        "description": "If your data is just a small sample of a larger population, you must divide by (n-1) instead of (n) when finding the variance. This 'Bessel Correction' makes your estimate slightly larger to account for uncertainty."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Find the mean and population standard deviation of the dataset: [2, 4, 4, 4, 5, 5, 7, 9].",
+      "solution": [
+        "Sum = 40. Count = 8. Mean = 40 / 8 = 5.",
+        "Subtract mean and square: (-3)²=9, (-1)²=1, (-1)²=1, (-1)²=1, (0)²=0, (0)²=0, (2)²=4, (4)²=16.",
+        "Sum of squares = 32.",
+        "Variance = 32 / 8 = 4.",
+        "Standard Deviation = √4 = 2."
+      ],
+      "answer": "Mean = 5, Std Dev = 2"
+    }
+  },
 
   "linear-regression": {
-  "intuition": "Linear Regression (y=mx+b) calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "xdata",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "X values",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "ydata",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Y values",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown xdata using Linear Regression (y=mx+b) with: xdata = 10, ydata = 10.",
-    "solution": [
-      "Identify known quantities and the target (xdata).",
-      "Write the formula and solve for xdata.",
-      "Substitute the values: xdata = 10, ydata = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Linear regression finds the ultimate 'line of best fit' through a messy cloud of data points on a graph. It works by tilting and shifting the line until the total distance between the line and every single data point is minimized as much as mathematically possible.",
+    "variableBreakdown": [
+      {
+        "id": "xdata",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Independent Variables (X)",
+        "commonTraps": "The 'cause' or the input data."
+      },
+      {
+        "id": "ydata",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Dependent Variables (Y)",
+        "commonTraps": "The 'effect' or the output data you are trying to predict."
+      }
     ],
-    "answer": "xdata = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Calculate the mean of X and the mean of Y.",
+      "2. Calculate the slope (m) using the covariance of X and Y divided by the variance of X.",
+      "3. Calculate the Y-intercept (b) using: b = mean(Y) - m × mean(X).",
+      "4. The final equation is Y = mx + b."
+    ],
+    "edgeCases": [
+      {
+        "title": "Outliers",
+        "description": "Because linear regression relies on squaring the distances (Least Squares Method), a single massive outlier will pull the line of best fit violently towards it, ruining the prediction for everything else."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "Given X=[1, 2, 3] and Y=[2, 4, 5], find the line of best fit.",
+      "solution": [
+        "Mean X = 2. Mean Y = 3.66.",
+        "Slope (m) ≈ 1.5.",
+        "Intercept (b) = 3.66 - 1.5(2) = 0.66.",
+        "Equation: Y = 1.5X + 0.66"
+      ],
+      "answer": "Y = 1.5X + 0.66"
+    }
+  },
 
   "permutation-combination": {
-  "intuition": "Permutations & Combinations calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "n",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Total items",
-      "commonTraps": "In chemistry, n is moles; in physics, n is index of refraction or quantum number."
-    },
-    {
-      "id": "r",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Choosing",
-      "commonTraps": "Radius must be in meters for standard physics formulas."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown n using Permutations & Combinations with: n = 10, r = 10.",
-    "solution": [
-      "Identify known quantities and the target (n).",
-      "Write the formula and solve for n.",
-      "Substitute the values: n = 10, r = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Combinations count how many groups you can make when order DOES NOT matter (like picking a 3-person committee). Permutations count how many groups you can make when order DOES matter (like picking a President, VP, and Secretary).",
+    "variableBreakdown": [
+      {
+        "id": "n",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Total Pool Size (n)",
+        "commonTraps": "The total number of items you are choosing FROM."
+      },
+      {
+        "id": "r",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Number Chosen (r)",
+        "commonTraps": "How many items you are picking. Must be ≤ n."
+      }
     ],
-    "answer": "n = computed result (run Solve mode to see the exact value)"
+    "solvingLogic": [
+      "1. For Permutations (Order Matters): n! / (n-r)!. This gives you a BIGGER number.",
+      "2. For Combinations (Order Doesn't Matter): n! / [r!(n-r)!]. You divide by an extra r! to erase duplicate groups that just have different orders."
+    ],
+    "edgeCases": [
+      {
+        "title": "Choosing Zero",
+        "description": "If you choose r = 0 items from a pool of n, the formula evaluates to 1. There is exactly 1 way to choose absolutely nothing!"
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "How many ways can you pick a 3-person team from 5 people? (Order does not matter, so use Combinations).",
+      "solution": [
+        "n = 5, r = 3.",
+        "Numerator: 5! = 120.",
+        "Denominator: 3! × (5-3)! = 6 × 2 = 12.",
+        "120 / 12 = 10."
+      ],
+      "answer": "10 ways"
+    }
   }
-},
-
 };

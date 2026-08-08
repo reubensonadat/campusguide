@@ -31,31 +31,21 @@ const Modal = ({
   const headerRef = useRef(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
-        onClose();
+        onClose?.();
       }
     };
 
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
-      window.__modalScrollY = scrollY;
-    }
+    document.addEventListener('keydown', handleEscape);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      const sy = window.__modalScrollY || 0;
-      window.__modalScrollY = undefined;
-      window.scrollTo(0, sy);
+      document.body.style.overflow = originalOverflow;
     };
   }, [isOpen, onClose]);
 

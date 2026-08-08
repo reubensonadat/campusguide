@@ -1,275 +1,208 @@
 export const analytical_chemistry = {
   "beer-lambert": {
-  "intuition": "Beer-Lambert Law calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "A",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Absorbance",
-      "commonTraps": "Area (m�), amplitude (m), and mass number all use A � context matters."
-    },
-    {
-      "id": "eps",
-      "siUnit": "L·mol⁻¹·cm⁻¹",
-      "altUnits": "",
-      "description": "Molar Absorptivity",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "c",
-      "siUnit": "mol/L",
-      "altUnits": "",
-      "description": "Concentration",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "l",
-      "siUnit": "cm",
-      "altUnits": "",
-      "description": "Path Length",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown A using Beer-Lambert Law with: A = 10, eps = 10, c = 10.",
-    "solution": [
-      "Identify known quantities and the target (A).",
-      "Write the formula and solve for A.",
-      "Substitute the values: A = 10, eps = 10, c = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "The Beer-Lambert Law explains how sunglasses work. The thicker the glass (path length), and the darker the tint (concentration), the less light makes it to your eye. In chemistry, we use this to shoot a laser through a liquid to instantly calculate exactly how much of a chemical is dissolved in it, just by seeing how much light gets blocked.",
+    "variableBreakdown": [
+      {
+        "id": "A",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Absorbance",
+        "commonTraps": "It has absolutely no units! It is a logarithmic ratio of light in vs. light out."
+      },
+      {
+        "id": "eps",
+        "siUnit": "L/(mol·cm)",
+        "altUnits": "",
+        "description": "Molar Absorptivity (ε)",
+        "commonTraps": "A constant specific to the chemical and the exact color (wavelength) of the laser being used."
+      },
+      {
+        "id": "c",
+        "siUnit": "mol/L",
+        "altUnits": "",
+        "description": "Concentration",
+        "commonTraps": "Must be in Molarity."
+      },
+      {
+        "id": "l",
+        "siUnit": "cm",
+        "altUnits": "",
+        "description": "Path Length",
+        "commonTraps": "Almost always 1 cm, because standard laboratory cuvettes are exactly 1 cm wide."
+      }
     ],
-    "answer": "A = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Multiply the molar absorptivity (ε) by the path length (l).",
+      "2. Multiply that result by the concentration (c)."
+    ],
+    "edgeCases": [
+      {
+        "title": "Too Dark to See",
+        "description": "If Absorbance (A) goes above 2.0, the liquid is blocking 99% of the light. At this point, the law breaks down mathematically because stray light bouncing off the room starts corrupting the tiny amount of laser light hitting the sensor. You MUST dilute the sample and try again."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "A protein solution has an absorbance of 0.5. The cuvette is 1 cm wide. ε is 10,000. Find the concentration.",
+      "solution": [
+        "A = ε × c × l",
+        "0.5 = 10000 × c × 1",
+        "c = 0.5 / 10000"
+      ],
+      "answer": "c = 0.00005 mol/L (50 μM)"
+    }
+  },
 
   "henderson-hasselbalch": {
-  "intuition": "Henderson-Hasselbalch Equation calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "pH",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "pH",
-      "commonTraps": "pOH + pH = 14 at 25�C. This changes with temperature."
-    },
-    {
-      "id": "pKa",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "pKa",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "ratio",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "[A⁻]/[HA] Ratio",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown pH using Henderson-Hasselbalch Equation with: pH = 10, pKa = 10, ratio = 10.",
-    "solution": [
-      "Identify known quantities and the target (pH).",
-      "Write the formula and solve for pH.",
-      "Substitute the values: pH = 10, pKa = 10, ratio = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "This is the 'Buffer' equation. It tells you exactly what the pH of a liquid will be when you mix a weak acid with its conjugate base. This is the exact math your blood uses to prevent you from dying when you drink acidic orange juice.",
+    "variableBreakdown": [
+      {
+        "id": "pH",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "pH of the Solution",
+        "commonTraps": "Below 7 is acidic, above 7 is basic."
+      },
+      {
+        "id": "pKa",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Acid Dissociation Constant (pKa)",
+        "commonTraps": "The 'native' pH where the acid is exactly 50% neutralized."
+      },
+      {
+        "id": "ratio",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Ratio [Base] / [Acid]",
+        "commonTraps": "Must be the Base divided by the Acid! Flipping this ratio upside down is the #1 mistake on chemistry finals."
+      }
     ],
-    "answer": "pH = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Divide the concentration of the Base by the concentration of the Acid.",
+      "2. Take the Log (base 10) of that ratio.",
+      "3. Add the result to the pKa."
+    ],
+    "edgeCases": [
+      {
+        "title": "Perfect Buffers",
+        "description": "If you mix exactly equal amounts of Acid and Base, the ratio is 1. The log of 1 is ZERO. Therefore, pH = pKa perfectly. This is the 'maximum buffering capacity' sweet spot."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "pKa is 4.76. You have 0.1M of Acetate (Base) and 0.01M of Acetic Acid (Acid). Find pH.",
+      "solution": [
+        "Ratio = 0.1 / 0.01 = 10.",
+        "Log(10) = 1.",
+        "pH = 4.76 + 1."
+      ],
+      "answer": "pH = 5.76"
+    }
+  },
 
   "titration-equivalence": {
-  "intuition": "Titration Equivalence Point calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "C1",
-      "siUnit": "mol/L",
-      "altUnits": "",
-      "description": "Concentration of Analyte",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "V1",
-      "siUnit": "mL",
-      "altUnits": "",
-      "description": "Volume of Analyte",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "C2",
-      "siUnit": "mol/L",
-      "altUnits": "",
-      "description": "Concentration of Titrant",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "V2",
-      "siUnit": "mL",
-      "altUnits": "",
-      "description": "Volume of Titrant",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown C1 using Titration Equivalence Point with: C1 = 10, V1 = 10, C2 = 10.",
-    "solution": [
-      "Identify known quantities and the target (C1).",
-      "Write the formula and solve for C1.",
-      "Substitute the values: C1 = 10, V1 = 10, C2 = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "When neutralizing an acid with a base (titration), this formula acts as a perfectly balanced seesaw. It proves that the total number of acid molecules must perfectly equal the total number of base molecules to reach the exact 'equivalence point'.",
+    "variableBreakdown": [
+      {
+        "id": "C1",
+        "siUnit": "mol/L",
+        "altUnits": "",
+        "description": "Concentration of Acid",
+        "commonTraps": "Molarity (M)."
+      },
+      {
+        "id": "V1",
+        "siUnit": "mL",
+        "altUnits": "L",
+        "description": "Volume of Acid",
+        "commonTraps": "Can be in mL or L, as long as it matches V2 perfectly."
+      },
+      {
+        "id": "C2",
+        "siUnit": "mol/L",
+        "altUnits": "",
+        "description": "Concentration of Base",
+        "commonTraps": ""
+      },
+      {
+        "id": "V2",
+        "siUnit": "mL",
+        "altUnits": "L",
+        "description": "Volume of Base",
+        "commonTraps": ""
+      }
     ],
-    "answer": "C1 = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Multiply Concentration 1 by Volume 1.",
+      "2. Divide by the known value on the other side of the equation (either C2 or V2) to solve for the missing variable."
+    ],
+    "edgeCases": [
+      {
+        "title": "Diprotic Acids",
+        "description": "This simple formula breaks if the acid is Sulfuric Acid (H₂SO₄), because it has TWO acidic protons per molecule. You must multiply the Acid side by 2 (or use the Normality formula instead)."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "It takes 50 mL of 0.1M NaOH to neutralize 25 mL of unknown HCl. Find HCl concentration.",
+      "solution": [
+        "Base side: 50 × 0.1 = 5.",
+        "Acid side: 25 × C1 = 5.",
+        "C1 = 5 / 25 = 0.2."
+      ],
+      "answer": "C1 = 0.2 M"
+    }
+  },
 
   "delta-g": {
-  "intuition": "Gibbs Free Energy calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "dG",
-      "siUnit": "kJ/mol",
-      "altUnits": "",
-      "description": "Gibbs Free Energy",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "dH",
-      "siUnit": "kJ/mol",
-      "altUnits": "",
-      "description": "Enthalpy Change",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "T",
-      "siUnit": "K",
-      "altUnits": "",
-      "description": "Temperature",
-      "commonTraps": "Always use absolute temperature in Kelvin (K = �C + 273.15) in gas and thermodynamic laws."
-    },
-    {
-      "id": "dS",
-      "siUnit": "kJ/(mol·K)",
-      "altUnits": "",
-      "description": "Entropy Change",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown dG using Gibbs Free Energy with: dG = 10, dH = 10, T = 300.",
-    "solution": [
-      "Identify known quantities and the target (dG).",
-      "Write the formula and solve for dG.",
-      "Substitute the values: dG = 10, dH = 10, T = 300.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Gibbs Free Energy is the ultimate judge of chemistry. It mathematically decides if a reaction will happen spontaneously (on its own), or if you have to force it to happen by adding energy. It balances the heat given off (Enthalpy) against the chaos created (Entropy).",
+    "variableBreakdown": [
+      {
+        "id": "dG",
+        "siUnit": "kJ/mol",
+        "altUnits": "",
+        "description": "Change in Free Energy (ΔG)",
+        "commonTraps": "Negative ΔG means SPONTANEOUS (it will happen). Positive ΔG means NON-SPONTANEOUS."
+      },
+      {
+        "id": "dH",
+        "siUnit": "kJ/mol",
+        "altUnits": "",
+        "description": "Change in Enthalpy (ΔH)",
+        "commonTraps": "Heat. Negative means it gives off heat (exothermic), which the universe likes."
+      },
+      {
+        "id": "T",
+        "siUnit": "K",
+        "altUnits": "",
+        "description": "Temperature (T)",
+        "commonTraps": "Must be in Kelvin."
+      },
+      {
+        "id": "dS",
+        "siUnit": "J/(mol·K)",
+        "altUnits": "",
+        "description": "Change in Entropy (ΔS)",
+        "commonTraps": "CRITICAL TRAP: Entropy is almost always given in JOULES, but Enthalpy is in KILOJOULES. You MUST divide Entropy by 1000 before plugging it in!"
+      }
     ],
-    "answer": "dG = computed result (run Solve mode to see the exact value)"
+    "solvingLogic": [
+      "1. Convert ΔS to kJ/mol (divide by 1000).",
+      "2. Multiply Temperature (T) by ΔS.",
+      "3. Subtract that result from ΔH."
+    ],
+    "edgeCases": [
+      {
+        "title": "Melting Ice",
+        "description": "Ice melting requires heat (ΔH is positive / bad), but creates a puddle of chaotic liquid (ΔS is positive / good). Because 'T' is multiplied by ΔS, at high temperatures, the chaos wins, ΔG becomes negative, and the ice spontaneously melts!"
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "ΔH = -50 kJ/mol. ΔS = -100 J/(mol·K). T = 300 K. Find ΔG.",
+      "solution": [
+        "Convert ΔS: -100 / 1000 = -0.1 kJ.",
+        "T × ΔS = 300 × (-0.1) = -30.",
+        "ΔG = ΔH - (TΔS) = -50 - (-30) = -20."
+      ],
+      "answer": "ΔG = -20 kJ/mol (Spontaneous)"
+    }
   }
-},
-
 };

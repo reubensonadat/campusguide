@@ -1,198 +1,150 @@
 export const economics_finance = {
   "price-elasticity": {
-  "intuition": "Price Elasticity of Demand calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "Ed",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Elasticity",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "pctQ",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "% Change in Quantity",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "pctP",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "% Change in Price",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown Ed using Price Elasticity of Demand with: Ed = 10, pctQ = 10, pctP = 10.",
-    "solution": [
-      "Identify known quantities and the target (Ed).",
-      "Write the formula and solve for Ed.",
-      "Substitute the values: Ed = 10, pctQ = 10, pctP = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "Price Elasticity of Demand measures how sensitive customers are to a price change. If a product is 'Elastic' (like luxury watches), a small price hike causes a massive drop in sales. If it is 'Inelastic' (like insulin), people will keep buying it no matter how high the price goes.",
+    "variableBreakdown": [
+      {
+        "id": "Ed",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Elasticity of Demand (E_d)",
+        "commonTraps": "We always take the absolute value! Even though raising prices always lowers demand (negative correlation), elasticity is reported as a positive number. >1 is Elastic. <1 is Inelastic."
+      },
+      {
+        "id": "pctQ",
+        "siUnit": "%",
+        "altUnits": "",
+        "description": "Percentage Change in Quantity",
+        "commonTraps": "Must be calculated as (New - Old) / Old."
+      },
+      {
+        "id": "pctP",
+        "siUnit": "%",
+        "altUnits": "",
+        "description": "Percentage Change in Price",
+        "commonTraps": "Calculated as (New - Old) / Old."
+      }
     ],
-    "answer": "Ed = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Calculate the % change in Quantity Demanded.",
+      "2. Calculate the % change in Price.",
+      "3. Divide % change in Quantity by the % change in Price.",
+      "4. Take the absolute value."
+    ],
+    "edgeCases": [
+      {
+        "title": "Perfectly Inelastic",
+        "description": "If E_d is exactly 0, demand is perfectly inelastic. This means a 100% price increase causes exactly 0% drop in sales. This is a monopolist's dream, but usually only happens with life-saving drugs."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "A 10% price increase causes a 25% drop in sales. Find the elasticity.",
+      "solution": [
+        "Quantity change = -25%.",
+        "Price change = 10%.",
+        "E_d = |-25 / 10| = |-2.5| = 2.5."
+      ],
+      "answer": "E_d = 2.5 (Highly Elastic)"
+    }
+  },
 
   "compound-growth": {
-  "intuition": "Compound Annual Growth Rate (CAGR) calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "CAGR",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "CAGR",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "FV",
-      "siUnit": "GH¢",
-      "altUnits": "",
-      "description": "Future Value",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "PV",
-      "siUnit": "GH¢",
-      "altUnits": "",
-      "description": "Present Value",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "t",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Number of Years",
-      "commonTraps": "Use consistent time units throughout � convert minutes/hours to seconds."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown CAGR using Compound Annual Growth Rate (CAGR) with: CAGR = 10, FV = 10, PV = 10.",
-    "solution": [
-      "Identify known quantities and the target (CAGR).",
-      "Write the formula and solve for CAGR.",
-      "Substitute the values: CAGR = 10, FV = 10, PV = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "The Compound Annual Growth Rate (CAGR) smooths out a bumpy investment ride into a steady, flat yearly interest rate. It tells you exactly what fixed bank rate you would have needed to get the same exact end result.",
+    "variableBreakdown": [
+      {
+        "id": "CAGR",
+        "siUnit": "%",
+        "altUnits": "",
+        "description": "Compound Annual Growth Rate",
+        "commonTraps": "Usually converted to a percentage by multiplying the decimal by 100."
+      },
+      {
+        "id": "FV",
+        "siUnit": "$",
+        "altUnits": "",
+        "description": "Future Value (Ending Balance)",
+        "commonTraps": "The final amount of money in the account."
+      },
+      {
+        "id": "PV",
+        "siUnit": "$",
+        "altUnits": "",
+        "description": "Present Value (Starting Balance)",
+        "commonTraps": "The initial investment."
+      },
+      {
+        "id": "t",
+        "siUnit": "years",
+        "altUnits": "",
+        "description": "Time in Years",
+        "commonTraps": "If the investment was held for 18 months, t must be 1.5."
+      }
     ],
-    "answer": "CAGR = computed result (run Solve mode to see the exact value)"
-  }
-},
+    "solvingLogic": [
+      "1. Divide Future Value (FV) by Present Value (PV).",
+      "2. Raise that ratio to the power of (1 / t).",
+      "3. Subtract 1 from the result."
+    ],
+    "edgeCases": [
+      {
+        "title": "The Average Trap",
+        "description": "If your portfolio grows 50% year 1, and drops 50% year 2, the 'average' growth is 0%. BUT if you do the math ($100 → $150 → $75), you actually LOST money. CAGR correctly calculates your real return as -13.4%, ignoring misleading averages!"
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "An investment grows from $10,000 to $15,000 over 5 years. Find the CAGR.",
+      "solution": [
+        "Ratio: 15000 / 10000 = 1.5.",
+        "Power: 1 / 5 = 0.2.",
+        "1.5 ^ 0.2 ≈ 1.0844.",
+        "Subtract 1: 0.0844."
+      ],
+      "answer": "CAGR ≈ 8.44%"
+    }
+  },
 
   "gini-coeff": {
-  "intuition": "Gini Coefficient calculates a key relationship between physical quantities. It provides a direct method to solve for unknown variables when others are known, making it essential for both theoretical understanding and practical applications.",
-  "variableBreakdown": [
-    {
-      "id": "G",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Gini Coefficient",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "popShare",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Population share",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    },
-    {
-      "id": "incShare",
-      "siUnit": "",
-      "altUnits": "",
-      "description": "Income share",
-      "commonTraps": "Verify units and sign conventions before calculating."
-    }
-  ],
-  "solvingLogic": [
-    "Identify the known variables and the target unknown in the equation.",
-    "Write down the formula and algebraically isolate the desired variable.",
-    "Convert all inputs to consistent SI units before substituting.",
-    "Substitute the known numerical values into the rearranged formula.",
-    "Compute the result, check magnitude, and verify units are correct."
-  ],
-  "edgeCases": [
-    {
-      "title": "Division by Zero",
-      "description": "If a denominator variable equals zero, the formula becomes undefined. Check that no divisor is zero before calculating."
-    },
-    {
-      "title": "Unit Consistency",
-      "description": "Mixing different unit systems (e.g., cm with m, or Celsius with Kelvin) produces incorrect results by orders of magnitude."
-    },
-    {
-      "title": "Sign Convention Errors",
-      "description": "Directional quantities require consistent sign selection. What is positive for one coordinate may be negative for another."
-    },
-    {
-      "title": "Extreme Values",
-      "description": "Very large or tiny inputs can cause floating-point overflow or underflow. Use scientific notation or scale conversions."
-    }
-  ],
-  "walkthroughExample": {
-    "problem": "Find the unknown G using Gini Coefficient with: G = 10, popShare = 10, incShare = 10.",
-    "solution": [
-      "Identify known quantities and the target (G).",
-      "Write the formula and solve for G.",
-      "Substitute the values: G = 10, popShare = 10, incShare = 10.",
-      "Perform the calculation with consistent units.",
-      "Verify the result is physically reasonable."
+    "intuition": "The Gini Coefficient measures wealth inequality in a country. A score of 0 means perfect communism (everyone has the exact same amount of money). A score of 1 means a single dictator owns 100% of the country's wealth, and everyone else has $0.",
+    "variableBreakdown": [
+      {
+        "id": "G",
+        "siUnit": "",
+        "altUnits": "",
+        "description": "Gini Coefficient",
+        "commonTraps": "Often multiplied by 100 and called the 'Gini Index' (e.g. a coefficient of 0.45 is a Gini Index of 45)."
+      },
+      {
+        "id": "popShare",
+        "siUnit": "%",
+        "altUnits": "",
+        "description": "Cumulative Population Share",
+        "commonTraps": "Plotted on the X-axis of a Lorenz Curve."
+      },
+      {
+        "id": "incShare",
+        "siUnit": "%",
+        "altUnits": "",
+        "description": "Cumulative Income Share",
+        "commonTraps": "Plotted on the Y-axis."
+      }
     ],
-    "answer": "G = computed result (run Solve mode to see the exact value)"
+    "solvingLogic": [
+      "1. Calculate the area between the 'Line of Perfect Equality' (a 45-degree angle) and the actual 'Lorenz Curve' of the country.",
+      "2. Divide that area by the total area under the Line of Perfect Equality (which is always 0.5).",
+      "3. Alternatively, Area A / (Area A + Area B)."
+    ],
+    "edgeCases": [
+      {
+        "title": "Negative Wealth",
+        "description": "In reality, the Gini coefficient can technically exceed 1 if a large portion of the population has negative wealth (massive debt). However, standard economic models usually clamp the scale between 0 and 1."
+      }
+    ],
+    "walkthroughExample": {
+      "problem": "The area between the perfect equality line and the Lorenz curve is 0.15. Find Gini.",
+      "solution": [
+        "Total area under equality line is always 0.5.",
+        "Gini = 0.15 / 0.5 = 0.3."
+      ],
+      "answer": "Gini = 0.3 (Relatively equal society)"
+    }
   }
-},
-
 };
