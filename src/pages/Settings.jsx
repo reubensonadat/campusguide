@@ -13,7 +13,6 @@ import { sanitizeGhanaPhone, isValidGhanaPhone } from '../utils/helpers';
 import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import { CustomCoach } from '../components/common/CustomIcons';
-import SEOHead from '../components/common/SEOHead';
 import ConfirmModal from '../components/common/ConfirmModal';
 import {
   Trash2, Download, Lock, Moon, User, Share2, Bell, Smartphone,
@@ -67,7 +66,6 @@ const Settings = () => {
 
   const navigate = useNavigate();
   const { actions } = useAppContext();
-  const { selectedCampus } = useCampus();
   const [timetable] = useLocalStorage('ucc_timetable', []);
   const [gpa] = useLocalStorage('ucc_gpa', []);
   const [theme, setTheme] = useLocalStorage('theme', 'light');
@@ -270,13 +268,12 @@ const Settings = () => {
     });
   };
 
-  const handleRestore = async (fullId) => {
-    const idToUse = fullId || restoreId.trim().toUpperCase();
-    if (!idToUse || !restorePin) return;
+  const handleRestore = async () => {
+    if (!restoreId.trim() || !restorePin) return;
     setIsRestoring(true);
     const restoreToast = toast.loading('Restoring your data...');
     try {
-      const authResult = await restoreLifecycle(idToUse, restorePin);
+      const authResult = await restoreLifecycle(restoreId.trim().toUpperCase(), restorePin);
       if (!authResult.success) {
         toast.error(`Restore failed: ${authResult.error}`, { id: restoreToast });
         setIsRestoring(false);
@@ -405,7 +402,6 @@ const Settings = () => {
 
   return (
     <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-gray-900">
-      <SEOHead title="Settings" description="Manage your preferences, sync data, and configure campus settings." path="/settings" />
       <div className="max-w-3xl mx-auto px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
 
         <div>
@@ -551,7 +547,6 @@ const Settings = () => {
             isResyncing={isResyncing}
             onBackup={handleBackup}
             onResync={handleResync}
-            campusPrefix={selectedCampus?.shortName || 'UCC'}
           />
 
           <hr className="border-gray-100" />

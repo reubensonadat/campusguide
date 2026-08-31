@@ -23,7 +23,6 @@ import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import ConfirmModal from '../components/common/ConfirmModal';
 import notificationService from '../services/notificationService';
-import SEOHead from '../components/common/SEOHead';
 import { CourseCombobox } from '../components/common/CourseCombobox';
 import ListingManageModal from '../components/profile/ListingManageModal';
 import { getProductivityStats } from '../services/productivityService';
@@ -85,7 +84,6 @@ const Profile = () => {
   const navigate = useNavigate();
   const { actions } = useAppContext();
   const { isSupporter, tier } = usePremiumAccess();
-  const { selectedCampus } = useCampus();
 
   const [theme, setTheme] = useLocalStorage('theme', 'light');
   useEffect(() => {
@@ -296,14 +294,13 @@ const Profile = () => {
     });
   };
 
-  const handleRestore = async (fullId) => {
-    const idToUse = fullId || restoreId.trim().toUpperCase();
-    if (!idToUse || !restorePin) return;
+  const handleRestore = async () => {
+    if (!restoreId.trim() || !restorePin) return;
     setIsRestoring(true);
     const restoreToast = toast.loading('Restoring your data...');
     try {
       const { restoreLifecycle } = await import('../services/authService');
-      const authResult = await restoreLifecycle(idToUse, restorePin);
+      const authResult = await restoreLifecycle(restoreId.trim().toUpperCase(), restorePin);
       if (!authResult.success) {
         toast.error(`Restore failed: ${authResult.error}`, { id: restoreToast });
         setIsRestoring(false);
@@ -392,7 +389,6 @@ const Profile = () => {
 
   return (
     <>
-      <SEOHead title="Profile" description="View and edit your campus profile, sync data, and manage your account." path="/profile" />
       <div className="min-h-screen bg-white pb-28 font-sans">
 
         {/* ── Main Profile View ── */}
@@ -627,7 +623,6 @@ const Profile = () => {
             isResyncing={isResyncing}
             onBackup={handleBackup}
             onResync={handleResync}
-            campusPrefix={selectedCampus?.shortName || 'UCC'}
           />
 
           <hr className="border-gray-100" />

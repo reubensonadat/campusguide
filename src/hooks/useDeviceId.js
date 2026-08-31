@@ -17,7 +17,15 @@ export const useDeviceId = () => {
     }
 
     const existing = localStorage.getItem(DEVICE_ID_KEY);
-    if (existing) return existing;
+    if (existing) {
+      // Migration: if stored ID has no prefix (e.g. "5576F9F5"), add campus prefix
+      if (!existing.includes('-')) {
+        const fixed = `${campusShortName}-${existing}`;
+        localStorage.setItem(DEVICE_ID_KEY, fixed);
+        return fixed;
+      }
+      return existing;
+    }
 
     // Generate new campus-prefixed ID
     const hex = Array.from(crypto.getRandomValues(new Uint8Array(4)))

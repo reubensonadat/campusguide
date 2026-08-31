@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { secureDevice, restoreLifecycle, getCurrentUser } from '../../services/authService';
 import { supabase } from '../../lib/supabase';
-import { Lock, RefreshCw, AlertCircle, X, ChevronDown } from 'lucide-react';
+import { Lock, RefreshCw, AlertCircle, X } from 'lucide-react';
 import { restoreFromCloud, markDeviceAsLinked } from '../../services/syncService';
 import { toast } from 'react-hot-toast';
 import { DataLoader } from '../common/CustomLoaders';
 import { useCampus } from '../../context/CampusContext';
-import { CAMPUSES } from '../../data/campuses';
 
 // Global event to trigger the auth sheet from anywhere
 export const triggerAuthSheet = (onSuccessCallback) => {
@@ -24,7 +23,6 @@ export const AuthBottomSheet = () => {
   const [loading, setLoading] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [restorePrefix, setRestorePrefix] = useState(campusShortName);
 
   useEffect(() => {
     const handleOpen = async (e) => {
@@ -69,8 +67,6 @@ export const AuthBottomSheet = () => {
 
     setLoading(true);
 
-    const submitId = mode === 'restore' ? `${restorePrefix}-${deviceId}` : deviceId;
-
     if (mode === 'register') {
       const { success, error: authError } = await secureDevice(deviceId, pin);
       if (!success) {
@@ -80,12 +76,12 @@ export const AuthBottomSheet = () => {
       }
       toast.success('Device secured! Your data is now protected.');
     } else {
-      if (!submitId) {
+      if (!deviceId) {
         setError('Device ID is required to restore.');
         setLoading(false);
         return;
       }
-      const { success, error: authError } = await restoreLifecycle(submitId, pin);
+      const { success, error: authError } = await restoreLifecycle(deviceId, pin);
       if (!success) {
         setError('Invalid Device ID or PIN. Could not restore data.');
         setLoading(false);
@@ -135,7 +131,7 @@ export const AuthBottomSheet = () => {
         <p className="text-gray-500 font-medium mb-8 leading-relaxed">
           {mode === 'register' 
             ? 'To save your information, please secure your device with a 6-digit PIN. You will use this PIN if you ever lose your phone.' 
-            : 'Select your campus, then type your Device ID and enter your 6-digit PIN to restore your data to this phone.'}
+            : 'Enter your old Device ID and your 6-digit PIN to download your saved data to this phone.'}
         </p>
 
         {error && (
@@ -147,38 +143,15 @@ export const AuthBottomSheet = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Device ID or Username</label>
-            {mode === 'register' ? (
-              <input
-                type="text"
-                value={deviceId}
-                readOnly
-                className="w-full px-4 py-4 rounded-2xl border-2 bg-gray-50 border-gray-100 text-gray-500 outline-none text-center font-bold tracking-wider transition-all"
-              />
-            ) : (
-              <div className="flex rounded-2xl border-2 border-gray-200 focus-within:border-primary-500 focus-within:ring-4 focus-within:ring-primary-50 transition-all overflow-hidden">
-                <div className="relative flex-shrink-0 bg-gray-50 border-r border-gray-200">
-                  <select
-                    value={restorePrefix}
-                    onChange={(e) => setRestorePrefix(e.target.value)}
-                    className="appearance-none bg-transparent pl-4 pr-8 py-4 font-bold text-sm text-gray-700 outline-none cursor-pointer"
-                  >
-                    {CAMPUSES.map(c => (
-                      <option key={c.id} value={c.shortName}>{c.shortName}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                </div>
-                <span className="text-gray-400 font-bold text-sm px-2 select-none self-center">-</span>
-                <input
-                  type="text"
-                  value={deviceId}
-                  onChange={(e) => setDeviceId(e.target.value)}
-                  className="flex-1 px-2 py-4 bg-white outline-none font-bold tracking-wider"
-                  placeholder="DEBC4A8F"
-                />
-              </div>
-            )}
+            <label className="block text-sm font-bold text-gray-700 mb-2">Your Device ID</label>
+            <input
+              type="text"
+              value={deviceId}
+              onChange={(e) => mode === 'restore' && setDeviceId(e.target.value.toUpperCase())}
+              readOnly={mode === 'register'}
+              className={`w-full px-4 py-4 rounded-2xl border-2 ${mode === 'register' ? 'bg-gray-50 border-gray-100 text-gray-500' : 'bg-white border-gray-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-50'} outline-none font-mono text-center font-bold tracking-wider uppercase transition-all`}
+              placeholder="XXXX-XXXXXXXX"
+            />
           </div>
 
           <div>
