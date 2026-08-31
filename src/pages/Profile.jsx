@@ -294,13 +294,14 @@ const Profile = () => {
     });
   };
 
-  const handleRestore = async () => {
-    if (!restoreId.trim() || !restorePin) return;
+  const handleRestore = async (fullId) => {
+    const idToUse = fullId || restoreId.trim().toUpperCase();
+    if (!idToUse || !restorePin) return;
     setIsRestoring(true);
     const restoreToast = toast.loading('Restoring your data...');
     try {
       const { restoreLifecycle } = await import('../services/authService');
-      const authResult = await restoreLifecycle(restoreId.trim().toUpperCase(), restorePin);
+      const authResult = await restoreLifecycle(idToUse, restorePin);
       if (!authResult.success) {
         toast.error(`Restore failed: ${authResult.error}`, { id: restoreToast });
         setIsRestoring(false);
@@ -623,6 +624,7 @@ const Profile = () => {
             isResyncing={isResyncing}
             onBackup={handleBackup}
             onResync={handleResync}
+            campusPrefix={selectedCampus?.shortName || 'UCC'}
           />
 
           <hr className="border-gray-100" />

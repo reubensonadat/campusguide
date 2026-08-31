@@ -227,14 +227,12 @@ function MarkerPopup({
     popup.setDOMContent(container);
     marker.setPopup(popup);
     
-    // Explicitly open the popup if it's not already open. 
-    // This fixes issues where conditionally rendered popups don't open natively.
     if (!popup.isOpen()) {
-      marker.togglePopup();
+      try { marker.togglePopup(); } catch {}
     }
     
     return () => {
-      marker.setPopup(null);
+      try { marker.setPopup(null); } catch {}
     };
   }, [map, marker, popup, container]);
 
