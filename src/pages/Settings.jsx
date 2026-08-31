@@ -66,6 +66,7 @@ const Settings = () => {
 
   const navigate = useNavigate();
   const { actions } = useAppContext();
+  const { selectedCampus } = useCampus();
   const [timetable] = useLocalStorage('ucc_timetable', []);
   const [gpa] = useLocalStorage('ucc_gpa', []);
   const [theme, setTheme] = useLocalStorage('theme', 'light');

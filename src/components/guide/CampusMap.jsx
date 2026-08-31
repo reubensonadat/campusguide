@@ -213,11 +213,11 @@ const MapView = () => {
       try {
         const data = await fetchCampusData(campusId);
         if (!cancelled) {
-          if (data.buildings && (data.source === 'db' || data.source === 'static')) setDbBuildings(data.buildings);
-          if (data.knowledge && (data.source === 'db' || data.source === 'static')) setDbKnowledge(data.knowledge);
+          setDbBuildings(data.buildings || []);
+          setDbKnowledge(data.knowledge || {});
           if (data.guideCards) setDbGuideCards(data.guideCards);
         }
-      } catch (err) { console.warn('[CampusMap] Data fetch failed:', err); if (!cancelled) setDataError('Could not load live campus data.'); }
+      } catch (err) { console.warn('[CampusMap] Data fetch failed:', err); if (!cancelled) { setDbBuildings([]); setDataError('Could not load live campus data.'); } }
       finally { if (!cancelled) setIsDataLoading(false); }
     };
     loadData();

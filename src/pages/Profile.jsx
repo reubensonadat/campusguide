@@ -84,6 +84,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const { actions } = useAppContext();
   const { isSupporter, tier } = usePremiumAccess();
+  const { selectedCampus } = useCampus();
 
   const [theme, setTheme] = useLocalStorage('theme', 'light');
   useEffect(() => {

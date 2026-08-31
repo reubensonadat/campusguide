@@ -5,7 +5,8 @@ export const useLocalStorage = (key, initialValue) => {
   const readValue = () => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      if (!item) return initialValue;
+      try { return JSON.parse(item); } catch { return item; }
     } catch (error) {
       console.warn(`Error reading localStorage key "${key}":`, error);
       return initialValue;
