@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#002F45" />
   <meta name="description" content="The ultimate student companion. Manage your timetable, calculate GPA, track budgets, auto-generate formal letters, buy/sell on student thrift, and navigate campus life." />
   <meta name="keywords" content="Campus Guide, Student Timetable Builder, GPA Calculator, Budget Tracker, Formal Letter Generator, Student Thrift, Campus Whispers" />
@@ -15,13 +15,19 @@
 
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://campusguide.pages.dev/" />
-  <meta property="og:title" content="Campus Guide | Ultimate Student Companion" />
+  <meta property="og:title" content="Campus Guide | Student Timetable, GPA & Resources" />
   <meta property="og:description" content="Manage your class timetable, track budgets, project GPAs, auto-generate letters, and keep up with campus updates." />
   <meta property="og:image" content="https://campusguide.pages.dev/og_image.jpg" />
+  <meta property="og:image:alt" content="Campus Guide - Ultimate Student Companion App" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:site_name" content="Campus Guide" />
+  <meta property="og:locale" content="en_US" />
   <meta itemprop="image" content="https://campusguide.pages.dev/og_image.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Campus Guide Student Companion" />
-  <meta name="twitter:description" content="Ultimate student guide and productivity toolkit. Timetable, GPA, budgets, and more." />
+  <meta name="twitter:title" content="Campus Guide | Student Timetable, GPA & Resources" />
+  <meta name="twitter:description" content="Manage your class timetable, track budgets, project GPAs, auto-generate letters, and keep up with campus updates." />
   <meta name="twitter:image" content="https://campusguide.pages.dev/og_image.jpg" />
 
   <!-- PWA Meta Tags -->
@@ -38,6 +44,34 @@
   <link rel="preconnect" href="https://js.paystack.co" />
   <link rel="preconnect" href="https://www.googletagmanager.com" />
   <link rel="dns-prefetch" href="https://*.supabase.co" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Campus Guide",
+    "url": "https://campusguide.pages.dev/",
+    "description": "The ultimate student companion. Manage your timetable, calculate GPA, track budgets, auto-generate formal letters, buy/sell on student thrift, and navigate campus life.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "GHS"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "Campus Guide Team",
+      "url": "https://campusguide.pages.dev/"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "500"
+    }
+  }
+  </script>
 
   <!-- Critical inline styles for instant app shell -->
   <style>

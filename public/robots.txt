@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://campusguide.pages.dev/sitemap.xml

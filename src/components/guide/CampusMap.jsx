@@ -111,56 +111,7 @@ const CommunityHeatmap = ({ posts, visible }) => {
   return null;
 };
 
-const MOCK_COMMUNITY_POSTS = [
-  {
-    id: 'event-1',
-    type: 'event',
-    title: 'SRC Week Mega Concert',
-    price: 'GHS 50',
-    seller: 'UCC_SRC',
-    coords: [5.115400, -1.294200],
-    image: 'https://images.unsplash.com/photo-1540511546273-6c841c7b1bc0?w=400&q=80',
-    description: 'Get ready for the biggest concert on campus! Featuring top artists.',
-    keywords: ['party', 'music', 'dance', 'fun', 'show'],
-    phone: '+233201234567'
-  },
-  {
-    id: 'thrift-1',
-    type: 'thrift',
-    title: 'Selling my customized lab coat (Size M)',
-    price: 'GHS 85',
-    seller: 'Kobby_Science',
-    coords: [5.116900, -1.290600],
-    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80',
-    description: 'Used for only one semester. Very clean.',
-    keywords: ['clothes', 'labcoat', 'science', 'apparel'],
-    phone: '+233201234567'
-  },
-  {
-    id: 'thrift-2',
-    type: 'thrift',
-    title: 'Almost new iPhone 13 Pro Max case',
-    price: 'GHS 40',
-    seller: 'Ama_Levels',
-    coords: [5.116795, -1.284218],
-    image: 'https://images.unsplash.com/photo-1603313011101-320f666f5787?w=400&q=80',
-    description: 'Black silicone case, MagSafe compatible.',
-    keywords: ['phone', 'case', 'apple', 'accessories'],
-    phone: '+233551234567'
-  },
-  {
-    id: 'business-1',
-    type: 'business',
-    title: 'Ali\'s Shawarma & Grill',
-    price: 'GHS 35+',
-    seller: 'Ali_Shawarma',
-    coords: [5.118900, -1.293200], // Diaspora / Amamoma area
-    image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&q=80',
-    description: 'Best shawarma on campus! Beef, Chicken, and Mixed available. Delivery available.',
-    keywords: ['food', 'shawama', 'shawarma', 'eat', 'hungry', 'dinner', 'grill', 'meat'],
-    phone: '+233241234567'
-  }
-];
+const MOCK_COMMUNITY_POSTS = [];
 
 const POST_COLORS = {
   'business': '#f59e0b',
