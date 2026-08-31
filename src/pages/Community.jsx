@@ -16,6 +16,7 @@ import { supabase } from '../lib/supabase';
 import { withCache, cacheInvalidate, cacheAge, CACHE_KEYS, DEFAULT_TTL, SHORT_TTL } from '../services/cacheService';
 import { CommunityLoader } from '../components/common/CustomLoaders';
 import { useCampus } from '../context/CampusContext';
+import SEOHead from '../components/common/SEOHead';
 
 // Categories matching Advertise.jsx options
 const CATEGORIES = [
@@ -252,6 +253,7 @@ const Community = () => {
 
     return (
         <div className="pb-24 bg-gray-50/50 min-h-screen">
+      <SEOHead title="Community" description="Join your campus community — whispers, thrift marketplace, lost & found, and leaderboards." path="/community" />
 
             {/* Sticky Header */}
             <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 pt-[env(safe-area-inset-top,0px)] h-[calc(4rem_+_env(safe-area-inset-top,0px))]">

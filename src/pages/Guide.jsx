@@ -2,10 +2,12 @@ import React from 'react';
 import CampusMap from '../components/guide/CampusMap';
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 import { CustomGuide, CustomEyes, CustomRoute, CustomNavigation } from '../components/common/CustomIcons';
+import SEOHead from '../components/common/SEOHead';
 
 const Guide = () => {
   return (
     <div className="relative w-full h-screen overflow-hidden">
+      <SEOHead title="Campus Map" description="Explore your campus with our interactive map — find buildings, lecture halls, and more." path="/guide" />
       {/* 🗺️ CAMPUS MAP COMPONENT */}
       <CampusMap />
 

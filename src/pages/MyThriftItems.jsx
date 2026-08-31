@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { fetchUserThriftListingsWithStats, boostThriftListing, extendThriftListing, markThriftListingAsSold, deleteThriftListing, clearThriftCache } from '../services/thriftService';
 import { PaymentButton } from '../components/payment/PaymentButton';
 import ConfirmModal from '../components/common/ConfirmModal';
+import SEOHead from '../components/common/SEOHead';
 
 const getPaymentEmail = () => {
   const deviceId = localStorage.getItem('ucc_device_id');
@@ -120,6 +121,7 @@ const MyThriftItems = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-28 font-sans animate-in fade-in duration-300">
+      <SEOHead title="My Thrift Listings" description="Manage your thrift marketplace listings — boost, extend, mark sold, or delete." path="/my-thrift" />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 space-y-5">
 
         {/* Header */}

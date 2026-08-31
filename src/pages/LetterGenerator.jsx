@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import PageHeader from '../components/common/PageHeader';
 import PremiumGate from '../components/common/PremiumGate';
 import { useCampus } from '../context/CampusContext';
+import SEOHead from '../components/common/SEOHead';
 
 export const LetterGenerator = () => {
   const navigate = useNavigate();
@@ -77,6 +78,7 @@ export const LetterGenerator = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-24 font-sans selection:bg-gray-900/20 selection:text-gray-900">
+      <SEOHead title="Letter Generator" description="Draft formal academic letters instantly — admission, excuse, and recommendation letters." path="/tools/letter-generator" />
       {/* Header */}
       <div className="max-w-5xl mx-auto px-4 md:px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))]">
         <PageHeader

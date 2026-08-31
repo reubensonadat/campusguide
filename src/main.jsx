@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { PremiumAccessProvider } from './hooks/usePremiumAccess.jsx';
+import { HelmetProvider } from 'react-helmet-async';
 import './styles/globals.css'  // This line is important! 
 import { registerSW } from 'virtual:pwa-register';
 
@@ -10,7 +11,9 @@ import { registerSW } from 'virtual:pwa-register';
 registerSW();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <PremiumAccessProvider>
-    <App />
-  </PremiumAccessProvider>
+  <HelmetProvider>
+    <PremiumAccessProvider>
+      <App />
+    </PremiumAccessProvider>
+  </HelmetProvider>
 );

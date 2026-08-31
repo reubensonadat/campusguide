@@ -13,6 +13,7 @@ import ConfirmModal from '../components/common/ConfirmModal';
 import AdminLoginScreen from '../components/admin/AdminLoginScreen';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
+import SEOHead from '../components/common/SEOHead';
 import AdModerationPanel from '../components/admin/AdModerationPanel';
 import ThriftVerificationPanel from '../components/admin/ThriftVerificationPanel';
 import LostFoundPanel from '../components/admin/LostFoundPanel';
@@ -165,6 +166,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row mb-24 md:mb-0">
+      <SEOHead title="Admin Dashboard" description="Campus Guide administration panel." path="/admin" />
       <AdminSidebar activeTab={activeTab} onTabChange={setTab} onLogout={logout} />
       <div className="flex-1 p-4 md:p-8 overflow-y-auto w-full">
         {/* Campus Selector */}

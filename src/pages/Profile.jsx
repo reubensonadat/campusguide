@@ -23,6 +23,7 @@ import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import ConfirmModal from '../components/common/ConfirmModal';
 import notificationService from '../services/notificationService';
+import SEOHead from '../components/common/SEOHead';
 import { CourseCombobox } from '../components/common/CourseCombobox';
 import ListingManageModal from '../components/profile/ListingManageModal';
 import { getProductivityStats } from '../services/productivityService';
@@ -391,6 +392,7 @@ const Profile = () => {
 
   return (
     <>
+      <SEOHead title="Profile" description="View and edit your campus profile, sync data, and manage your account." path="/profile" />
       <div className="min-h-screen bg-white pb-28 font-sans">
 
         {/* ── Main Profile View ── */}

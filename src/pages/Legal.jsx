@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, FileText, ChevronLeft, Mail } from 'lucide-react';
+import SEOHead from '../components/common/SEOHead';
 
 const LegalLayout = ({ title, subtitle, lastUpdated, icon: Icon, children, contactEmail = "uccguide25@gmail.com" }) => {
   const navigate = useNavigate();
@@ -469,7 +470,9 @@ export const TermsOfService = () => {
   ];
 
   return (
-    <LegalLayout title="Terms of Service" subtitle="Legal Documentation" lastUpdated="July 16, 2026" icon={FileText}>
+    <>
+      <SEOHead title="Terms of Service" description="Read the terms and conditions for using Campus Guide." path="/terms" />
+      <LegalLayout title="Terms of Service" subtitle="Legal Documentation" lastUpdated="July 16, 2026" icon={FileText}>
       <IntroBlock icon={FileText} text="Welcome to Campus Guide. These Terms of Service constitute a legally binding agreement between you and Campus Guide ('we,' 'our,' or 'us') regarding your use of our academic planning platform, community features, and related services (collectively, the 'Platform'). By accessing, browsing, registering for, or using the Platform in any manner, you acknowledge that you have read, understood, and agree to be bound by these Terms. If you do not agree to any portion of these Terms, you must immediately cease use of the Platform and delete your account. These Terms incorporate by reference our Privacy Policy, which governs our collection and use of your personal information. Capitalized terms used but not defined in these Terms have the meanings assigned to them in our Privacy Policy." />
       
       <div className="space-y-16">
@@ -495,6 +498,7 @@ export const TermsOfService = () => {
         ))}
       </div>
     </LegalLayout>
+    </>
   );
 };
 
@@ -779,7 +783,9 @@ export const PrivacyPolicy = () => {
   ];
 
   return (
-    <LegalLayout title="Privacy Policy" subtitle="Legal Documentation" lastUpdated="July 16, 2026" icon={Shield}>
+    <>
+      <SEOHead title="Privacy Policy" description="Read how Campus Guide collects, uses, and protects your personal data." path="/privacy" />
+      <LegalLayout title="Privacy Policy" subtitle="Legal Documentation" lastUpdated="July 16, 2026" icon={Shield}>
       <IntroBlock icon={Shield} text="Campus Guide ('we,' 'our,' or 'us') is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your personal information when you use our academic planning and community platform, including the mobile application and any related services (collectively, the 'Platform'). By registering for, accessing, or using the Platform, you acknowledge that you have read and understood this Privacy Policy and consent to the collection, use, and disclosure of your information as described herein. This Privacy Policy is incorporated into and forms part of our Terms of Service. Capitalized terms used but not defined in this Privacy Policy have the meanings assigned to them in our Terms of Service." />
       
       <div className="space-y-16">
@@ -805,6 +811,7 @@ export const PrivacyPolicy = () => {
         ))}
       </div>
     </LegalLayout>
+    </>
   );
 };
 

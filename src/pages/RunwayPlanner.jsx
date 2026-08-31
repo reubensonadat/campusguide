@@ -5,6 +5,7 @@ import { SetupModal } from '../components/budget/SetupModal';
 import { DayCard } from '../components/budget/DayCard';
 import { ShieldAlert, Wallet, Edit2, Check, X, RefreshCw } from 'lucide-react';
 import { isToday, parseISO, format } from 'date-fns';
+import SEOHead from '../components/common/SEOHead';
 
 export default function RunwayPlanner({ transactions = [], currentBalance = 0 }) {
   const {
@@ -68,6 +69,7 @@ export default function RunwayPlanner({ transactions = [], currentBalance = 0 })
 
   return (
     <div className="w-full">
+      <SEOHead title="Budget Runway Planner" description="Plan your budget runway — see how long your money will last." path="/planner" />
 
       {/* ── Runway Header ─────────────────────────────────────────────────── */}
       <div className="bg-gray-900 dark:bg-gray-800 rounded-2xl p-4 mb-6 text-white">

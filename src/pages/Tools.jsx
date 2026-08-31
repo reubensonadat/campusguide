@@ -13,6 +13,7 @@ import { triggerAuthSheet } from '../components/onboarding/AuthModal';
 import PageHeader from '../components/common/PageHeader';
 import { CoachMarksOverlay } from '../components/common/CoachMarksOverlay';
 import { CustomCoach, CustomCalculator, CustomBudget, CustomPlanner, CustomCoolFinds } from '../components/common/CustomIcons';
+import SEOHead from '../components/common/SEOHead';
 
 const tabs = [
     { id: 'timetable', label: 'Timetable Builder', short: 'Timetable', icon: Calendar },
@@ -84,6 +85,7 @@ const Tools = () => {
 
     return (
         <div className="min-h-screen bg-gray-50/30 font-sans selection:bg-primary-100 selection:text-primary-900 pb-20 md:pb-0 transition-colors duration-300">
+            <SEOHead title="Student Tools" description="Timetable builder, GPA calculator, assignments tracker, budget planner, and more." path="/tools" />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[calc(2rem_+_env(safe-area-inset-top,0px))] pb-8">
 
                 <PageHeader title="Student Tools" subtitle="Manage your schedule, track your academic progress, and solve complex formulas." />

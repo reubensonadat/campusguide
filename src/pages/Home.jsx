@@ -23,6 +23,7 @@ import { logAppOpen, getProductivityStats } from '../services/productivityServic
 import { syncToCloud, shouldSyncNow } from '../services/syncService';
 import { triggerConfetti } from '../utils/confetti';
 import { triggerHaptic } from '../utils/haptics';
+import SEOHead from '../components/common/SEOHead';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import { HOME_COACH_STEPS } from '../components/home/CoachSteps';
 import StreakBadge from '../components/home/StreakBadge';
@@ -464,6 +465,7 @@ const Home = () => {
 
   return (
     <div className="pb-28 bg-[#f0f2f8] min-h-screen font-sans">
+      <SEOHead title="Home" path="/" />
       <div className="lg:hidden">
         <div className="relative overflow-hidden bg-gradient-to-b from-gray-900 to-gray-900 px-6 pt-[calc(2.5rem_+_env(safe-area-inset-top,0px))] pb-16">
           <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[150%] h-[100px] bg-gray-900 rounded-[100%] blur-xl opacity-40 pointer-events-none"></div>

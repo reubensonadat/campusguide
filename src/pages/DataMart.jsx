@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import { Modal } from '../components/common/Modal';
 import { getNetworks, getBundles, getNetworkById, createOrder, getOrders, getNetworkHealth, getWallet, simulateDelivery, getOrderById } from '../services/dataMartService';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import SEOHead from '../components/common/SEOHead';
 
 const LOGOS = {
   mtn:       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvFNqzc7K3ByvAYZyJljGHM2VZb2fY7DTFe4m4Qy0fhg&s=10',
@@ -453,6 +454,7 @@ export default function DataMart() {
 
   return (
     <div className="min-h-screen bg-[#f0f2f8] pb-28">
+      <SEOHead title="Data Mart" description="Purchase affordable mobile data bundles — MTN, Telecel, and AirtelTigo." path="/data-mart" />
       <div className="max-w-3xl mx-auto px-5 pt-[calc(2.5rem_+_env(safe-area-inset-top,0px))] space-y-5">
 
         <div className="flex items-center justify-between">

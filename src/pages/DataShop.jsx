@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, RefreshCw, ExternalLink, Loader2 } from 'lucide-react';
+import SEOHead from '../components/common/SEOHead';
 
 const DATA_SHOP_URL = 'https://www.cheapdata.shop/shop/anat-enterprise-1774112668074-swiftdata-mp8lcz98';
 
@@ -9,6 +10,7 @@ export default function DataShop() {
 
   return (
     <div className="min-h-screen bg-[#f0f2f8] flex flex-col">
+      <SEOHead title="Buy Data" description="Purchase affordable mobile data bundles directly in the app." path="/data" />
       {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between shrink-0"
            style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top, 0px))' }}>

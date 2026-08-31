@@ -5,6 +5,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { supabase } from '../lib/supabase';
 import { toast } from 'react-hot-toast';
 import { AD_PACKAGES, STEPS, formatPhoneNumber, StepGuidelines, StepBusinessDetails, StepCreative, StepCheckout } from '../components/advertise';
+import SEOHead from '../components/common/SEOHead';
 
 const Advertise = () => {
     const navigate = useNavigate();
@@ -212,6 +213,7 @@ const Advertise = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-sans selection:bg-primary-100 selection:text-primary-900 mb-24 sm:pb-0">
+      <SEOHead title="Advertise" description="Reach thousands of Ghanaian students — advertise your brand on Campus Guide." path="/advertise" />
 
             <header className="bg-white border-b border-gray-100 px-4 pt-[calc(1rem_+_env(safe-area-inset-top,0px))] pb-4 sticky top-0 z-30">
                 <div className="max-w-3xl mx-auto flex items-center gap-4">

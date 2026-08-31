@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import { Phone, Mail, MapPin, Send, ChevronDown, ArrowLeft } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import headerImage from '/call-center-cuate.png';
+import SEOHead from '../components/common/SEOHead';
 
 const FAQS = [
   {
@@ -45,6 +46,7 @@ const Contact = () => {
 
   return (
     <div className="pb-28 bg-white min-h-screen font-sans selection:bg-[#cce1eb] selection:text-gray-900">
+      <SEOHead title="Contact Support" description="Get help with Campus Guide — reach out with questions, feedback, or feature requests." path="/contact" />
       <div className="max-w-3xl mx-auto px-6 pt-[calc(3rem_+_env(safe-area-inset-top,0px))] space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
         
         {/* Header matching Profile style */}
