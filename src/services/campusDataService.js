@@ -105,9 +105,8 @@ export const fetchCampusData = async (campusId) => {
     if (knowledgeRes.data && !kErr) knowledgeRes.data.forEach(row => { dbKnowledge[row.id] = transformKnowledgeRow(row); });
     const dbGuideCards = cardsRes.data && !cErr ? cardsRes.data.map(transformGuideCardRow) : [];
 
-    if (dbBuildings.length === 0 && !isUcc) {
-      return emptyData(campusId);
-    }
+    const campusMeta = { ug: { lat: 5.6511, lng: -0.1883 }, knust: { lat: 6.6751, lng: -1.5714 } };
+    const meta = campusMeta[campusId];
 
     const result = {
       buildings: dbBuildings.length > 0 ? dbBuildings : (isUcc ? staticData.buildings : []),
@@ -115,11 +114,15 @@ export const fetchCampusData = async (campusId) => {
       guideCards: dbGuideCards,
       openGoogleMaps: isUcc ? staticData.openGoogleMaps : null,
       getCoordinates: isUcc ? staticData.getCoordinates : null,
-      defaultCenter: dbBuildings.length > 0 ? [dbBuildings[0]?.url?.split(',')[0]?.trim() || '', dbBuildings[0]?.url?.split(',')[1]?.trim() || ''] : (isUcc ? staticData.defaultCenter : null),
+      defaultCenter: dbBuildings.length > 0
+        ? [parseFloat(dbBuildings[0]?.url?.split(',')[0]?.trim()) || meta?.lat || 5.6511, parseFloat(dbBuildings[0]?.url?.split(',')[1]?.trim()) || meta?.lng || -0.1883]
+        : (isUcc ? staticData.defaultCenter : (meta ? [meta.lat, meta.lng] : null)),
       isLoading: false, error: null, source: dbBuildings.length > 0 ? 'db' : (isUcc ? 'static' : 'empty')
     };
 
-    writeCache(result, campusId);
+    if (dbBuildings.length > 0 || Object.keys(dbKnowledge).length > 0) {
+      writeCache(result, campusId);
+    }
     return { ...result, isCached: true };
   } catch (err) {
     if (isUcc) {

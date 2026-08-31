@@ -18,94 +18,104 @@ const CommunityHeatmap = ({ posts, visible }) => {
   const { map, isLoaded } = useMap();
 
   useEffect(() => {
-    if (!map || !isLoaded) return;
+    if (!map || !isLoaded || !posts || posts.length === 0) return;
 
-    if (!map.getSource('community-heat-source')) {
-      map.addSource('community-heat-source', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: posts.map(post => ({
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [post.coords[1], post.coords[0]] },
-            properties: { type: post.type }
-          }))
-        }
-      });
+    try {
+      if (!map.getSource('community-heat-source')) {
+        map.addSource('community-heat-source', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: posts.map(post => ({
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [post.coords[1], post.coords[0]] },
+              properties: { type: post.type }
+            }))
+          }
+        });
 
-      // Events Heatmap
-      map.addLayer({
-        id: 'community-heat-events',
-        type: 'heatmap',
-        source: 'community-heat-source',
-        filter: ['==', ['get', 'type'], 'event'],
-        maxzoom: 20,
-        paint: {
-          'heatmap-weight': 1,
-          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 13, 1, 20, 3],
-          'heatmap-color': [
-            'interpolate', ['linear'], ['heatmap-density'],
-            0, 'rgba(251,113,133,0)',      // transparent rose-400
-            0.5, 'rgba(251,113,133,0.5)',
-            1, 'rgba(225,29,72,0.8)'       // rose-600
-          ],
-          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 13, 30, 20, 150],
-          'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.7, 20, 0]
-        }
-      });
+        map.addLayer({
+          id: 'community-heat-events',
+          type: 'heatmap',
+          source: 'community-heat-source',
+          filter: ['==', ['get', 'type'], 'event'],
+          maxzoom: 20,
+          paint: {
+            'heatmap-weight': 1,
+            'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 13, 1, 20, 3],
+            'heatmap-color': [
+              'interpolate', ['linear'], ['heatmap-density'],
+              0, 'rgba(251,113,133,0)',
+              0.5, 'rgba(251,113,133,0.5)',
+              1, 'rgba(225,29,72,0.8)'
+            ],
+            'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 13, 30, 20, 150],
+            'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.7, 20, 0]
+          }
+        });
 
-      // Thrift Heatmap
-      map.addLayer({
-        id: 'community-heat-thrift',
-        type: 'heatmap',
-        source: 'community-heat-source',
-        filter: ['==', ['get', 'type'], 'thrift'],
-        maxzoom: 20,
-        paint: {
-          'heatmap-weight': 1,
-          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 13, 1, 20, 3],
-          'heatmap-color': [
-            'interpolate', ['linear'], ['heatmap-density'],
-            0, 'rgba(96,165,250,0)',       // transparent blue-400
-            0.5, 'rgba(96,165,250,0.5)',
-            1, 'rgba(37,99,235,0.8)'       // blue-600
-          ],
-          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 13, 30, 20, 150],
-          'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.7, 20, 0]
-        }
-      });
+        map.addLayer({
+          id: 'community-heat-thrift',
+          type: 'heatmap',
+          source: 'community-heat-source',
+          filter: ['==', ['get', 'type'], 'thrift'],
+          maxzoom: 20,
+          paint: {
+            'heatmap-weight': 1,
+            'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 13, 1, 20, 3],
+            'heatmap-color': [
+              'interpolate', ['linear'], ['heatmap-density'],
+              0, 'rgba(96,165,250,0)',
+              0.5, 'rgba(96,165,250,0.5)',
+              1, 'rgba(37,99,235,0.8)'
+            ],
+            'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 13, 30, 20, 150],
+            'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.7, 20, 0]
+          }
+        });
 
-      // Business Heatmap
-      map.addLayer({
-        id: 'community-heat-business',
-        type: 'heatmap',
-        source: 'community-heat-source',
-        filter: ['==', ['get', 'type'], 'business'],
-        maxzoom: 20,
-        paint: {
-          'heatmap-weight': 1,
-          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 13, 1, 20, 3],
-          'heatmap-color': [
-            'interpolate', ['linear'], ['heatmap-density'],
-            0, 'rgba(251,191,36,0)',       // transparent amber-400
-            0.5, 'rgba(251,191,36,0.5)',
-            1, 'rgba(217,119,6,0.8)'       // amber-600
-          ],
-          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 13, 30, 20, 150],
-          'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.7, 20, 0]
-        }
-      });
+        map.addLayer({
+          id: 'community-heat-business',
+          type: 'heatmap',
+          source: 'community-heat-source',
+          filter: ['==', ['get', 'type'], 'business'],
+          maxzoom: 20,
+          paint: {
+            'heatmap-weight': 1,
+            'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 13, 1, 20, 3],
+            'heatmap-color': [
+              'interpolate', ['linear'], ['heatmap-density'],
+              0, 'rgba(251,191,36,0)',
+              0.5, 'rgba(251,191,36,0.5)',
+              1, 'rgba(217,119,6,0.8)'
+            ],
+            'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 13, 30, 20, 150],
+            'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.7, 20, 0]
+          }
+        });
+      }
+
+      if (map.getLayer('community-heat-events')) {
+        map.setLayoutProperty('community-heat-events', 'visibility', visible ? 'visible' : 'none');
+      }
+      if (map.getLayer('community-heat-thrift')) {
+        map.setLayoutProperty('community-heat-thrift', 'visibility', visible ? 'visible' : 'none');
+      }
+      if (map.getLayer('community-heat-business')) {
+        map.setLayoutProperty('community-heat-business', 'visibility', visible ? 'visible' : 'none');
+      }
+    } catch (e) {
+      console.warn('[CommunityHeatmap] Error:', e);
     }
 
-    if (map.getLayer('community-heat-events')) {
-      map.setLayoutProperty('community-heat-events', 'visibility', visible ? 'visible' : 'none');
-    }
-    if (map.getLayer('community-heat-thrift')) {
-      map.setLayoutProperty('community-heat-thrift', 'visibility', visible ? 'visible' : 'none');
-    }
-    if (map.getLayer('community-heat-business')) {
-      map.setLayoutProperty('community-heat-business', 'visibility', visible ? 'visible' : 'none');
-    }
+    return () => {
+      try {
+        if (map.getLayer('community-heat-events')) map.removeLayer('community-heat-events');
+        if (map.getLayer('community-heat-thrift')) map.removeLayer('community-heat-thrift');
+        if (map.getLayer('community-heat-business')) map.removeLayer('community-heat-business');
+        if (map.getSource('community-heat-source')) map.removeSource('community-heat-source');
+      } catch {}
+    };
   }, [map, isLoaded, posts, visible]);
 
   return null;

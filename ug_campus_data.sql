@@ -1,0 +1,205 @@
+-- ============================================================
+-- University of Ghana (UG) Campus Data
+-- Run this in Supabase SQL Editor
+-- ============================================================
+
+INSERT INTO campus_buildings (id, campus_id, full_name, short_form, description, latitude, longitude, category, sort_order, is_active) VALUES
+
+-- ═══════════════════════════════════════════════════════════
+-- ACADEMIC BUILDINGS
+-- ═══════════════════════════════════════════════════════════
+
+('ug-balme-library', 'ug', 'Balme Library', 'Balme', 'The main university library with extensive collections across all disciplines. Provides study spaces, computer labs, and research support services.', 5.6518, -0.1871, 'Academic', 1, true),
+('ug-great-hall', 'ug', 'Great Hall', 'Great Hall', 'The iconic Great Hall used for major ceremonies including graduation and special events. Known for its distinctive architecture.', 5.6507, -0.1960, 'Academic', 2, true),
+('ug-humanities', 'ug', 'College of Humanities', 'Humanities', 'Home to departments including English, History, Philosophy, Modern Languages, and the Study of Religions.', 5.6537, -0.1822, 'Academic', 3, true),
+('ug-computer-science', 'ug', 'Department of Computer Science', 'CS', 'Offers BSc, MSc, and PhD programs in Computer Science with computer labs, research centers, and innovation hubs.', 5.6545, -0.1838, 'Academic', 4, true),
+('ug-business-school', 'ug', 'University of Ghana Business School', 'UGBS', 'Premier business education institution in West Africa offering undergraduate, graduate, and executive education programs.', 5.6587, -0.1777, 'Academic', 5, true),
+('ug-geography', 'ug', 'Department of Geography and Resource Development', 'Geography', 'Offers programs in Geography, Resource Development, and Environmental Science. Known for climate change and urban planning research.', 5.6510, -0.1832, 'Academic', 6, true),
+('ug-law', 'ug', 'School of Law', 'Law', 'The oldest law school in Ghana, providing legal education and training for the Ghana Bar.', 5.6540, -0.1832, 'Academic', 7, true),
+('ug-chemistry', 'ug', 'Department of Chemistry', 'Chemistry', 'Offers programs in pure and applied chemistry including analytical, organic, inorganic, and physical chemistry.', 5.6528, -0.1853, 'Academic', 8, true),
+('ug-home-science', 'ug', 'Department of Home Science', 'Home Science', 'Focuses on food and nutrition, textiles and clothing, and family and consumer sciences education.', 5.6527, -0.1845, 'Academic', 9, true),
+('ug-political-science', 'ug', 'Department of Political Science', 'Political Sci', 'Offers programs in political science, public administration, and international relations.', 5.6547, -0.1864, 'Academic', 10, true),
+('ug-psychology', 'ug', 'Department of Psychology', 'Psychology', 'Provides training in clinical, social, developmental, and cognitive psychology.', 5.6551, -0.1866, 'Academic', 11, true),
+('ug-info-studies', 'ug', 'Department of Information Studies', 'Info Studies', 'Offers programs in library science, information management, and archival studies.', 5.6552, -0.1871, 'Academic', 12, true),
+('ug-animal-biology', 'ug', 'Department of Animal Biology', 'Animal Biology', 'Covers zoology, entomology, parasitology, and marine biology research and teaching.', 5.6534, -0.1875, 'Academic', 13, true),
+('ug-marine-fisheries', 'ug', 'Department of Marine and Fisheries Sciences', 'Marine & Fisheries', 'Research and teaching in marine ecology, fisheries management, and ocean sciences.', 5.6537, -0.1884, 'Academic', 14, true),
+('ug-education-desl', 'ug', 'Department of Educational Studies and Leadership', 'DESL', 'Focuses on educational leadership, curriculum studies, and educational policy and planning.', 5.6528, -0.1812, 'Academic', 15, true),
+('ug-teacher-education', 'ug', 'Department of Teacher Education', 'Teacher Ed', 'Prepares students for careers in teaching and educational administration.', 5.6526, -0.1810, 'Academic', 16, true),
+('ug-ipo', 'ug', 'International Programmes Office', 'IPO', 'Manages international student admissions, exchange programs, and global partnerships.', 5.6536, -0.1819, 'Academic', 17, true),
+('ug-jqb', 'ug', 'JQB Lecture Hall', 'JQB', 'Lecture hall used for large classes and academic gatherings.', 5.6523, -0.1819, 'Academic', 18, true),
+('ug-africa-studies', 'ug', 'Institute of Africa Studies', 'IAS', 'Research institute focused on African cultural, social, and political studies.', 5.6511, -0.1819, 'Academic', 19, true),
+('ug-adult-education', 'ug', 'Department of Adult Education', 'Adult Ed', 'Offers programs in adult literacy, community education, and lifelong learning.', 5.6515, -0.1811, 'Academic', 20, true),
+('ug-archaeology', 'ug', 'Department of Archaeology', 'Archaeology', 'Studies human history through excavation and analysis of artifacts and structures.', 5.6518, -0.1813, 'Academic', 21, true),
+('ug-scde', 'ug', 'School of Continuing and Distance Education', 'SCDE', 'Provides distance learning and continuing education programs for working professionals.', 5.6508, -0.1811, 'Academic', 22, true),
+('ug-geology', 'ug', 'Department of Geology', 'Geology', 'Studies the Earths composition, structure, and processes including mineralogy and petrology.', 5.6512, -0.1845, 'Academic', 23, true),
+('ug-international-affairs', 'ug', 'Centre for International Affairs', 'CIA', 'Coordinates international collaborations, visiting scholars, and global academic partnerships.', 5.6521, -0.1841, 'Academic', 24, true),
+('ug-physics', 'ug', 'Department of Physics', 'Physics', 'Offers programs in theoretical and experimental physics including electronics and nuclear physics.', 5.6512, -0.1856, 'Academic', 25, true),
+('ug-plant-biology', 'ug', 'Department of Plant and Environmental Biology', 'Plant Bio', 'Covers botany, ecology, and environmental biology research and teaching.', 5.6539, -0.1862, 'Academic', 26, true),
+('ug-pharmacy', 'ug', 'School of Pharmacy', 'Pharmacy', 'Trains pharmacists and pharmaceutical scientists for healthcare practice.', 5.6538, -0.1893, 'Academic', 27, true),
+('ug-biochemistry', 'ug', 'Department of Biochemistry', 'Biochem', 'Studies the chemical processes within living organisms including molecular biology.', 5.6547, -0.1894, 'Academic', 28, true),
+('ug-nursing', 'ug', 'School of Nursing and Midwifery', 'Nursing', 'Prepares nurses and midwives for clinical practice and healthcare leadership.', 5.6538, -0.1902, 'Academic', 29, true),
+('ug-french', 'ug', 'French Department', 'French', 'Offers programs in French language, literature, and Francophone African studies.', 5.6509, -0.1887, 'Academic', 30, true),
+('ug-isser', 'ug', 'Institute of Statistical, Social and Economic Research', 'ISSER', 'Leading research institute producing policy-relevant data and analysis on Ghana and West Africa.', 5.6545, -0.1844, 'Academic', 31, true),
+('ug-animal-science', 'ug', 'Department of Animal Science', 'Animal Science', 'Covers livestock production, animal nutrition, and poultry science.', 5.6499, -0.1832, 'Academic', 32, true),
+('ug-agri-econ', 'ug', 'Department of Agriculture Economics and Agribusiness', 'Agri Econ', 'Studies agricultural markets, farm management, and agribusiness development.', 5.6497, -0.1834, 'Academic', 33, true),
+('ug-agriculture', 'ug', 'Faculty of Agriculture', 'Agriculture', 'Houses departments of crop science, animal science, agriculture economics, and soil science.', 5.6502, -0.1838, 'Academic', 34, true),
+('ug-biotech-lab', 'ug', 'Biotechnology Laboratory', 'Biotech Lab', 'Research facility for genetic engineering, molecular biology, and biotechnology applications.', 5.6488, -0.1837, 'Academic', 35, true),
+('ug-cegensa', 'ug', 'CEGENSA - College', 'CEGENSA', 'Centre for Gender Studies and Advocacy, promoting gender equality and women empowerment.', 5.6491, -0.1837, 'Academic', 36, true),
+('ug-crop-science', 'ug', 'Department of Crop Science', 'Crop Science', 'Studies crop production, plant breeding, and crop protection technologies.', 5.6501, -0.1848, 'Academic', 37, true),
+('ug-music', 'ug', 'Department of Music', 'Music', 'Offers programs in music theory, performance, ethnomusicology, and music education.', 5.6492, -0.1808, 'Academic', 38, true),
+('ug-cergis', 'ug', 'RS/GIS Lab - Research Institute', 'CERGIS', 'Remote Sensing and GIS laboratory for geospatial research and mapping.', 5.6513, -0.1828, 'Academic', 39, true),
+('ug-economics', 'ug', 'Department of Economics', 'Economics', 'Offers programs in microeconomics, macroeconomics, development economics, and econometrics.', 5.6510, -0.1874, 'Academic', 40, true),
+('ug-research-office', 'ug', 'Research and Innovation Office Complex', 'RIO', 'Coordinates university research activities, grants, and innovation partnerships.', 5.6537, -0.1928, 'Academic', 41, true),
+('ug-biomed-engineering', 'ug', 'Biomedical Engineering Department', 'Biomed Eng', 'Combines engineering principles with medical sciences for healthcare technology.', 5.6556, -0.1831, 'Academic', 42, true),
+('ug-n-block', 'ug', 'New N Block', 'N Block', 'Academic building housing lecture rooms and faculty offices.', 5.6560, -0.1879, 'Academic', 43, true),
+('ug-c3ss', 'ug', 'Centre for Climate Change and Sustainability Studies', 'C3SS', 'Research centre addressing climate change impacts and sustainability solutions in Africa.', 5.6566, -0.1879, 'Academic', 44, true),
+('ug-gcb-lecture', 'ug', 'GCB Lecture Building', 'GCB', 'Lecture building sponsored by GCB Bank for academic activities.', 5.6550, -0.1883, 'Academic', 45, true),
+('ug-sociology', 'ug', 'Sociology Department', 'Sociology', 'Studies social behavior, institutions, and structures of society.', 5.6503, -0.1897, 'Academic', 46, true),
+('ug-grasag', 'ug', 'School of Graduate Studies', 'GRASAG', 'Manages postgraduate programs, admissions, and graduate student welfare across all colleges.', 5.6531, -0.1907, 'Academic', 47, true),
+('ug-modern-langs', 'ug', 'Department of Modern Languages', 'Mod Langs', 'Offers programs in Spanish, Chinese, Arabic, German, and other modern languages.', 5.6494, -0.1877, 'Academic', 48, true),
+('ug-history', 'ug', 'Department of History', 'History', 'Studies historical events, processes, and themes from Africa and the wider world.', 5.6501, -0.1894, 'Academic', 49, true),
+('ug-miasa', 'ug', 'Merian Institute for Advanced Studies in Africa', 'MIASA', 'Post-doctoral research institute promoting interdisciplinary research on Africa.', 5.6479, -0.1912, 'Academic', 50, true),
+('ug-maison-francaise', 'ug', 'Maison Francaise Legon', 'Maison Fr', 'French cultural centre promoting Francophone culture and language exchange on campus.', 5.6493, -0.1877, 'Academic', 51, true),
+('ug-soil-science', 'ug', 'Department of Soil Science', 'Soil Science', 'Studies soil properties, fertility management, and land use planning.', 5.6503, -0.1848, 'Academic', 52, true),
+('ug-family-consumer', 'ug', 'Department of Family and Consumer Science', 'FCS', 'Focuses on family dynamics, consumer behavior, and interior design education.', 5.6503, -0.1841, 'Academic', 53, true),
+('ug-creche', 'ug', 'UG Creche and Kindergarten School', 'Creche', 'Early childhood education facility serving university staff and community children.', 5.6497, -0.1839, 'Academic', 54, true),
+('ug-mfodwo', 'ug', 'Mfodwo Complex / N Block', 'Mfodwo', 'Training and seminar complex for academic workshops and conferences.', 5.6546, -0.1870, 'Academic', 55, true),
+('ug-social-sciences', 'ug', 'School of Social Sciences', 'Social Sci', 'Houses departments of sociology, psychology, political science, and economics.', 5.6551, -0.1873, 'Academic', 56, true),
+('ug-csps', 'ug', 'Centre for Social Policy Studies', 'CSPS', 'Research centre focused on social policy development and analysis in Ghana.', 5.6549, -0.1876, 'Academic', 57, true),
+('ug-religions', 'ug', 'Department for the Study of Religions', 'Religions', 'Studies world religions, theology, and the role of religion in African societies.', 5.6509, -0.1883, 'Academic', 58, true),
+('ug-philosophy', 'ug', 'Department of Philosophy and Classics', 'Philosophy', 'Studies logic, ethics, metaphysics, and classical literature and languages.', 5.6509, -0.1881, 'Academic', 59, true),
+('ug-economic-policy', 'ug', 'Economic Policy Management Programme Office', 'EPM', 'Trains professionals in economic policy analysis and public sector management.', 5.6512, -0.1880, 'Academic', 60, true),
+('ug-public-health', 'ug', 'School of Public Health', 'Public Health', 'Trains public health professionals in epidemiology, biostatistics, and health promotion.', 5.6366, -0.1827, 'Academic', 61, true),
+('ug-mathematics', 'ug', 'Department of Mathematics', 'Mathematics', 'Offers programs in pure mathematics, applied mathematics, and computational mathematics.', 5.6538, -0.1841, 'Academic', 62, true),
+('ug-statistics', 'ug', 'Department of Statistics', 'Statistics', 'Provides training in statistical theory, data analysis, and actuarial science.', 5.6538, -0.1838, 'Academic', 63, true),
+('ug-wagmc', 'ug', 'West African Genetic Medicine Centre', 'WAGMC', 'Research and clinical centre for genetic diseases prevalent in West Africa.', 5.6348, -0.1847, 'Academic', 64, true),
+('ug-engineering', 'ug', 'School of Engineering Sciences', 'Engineering', 'Offers programs in civil, mechanical, electrical, and computer engineering.', 5.6553, -0.1830, 'Academic', 65, true),
+('ug-performing-arts', 'ug', 'School of Performing Arts', 'Performing Arts', 'Training in music, dance, and drama with emphasis on Ghanaian and African performing arts.', 5.6501, -0.1819, 'Academic', 66, true),
+
+-- ═══════════════════════════════════════════════════════════
+-- RESIDENCE HALLS
+-- ═══════════════════════════════════════════════════════════
+
+('ug-legon-hall', 'ug', 'Legon Hall', 'Legon', 'One of the premier residential halls on campus, housing both undergraduate and graduate students. Features dining facilities and common areas.', 5.6502, -0.1884, 'Residential', 67, true),
+('ug-commonwealth-hall', 'ug', 'Commonwealth Hall', 'Commonwealth', 'Male residential hall known as Vandals. Provides accommodation and dining services with various social and academic facilities.', 5.6506, -0.1925, 'Residential', 68, true),
+('ug-volta-hall', 'ug', 'Volta Hall', 'Volta', 'Originally an all-female hall, now co-ed. Features residential facilities, dining hall, and recreational areas.', 5.6518, -0.1898, 'Residential', 69, true),
+('ug-akuafo-hall', 'ug', 'Akuafo Hall', 'Akuafo', 'Also known as the Hall of Excellence. Named in appreciation of cocoa farmers who contributed to its establishment.', 5.6503, -0.1857, 'Residential', 70, true),
+('ug-akuafo-annex', 'ug', 'Akuafo Hall Annex', 'Akuafo Annex', 'Has four annex buildings (A, B, C, D) set up to support the increasing student population.', 5.6476, -0.1856, 'Residential', 71, true),
+('ug-mensah-sarbah', 'ug', 'Mensah Sarbah Hall', 'Mensah Sarbah', 'The youngest of the five traditional halls of residence at the University of Ghana, opened in October 1963.', 5.6462, -0.1871, 'Residential', 72, true),
+('ug-vikings', 'ug', 'Vikings Hostel', 'Vikings', 'Private hostel owned by alumni of Mensah Sarbah Hall, funded by Cidan Investments Ltd.', 5.6442, -0.1856, 'Residential', 73, true),
+('ug-legon-annex', 'ug', 'Legon Hall Annex', 'Legon Annex', 'Three annex buildings (A, B, C) as part of the main Legon Hall complex.', 5.6474, -0.1881, 'Residential', 74, true),
+('ug-ms-annex', 'ug', 'Mensah Sarbah Annex', 'MS Annex', 'Four annex buildings (A, B, C, D) providing additional residential space.', 5.6454, -0.1854, 'Residential', 75, true),
+('ug-valco', 'ug', 'Valco Trust Hostel', 'Valco', 'Adjacent to Vikings Hostel and behind Mensah Sarbah Main Hall. Provides student accommodation.', 5.6443, -0.1869, 'Residential', 76, true),
+('ug-old-pent', 'ug', 'Old Pentagon Blocks', 'Old Pent', 'Ghana Hostels Ltd flats comprising Addis-Ababa, Kampala, Dar es Salaam, and Nairobi Courts.', 5.6567, -0.1814, 'Residential', 77, true),
+('ug-pent-a', 'ug', 'Pent Hostel Block A', 'Pent A', 'Part of the Africa Union Halls built by SSNIT. Arguably the most popular residential facility on campus.', 5.6572, -0.1820, 'Residential', 78, true),
+('ug-pent-b', 'ug', 'Pent Hostel Block B', 'Pent B', 'Part of the Africa Union Halls built by SSNIT. Popular residential facility for students.', 5.6585, -0.1819, 'Residential', 79, true),
+('ug-pent-c', 'ug', 'Pent Hostel Block C', 'Pent C', 'Part of the Africa Union Halls built by SSNIT. Provides affordable student accommodation.', 5.6584, -0.1813, 'Residential', 80, true),
+('ug-evandy', 'ug', 'Evandy Hostel', 'Evandy', 'Formerly private, transferred to university ownership after tenancy agreement elapsed.', 5.6629, -0.1817, 'Residential', 81, true),
+('ug-bani', 'ug', 'Bani Hostel', 'Bani', 'Initially a private hostel, later transferred to hall status after the tenancy agreement expired.', 5.6630, -0.1797, 'Residential', 82, true),
+('ug-tf-hostel', 'ug', 'TF Hostel', 'TF / JTNY', 'The Teachers Fund Hostel, currently known as the James Topp Nelson Yankah Hall.', 5.6662, -0.1821, 'Residential', 83, true),
+('ug-jubilee', 'ug', 'Jubilee Hall', 'Jubilee', 'Built to commemorate the universitys Golden Jubilee celebration.', 5.6405, -0.1860, 'Residential', 84, true),
+('ug-ish', 'ug', 'International Student Hostel', 'ISH', 'Provides accommodation for international students enrolled at the university.', 5.6399, -0.1852, 'Residential', 85, true),
+('ug-limann', 'ug', 'Dr. Hilla Limann Hall', 'Limann', 'First UGEL hostel completed, inaugurated July 2010. Named after Dr. Hilla Limann, former President of Ghana.', 5.6373, -0.1848, 'Residential', 86, true),
+('ug-kwapong', 'ug', 'Alexander Kwapong Hall', 'Kwapong', 'Named after Professor Alexander Kwapong, former Vice-Chancellor and Chairman of the Council of State.', 5.6370, -0.1855, 'Residential', 87, true),
+('ug-sey', 'ug', 'Elizabeth Sey Hall', 'Sey', 'Named after Elizabeth Frances Baaba Sey, the first female graduate of the university.', 5.6358, -0.1877, 'Residential', 88, true),
+('ug-jean-nelson', 'ug', 'Jean Nelson Akah Hall', 'Jean Nelson', 'Named after alumnus Jean Nelson Akah. Emblem shows candle, book, and pen symbolizing perseverance.', 5.6355, -0.1882, 'Residential', 89, true),
+
+-- ═══════════════════════════════════════════════════════════
+-- SERVICES & FACILITIES
+-- ═══════════════════════════════════════════════════════════
+
+('ug-cafeteria', 'ug', 'Central Cafeteria', 'Cafeteria', 'Main student dining facility serving breakfast, lunch, and dinner with local and continental dishes.', 5.6468, -0.1868, 'Services', 90, true),
+('ug-hospital', 'ug', 'Legon Hospital', 'Hospital', 'University hospital providing healthcare services including emergency and outpatient care.', 5.6511, -0.1779, 'Services', 91, true),
+('ug-sports', 'ug', 'University of Ghana Sports Complex', 'Sports', 'Includes football stadium, tennis courts, basketball courts, swimming pool, and gymnasium.', 5.6393, -0.1811, 'Services', 92, true),
+('ug-banking', 'ug', 'University Banking Square', 'Banking', 'Full-service bank branches on campus offering banking, ATMs, and forex services.', 5.6427, -0.1856, 'Services', 93, true),
+('ug-ecowas', 'ug', 'ECOWAS Coastal and Marine Resources Management Centre', 'ECOWAS', 'Regional centre for coastal and marine resources research and management in West Africa.', 5.6527, -0.1839, 'Services', 94, true),
+('ug-ghana-korea', 'ug', 'Ghana Korea Information Access Centre', 'Ghana-Korea ICT', 'Information and communication technology centre promoting digital literacy and tech access.', 5.6520, -0.1877, 'Services', 95, true);
+
+
+-- ==================== CAMPUS KNOWLEDGE ====================
+
+INSERT INTO campus_knowledge (id, campus_id, title, tags, history, architecture, statistics, rules, disclaimer, is_active) VALUES
+
+('ug-balme-library', 'ug', 'Balme Library', '["library","study","research","books"]',
+'The Balme Library is the main library of the University of Ghana, named after David Balme who served as Acting Director of Education. It serves as the primary repository for academic resources across all disciplines.',
+'Central multi-story building with modern reading halls, computer labs, and group study rooms.',
+'{"seating_capacity": "2000+", "volumes": "750000+", "floors": 4, "computer_workstations": 150}',
+'["No food or drinks in reading areas", "Silence in designated zones", "Valid student ID required", "Hours: Mon-Fri 8am-10pm, Sat 9am-5pm"]',
+'Information sourced for educational purposes.', true),
+
+('ug-great-hall', 'ug', 'Great Hall', '["ceremony","graduation","events","iconic"]',
+'The Great Hall is the most iconic building at the University of Ghana, hosting major ceremonies including matriculation, graduation, and special convocations.',
+'Grand hall with distinctive colonial-era architecture featuring a large auditorium and stage.',
+'{"capacity": "3000+", "used_for": "graduation ceremonies", "construction_era": "1960s"}',
+'["Entry restricted during private events", "Photography requires prior approval", "Formal dress code during ceremonies"]',
+'This is a ceremonial landmark, not open for daily academic use.', true),
+
+('ug-business-school', 'ug', 'University of Ghana Business School', '["business","MBA","management","commerce"]',
+'The UGBS is the premier business education institution in West Africa. It is accredited by AACSB and offers undergraduate, graduate, and executive programs.',
+'Modern complex with lecture halls, case study rooms, a business library, and executive conference facilities.',
+'{"programs": "UGB, MBA, EMBA, PhD", "established": 1960, "accreditation": "AACSB"}',
+'["Professional dress code recommended", "Visitors must register at reception", "Lab access requires course enrollment"]',
+'One of the top business schools in Africa.', true),
+
+('ug-legon-hall', 'ug', 'Legon Hall', '["hall","residence","accommodation","premier"]',
+'Legon Hall is one of the premier residential halls at the University of Ghana, housing both undergraduate and graduate students. Known as the Premier Hall.',
+'Historic hall complex with main building and annexes (A, B, C). Features dining hall and common rooms.',
+'{"capacity": "1500+", "annexes": 3, "established": "1950s"}',
+'["Residents must carry student ID", "Visiting hours end at 10pm", "No cooking in dormitory rooms", "Guests must sign in at hall office"]',
+'The premier hall of the University of Ghana.', true),
+
+('ug-commonwealth-hall', 'ug', 'Commonwealth Hall', '["hall","residence","vandals","male"]',
+'Commonwealth Hall is an all-male residential hall known as the Vandals. It has a strong tradition of student activism and brotherhood.',
+'Hall complex with main building and recreational facilities. Known for its vibrant student culture.',
+'{"capacity": "1200+", "gender": "male", "nickname": "Vandals"}',
+'["Male students only", "Visiting hours end at 10pm", "No unauthorized gatherings after midnight"]',
+'Known for its strong alumni network and student governance.', true),
+
+('ug-volta-hall', 'ug', 'Volta Hall', '["hall","residence","coed","female"]',
+'Originally established as an all-female hall, Volta Hall is now co-ed. Named after the Volta Region and maintains a tradition of female empowerment.',
+'Residential complex with dining hall, study rooms, and recreational areas.',
+'{"capacity": "1000+", "gender": "coed", "originally": "all-female"}',
+'["Quiet hours after 10pm", "Common areas must be kept clean", "Laundry facilities available on specific days"]',
+'Historically significant as the first female hall at UG.', true),
+
+('ug-akuafo-hall', 'ug', 'Akuafo Hall', '["hall","residence","excellence","cocoa"]',
+'Also known as the Hall of Excellence. Named in appreciation of cocoa farmers who contributed generously to its establishment.',
+'Well-maintained hall complex with modern amenities, dining facilities, and study spaces.',
+'{"capacity": "800+", "nickname": "Hall of Excellence"}',
+'["Residents must maintain academic standards", "Visiting hours: 6am-10pm", "No noise disturbance after 10pm"]',
+'The second residential hall established at the University of Ghana.', true),
+
+('ug-mensah-sarbah', 'ug', 'Mensah Sarbah Hall', '["hall","residence","youngest","traditional"]',
+'Mensah Sarbah Hall is the youngest of the five traditional halls, opened in October 1963. Named after John Mensah Sarbah, a notable Ghanaian statesman.',
+'Hall complex with main building, annexes, and recreational facilities.',
+'{"capacity": "1000+", "annexes": 4, "opened": "October 1963"}',
+'["Hall identity activities encouraged", "Quiet hours after 10pm", "Guest registration required"]',
+'Named after a pioneering Ghanaian educationist and lawyer.', true),
+
+('ug-pharmacy', 'ug', 'School of Pharmacy', '["pharmacy","medicine","health","drugs"]',
+'The School of Pharmacy trains pharmacists and pharmaceutical scientists. Offers the Doctor of Pharmacy (PharmD) program and research degrees.',
+'Modern facility with laboratories, lecture halls, and a pharmaceutical sciences research center.',
+'{"programs": "PharmD, MPhil, PhD", "established": "1960s"}',
+'["Laboratory coats required in labs", "No eating in practical areas", "Clinical placements require health clearance"]',
+'Training the next generation of pharmaceutical professionals in Ghana.', true),
+
+('ug-engineering', 'ug', 'School of Engineering Sciences', '["engineering","technology","civil","mechanical","electrical"]',
+'The School of Engineering Sciences offers programs in civil, mechanical, electrical, and computer engineering. One of the leading engineering schools in West Africa.',
+'Modern engineering complex with specialized laboratories, workshops, and CAD facilities.',
+'{"programs": "BSc Engineering, MSc, PhD", "departments": 4}',
+'["Safety equipment required in workshops", "Lab sessions are compulsory", "Project work requires supervisor approval"]',
+'Producing engineers who shape Ghana and West Africa.', true),
+
+('ug-sports', 'ug', 'University of Ghana Sports Complex', '["sports","stadium","athletics","football","gym"]',
+'The Sports Complex includes a football stadium, tennis courts, basketball courts, swimming pool, and gymnasium. Hosts inter-university sports competitions.',
+'Large complex with standard football pitch, indoor sports hall, Olympic-size swimming pool, and fitness center.',
+'{"football_pitch": "standard", "swimming_pool": "Olympic size", "courts": "tennis, basketball, volleyball"}',
+'["Valid student ID required", "Operating hours: 6am-8pm", "Booking required for group activities", "Proper sports attire mandatory"]',
+'The athletics hub of the University of Ghana.', true),
+
+('ug-hospital', 'ug', 'Legon Hospital', '["hospital","health","medical","emergency"]',
+'Legon Hospital provides healthcare services to students, staff, and the community. Offers emergency services, outpatient departments, and pharmacy.',
+'Modern hospital facility with emergency department, consultation rooms, pharmacy, and laboratory.',
+'{"departments": "emergency, outpatient, pharmacy, lab"}',
+'["Student ID required for subsidized treatment", "Emergency services available 24/7", "Consultation hours: 8am-5pm"]',
+'Healthcare services for the university community.', true);
