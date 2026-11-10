@@ -5,7 +5,7 @@ import { useCampus } from '../context/CampusContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDeviceId } from '../hooks/useDeviceId';
 import { updatePin, restoreLifecycle } from '../services/authService';
-import { restoreFromCloud } from '../services/syncService';
+import { restoreFromCloud, markDeviceAsLinked } from '../services/syncService';
 import notificationService from '../services/notificationService';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import CampusSelectorModal from '../components/common/CampusSelectorModal';
@@ -50,7 +50,7 @@ const CampusSelectorSection = () => {
             className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all text-gray-600 hover:text-gray-900"
             aria-label="Change campus"
           >
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M11.9498 7.94975L10.5356 9.36396L8.00079 6.828L8.00004 20H6.00004L6.00079 6.828L3.46451 9.36396L2.05029 7.94975L7.00004 3L11.9498 7.94975ZM21.9498 16.0503L17 21L12.0503 16.0503L13.4645 14.636L16.0008 17.172L16 4H18L18.0008 17.172L20.5356 14.636L21.9498 16.0503Z"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M11.9498 7.94975L10.5356 9.36396L8.00079 6.828L8.00004 20H6.00004L6.00079 6.828L3.46451 9.36396L2.05029 7.94975L7.00004 3L11.9498 7.94975ZM21.9498 16.0503L17 21L12.0503 16.0503L13.4645 14.636L16.0008 17.172L16 4H18L18.0008 17.172L20.5356 14.636L21.9498 16.0503Z"></path></svg>
           </button>
         </div>
       </div>
@@ -94,7 +94,7 @@ const Settings = () => {
   const handleToggleSetting = (key) => {
     setAppSettings(prev => {
       const updated = { ...prev, [key]: prev[key] === false ? true : false };
-      try { notificationService.addTag(key, updated[key] ? "true" : "false"); } catch {}
+      try { notificationService.addTag(key, updated[key] ? "true" : "false"); } catch { }
       setTimeout(() => {
         import('../services/syncService').then(({ syncToCloud }) => {
           syncToCloud();
@@ -119,7 +119,7 @@ const Settings = () => {
           });
           return;
         }
-      } catch {}
+      } catch { }
       if (++attempts < 20) {
         setTimeout(check, 500);
       }
@@ -281,6 +281,7 @@ const Settings = () => {
       }
       const result = await restoreFromCloud();
       if (result.success) {
+        markDeviceAsLinked(); // enable periodic cloud pulls on this restored device
         setRestoreId('');
         setRestorePin('');
         toast.success('Data restored! Reloading...', { id: restoreToast, duration: 2000 });

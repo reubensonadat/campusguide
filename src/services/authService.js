@@ -44,7 +44,7 @@ export const secureDevice = async (deviceId, pin) => {
       // Persist the Auth UUID so thrift and other services can query by user_id
       localStorage.setItem('ucc_user_id', data.user.id);
 
-      try { notificationService.tagUser(data.user.id); } catch {}
+      try { notificationService.tagUser(data.user.id); } catch { }
     }
 
     return { success: true, user: data.user };
@@ -97,12 +97,18 @@ export const restoreLifecycle = async (oldDeviceId, pin) => {
 
     if (error) throw error;
 
-    // Save the old device ID locally so the app adopts it
+    // Save the old device ID locally so the app adopts it.
+    // IMPORTANT: useDeviceId() reads 'campus_device_id' first (the multi-campus
+    // key) and only falls back to the legacy 'ucc_device_id'. On a fresh device
+    // a random 'campus_device_id' already exists, so we must overwrite BOTH
+    // keys — otherwise the Profile page keeps showing the new device's random
+    // ID instead of the restored one, and future restores with that shown ID fail.
     localStorage.setItem('ucc_device_id', resolvedId);
+    localStorage.setItem('campus_device_id', resolvedId);
     // Persist the Auth UUID so thrift and other services can query by user_id
     localStorage.setItem('ucc_user_id', data.user.id);
 
-    try { notificationService.tagUser(data.user.id); } catch {}
+    try { notificationService.tagUser(data.user.id); } catch { }
 
     return { success: true, user: data.user };
   } catch (error) {

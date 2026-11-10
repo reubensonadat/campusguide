@@ -17,7 +17,7 @@ import { useAppContext } from '../context/AppContext';
 import { useCampus } from '../context/CampusContext';
 import { LS_KEYS, DEFAULT_HOME_WIDGETS } from '../utils/constants';
 import CampusSelectorModal from '../components/common/CampusSelectorModal';
-import { restoreFromCloud } from '../services/syncService';
+import { restoreFromCloud, markDeviceAsLinked } from '../services/syncService';
 import { fetchUserThriftListings } from '../services/thriftService';
 import { toast } from 'react-hot-toast';
 import { triggerAuthSheet } from '../components/onboarding/AuthModal';
@@ -71,7 +71,7 @@ const CampusSelectorSection = () => {
             className="p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all text-gray-600 hover:text-gray-900"
             aria-label="Change campus"
           >
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M11.9498 7.94975L10.5356 9.36396L8.00079 6.828L8.00004 20H6.00004L6.00079 6.828L3.46451 9.36396L2.05029 7.94975L7.00004 3L11.9498 7.94975ZM21.9498 16.0503L17 21L12.0503 16.0503L13.4645 14.636L16.0008 17.172L16 4H18L18.0008 17.172L20.5356 14.636L21.9498 16.0503Z"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M11.9498 7.94975L10.5356 9.36396L8.00079 6.828L8.00004 20H6.00004L6.00079 6.828L3.46451 9.36396L2.05029 7.94975L7.00004 3L11.9498 7.94975ZM21.9498 16.0503L17 21L12.0503 16.0503L13.4645 14.636L16.0008 17.172L16 4H18L18.0008 17.172L20.5356 14.636L21.9498 16.0503Z"></path></svg>
           </button>
         </div>
       </div>
@@ -213,7 +213,7 @@ const Profile = () => {
         try {
           const { supabase } = await import('../lib/supabase');
           await supabase.from('users').upsert({ id: userId, username: formData.username }, { onConflict: 'id' });
-        } catch {}
+        } catch { }
       }
       const { triggerBackgroundSync } = await import('../services/syncService');
       triggerBackgroundSync();
@@ -308,6 +308,7 @@ const Profile = () => {
       }
       const result = await restoreFromCloud();
       if (result.success) {
+        markDeviceAsLinked(); // enable periodic cloud pulls on this restored device
         setRestoreId('');
         setRestorePin('');
         toast.success('Data restored! Reloading...', { id: restoreToast, duration: 2000 });
@@ -429,9 +430,9 @@ const Profile = () => {
                       <div className="mt-3 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 w-max">
                         <span className="text-sm drop-shadow-sm flex items-center justify-center">
                           {TIERS[tier]?.icon || (
-                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fbbf24" className="w-4 h-4">
-                               <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-                             </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fbbf24" className="w-4 h-4">
+                              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                            </svg>
                           )}
                         </span>
                         <span className="text-white font-black text-[10px] tracking-widest uppercase drop-shadow-sm">
@@ -466,7 +467,7 @@ const Profile = () => {
                     <div className="mt-1.5 flex items-center gap-1.5 opacity-80">
                       <Fingerprint size={12} className="text-white/70" />
                       <span className="text-white font-mono font-bold text-[9px] uppercase tracking-[0.2em] drop-shadow-sm">
-                        App ID: {deviceId ? `UCC-••••${deviceId.slice(-4)}` : 'UNKNOWN'}
+                        App ID: {deviceId ? `${deviceId.split('-')[0]}-••••${deviceId.slice(-4)}` : 'UNKNOWN'}
                       </span>
                     </div>
                   </div>
